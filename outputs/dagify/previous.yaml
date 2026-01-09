@@ -1,49 +1,80 @@
 dag_type: plain_text
-description: A workflow that implements a concurrent and parallelized quicksort algorithm
-name: concurrent_quicksort
+description: A workflow to assemble a transformer where each step is represented as
+  a node
+name: transformer_assembly
 nodes:
-  final_sorted_list:
+  assemble_transformer_layers:
     agent: false
-    description: The final sorted list resulting from merging the sorted sublists
-    name: final_sorted_list
+    description: Assemble the transformer layers using the encoder and decoder nodes
+    name: assemble_transformer_layers
     nodes_depended_on:
-    - merge_sorted_sublists
+    - implement_self_attention_mechanism
+    - implement_feed_forward_network
     nodes_dependent_on: []
-    prompt: Output the final sorted list
-  input_list:
+    prompt: Assemble the transformer layers by combining the encoder and decoder nodes
+      with the implemented self-attention mechanisms and feed-forward networks.
+  create_decoder_node:
     agent: false
-    description: The initial input list to be sorted
-    name: input_list
+    description: Create the decoder node for the transformer
+    name: create_decoder_node
+    nodes_depended_on:
+    - define_transformer_architecture
+    nodes_dependent_on: []
+    prompt: Create the decoder node based on the defined transformer architecture,
+      including self-attention mechanisms, encoder-decoder attention, and feed-forward
+      networks.
+  create_encoder_node:
+    agent: false
+    description: Create the encoder node for the transformer
+    name: create_encoder_node
+    nodes_depended_on:
+    - define_transformer_architecture
+    nodes_dependent_on: []
+    prompt: Create the encoder node based on the defined transformer architecture,
+      including self-attention mechanisms and feed-forward networks.
+  define_loss_function_and_optimizer:
+    agent: false
+    description: Define the loss function and optimizer for training the transformer
+    name: define_loss_function_and_optimizer
+    nodes_depended_on:
+    - assemble_transformer_layers
+    nodes_dependent_on: []
+    prompt: Define the loss function and optimizer for training the transformer model,
+      including the choice of loss function and optimization algorithm.
+  define_transformer_architecture:
+    agent: false
+    description: Specify the transformer model architecture
+    name: define_transformer_architecture
     nodes_depended_on: []
-    nodes_dependent_on:
-    - split_input_list
-    prompt: Provide the input list to be sorted
-  merge_sorted_sublists:
+    nodes_dependent_on: []
+    prompt: Define the transformer model architecture, including the number of layers,
+      heads, and embedding dimensions.
+  finalize_transformer_model:
     agent: false
-    description: Merge the sorted sublists into a single sorted list
-    name: merge_sorted_sublists
+    description: Finalize the transformer model by combining all the nodes and layers
+    name: finalize_transformer_model
     nodes_depended_on:
-    - sort_sublists
-    nodes_dependent_on:
-    - final_sorted_list
-    prompt: Merge the sorted sublists using a merge algorithm, maintaining the sorted
-      order
-  sort_sublists:
+    - define_loss_function_and_optimizer
+    nodes_dependent_on: []
+    prompt: Finalize the transformer model by combining all the nodes and layers,
+      including the encoder, decoder, and transformer layers.
+  implement_feed_forward_network:
     agent: false
-    description: Sort each sublist using the quicksort algorithm
-    name: sort_sublists
+    description: Implement the feed-forward network for the transformer
+    name: implement_feed_forward_network
     nodes_depended_on:
-    - split_input_list
-    nodes_dependent_on:
-    - merge_sorted_sublists
-    prompt: Apply the quicksort algorithm to sort each sublist independently
-  split_input_list:
+    - create_encoder_node
+    - create_decoder_node
+    nodes_dependent_on: []
+    prompt: Implement the feed-forward network for both the encoder and decoder nodes,
+      including linear layers and activation functions.
+  implement_self_attention_mechanism:
     agent: false
-    description: Split the input list into smaller sublists for concurrent sorting
-    name: split_input_list
+    description: Implement the self-attention mechanism for the transformer
+    name: implement_self_attention_mechanism
     nodes_depended_on:
-    - input_list
-    nodes_dependent_on:
-    - sort_sublists
-    prompt: Split the input list into sublists of size n, where n is the number of
-      available processing units
+    - create_encoder_node
+    - create_decoder_node
+    nodes_dependent_on: []
+    prompt: Implement the self-attention mechanism for both the encoder and decoder
+      nodes, including query, key, and value projections.
