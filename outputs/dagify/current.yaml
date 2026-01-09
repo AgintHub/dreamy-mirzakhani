@@ -1,84 +1,16 @@
 dag_type: plain_text
-description: A workflow for adding a judge component to a world simulator via nodes,
-  ensuring modular and concurrent execution.
+description: Create and integrate a judge component into the world simulator, covering
+  role definition, decision logic, interface design, integration, validation, testing,
+  and documentation.
 name: add_judge_to_world_simulator
 nodes:
-  define_judge_role:
+  add_judge_to_world_simulator:
     agent: false
-    description: Define the role and responsibilities of the judge within the world
-      simulator.
-    name: define_judge_role
+    description: Implement and document the judge component throughout its lifecycle.
+    name: add_judge_to_world_simulator
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Specify the primary functions and responsibilities of the judge component
-      in the world simulator, including decision-making processes and interaction
-      with other components.
-  design_judge_decision_logic:
-    agent: false
-    description: Design the decision-making logic for the judge component.
-    name: design_judge_decision_logic
-    nodes_depended_on:
-    - define_judge_role
-    nodes_dependent_on: []
-    prompt: Outline the decision-making process and algorithms for the judge, including
-      inputs, processing rules, and output formats.
-  develop_judge_interface:
-    agent: false
-    description: Develop the interface for the judge component to interact with other
-      simulator components.
-    name: develop_judge_interface
-    nodes_depended_on:
-    - define_judge_role
-    nodes_dependent_on: []
-    prompt: Design the APIs or interfaces required for the judge to communicate with
-      other components of the world simulator, including data exchange formats and
-      protocols.
-  document_judge_component:
-    agent: false
-    description: Document the judge component's functionality, interface, and integration
-      details.
-    name: document_judge_component
-    nodes_depended_on:
-    - refine_judge_component
-    nodes_dependent_on: []
-    prompt: Create comprehensive documentation for the judge component, including
-      its role, decision logic, interface specifications, and integration guidelines.
-  integrate_judge_with_simulator:
-    agent: false
-    description: Integrate the judge component with the existing world simulator framework.
-    name: integrate_judge_with_simulator
-    nodes_depended_on:
-    - design_judge_decision_logic
-    - develop_judge_interface
-    nodes_dependent_on: []
-    prompt: Implement the integration of the judge component with the world simulator,
-      ensuring compatibility and seamless interaction with other components.
-  refine_judge_component:
-    agent: false
-    description: Refine the judge component based on testing and validation results.
-    name: refine_judge_component
-    nodes_depended_on:
-    - validate_judge_decisions
-    nodes_dependent_on: []
-    prompt: Iterate on the design and implementation of the judge component to address
-      any issues or discrepancies identified during testing and validation.
-  test_judge_component:
-    agent: false
-    description: Test the judge component in isolation and within the simulator.
-    name: test_judge_component
-    nodes_depended_on:
-    - integrate_judge_with_simulator
-    nodes_dependent_on: []
-    prompt: Conduct thorough testing of the judge component, including unit tests,
-      integration tests, and scenario-based tests to ensure correct functionality
-      and interaction with other components.
-  validate_judge_decisions:
-    agent: false
-    description: Validate the decisions made by the judge component against expected
-      outcomes.
-    name: validate_judge_decisions
-    nodes_depended_on:
-    - test_judge_component
-    nodes_dependent_on: []
-    prompt: Compare the decisions made by the judge component with predefined expected
-      outcomes or rules to ensure accuracy and fairness.
+    prompt: Define the judge role, design its decision-making logic, develop interfaces
+      for interaction, integrate it with the simulator, validate decisions against
+      expected outcomes, test the component thoroughly, and produce comprehensive
+      documentation covering all aspects.
