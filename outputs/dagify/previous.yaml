@@ -1,80 +1,98 @@
 dag_type: plain_text
-description: A workflow to assemble a transformer where each step is represented as
-  a node
-name: transformer_assembly
+description: A workflow for writing a comprehensive textbook on quantum mechanics,
+  covering outline creation, chapter writing, figure generation, and final assembly.
+name: write_textbook_on_quantum_mechanics
 nodes:
-  assemble_transformer_layers:
+  compile_chapters:
     agent: false
-    description: Assemble the transformer layers using the encoder and decoder nodes
-    name: assemble_transformer_layers
+    description: Compile the written chapters into a cohesive draft
+    name: compile_chapters
     nodes_depended_on:
-    - implement_self_attention_mechanism
-    - implement_feed_forward_network
+    - write_chapter_introduction
+    - write_chapter_1
+    - write_chapter_2
     nodes_dependent_on: []
-    prompt: Assemble the transformer layers by combining the encoder and decoder nodes
-      with the implemented self-attention mechanisms and feed-forward networks.
-  create_decoder_node:
+    prompt: Assemble the introduction and chapters into a single document, ensuring
+      a logical flow.
+  create_figures_for_chapter_1:
     agent: false
-    description: Create the decoder node for the transformer
-    name: create_decoder_node
+    description: Generate figures for the first chapter
+    name: create_figures_for_chapter_1
     nodes_depended_on:
-    - define_transformer_architecture
+    - write_chapter_1
     nodes_dependent_on: []
-    prompt: Create the decoder node based on the defined transformer architecture,
-      including self-attention mechanisms, encoder-decoder attention, and feed-forward
-      networks.
-  create_encoder_node:
+    prompt: Create relevant figures and diagrams to illustrate key concepts in the
+      first chapter.
+  create_figures_for_chapter_2:
     agent: false
-    description: Create the encoder node for the transformer
-    name: create_encoder_node
+    description: Generate figures for the second chapter
+    name: create_figures_for_chapter_2
     nodes_depended_on:
-    - define_transformer_architecture
+    - write_chapter_2
     nodes_dependent_on: []
-    prompt: Create the encoder node based on the defined transformer architecture,
-      including self-attention mechanisms and feed-forward networks.
-  define_loss_function_and_optimizer:
+    prompt: Create relevant figures and diagrams to illustrate key concepts in the
+      second chapter.
+  define_target_audience:
     agent: false
-    description: Define the loss function and optimizer for training the transformer
-    name: define_loss_function_and_optimizer
-    nodes_depended_on:
-    - assemble_transformer_layers
-    nodes_dependent_on: []
-    prompt: Define the loss function and optimizer for training the transformer model,
-      including the choice of loss function and optimization algorithm.
-  define_transformer_architecture:
-    agent: false
-    description: Specify the transformer model architecture
-    name: define_transformer_architecture
+    description: Identify the intended audience for the textbook
+    name: define_target_audience
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Define the transformer model architecture, including the number of layers,
-      heads, and embedding dimensions.
-  finalize_transformer_model:
+    prompt: Determine the target audience for the quantum mechanics textbook (e.g.,
+      undergraduate students, graduate students, professionals).
+  develop_textbook_outline:
     agent: false
-    description: Finalize the transformer model by combining all the nodes and layers
-    name: finalize_transformer_model
+    description: Create a detailed outline for the textbook
+    name: develop_textbook_outline
     nodes_depended_on:
-    - define_loss_function_and_optimizer
+    - define_target_audience
     nodes_dependent_on: []
-    prompt: Finalize the transformer model by combining all the nodes and layers,
-      including the encoder, decoder, and transformer layers.
-  implement_feed_forward_network:
+    prompt: Develop a comprehensive outline for the quantum mechanics textbook, including
+      chapter titles and key concepts.
+  edit_and_refine_draft:
     agent: false
-    description: Implement the feed-forward network for the transformer
-    name: implement_feed_forward_network
+    description: Edit and refine the compiled draft
+    name: edit_and_refine_draft
     nodes_depended_on:
-    - create_encoder_node
-    - create_decoder_node
+    - compile_chapters
+    - create_figures_for_chapter_1
+    - create_figures_for_chapter_2
     nodes_dependent_on: []
-    prompt: Implement the feed-forward network for both the encoder and decoder nodes,
-      including linear layers and activation functions.
-  implement_self_attention_mechanism:
+    prompt: Review the draft for clarity, accuracy, and consistency, making necessary
+      revisions.
+  finalize_textbook:
     agent: false
-    description: Implement the self-attention mechanism for the transformer
-    name: implement_self_attention_mechanism
+    description: Finalize the textbook for publication
+    name: finalize_textbook
     nodes_depended_on:
-    - create_encoder_node
-    - create_decoder_node
+    - edit_and_refine_draft
     nodes_dependent_on: []
-    prompt: Implement the self-attention mechanism for both the encoder and decoder
-      nodes, including query, key, and value projections.
+    prompt: Prepare the final version of the textbook, including any last-minute corrections
+      or additions.
+  write_chapter_1:
+    agent: false
+    description: Write the first chapter of the textbook
+    name: write_chapter_1
+    nodes_depended_on:
+    - develop_textbook_outline
+    nodes_dependent_on: []
+    prompt: Write the first chapter of the quantum mechanics textbook, focusing on
+      the fundamental principles.
+  write_chapter_2:
+    agent: false
+    description: Write the second chapter of the textbook
+    name: write_chapter_2
+    nodes_depended_on:
+    - develop_textbook_outline
+    nodes_dependent_on: []
+    prompt: Write the second chapter of the quantum mechanics textbook, building on
+      the principles established in the first chapter.
+  write_chapter_introduction:
+    agent: false
+    description: Write the introduction to the textbook
+    name: write_chapter_introduction
+    nodes_depended_on:
+    - develop_textbook_outline
+    nodes_dependent_on: []
+    prompt: Write a clear and engaging introduction to the quantum mechanics textbook,
+      setting the stage for the rest of the content.
