@@ -1,0 +1,141 @@
+dag_type: plain_text
+description: A sequence of tasks required to design and construct a rocket.
+name: build_rockets
+nodes:
+  calculate_thrust_to_weight_ratio:
+    agent: false
+    description: Calculate the thrust to weight ratio for the rocket.
+    name: calculate_thrust_to_weight_ratio
+    nodes_depended_on:
+    - design_propulsion_system
+    nodes_dependent_on: []
+    prompt: Determine the thrust to weight ratio using the specific impulse values
+      and spacecraft dry mass. Provide the calculated ratio as the final answer.
+  choose_materials:
+    agent: false
+    description: Select the materials for the rocket's structure and components.
+    name: choose_materials
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Select materials for the rocket's structure and components, considering
+      factors such as strength, durability, weight, and cost.
+  define_launch_site:
+    agent: false
+    description: Determine the ideal location for launching the rocket.
+    name: define_launch_site
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Choose a launch site based on factors such as accessibility, safety, and
+      environmental concerns. Provide the name and coordinates of the selected site.
+  define_spacecraft_requirements:
+    agent: false
+    description: Determine the spacecraft's requirements and specifications.
+    name: define_spacecraft_requirements
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Define the spacecraft's requirements and specifications, including its
+      size, weight, shape, and payload capacity. Ensure the design meets the intended
+      mission objectives.
+  design_control_system:
+    agent: false
+    description: Develop a reliable control system.
+    name: design_control_system
+    nodes_depended_on:
+    - design_spacecraft_structure
+    nodes_dependent_on: []
+    prompt: Design a control system that can accurately manage the spacecraft's altitude,
+      velocity, and direction. Consider factors such as efficiency, accuracy, and
+      reliability.
+  design_propulsion_system:
+    agent: false
+    description: Design a reliable propulsion system.
+    name: design_propulsion_system
+    nodes_depended_on:
+    - plan_propellant_system
+    nodes_dependent_on: []
+    prompt: Develop a propulsion system that meets the spacecraft's power requirements.
+      Consider factors such as thrust, efficiency, and reliability.
+  design_spacecraft_structure:
+    agent: false
+    description: Develop a reliable and efficient spacecraft structure.
+    name: design_spacecraft_structure
+    nodes_depended_on:
+    - choose_materials
+    nodes_dependent_on: []
+    prompt: Describe the design of the spacecraft structure, including the shape,
+      size, and materials used. Consider factors such as weight, strength, and durability.
+  develop_launch_trajectory:
+    agent: false
+    description: Calculate the optimal launch trajectory.
+    name: develop_launch_trajectory
+    nodes_depended_on:
+    - design_spacecraft_structure
+    - select_payload
+    nodes_dependent_on: []
+    prompt: Use computer simulations to determine the optimal launch trajectory that
+      ensures the spacecraft reaches its intended destination safely and efficiently.
+  establish_communication_system:
+    agent: false
+    description: Develop a reliable communication system.
+    name: establish_communication_system
+    nodes_depended_on:
+    - define_launch_site
+    nodes_dependent_on: []
+    prompt: Design a communication system that ensures seamless communication between
+      the spacecraft, ground control, and telemetry systems.
+  finalize_spacecraft_assembly:
+    agent: false
+    description: Assemble the final spacecraft.
+    name: finalize_spacecraft_assembly
+    nodes_depended_on:
+    - select_payload
+    - design_spacecraft_structure
+    - design_control_system
+    - calculate_thrust_to_weight_ratio
+    - perform_safety_checks
+    nodes_dependent_on: []
+    prompt: Carefully assemble the spacecraft components, including the payload, structure,
+      control systems, and communication systems. Ensure the final assembly meets
+      all safety and performance requirements.
+  perform_safety_checks:
+    agent: false
+    description: Conduct thorough safety checks on the spacecraft and its components.
+    name: perform_safety_checks
+    nodes_depended_on:
+    - design_propulsion_system
+    - choose_materials
+    - plan_propellant_system
+    nodes_dependent_on: []
+    prompt: Conduct comprehensive safety checks to ensure the spacecraft and its components
+      meet all safety standards and regulations. Identify and address any potential
+      safety risks or threats.
+  plan_propellant_system:
+    agent: false
+    description: Design a reliable propellant system.
+    name: plan_propellant_system
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Develop a propellant system that meets the spacecraft's power requirements.
+      Consider factors such as fuel efficiency, weight, and safety.
+  select_payload:
+    agent: false
+    description: Choose the payload for the rocket.
+    name: select_payload
+    nodes_depended_on:
+    - design_spacecraft_structure
+    - define_spacecraft_requirements
+    nodes_dependent_on: []
+    prompt: Select a suitable payload that aligns with the spacecraft's purpose and
+      launch site. Provide the type, weight, and dimensions of the payload.
+  simulate_spacecraft_performance:
+    agent: false
+    description: Use computer simulations to test the spacecraft's performance.
+    name: simulate_spacecraft_performance
+    nodes_depended_on:
+    - finalize_spacecraft_assembly
+    - develop_launch_trajectory
+    - design_control_system
+    nodes_dependent_on: []
+    prompt: Perform extensive simulations to test the spacecraft's performance under
+      various conditions, including launch, orbit, and re-entry scenarios. Verify
+      the spacecraft's stability, control, and reliability.
