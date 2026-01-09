@@ -1,14 +1,26 @@
 dag_type: plain_text
-description: Generated workflow from UI.
-name: add_judge_to_world_simulator
+description: Workflow to add a prosecutor node whose output feeds into the judge node.
+name: add_judge_and_prosecutor_to_world_simulator
 nodes:
   judge:
     agent: false
     description: Implement and document the judge component throughout its lifecycle.
     name: judge
-    nodes_depended_on: []
+    nodes_depended_on:
+    - prosecutor
     nodes_dependent_on: []
     prompt: Define the judge role, design its decision-making logic, develop interfaces
       for interaction, integrate it with the simulator, validate decisions against
       expected outcomes, test the component thoroughly, and produce comprehensive
+      documentation covering all aspects.
+  prosecutor:
+    agent: false
+    description: Implement and document the prosecutor component throughout its lifecycle.
+    name: prosecutor
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - judge
+    prompt: Define the prosecutor role, design its evidence gathering and argumentation
+      logic, develop interfaces for interaction, integrate it with the simulator,
+      validate its outputs, test the component thoroughly, and produce comprehensive
       documentation covering all aspects.
