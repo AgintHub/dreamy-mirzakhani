@@ -1,305 +1,43 @@
 dag_type: plain_text
-description: Weather forecasting system with each node split into two concurrent tasks,
-  flowing outputs to both split successors
-name: concurrent_weather_forecasting_system
+description: End-to-end weather forecasting system covering data collection, model
+  training, deployment, real-time integration, and performance monitoring
+name: integrated_weather_forecasting_workflow
 nodes:
-  collect_historical_weather_data_part1:
+  integrated_weather_forecasting:
     agent: false
-    description: Gather historical weather observations and auxiliary data from authoritative
-      sources - part 1 of 2 concurrent tasks
-    name: collect_historical_weather_data_part1
-    nodes_depended_on:
-    - define_forecasting_requirements_part1
-    - define_forecasting_requirements_part2
-    nodes_dependent_on:
-    - preprocess_historical_data_part1
-    - preprocess_historical_data_part2
-    prompt: Collect historical weather data for the specified region and variables
-      from government databases, weather stations, and satellite archives, ensuring
-      coverage over the required time span - part 1 of 2 concurrent tasks
-  collect_historical_weather_data_part2:
-    agent: false
-    description: Gather historical weather observations and auxiliary data from authoritative
-      sources - part 2 of 2 concurrent tasks
-    name: collect_historical_weather_data_part2
-    nodes_depended_on:
-    - define_forecasting_requirements_part1
-    - define_forecasting_requirements_part2
-    nodes_dependent_on:
-    - preprocess_historical_data_part1
-    - preprocess_historical_data_part2
-    prompt: Collect historical weather data for the specified region and variables
-      from government databases, weather stations, and satellite archives, ensuring
-      coverage over the required time span - part 2 of 2 concurrent tasks
-  configure_alerts_and_notifications_part1:
-    agent: false
-    description: Generate alerts when forecasted conditions exceed user‑defined thresholds
-      - part 1 of 2 concurrent tasks
-    name: configure_alerts_and_notifications_part1
-    nodes_depended_on:
-    - deploy_forecasting_model_part1
-    - deploy_forecasting_model_part2
-    nodes_dependent_on: []
-    prompt: Create a rule engine that watches forecast outputs and, when specified
-      thresholds (e.g., temperature > 35°C, precipitation > 10 mm) are met, send notifications
-      via email or SMS - part 1 of 2 concurrent tasks
-  configure_alerts_and_notifications_part2:
-    agent: false
-    description: Generate alerts when forecasted conditions exceed user‑defined thresholds
-      - part 2 of 2 concurrent tasks
-    name: configure_alerts_and_notifications_part2
-    nodes_depended_on:
-    - deploy_forecasting_model_part1
-    - deploy_forecasting_model_part2
-    nodes_dependent_on: []
-    prompt: Create a rule engine that watches forecast outputs and, when specified
-      thresholds (e.g., temperature > 35°C, precipitation > 10 mm) are met, send notifications
-      via email or SMS - part 2 of 2 concurrent tasks
-  define_forecasting_requirements_part1:
-    agent: false
-    description: Define the weather forecasting system requirements including region,
-      forecast horizon, target variables, and model evaluation criteria - part 1 of
-      2 concurrent tasks
-    name: define_forecasting_requirements_part1
+    description: Execute complete weather forecasting pipeline including requirements
+      definition, historical data collection and preprocessing, model selection and
+      training, deployment, real-time data integration, alert configuration, and ongoing
+      model monitoring
+    name: integrated_weather_forecasting
     nodes_depended_on: []
-    nodes_dependent_on:
-    - collect_historical_weather_data_part1
-    - collect_historical_weather_data_part2
-    - select_forecasting_model_part1
-    - select_forecasting_model_part2
-    prompt: Specify the geographic region, forecast horizon (e.g., 1‑3 day, 1‑week),
-      target variables (temperature, precipitation, wind speed), and evaluation metrics
-      for the weather forecasting system - part 1 of 2 concurrent tasks
-  define_forecasting_requirements_part2:
-    agent: false
-    description: Define the weather forecasting system requirements including region,
-      forecast horizon, target variables, and model evaluation criteria - part 2 of
-      2 concurrent tasks
-    name: define_forecasting_requirements_part2
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - collect_historical_weather_data_part1
-    - collect_historical_weather_data_part2
-    - select_forecasting_model_part1
-    - select_forecasting_model_part2
-    prompt: Specify the geographic region, forecast horizon (e.g., 1‑3 day, 1‑week),
-      target variables (temperature, precipitation, wind speed), and evaluation metrics
-      for the weather forecasting system - part 2 of 2 concurrent tasks
-  deploy_forecasting_model_part1:
-    agent: false
-    description: Package the trained model and deploy it into a production environment
-      for real‑time inference - part 1 of 2 concurrent tasks
-    name: deploy_forecasting_model_part1
-    nodes_depended_on:
-    - evaluate_forecasting_model_part1
-    - evaluate_forecasting_model_part2
-    nodes_dependent_on:
-    - integrate_real_time_data_part1
-    - integrate_real_time_data_part2
-    - configure_alerts_and_notifications_part1
-    - configure_alerts_and_notifications_part2
-    - monitor_and_update_model_part1
-    - monitor_and_update_model_part2
-    prompt: Deploy the trained model as a REST API. Include serialization (e.g., joblib,
-      ONNX), load time, inference latency, and health check endpoints. Ensure the
-      model can receive real‑time data, generate forecasts, and output JSON results
-      - part 1 of 2 concurrent tasks
-  deploy_forecasting_model_part2:
-    agent: false
-    description: Package the trained model and deploy it into a production environment
-      for real‑time inference - part 2 of 2 concurrent tasks
-    name: deploy_forecasting_model_part2
-    nodes_depended_on:
-    - evaluate_forecasting_model_part1
-    - evaluate_forecasting_model_part2
-    nodes_dependent_on:
-    - integrate_real_time_data_part1
-    - integrate_real_time_data_part2
-    - configure_alerts_and_notifications_part1
-    - configure_alerts_and_notifications_part2
-    - monitor_and_update_model_part1
-    - monitor_and_update_model_part2
-    prompt: Deploy the trained model as a REST API. Include serialization (e.g., joblib,
-      ONNX), load time, inference latency, and health check endpoints. Ensure the
-      model can receive real‑time data, generate forecasts, and output JSON results
-      - part 2 of 2 concurrent tasks
-  evaluate_forecasting_model_part1:
-    agent: false
-    description: Assess the trained model’s predictive accuracy using multiple metrics
-      and visual diagnostics - part 1 of 2 concurrent tasks
-    name: evaluate_forecasting_model_part1
-    nodes_depended_on:
-    - train_forecasting_model_part1
-    - train_forecasting_model_part2
-    nodes_dependent_on:
-    - deploy_forecasting_model_part1
-    - deploy_forecasting_model_part2
-    prompt: Evaluate the model on a held‑out validation set. Compute MAE, MSE, RMSE,
-      and MAPE for each target variable. Generate forecast‑vs‑actual plots and calculate
-      bias. Summarize performance in a concise report - part 1 of 2 concurrent tasks
-  evaluate_forecasting_model_part2:
-    agent: false
-    description: Assess the trained model’s predictive accuracy using multiple metrics
-      and visual diagnostics - part 2 of 2 concurrent tasks
-    name: evaluate_forecasting_model_part2
-    nodes_depended_on:
-    - train_forecasting_model_part1
-    - train_forecasting_model_part2
-    nodes_dependent_on:
-    - deploy_forecasting_model_part1
-    - deploy_forecasting_model_part2
-    prompt: Evaluate the model on a held‑out validation set. Compute MAE, MSE, RMSE,
-      and MAPE for each target variable. Generate forecast‑vs‑actual plots and calculate
-      bias. Summarize performance in a concise report - part 2 of 2 concurrent tasks
-  integrate_real_time_data_part1:
-    agent: false
-    description: Ingest and preprocess real‑time weather observations to feed into
-      the deployed model - part 1 of 2 concurrent tasks
-    name: integrate_real_time_data_part1
-    nodes_depended_on:
-    - deploy_forecasting_model_part1
-    - deploy_forecasting_model_part2
     nodes_dependent_on: []
-    prompt: Set up an ingestion pipeline that pulls real‑time data from sensors or
-      APIs, cleans it, and transforms it into the same format expected by the model
-      for inference - part 1 of 2 concurrent tasks
-  integrate_real_time_data_part2:
-    agent: false
-    description: Ingest and preprocess real‑time weather observations to feed into
-      the deployed model - part 2 of 2 concurrent tasks
-    name: integrate_real_time_data_part2
-    nodes_depended_on:
-    - deploy_forecasting_model_part1
-    - deploy_forecasting_model_part2
-    nodes_dependent_on: []
-    prompt: Set up an ingestion pipeline that pulls real‑time data from sensors or
-      APIs, cleans it, and transforms it into the same format expected by the model
-      for inference - part 2 of 2 concurrent tasks
-  monitor_and_update_model_part1:
-    agent: false
-    description: Continuously track model performance and retrain when accuracy degrades
-      - part 1 of 2 concurrent tasks
-    name: monitor_and_update_model_part1
-    nodes_depended_on:
-    - deploy_forecasting_model_part1
-    - deploy_forecasting_model_part2
-    nodes_dependent_on: []
-    prompt: Implement monitoring to compare forecasted versus observed values over
-      time. When error metrics exceed thresholds, trigger a retraining pipeline that
-      retrains the model with the latest data - part 1 of 2 concurrent tasks
-  monitor_and_update_model_part2:
-    agent: false
-    description: Continuously track model performance and retrain when accuracy degrades
-      - part 2 of 2 concurrent tasks
-    name: monitor_and_update_model_part2
-    nodes_depended_on:
-    - deploy_forecasting_model_part1
-    - deploy_forecasting_model_part2
-    nodes_dependent_on: []
-    prompt: Implement monitoring to compare forecasted versus observed values over
-      time. When error metrics exceed thresholds, trigger a retraining pipeline that
-      retrains the model with the latest data - part 2 of 2 concurrent tasks
-  preprocess_historical_data_part1:
-    agent: false
-    description: Clean, impute missing values, and transform the collected data to
-      a format suitable for modeling - part 1 of 2 concurrent tasks
-    name: preprocess_historical_data_part1
-    nodes_depended_on:
-    - collect_historical_weather_data_part1
-    - collect_historical_weather_data_part2
-    nodes_dependent_on:
-    - select_forecasting_model_part1
-    - select_forecasting_model_part2
-    - train_forecasting_model_part1
-    - train_forecasting_model_part2
-    prompt: 'Preprocess the historical data: handle missing values, apply scaling
-      or normalization as needed, create lagged features, and encode categorical variables
-      - part 1 of 2 concurrent tasks'
-  preprocess_historical_data_part2:
-    agent: false
-    description: Clean, impute missing values, and transform the collected data to
-      a format suitable for modeling - part 2 of 2 concurrent tasks
-    name: preprocess_historical_data_part2
-    nodes_depended_on:
-    - collect_historical_weather_data_part1
-    - collect_historical_weather_data_part2
-    nodes_dependent_on:
-    - select_forecasting_model_part1
-    - select_forecasting_model_part2
-    - train_forecasting_model_part1
-    - train_forecasting_model_part2
-    prompt: 'Preprocess the historical data: handle missing values, apply scaling
-      or normalization as needed, create lagged features, and encode categorical variables
-      - part 2 of 2 concurrent tasks'
-  select_forecasting_model_part1:
-    agent: false
-    description: Choose a specific forecasting model type and determine initial hyperparameters
-      based on data characteristics - part 1 of 2 concurrent tasks
-    name: select_forecasting_model_part1
-    nodes_depended_on:
-    - define_forecasting_requirements_part1
-    - define_forecasting_requirements_part2
-    - preprocess_historical_data_part1
-    - preprocess_historical_data_part2
-    nodes_dependent_on:
-    - train_forecasting_model_part1
-    - train_forecasting_model_part2
-    prompt: Select a concrete forecasting model for the task (e.g., SARIMA, Prophet,
-      LSTM, Gradient Boosted Trees). Specify model family, key hyperparameters, and
-      rationale based on seasonality, trend, and data granularity. Use cross‑validation
-      to identify promising parameter ranges - part 1 of 2 concurrent tasks
-  select_forecasting_model_part2:
-    agent: false
-    description: Choose a specific forecasting model type and determine initial hyperparameters
-      based on data characteristics - part 2 of 2 concurrent tasks
-    name: select_forecasting_model_part2
-    nodes_depended_on:
-    - define_forecasting_requirements_part1
-    - define_forecasting_requirements_part2
-    - preprocess_historical_data_part1
-    - preprocess_historical_data_part2
-    nodes_dependent_on:
-    - train_forecasting_model_part1
-    - train_forecasting_model_part2
-    prompt: Select a concrete forecasting model for the task (e.g., SARIMA, Prophet,
-      LSTM, Gradient Boosted Trees). Specify model family, key hyperparameters, and
-      rationale based on seasonality, trend, and data granularity. Use cross‑validation
-      to identify promising parameter ranges - part 2 of 2 concurrent tasks
-  train_forecasting_model_part1:
-    agent: false
-    description: Train the selected forecasting model on the preprocessed historical
-      data and tune hyperparameters to optimize performance - part 1 of 2 concurrent
-      tasks
-    name: train_forecasting_model_part1
-    nodes_depended_on:
-    - select_forecasting_model_part1
-    - select_forecasting_model_part2
-    - preprocess_historical_data_part1
-    - preprocess_historical_data_part2
-    nodes_dependent_on:
-    - evaluate_forecasting_model_part1
-    - evaluate_forecasting_model_part2
-    prompt: Train the chosen model using the preprocessed dataset. For SARIMA, use
-      auto_arima to find p,d,q; for LSTM, set sequence length 24, dropout 0.2, 200
-      epochs, batch size 32, and early stopping. For Gradient Boosted Trees, use XGBoost
-      with 500 trees, max depth 5. Report training loss and validation metrics - part
-      1 of 2 concurrent tasks
-  train_forecasting_model_part2:
-    agent: false
-    description: Train the selected forecasting model on the preprocessed historical
-      data and tune hyperparameters to optimize performance - part 2 of 2 concurrent
-      tasks
-    name: train_forecasting_model_part2
-    nodes_depended_on:
-    - select_forecasting_model_part1
-    - select_forecasting_model_part2
-    - preprocess_historical_data_part1
-    - preprocess_historical_data_part2
-    nodes_dependent_on:
-    - evaluate_forecasting_model_part1
-    - evaluate_forecasting_model_part2
-    prompt: Train the chosen model using the preprocessed dataset. For SARIMA, use
-      auto_arima to find p,d,q; for LSTM, set sequence length 24, dropout 0.2, 200
-      epochs, batch size 32, and early stopping. For Gradient Boosted Trees, use XGBoost
-      with 500 trees, max depth 5. Report training loss and validation metrics - part
-      2 of 2 concurrent tasks
+    prompt: 'Run full weather forecasting workflow:
+
+      1. Define geographic region, forecast horizon (1-3 day, 1-week), target variables
+      (temperature, precipitation, wind speed), and evaluation metrics
+
+      2. Collect historical weather data from government databases, weather stations,
+      and satellite archives with at least 10-year coverage
+
+      3. Clean missing values, apply normalization/scaling, create lagged features
+      and encode categorical variables
+
+      4. Select appropriate forecasting models (SARIMA, LSTM, Gradient Boosted Trees)
+      based on data characteristics
+
+      5. Train selected models with parameter configuration: SARIMA use auto_arima,
+      LSTM: sequence length 24, dropout 0.2, XGBoost 500 trees, max depth 5
+
+      6. Evaluate with MAE, MSE, RMSE, MAPE and compare forecast vs actual plots
+
+      7. Deploy trained model as REST API with health check endpoints and real-time
+      inference capability
+
+      8. Implement real-time data pipeline for sensors/APIs to model-ready format
+
+      9. Configure alert system for thresholds (e.g., >35°C, >10 mm rainfall) via
+      email/SMS
+
+      10. Set up performance monitoring with automatic retraining when error exceeds
+      thresholds'
