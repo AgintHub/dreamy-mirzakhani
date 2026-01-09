@@ -1,199 +1,30 @@
 dag_type: plain_text
-description: A weather forecasting workflow where each original step is divided into
-  two sub‑steps to clarify responsibilities and enable finer control over the execution
-  process.
-name: weather_forecasting_system_split
+description: Generated workflow with each node split into two concurrent nodes, where
+  each output flows downstream to both split successors.
+name: weather_forecasting_system_split_concurrent
 nodes:
-  collect_historical_weather_data_part1:
+  collect_historical_weather_data_a:
     agent: false
-    description: Gather raw historical weather data.
-    name: collect_historical_weather_data_part1
+    description: Gather partial data from governmental sources such as weather stations.
+    name: collect_historical_weather_data_a
     nodes_depended_on:
-    - define_forecasting_requirements_part2
-    nodes_dependent_on:
-    - collect_historical_weather_data_part2
-    prompt: Collect raw historical weather data from government databases, weather
-      stations, and satellite archives for the specified region and time span.
-  collect_historical_weather_data_part2:
-    agent: false
-    description: Validate and store raw weather data.
-    name: collect_historical_weather_data_part2
-    nodes_depended_on:
-    - collect_historical_weather_data_part1
-    nodes_dependent_on:
-    - preprocess_historical_data_part1
-    prompt: Validate, deduplicate, and store the collected raw weather data in a centralized
-      repository.
-  configure_alerts_and_notifications_part1:
-    agent: false
-    description: Create alert rules.
-    name: configure_alerts_and_notifications_part1
-    nodes_depended_on:
-    - deploy_forecasting_model_part2
-    nodes_dependent_on:
-    - configure_alerts_and_notifications_part2
-    prompt: Define rule engine logic to detect when forecasted conditions cross user‑defined
-      thresholds.
-  configure_alerts_and_notifications_part2:
-    agent: false
-    description: Send notifications.
-    name: configure_alerts_and_notifications_part2
-    nodes_depended_on:
-    - configure_alerts_and_notifications_part1
+    - define_forecasting_requirements_a
     nodes_dependent_on: []
-    prompt: Send notifications via email or SMS when alert conditions are met.
-  define_forecasting_requirements_part1:
+    prompt: Collect historical weather data for the specified region and variables
+      from government databases, weather stations.
+  define_forecasting_requirements_a:
     agent: false
-    description: Define the region and forecast horizon.
-    name: define_forecasting_requirements_part1
+    description: Define the basic parameters of the weather forecasting system.
+    name: define_forecasting_requirements_a
     nodes_depended_on: []
-    nodes_dependent_on:
-    - define_forecasting_requirements_part2
-    prompt: Specify the geographic region and forecast horizon for the weather forecasting
-      system.
-  define_forecasting_requirements_part2:
-    agent: false
-    description: Define target variables and evaluation metrics.
-    name: define_forecasting_requirements_part2
-    nodes_depended_on:
-    - define_forecasting_requirements_part1
-    nodes_dependent_on:
-    - collect_historical_weather_data_part1
-    - select_forecasting_model_part1
-    prompt: Specify the target variables and evaluation metrics for the weather forecasting
-      system.
-  deploy_forecasting_model_part1:
-    agent: false
-    description: Package the trained model.
-    name: deploy_forecasting_model_part1
-    nodes_depended_on:
-    - evaluate_forecasting_model_part2
-    nodes_dependent_on:
-    - deploy_forecasting_model_part2
-    prompt: Package the trained model and prepare deployment artifacts.
-  deploy_forecasting_model_part2:
-    agent: false
-    description: Deploy model as REST API.
-    name: deploy_forecasting_model_part2
-    nodes_depended_on:
-    - deploy_forecasting_model_part1
-    nodes_dependent_on:
-    - integrate_real_time_data_part1
-    - monitor_and_update_model_part1
-    - configure_alerts_and_notifications_part1
-    prompt: Deploy the packaged model as a REST API with health checks and latency
-      monitoring.
-  evaluate_forecasting_model_part1:
-    agent: false
-    description: Calculate evaluation metrics.
-    name: evaluate_forecasting_model_part1
-    nodes_depended_on:
-    - train_forecasting_model_part2
-    nodes_dependent_on:
-    - evaluate_forecasting_model_part2
-    prompt: Compute MAE, MSE, RMSE, and MAPE on the validation set.
-  evaluate_forecasting_model_part2:
-    agent: false
-    description: Summarize model performance.
-    name: evaluate_forecasting_model_part2
-    nodes_depended_on:
-    - evaluate_forecasting_model_part1
-    nodes_dependent_on:
-    - deploy_forecasting_model_part1
-    prompt: Generate forecast‑vs‑actual plots and summarize performance in a concise
-      report.
-  integrate_real_time_data_part1:
-    agent: false
-    description: Ingest real‑time data.
-    name: integrate_real_time_data_part1
-    nodes_depended_on:
-    - deploy_forecasting_model_part2
-    nodes_dependent_on:
-    - integrate_real_time_data_part2
-    prompt: Set up a pipeline to ingest real‑time weather observations from sensors
-      or APIs.
-  integrate_real_time_data_part2:
-    agent: false
-    description: Preprocess real‑time data for inference.
-    name: integrate_real_time_data_part2
-    nodes_depended_on:
-    - integrate_real_time_data_part1
     nodes_dependent_on: []
-    prompt: Clean and transform the incoming data to match the model's input schema.
-  monitor_and_update_model_part1:
+    prompt: Specify the geographic region, forecast horizon (e.g., 1‑3 day, 1‑week),
+      target variables (temperature, precipitation, wind speed).
+  define_forecasting_requirements_b:
     agent: false
-    description: Monitor model performance.
-    name: monitor_and_update_model_part1
+    description: Define the evaluation criteria of the weather forecasting system.
+    name: define_forecasting_requirements_b
     nodes_depended_on:
-    - deploy_forecasting_model_part2
-    nodes_dependent_on:
-    - monitor_and_update_model_part2
-    prompt: Monitor forecast accuracy against live observations.
-  monitor_and_update_model_part2:
-    agent: false
-    description: Trigger retraining when necessary.
-    name: monitor_and_update_model_part2
-    nodes_depended_on:
-    - monitor_and_update_model_part1
+    - define_forecasting_requirements_a
     nodes_dependent_on: []
-    prompt: When error metrics exceed thresholds, trigger a retraining pipeline with
-      the latest data.
-  preprocess_historical_data_part1:
-    agent: false
-    description: Clean historical data.
-    name: preprocess_historical_data_part1
-    nodes_depended_on:
-    - collect_historical_weather_data_part2
-    nodes_dependent_on:
-    - preprocess_historical_data_part2
-    prompt: 'Clean the historical data: handle missing values, remove outliers, and
-      standardize units.'
-  preprocess_historical_data_part2:
-    agent: false
-    description: Engineer features for modeling.
-    name: preprocess_historical_data_part2
-    nodes_depended_on:
-    - preprocess_historical_data_part1
-    nodes_dependent_on:
-    - select_forecasting_model_part1
-    prompt: Engineer features such as lagged variables and encoded categorical fields
-      for modeling.
-  select_forecasting_model_part1:
-    agent: false
-    description: Select a forecasting model family.
-    name: select_forecasting_model_part1
-    nodes_depended_on:
-    - define_forecasting_requirements_part2
-    - preprocess_historical_data_part2
-    nodes_dependent_on:
-    - select_forecasting_model_part2
-    prompt: Choose a forecasting model family (e.g., SARIMA, Prophet, LSTM, Gradient
-      Boosted Trees) based on data characteristics.
-  select_forecasting_model_part2:
-    agent: false
-    description: Configure model hyperparameters.
-    name: select_forecasting_model_part2
-    nodes_depended_on:
-    - select_forecasting_model_part1
-    nodes_dependent_on:
-    - train_forecasting_model_part1
-    prompt: Set initial hyperparameters and rationale for the chosen model.
-  train_forecasting_model_part1:
-    agent: false
-    description: Initial model training.
-    name: train_forecasting_model_part1
-    nodes_depended_on:
-    - select_forecasting_model_part2
-    - preprocess_historical_data_part2
-    nodes_dependent_on:
-    - train_forecasting_model_part2
-    prompt: Train the model on the preprocessed data using default settings.
-  train_forecasting_model_part2:
-    agent: false
-    description: Hyperparameter tuning.
-    name: train_forecasting_model_part2
-    nodes_depended_on:
-    - train_forecasting_model_part1
-    nodes_dependent_on:
-    - evaluate_forecasting_model_part1
-    prompt: Fine‑tune hyperparameters using cross‑validation and report training loss.
+    prompt: Specify the evaluation metrics for the weather forecasting system performance.
