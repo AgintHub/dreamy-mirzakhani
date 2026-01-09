@@ -1,13 +1,11 @@
 dag_type: plain_text
-description: Create and integrate a judge component into the world simulator, covering
-  role definition, decision logic, interface design, integration, validation, testing,
-  and documentation.
+description: Generated workflow from UI.
 name: add_judge_to_world_simulator
 nodes:
-  add_judge_to_world_simulator:
+  judge:
     agent: false
     description: Implement and document the judge component throughout its lifecycle.
-    name: add_judge_to_world_simulator
+    name: judge
     nodes_depended_on: []
     nodes_dependent_on: []
     prompt: Define the judge role, design its decision-making logic, develop interfaces
