@@ -1,351 +1,142 @@
 dag_type: plain_text
-description: A workflow to produce a quantum mechanics textbook consisting of an introduction
-  and twelve chapters, including figure generation, drafting, editing, and finalization.
-name: write_textbook_on_quantum_mechanics_with_12_chapters
+description: A concurrent workflow to develop a comprehensive plan for winning the
+  space race, covering technological innovation, mission execution, funding, partnerships,
+  and regulatory compliance.
+name: build_space_race_plan
 nodes:
-  compile_chapters:
+  clarify_space_race_objectives:
     agent: false
-    description: Merge all written material into a cohesive draft.
-    name: compile_chapters
-    nodes_depended_on:
-    - write_chapter_introduction
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
-    - write_chapter_4
-    - write_chapter_5
-    - write_chapter_6
-    - write_chapter_7
-    - write_chapter_8
-    - write_chapter_9
-    - write_chapter_10
-    - write_chapter_11
-    - write_chapter_12
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Assemble the introduction and chapters into a single document, ensuring
-      a logical flow.
-  create_figures_for_chapter_1:
-    agent: false
-    description: Generate Chapter 1 figures.
-    name: create_figures_for_chapter_1
-    nodes_depended_on:
-    - write_chapter_1
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      first chapter.
-  create_figures_for_chapter_10:
-    agent: false
-    description: Generate Chapter 10 figures.
-    name: create_figures_for_chapter_10
-    nodes_depended_on:
-    - write_chapter_10
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      tenth chapter.
-  create_figures_for_chapter_11:
-    agent: false
-    description: Generate Chapter 11 figures.
-    name: create_figures_for_chapter_11
-    nodes_depended_on:
-    - write_chapter_11
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      eleventh chapter.
-  create_figures_for_chapter_12:
-    agent: false
-    description: Generate Chapter 12 figures.
-    name: create_figures_for_chapter_12
-    nodes_depended_on:
-    - write_chapter_12
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      twelfth chapter.
-  create_figures_for_chapter_2:
-    agent: false
-    description: Generate Chapter 2 figures.
-    name: create_figures_for_chapter_2
-    nodes_depended_on:
-    - write_chapter_2
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      second chapter.
-  create_figures_for_chapter_3:
-    agent: false
-    description: Generate Chapter 3 figures.
-    name: create_figures_for_chapter_3
-    nodes_depended_on:
-    - write_chapter_3
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      third chapter.
-  create_figures_for_chapter_4:
-    agent: false
-    description: Generate Chapter 4 figures.
-    name: create_figures_for_chapter_4
-    nodes_depended_on:
-    - write_chapter_4
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      fourth chapter.
-  create_figures_for_chapter_5:
-    agent: false
-    description: Generate Chapter 5 figures.
-    name: create_figures_for_chapter_5
-    nodes_depended_on:
-    - write_chapter_5
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      fifth chapter.
-  create_figures_for_chapter_6:
-    agent: false
-    description: Generate Chapter 6 figures.
-    name: create_figures_for_chapter_6
-    nodes_depended_on:
-    - write_chapter_6
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      sixth chapter.
-  create_figures_for_chapter_7:
-    agent: false
-    description: Generate Chapter 7 figures.
-    name: create_figures_for_chapter_7
-    nodes_depended_on:
-    - write_chapter_7
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      seventh chapter.
-  create_figures_for_chapter_8:
-    agent: false
-    description: Generate Chapter 8 figures.
-    name: create_figures_for_chapter_8
-    nodes_depended_on:
-    - write_chapter_8
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      eighth chapter.
-  create_figures_for_chapter_9:
-    agent: false
-    description: Generate Chapter 9 figures.
-    name: create_figures_for_chapter_9
-    nodes_depended_on:
-    - write_chapter_9
-    nodes_dependent_on:
-    - edit_and_refine_draft
-    prompt: Create relevant figures and diagrams to illustrate key concepts in the
-      ninth chapter.
-  define_target_audience:
-    agent: false
-    description: Identify the intended readers of the textbook.
-    name: define_target_audience
+    description: Define the primary goals of the space race initiative
+    name: clarify_space_race_objectives
     nodes_depended_on: []
-    nodes_dependent_on:
-    - develop_textbook_outline
-    prompt: Determine the target audience for the quantum mechanics textbook (e.g.,
-      undergraduate students, graduate students, professionals).
-  develop_textbook_outline:
-    agent: false
-    description: Create the structural framework of the textbook.
-    name: develop_textbook_outline
-    nodes_depended_on:
-    - define_target_audience
-    nodes_dependent_on:
-    - write_chapter_introduction
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
-    - write_chapter_4
-    - write_chapter_5
-    - write_chapter_6
-    - write_chapter_7
-    - write_chapter_8
-    - write_chapter_9
-    - write_chapter_10
-    - write_chapter_11
-    - write_chapter_12
-    prompt: Develop a comprehensive outline for the quantum mechanics textbook, including
-      chapter titles and key concepts.
-  edit_and_refine_draft:
-    agent: false
-    description: Polish the assembled draft.
-    name: edit_and_refine_draft
-    nodes_depended_on:
-    - compile_chapters
-    - create_figures_for_chapter_1
-    - create_figures_for_chapter_2
-    - create_figures_for_chapter_3
-    - create_figures_for_chapter_4
-    - create_figures_for_chapter_5
-    - create_figures_for_chapter_6
-    - create_figures_for_chapter_7
-    - create_figures_for_chapter_8
-    - create_figures_for_chapter_9
-    - create_figures_for_chapter_10
-    - create_figures_for_chapter_11
-    - create_figures_for_chapter_12
-    nodes_dependent_on:
-    - finalize_textbook
-    prompt: Review the draft for clarity, accuracy, and consistency, making necessary
-      revisions.
-  finalize_textbook:
-    agent: false
-    description: Produce the finalized textbook ready for publication.
-    name: finalize_textbook
-    nodes_depended_on:
-    - edit_and_refine_draft
     nodes_dependent_on: []
-    prompt: Prepare the final version of the textbook, including any last-minute corrections
-      or additions.
-  write_chapter_1:
+    prompt: List 5-8 specific objectives for winning the space race (e.g., lunar colonization,
+      Mars missions, satellite dominance). Focus only on final outcomes.
+  compile_space_race_blueprint:
     agent: false
-    description: Draft Chapter 1.
-    name: write_chapter_1
+    description: Generate final integrated plan
+    name: compile_space_race_blueprint
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_1
-    - compile_chapters
-    prompt: Write the first chapter of the quantum mechanics textbook, focusing on
-      the fundamental principles.
-  write_chapter_10:
+    - formulate_mission_timeline
+    - develop_fundraising_strategy
+    - design_reusable_spacecraft
+    - design_habitat_modules
+    - create_ai_mission_support_systems
+    - identify_regulatory_requirements
+    nodes_dependent_on: []
+    prompt: Synthesize all inputs into a 20-page executive plan covering objectives,
+      tech, funding, partnerships, timeline, and compliance.
+  create_ai_mission_support_systems:
     agent: false
-    description: Draft Chapter 10.
-    name: write_chapter_10
+    description: Develop autonomous operations tools
+    name: create_ai_mission_support_systems
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_10
-    - compile_chapters
-    prompt: Write the tenth chapter of the quantum mechanics textbook, covering experimental
-      techniques.
-  write_chapter_11:
+    - formulate_mission_timeline
+    - map_exploration_routes
+    nodes_dependent_on: []
+    prompt: Design 4 AI systems for real-time trajectory correction, resource optimization,
+      anomaly detection, and mission planning.
+  design_habitat_modules:
     agent: false
-    description: Draft Chapter 11.
-    name: write_chapter_11
+    description: Create extraterrestrial living quarters
+    name: design_habitat_modules
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_11
-    - compile_chapters
-    prompt: Write the eleventh chapter of the quantum mechanics textbook, integrating
-      multidisciplinary perspectives.
-  write_chapter_12:
+    - clarify_space_race_objectives
+    - develop_sustainable_energy_sources
+    nodes_dependent_on: []
+    prompt: Design 3 radiation-shielded habitat modules for lunar/Martian surfaces
+      with life support and radiation protection.
+  design_reusable_spacecraft:
     agent: false
-    description: Draft Chapter 12.
-    name: write_chapter_12
+    description: Create reusable space vehicle specifications
+    name: design_reusable_spacecraft
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_12
-    - compile_chapters
-    prompt: Write the twelfth chapter of the quantum mechanics textbook, summarizing
-      key insights and future directions.
-  write_chapter_2:
+    - clarify_space_race_objectives
+    nodes_dependent_on: []
+    prompt: Design a next-gen reusable spacecraft with payload capacity, re-entry
+      durability, and refueling capabilities.
+  develop_fundraising_strategy:
     agent: false
-    description: Draft Chapter 2.
-    name: write_chapter_2
+    description: Create plan to secure financial resources
+    name: develop_fundraising_strategy
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_2
-    - compile_chapters
-    prompt: Write the second chapter of the quantum mechanics textbook, building on
-      the principles established in the first chapter.
-  write_chapter_3:
+    - identify_funding_sources
+    nodes_dependent_on: []
+    prompt: Draft a 5-point strategy for securing funding, including government grants,
+      private investments, and commercial partnerships.
+  develop_sustainable_energy_sources:
     agent: false
-    description: Draft Chapter 3.
-    name: write_chapter_3
+    description: Design extraterrestrial energy systems
+    name: develop_sustainable_energy_sources
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_3
-    - compile_chapters
-    prompt: Write the third chapter of the quantum mechanics textbook, introducing
-      new concepts and applications.
-  write_chapter_4:
+    - clarify_space_race_objectives
+    nodes_dependent_on: []
+    prompt: Propose 3 sustainable energy solutions for space missions (e.g., laser
+      power beaming, nuclear reactors, solar sails).
+  establish_international_partnerships:
     agent: false
-    description: Draft Chapter 4.
-    name: write_chapter_4
+    description: Form global collaboration agreements
+    name: establish_international_partnerships
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_4
-    - compile_chapters
-    prompt: Write the fourth chapter of the quantum mechanics textbook, expanding
-      on advanced topics.
-  write_chapter_5:
+    - clarify_space_race_objectives
+    nodes_dependent_on: []
+    prompt: List 6 countries and 3 international organizations to partner with for
+      joint space programs and treaty negotiations.
+  formulate_mission_timeline:
     agent: false
-    description: Draft Chapter 5.
-    name: write_chapter_5
+    description: Create phased schedule for space initiatives
+    name: formulate_mission_timeline
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_5
-    - compile_chapters
-    prompt: Write the fifth chapter of the quantum mechanics textbook, covering intermediate
-      theory.
-  write_chapter_6:
+    - clarify_space_race_objectives
+    - map_exploration_routes
+    nodes_dependent_on: []
+    prompt: Design a 3-year timeline with milestones for orbital operations, lunar
+      missions, and interplanetary phases.
+  identify_funding_sources:
     agent: false
-    description: Draft Chapter 6.
-    name: write_chapter_6
+    description: List potential funding channels
+    name: identify_funding_sources
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_6
-    - compile_chapters
-    prompt: Write the sixth chapter of the quantum mechanics textbook, integrating
-      practical examples.
-  write_chapter_7:
+    - clarify_space_race_objectives
+    nodes_dependent_on: []
+    prompt: Generate a prioritized list of 10 funding sources (e.g., NASA, SpaceX,
+      venture capital, space tourism) aligned with the objectives.
+  identify_regulatory_requirements:
     agent: false
-    description: Draft Chapter 7.
-    name: write_chapter_7
+    description: Map legal compliance needs
+    name: identify_regulatory_requirements
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_7
-    - compile_chapters
-    prompt: Write the seventh chapter of the quantum mechanics textbook, exploring
-      emerging research.
-  write_chapter_8:
+    - establish_international_partnerships
+    - clarify_space_race_objectives
+    nodes_dependent_on: []
+    prompt: List 8 regulatory requirements for space operations across UN treaties,
+      national laws, and corporate governance.
+  map_exploration_routes:
     agent: false
-    description: Draft Chapter 8.
-    name: write_chapter_8
+    description: Plan efficient mission paths
+    name: map_exploration_routes
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_8
-    - compile_chapters
-    prompt: Write the eighth chapter of the quantum mechanics textbook, discussing
-      specialized techniques.
-  write_chapter_9:
+    - develop_sustainable_energy_sources
+    nodes_dependent_on: []
+    prompt: Generate 3 mission route options to Mars with transit windows, refueling
+      points, and contingency paths.
+  plan_space_economic_infrastructure:
     agent: false
-    description: Draft Chapter 9.
-    name: write_chapter_9
+    description: Build commercial ecosystem
+    name: plan_space_economic_infrastructure
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - create_figures_for_chapter_9
-    - compile_chapters
-    prompt: Write the ninth chapter of the quantum mechanics textbook, focusing on
-      computational methods.
-  write_chapter_introduction:
+    - develop_fundraising_strategy
+    - design_habitat_modules
+    nodes_dependent_on: []
+    prompt: Design 3 revenue-generating infrastructure models (space hotels, asteroid
+      mining, ISRU material trading).
+  simulate_mission_scenarios:
     agent: false
-    description: Compose the introductory section.
-    name: write_chapter_introduction
+    description: Test mission viability
+    name: simulate_mission_scenarios
     nodes_depended_on:
-    - develop_textbook_outline
-    nodes_dependent_on:
-    - compile_chapters
-    prompt: Write a clear and engaging introduction to the quantum mechanics textbook,
-      setting the stage for the rest of the content.
+    - formulate_mission_timeline
+    - map_exploration_routes
+    nodes_dependent_on: []
+    prompt: Create 5 simulation scenarios for launch delays, equipment failures, and
+      extravehicular activity emergencies.
