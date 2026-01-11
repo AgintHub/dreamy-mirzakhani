@@ -1,87 +1,139 @@
 dag_type: plain_text
-description: A workflow for a B2B SaaS company to manage advertisement buys for shoes,
-  from initial lead generation to campaign execution and analysis.
-name: b2b_saas_advertisement_pipeline
+description: Build an end-to-end pipeline for a B2B SaaS company selling advertisement
+  buys for shoes
+name: create_b2b_saa_software_pipeline
 nodes:
-  analyze_advertisement_results:
+  configure_b2b_saas_system_for_advertisement:
     agent: false
-    description: Analyze the results of the advertisement campaign
-    name: analyze_advertisement_results
+    description: Configure the existing B2B SaaS system to accommodate advertisement
+      reporting and performance metrics
+    name: configure_b2b_saas_system_for_advertisement
     nodes_depended_on:
-    - monitor_advertisement_performance
+    - create_advertisement_reporting_interface
     nodes_dependent_on: []
-    prompt: Analyze the results of the advertisement campaign, identifying areas for
-      improvement and opportunities for optimization.
-  create_advertisement_content:
+    prompt: 'Configure the existing B2B SaaS infrastructure to facilitate advertisement
+      reporting and performance metric display.
+
+      Integrate reporting interface with existing database management systems and
+      data storage solutions.
+
+      Set up APIs or interfaces to ensure seamless data exchange and synchronization.
+
+      Provide a plan for ongoing system updates and maintenance to ensure smooth advertisement
+      reporting and data performance.'
+  create_advertisement_reporting_interface:
     agent: false
-    description: Create advertisement content for shoe buys
-    name: create_advertisement_content
+    description: Develop an interactive advertisement reporting interface for shoe
+      companies
+    name: create_advertisement_reporting_interface
     nodes_depended_on:
-    - define_target_audience
-    - research_advertisement_platforms
+    - develop_data_model_for_advertisement_report
     nodes_dependent_on: []
-    prompt: Create a set of advertisement content for shoe buys, including ad copy,
-      images, and videos, based on the defined target audience and researched advertisement
-      platforms.
-  define_target_audience:
+    prompt: 'Develop an interactive reporting interface for shoe companies to view
+      ad campaign performance.
+
+      Design an intuitive and data-driven interface to display performance metrics
+      and campaign data.
+
+      Create an interactive dashboard with filters, drill-downs, and data visualizations.
+
+      Describe a plan for ongoing updates and maintenance to ensure interactive advertisement
+      reporting.'
+  define_target_shoe_bridle_market:
     agent: false
-    description: Define the target audience for shoe advertisement buys
-    name: define_target_audience
-    nodes_depended_on:
-    - generate_lead_list
-    nodes_dependent_on: []
-    prompt: Define the target audience for shoe advertisement buys, including demographics,
-      interests, and behaviors, based on the generated lead list.
-  generate_lead_list:
-    agent: false
-    description: Create a list of potential leads for shoe advertisement buys
-    name: generate_lead_list
+    description: Identify the target shoe bride audience market segment
+    name: define_target_shoe_bridle_market
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Generate a list of 100 potential leads for shoe advertisement buys, including
-      company name, contact email, and job title.
-  launch_advertisement_campaign:
+    prompt: 'Analyze online ad metrics to determine the key demographics of shoe brands
+      and the target audience for the shoe bride market segment.
+
+      Identify the psychographics of the shoe bride audience (e.g., fashion-minded,
+      style-conscious, comfort-oriented).'
+  develop_data_model_for_advertisement_report:
     agent: false
-    description: Launch the advertisement campaign for shoe buys
-    name: launch_advertisement_campaign
+    description: Define data model for ad campaign report
+    name: develop_data_model_for_advertisement_report
     nodes_depended_on:
-    - create_advertisement_content
-    - set_advertisement_budget
+    - plan_advertisement_strategy
     nodes_dependent_on: []
-    prompt: Launch the advertisement campaign for shoe buys, using the created advertisement
-      content and allocated budget.
-  monitor_advertisement_performance:
+    prompt: 'Create a data model for ad campaign reporting, including metrics for
+      campaign success and customer engagement.
+
+      Design a schema for data collection and storage.
+
+      Outline data visualizations for campaign performance metrics and ROI.
+
+      Create a data story outline for ad campaign success.
+
+      Map performance metrics to KPIs for campaign evaluation.'
+  establish_ad_technologies:
     agent: false
-    description: Monitor the performance of the advertisement campaign
-    name: monitor_advertisement_performance
+    description: Choose relevant ad technologies for shoe company advertisement buys
+    name: establish_ad_technologies
     nodes_depended_on:
-    - launch_advertisement_campaign
+    - research_shoe_companies
     nodes_dependent_on: []
-    prompt: Monitor the performance of the advertisement campaign, tracking metrics
-      such as click-through rate, conversion rate, and return on ad spend.
-  optimize_advertisement_campaign:
+    prompt: 'Research and select ad technologies used by top shoe companies in their
+      marketing campaigns.
+
+      Explore technologies for digital advertising, email marketing, social media
+      advertising, and influencer marketing.
+
+      Compare features, costs, and integration requirements for selected ad technologies.
+
+      Shortlist 3 ad technologies for potential use in advertisement buys for shoe
+      companies.'
+  integrate_advertising_technologies:
     agent: false
-    description: Optimize the advertisement campaign for better performance
-    name: optimize_advertisement_campaign
+    description: Integrate selected ad technologies into the existing B2B SaaS infrastructure
+    name: integrate_advertising_technologies
     nodes_depended_on:
-    - analyze_advertisement_results
+    - plan_advertisement_strategy
     nodes_dependent_on: []
-    prompt: Optimize the advertisement campaign, adjusting targeting, ad creative,
-      and budget allocation to improve performance and achieve better results.
-  research_advertisement_platforms:
+    prompt: 'Choose a method for integrating ad technologies into the existing B2B
+      SaaS infrastructure.
+
+      Use APIs, plug-ins, or third-party integrations to enable seamless ad technology
+      integration.
+
+      Set up and configure ad technologies in accordance with selected solutions.
+
+      Provide a plan for ongoing maintenance and updates to ensure seamless ad technology
+      integration.'
+  plan_advertisement_strategy:
     agent: false
-    description: Research available advertisement platforms for shoe buys
-    name: research_advertisement_platforms
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Research and list 5 available advertisement platforms for shoe buys, including
-      Google Ads, Facebook Ads, and Instagram Ads.
-  set_advertisement_budget:
-    agent: false
-    description: Set a budget for shoe advertisement buys
-    name: set_advertisement_budget
+    description: Outline a comprehensive advertisement strategy for shoes
+    name: plan_advertisement_strategy
     nodes_depended_on:
-    - research_advertisement_platforms
+    - establish_ad_technologies
     nodes_dependent_on: []
-    prompt: Set a budget of $10,000 for shoe advertisement buys, allocated across
-      the researched advertisement platforms.
+    prompt: 'Develop an advertisement strategy for shoe companies, focusing on reaching
+      target shoe bride audiences through selected ad technologies.
+
+      Create an outline of ad campaigns for specific shoe brands, including goals,
+      target audiences, and messaging.
+
+      Define metrics for measuring campaign success, including clicks, conversions,
+      engagement, and return on investment (ROI).
+
+      Describe a plan for data collection, analysis, and reporting for ad campaigns.
+
+      Define key performance indicators (KPIs) for ad campaign success and customer
+      engagement.'
+  research_shoe_companies:
+    agent: false
+    description: List and research shoe companies for potential advertisement buys
+    name: research_shoe_companies
+    nodes_depended_on:
+    - define_target_shoe_bridle_market
+    nodes_dependent_on: []
+    prompt: 'Research shoe companies including their history, product lines, target
+      audiences, marketing strategies, and advertising budgets.
+
+      Create a list of top shoe companies with market presence and potential for collaboration.
+
+      Keep the list to the top 10 shoe companies with highest market share and influencer
+      presence.
+
+      Include information on the target shoe bride market segment.'
