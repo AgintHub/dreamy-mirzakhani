@@ -1,75 +1,56 @@
 dag_type: plain_text
 description: Identify underlying songs from an audio snippet and redirect to musicians'
   pages
-name: audio_sample_identifier
+name: audiosamplesongidentifier
 nodes:
-  construct_musician_pages:
+  extractaudiofeatures:
     agent: false
-    description: Construct links to the musicians' pages for redirection
-    name: construct_musician_pages
-    nodes_depended_on:
-    - retrieve_musicians_info
-    nodes_dependent_on: []
-    prompt: Create URLs for the musicians' pages, using their respective profiles
-      and identifiers
-  generate_acoustic_fingerprint:
-    agent: false
-    description: Generate a unique acoustic fingerprint for the preprocessed audio
-    name: generate_acoustic_fingerprint
-    nodes_depended_on:
-    - preprocess_audio
-    nodes_dependent_on: []
-    prompt: Use machine learning algorithms to generate a unique acoustic fingerprint
-      from the preprocessed audio features
-  identify_sampled_songs:
-    agent: false
-    description: Identify the underlying songs that the audio snippet samples from
-    name: identify_sampled_songs
-    nodes_depended_on:
-    - search_database
-    nodes_dependent_on: []
-    prompt: Post-process the search results to determine the most likely sampled songs,
-      considering factors like similarity and context
-  load_audio_snippet:
-    agent: false
-    description: Load the provided audio snippet for processing
-    name: load_audio_snippet
+    description: Extract relevant audio features from the input snippet
+    name: extractaudiofeatures
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Load the audio snippet from the input source
-  preprocess_audio:
+    nodes_dependent_on:
+    - identifypotentialsongs
+    prompt: Extract audio features such as melody, rhythm, and spectral characteristics
+      from the input audio snippet.
+  formatredirectlinks:
     agent: false
-    description: Preprocess the audio snippet to extract relevant features
-    name: preprocess_audio
+    description: Format the retrieved musician information into redirect links
+    name: formatredirectlinks
     nodes_depended_on:
-    - load_audio_snippet
+    - retrievemusicianinfo
     nodes_dependent_on: []
-    prompt: Apply noise reduction, normalization, and feature extraction to the loaded
-      audio snippet
-  redirect_to_musician_pages:
+    prompt: Format the retrieved musician information into clickable links or redirect
+      URLs that the user can access.
+  identifypotentialsongs:
     agent: false
-    description: Redirect the user to the constructed musician pages
-    name: redirect_to_musician_pages
+    description: Compare extracted features against a database to identify potential
+      matching songs
+    name: identifypotentialsongs
     nodes_depended_on:
-    - construct_musician_pages
-    nodes_dependent_on: []
-    prompt: Send a response with the constructed URLs, enabling the user to access
-      the musicians' pages
-  retrieve_musicians_info:
+    - extractaudiofeatures
+    nodes_dependent_on:
+    - verifysongmatches
+    prompt: Use the extracted audio features to query a database of song features
+      and identify potential matching songs.
+  retrievemusicianinfo:
     agent: false
-    description: Retrieve information about the musicians behind the identified songs
-    name: retrieve_musicians_info
+    description: Retrieve information about the musicians associated with the verified
+      song matches
+    name: retrievemusicianinfo
     nodes_depended_on:
-    - identify_sampled_songs
-    nodes_dependent_on: []
-    prompt: Fetch the musicians' names, profiles, and other relevant information from
-      a reliable data source
-  search_database:
+    - verifysongmatches
+    nodes_dependent_on:
+    - formatredirectlinks
+    prompt: Query a database or API to retrieve information about the musicians associated
+      with the verified song matches, including their profile pages or relevant links.
+  verifysongmatches:
     agent: false
-    description: Search a comprehensive music database for matching acoustic fingerprints
-    name: search_database
+    description: Verify the identified potential song matches using a more detailed
+      comparison
+    name: verifysongmatches
     nodes_depended_on:
-    - generate_acoustic_fingerprint
-    nodes_dependent_on: []
-    prompt: Query the music database to find songs with matching acoustic fingerprints,
-      using efficient search algorithms
+    - identifypotentialsongs
+    nodes_dependent_on:
+    - retrievemusicianinfo
+    prompt: Perform a more detailed comparison between the input audio snippet and
+      the identified potential song matches to verify the matches.
