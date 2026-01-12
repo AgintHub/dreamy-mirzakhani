@@ -1,3 +1,16 @@
+from ._create_playlist.validate_musician_inputs import validate_musician_inputs
+from ._create_playlist.expand_musician_aliases import expand_musician_aliases
+from ._create_playlist.fetch_sampled_songs_metadata import fetch_sampled_songs_metadata
+from ._create_playlist.extract_nlp_features import extract_nlp_features
+from ._create_playlist.apply_collaborative_filtering import apply_collaborative_filtering
+from ._create_playlist.build_graph_based_model import build_graph_based_model
+from ._create_playlist.rank_tracks_with_graph_algorithm import rank_tracks_with_graph_algorithm
+from ._create_playlist.select_final_tracks import select_final_tracks
+from ._create_playlist.generate_playlist_metadata import generate_playlist_metadata
+from ._create_playlist.calculate_artist_diversity_score import calculate_artist_diversity_score
+from ._create_playlist.extract_genre_representation import extract_genre_representation
+from ._create_playlist.generate_playlist_id import generate_playlist_id
+
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -11,10 +24,14 @@ class ListMusiciansOutput(BaseModel):
         Field(..., description="List of names of the musicians")
     )
     musician_aliases: List[str] = (
-        Field(..., description="List of lists containing aliases for each musician")
+        Field(..., description = (
+            "List of lists containing aliases for each musician")
+        )
     )
     is_deduplicated: bool = (
-        Field(..., description="Whether the list of musicians has been deduplicated")
+        Field(..., description = (
+            "Whether the list of musicians has been deduplicated")
+        )
     )
 
 
@@ -24,16 +41,22 @@ class CreatePlaylistOutput(BaseModel):
         Field(..., description="Unique identifier for the generated playlist")
     )
     track_ids: List[str] = (
-        Field(..., description="List of track identifiers included in the playlist")
+        Field(..., description = (
+            "List of track identifiers included in the playlist")
+        )
     )
     playlist_name: str = (
         Field(..., description="Name of the generated playlist")
     )
     playlist_description: str = (
-        Field(..., description="Description of the playlist, including its theme and coherence")
+        Field(..., description = (
+            "Description of the playlist, including its theme and coherence")
+        )
     )
     artist_diversity_score: float = (
-        Field(..., description="Score representing the diversity of artists in the playlist")
+        Field(..., description = (
+            "Score representing the diversity of artists in the playlist")
+        )
     )
     genre_representation: List[str] = (
         Field(..., description="List of genres represented in the playlist")
@@ -82,11 +105,35 @@ def create_playlist(list_musicians_input: ListMusiciansOutput, **kwargs) -> Crea
     'artist_diversity_score': 0.8, 'genre_representation': ['Rock', 'Pop']}
 
     """
+    validate_musician_inputs(musician_ids=list_musicians_input.musician_ids, musician_names=list_musicians_input.musician_names, musician_aliases=list_musicians_input.musician_aliases)
+    
+    expanded_musician_data: dict = expand_musician_aliases(musician_ids=list_musicians_input.musician_ids, musician_names=list_musicians_input.musician_names, aliases=list_musicians_input.musician_aliases)
+    
+    sampled_songs_metadata: List[dict] = fetch_sampled_songs_metadata(musician_data=expanded_musician_data)
+    
+    nlp_features: dict = extract_nlp_features(songs_metadata=sampled_songs_metadata)
+    
+    collaborative_filtering_scores: dict = apply_collaborative_filtering(musician_data=expanded_musician_data, songs_metadata=sampled_songs_metadata)
+    
+    graph_model: dict = build_graph_based_model(nlp_features=nlp_features, cf_scores=collaborative_filtering_scores, songs_metadata=sampled_songs_metadata)
+    
+    ranked_tracks: List[str] = rank_tracks_with_graph_algorithm(graph_model=graph_model)
+    
+    selected_track_ids: List[str] = select_final_tracks(ranked_tracks=ranked_tracks, diversity_threshold=0.7)
+    
+    playlist_metadata: dict = generate_playlist_metadata(selected_tracks=selected_track_ids, musician_names=list_musicians_input.musician_names)
+    
+    diversity_score: float = calculate_artist_diversity_score(track_ids=selected_track_ids)
+    
+    genre_representation: List[str] = extract_genre_representation(track_ids=selected_track_ids)
+    
+    playlist_id: str = generate_playlist_id()
+    
     return CreatePlaylistOutput(
-        playlist_id="",
-        track_ids=[],
-        playlist_name="",
-        playlist_description="",
-        artist_diversity_score=0.0,
-        genre_representation=[],
+        playlist_id=playlist_id,
+        track_ids=selected_track_ids,
+        playlist_name=playlist_metadata["name"],
+        playlist_description=playlist_metadata["description"],
+        artist_diversity_score=diversity_score,
+        genre_representation=genre_representation
     )
