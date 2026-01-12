@@ -1,4 +1,4 @@
-dag_type: plain_text
+dag_type: typed
 description: Generated workflow from UI.
 name: audio_sample_identifier
 nodes:
@@ -16,6 +16,41 @@ nodes:
     nodes_depended_on:
     - build_song_database_schema
     nodes_dependent_on: []
+    output_structure:
+    - description: Indicates whether the ingestion process completed successfully
+        without critical errors.
+      key: ingestion_success
+      type: bool
+    - description: Total number of song records attempted for ingestion.
+      key: total_records_attempted
+      type: int
+    - description: Total number of new, valid song records successfully ingested into
+        the database.
+      key: total_records_ingested
+      type: int
+    - description: Number of duplicate records identified and handled during ingestion.
+      key: duplicate_records_found
+      type: int
+    - description: Number of records that failed schema validation.
+      key: schema_validation_errors
+      type: int
+    - description: Descriptions of schema validation errors encountered (may include
+        sample messages or summaries).
+      key: validation_error_messages
+      type: List[str]
+    - description: List of unique artist names ingested in this operation.
+      key: unique_artist_names
+      type: List[str]
+    - description: List of unique genres captured in this ingestion run.
+      key: unique_genres
+      type: List[str]
+    - description: List of data sources from which records were ingested.
+      key: provenance_sources
+      type: List[str]
+    - description: List of ISO8601-formatted timestamps representing when data batches
+        were ingested.
+      key: ingestion_timestamps
+      type: List[str]
     prompt: 'Ingest song data into the newly created database schema. Load a diverse
       set of songs, ensuring for each entry the inclusion of core fields—title, artist,
       album, genre, release year, and unique identifiers. Supplement each song with
@@ -38,6 +73,37 @@ nodes:
     nodes_depended_on:
     - design_app_architecture_components
     nodes_dependent_on: []
+    output_structure:
+    - description: Complete SQL DDL statements representing the relational schema
+        design, including table definitions, keys, indexes, and constraints.
+      key: schema_ddl
+      type: str
+    - description: Names of all tables included in the schema.
+      key: table_names
+      type: List[str]
+    - description: Primary key field(s) for each table, in order corresponding to
+        table_names.
+      key: primary_keys
+      type: List[str]
+    - description: List of foreign key relationships, each described in a standardized
+        string format (e.g., 'song.album_id -> album.id').
+      key: foreign_keys
+      type: List[str]
+    - description: Fields in each table that have explicit indexes for efficient lookup.
+      key: indexed_fields
+      type: List[str]
+    - description: Fields or tables specifically designed for planned extensibility
+        (e.g., lyrics, audio features, user-generated content).
+      key: extensible_fields
+      type: List[str]
+    - description: Description of all additional data integrity constraints (e.g.,
+        UNIQUE, NOT NULL, CHECK) applied in the schema.
+      key: integrity_constraints
+      type: List[str]
+    - description: Coherent textual commentary on major schema design decisions and
+        technical considerations.
+      key: design_commentary
+      type: str
     prompt: Design a comprehensive, normalized relational database schema optimized
       for efficient storage and querying of song-related data within the application's
       architecture. Specify the table structures, including primary keys, foreign
@@ -62,6 +128,35 @@ nodes:
     nodes_depended_on:
     - design_app_architecture_overview
     nodes_dependent_on: []
+    output_structure:
+    - description: List of UI layer components (frameworks, hierarchies, routing,
+        and state management strategies)
+      key: presentation_ui_components
+      type: List[str]
+    - description: List of domain logic elements (patterns, aggregates, and service
+        definitions)
+      key: domain_business_logic_components
+      type: List[str]
+    - description: List of database systems, ORM frameworks, caching mechanisms, and
+        schema versioning strategies
+      key: data_access_persistence_components
+      type: List[str]
+    - description: List of API protocols, gateways, and service discovery implementations
+      key: api_integrationlayer_components
+      type: List[str]
+    - description: List of third-party services and their integration patterns
+      key: external_service_components
+      type: List[str]
+    - description: List of authentication, encryption, and compliance implementations
+      key: security_modules_components
+      type: List[str]
+    - description: List of hosting solutions, containerization tools, and monitoring
+        strategies
+      key: infrastructure_components
+      type: List[str]
+    - description: Descriptive list of interactions between architectural components
+      key: component_interactions
+      type: List[str]
     prompt: 'Break down the app architecture into its granular technical layers and
       components. For each of the following categories, specify the concrete elements,
       patterns, technologies, and responsibilities involved:
@@ -101,6 +196,39 @@ nodes:
     nodes_depended_on:
     - design_app_architecture_overview
     nodes_dependent_on: []
+    output_structure:
+    - description: List of API endpoints with HTTP verbs and JSON schema definitions
+        (e.g., 'GET /songs', 'POST /users')
+      key: api_endpoints
+      type: List[str]
+    - description: List of authentication/authorization mechanisms used (e.g., 'OAuth2',
+        'JWT')
+      key: authentication_methods
+      type: List[str]
+    - description: List of message serialization formats (e.g., 'gRPC', 'Avro')
+      key: serialization_formats
+      type: List[str]
+    - description: List of HTTP status codes defined for error handling (e.g., 400,
+        404, 500)
+      key: error_handling_status_codes
+      type: List[int]
+    - description: Description of API versioning strategy (e.g., 'Semantic versioning
+        with backward compatibility')
+      key: versioning_strategy
+      type: str
+    - description: Whether idempotency patterns are implemented for critical endpoints
+      key: idempotency_supported
+      type: bool
+    - description: Whether circuit breaker patterns are implemented for fault tolerance
+      key: circuit_breaker_implemented
+      type: bool
+    - description: Required logging level (e.g., 'INFO', 'DEBUG') for standard interface
+        operations
+      key: log_level_required
+      type: str
+    - description: Whether distributed tracing is enabled across all interface calls
+      key: distributed_tracing
+      type: bool
     prompt: Design and document robust interfaces between architectural components
       including service APIs, internal module boundary contracts, data access patterns,
       and system-to-system communication protocols. Specify details such as API endpoint
@@ -120,6 +248,41 @@ nodes:
     name: design_app_architecture_overview
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: List of application-wide communication protocols (e.g., REST, gRPC,
+        WebSockets)
+      key: communication_protocols
+      type: List[str]
+    - description: List of data architecture components including database engines
+        and caching systems
+      key: data_layer_components
+      type: List[str]
+    - description: Whether the application employs a microservices architecture
+      key: is_microservices_architecture
+      type: bool
+    - description: List of implemented security standards and mechanisms
+      key: security_frameworks
+      type: List[str]
+    - description: List of active scalability patterns (e.g., horizontal, vertical,
+        load balancing)
+      key: scaling_strategies
+      type: List[str]
+    - description: List of infrastructure tools/platforms (e.g., Kubernetes, CI/CD
+        pipelines)
+      key: infrastructure_components
+      type: List[str]
+    - description: List of regulatory standards the architecture complies with
+      key: compliance_standards
+      type: List[str]
+    - description: Whether UML diagrams were produced for architectural documentation
+      key: has_uml_diagrams
+      type: bool
+    - description: Whether Architecture Decision Records (ADRs) were created
+      key: has_architecture_decision_records
+      type: bool
+    - description: List of critical architectural trade-offs documented
+      key: key_trade_offs
+      type: List[str]
     prompt: Design a comprehensive application architecture that includes a detailed
       breakdown of client-server communication protocols (REST/gRPC/WebSockets), data
       layer architecture (relational/non-relational databases, caching strategies,
@@ -143,6 +306,48 @@ nodes:
     nodes_depended_on:
     - design_user_interface_layout
     nodes_dependent_on: []
+    output_structure:
+    - description: List of all types of UI elements implemented (e.g., button, slider,
+        modal, tab, etc.).
+      key: ui_element_types
+      type: List[str]
+    - description: List of semantic names or IDs corresponding to each UI element
+        for reference and integration.
+      key: element_names
+      type: List[str]
+    - description: List of accessibility features implemented across UI elements (e.g.,
+        ARIA roles, keyboard navigation, label association).
+      key: accessibility_features
+      type: List[str]
+    - description: List of all supported UI states across elements (e.g., hover, focus,
+        active, disabled, error, success).
+      key: states_supported
+      type: List[str]
+    - description: List of platform-specific or design system patterns (e.g., Material,
+        iOS, Tailwind) referenced or implemented.
+      key: platform_design_patterns
+      type: List[str]
+    - description: List of validation and error state cues (e.g., invalid input, required,
+        helper text, tooltip error messages) included in form elements.
+      key: validation_error_states
+      type: List[str]
+    - description: Brief descriptions of responsive/adaptive behavior handled for
+        core UI elements (e.g., breakpoint adaptation for buttons, navigation collapse,
+        input resizing).
+      key: responsive_behavior_descriptions
+      type: List[str]
+    - description: List of visual principles adhered to (e.g., color contrast, font
+        size hierarchy, spacing conventions) across UI components.
+      key: visual_hierarchy_principles
+      type: List[str]
+    - description: List of component libraries or style sheets referenced or used
+        (e.g., React-Bootstrap, Ant Design, Tailwind CSS).
+      key: component_library_references
+      type: List[str]
+    - description: Whether the designed UI elements are compliant with WCAG 2.1 AA
+        accessibility standards.
+      key: is_wcag_compliant
+      type: bool
     prompt: 'Design and document the following UI elements with technical specifications:
       (1) interactive controls (buttons, sliders, checkboxes) with hover/focus/disabled
       states, (2) form components (text fields, dropdowns, date pickers) with validation
@@ -164,6 +369,44 @@ nodes:
     nodes_depended_on:
     - design_app_architecture_components
     nodes_dependent_on: []
+    output_structure:
+    - description: Textual summary describing the overall UI layout structure, primary
+        regions, and spatial hierarchy.
+      key: layout_description
+      type: str
+    - description: List of major UI regions present in the layout (e.g., navigation,
+        content, sidebar, footer, notifications, modals).
+      key: layout_regions
+      type: List[str]
+    - description: List of pixel values for responsive design breakpoints used in
+        the layout (e.g., [320, 768, 1024, 1440]).
+      key: responsive_breakpoints
+      type: List[int]
+    - description: Names of key reusable UI components defined at the layout level
+        (e.g., navigation bar, search bar, card, modal, drawer).
+      key: component_names
+      type: List[str]
+    - description: Accessibility strategies and WCAG-related practices included in
+        the layout (e.g., ARIA labels, color contrast, keyboard navigation, focus
+        order).
+      key: accessibility_features
+      type: List[str]
+    - description: List of design system libraries or CSS frameworks integrated with
+        the layout (e.g., Material Design, Tailwind CSS, Bootstrap).
+      key: ui_frameworks_utilized
+      type: List[str]
+    - description: Description of global rules for margins, paddings, alignment, and
+        spacing conventions across the layout.
+      key: alignment_and_spacing_rules
+      type: str
+    - description: Whether the layout is aware of and supports pixel density scaling
+        (e.g., retina/display density awareness).
+      key: has_retina_scaling
+      type: bool
+    - description: A textual or pseudo-visual representation of the layout wireframe,
+        diagram, or component map.
+      key: wireframe_representation
+      type: str
     prompt: Develop a detailed, technically sound user interface layout that reflects
       the specified app architecture components. Specify an adaptive grid or flexbox
       system, define regions for navigation, content, inputs, notifications, and other
@@ -191,6 +434,38 @@ nodes:
     nodes_depended_on:
     - train_song_identification_model_training
     nodes_dependent_on: []
+    output_structure:
+    - description: Indicates whether the integration of the model into the redirector
+        was successful
+      key: integration_success
+      type: bool
+    - description: Total number of test queries used to validate the integration
+      key: num_test_queries
+      type: int
+    - description: Number of test queries for which the artist redirection matched
+        the expected result
+      key: num_successful_redirections
+      type: int
+    - description: Number of test queries where fallback logic (non-model route) was
+        used due to errors or prediction failures
+      key: num_fallbacks_triggered
+      type: int
+    - description: List of error or warning messages encountered during integration
+        or test runs
+      key: integration_error_messages
+      type: List[str]
+    - description: Average inference latency in milliseconds for the model during
+        artist page redirection
+      key: average_inference_latency_ms
+      type: float
+    - description: Whether privacy, security, and data retention compliance requirements
+        were met
+      key: compliance_checks_passed
+      type: bool
+    - description: List of key log event descriptions (with timestamps) from the integration
+        and validation process
+      key: integration_log_events
+      type: List[str]
     prompt: 'Integrate the trained song identification model into the artist page
       redirector module with the following technical requirements:
 
@@ -234,6 +509,45 @@ nodes:
     nodes_depended_on:
     - design_app_architecture_components
     nodes_dependent_on: []
+    output_structure:
+    - description: List of audio formats supported by the codec (e.g., PCM, AAC, Opus).
+      key: supported_formats
+      type: List[str]
+    - description: Supported audio sampling rates in Hz (e.g., 16000, 44100).
+      key: supported_sample_rates
+      type: List[int]
+    - description: List of supported bitrates in kbps for encoding/decoding.
+      key: supported_bitrates
+      type: List[int]
+    - description: Measured latency of the encoding process in milliseconds.
+      key: encoding_latency_ms
+      type: float
+    - description: Measured latency of the decoding process in milliseconds.
+      key: decoding_latency_ms
+      type: float
+    - description: Whether real-time streaming of audio is supported.
+      key: streaming_supported
+      type: bool
+    - description: True if adaptive bitrate adjustments are supported.
+      key: adaptive_bitrate_supported
+      type: bool
+    - description: List of implemented error resilience features (e.g., buffer management,
+        frame recovery).
+      key: error_resilience_features
+      type: List[str]
+    - description: True if audio data integrity tests passed.
+      key: test_pass_audio_integrity
+      type: bool
+    - description: True if codec meets performance requirements in tests.
+      key: test_pass_performance
+      type: bool
+    - description: Descriptions of edge case scenarios that failed, if any.
+      key: edge_case_failures
+      type: List[str]
+    - description: List of available extensibility hooks for additional audio processing
+        features (e.g., noise reduction, gain normalization).
+      key: extensibility_hooks
+      type: List[str]
     prompt: Engineer a high-performance audio codec for the audio processing module.
       Architect the codec to support encoding and decoding of audio snippets in widely
       adopted formats (e.g., PCM, AAC, Opus), allowing for configurable sampling rates
@@ -261,6 +575,69 @@ nodes:
     nodes_depended_on:
     - develop_audio_processing_module_codec
     nodes_dependent_on: []
+    output_structure:
+    - description: Names of audio feature types extracted (e.g., MFCCs, chroma, spectral_centroid,
+        etc).
+      key: audio_feature_type_names
+      type: List[str]
+    - description: Flattened list of Mel-frequency cepstral coefficients (MFCCs) extracted
+        from the input audio snippet.
+      key: mfccs
+      type: List[float]
+    - description: Flattened list of chroma feature values extracted from the audio
+        snippet.
+      key: chroma_features
+      type: List[float]
+    - description: List of spectral contrast features per frame.
+      key: spectral_contrast
+      type: List[float]
+    - description: Frame-wise spectral centroid values.
+      key: spectral_centroid
+      type: List[float]
+    - description: Frame-wise spectral bandwidths.
+      key: spectral_bandwidth
+      type: List[float]
+    - description: Spectral roll-off values per frame.
+      key: spectral_rolloff
+      type: List[float]
+    - description: List of zero-crossing rates for each frame or segment.
+      key: zero_crossing_rate
+      type: List[float]
+    - description: Frame-wise root mean square (RMS) energy values.
+      key: rms_energy
+      type: List[float]
+    - description: 'Optional: List of pitch-related features if extracted (flattened
+        or per frame).'
+      key: pitch_features
+      type: List[float]
+    - description: 'Optional: Tonnetz harmonic features extracted from the audio snippet.'
+      key: tonnetz_features
+      type: List[float]
+    - description: Names of aggregation statistics applied (e.g., mean, std, min,
+        max) for each feature type.
+      key: aggregation_stat_names
+      type: List[str]
+    - description: Flattened list of aggregated values (e.g., mean MFCC, std chroma,
+        etc.), corresponding to audio_feature_type_names and aggregation_stat_names.
+      key: aggregation_stat_values
+      type: List[float]
+    - description: The window size (in samples or ms) used for feature extraction.
+      key: window_size
+      type: int
+    - description: The hop length (in samples or ms) between frames.
+      key: hop_length
+      type: int
+    - description: The dimensionality of the extracted feature vector for each feature
+        type.
+      key: feature_dimensionality
+      type: int
+    - description: Names/descriptions of preprocessing steps applied (e.g., normalization,
+        silence_trimming, SSL).
+      key: preprocessing_applied
+      type: List[str]
+    - description: Whether feature extraction was successful with no errors.
+      key: extraction_success
+      type: bool
     prompt: 'Develop an advanced audio feature extraction component for the audio
       processing module. The implementation should:
 
@@ -303,6 +680,32 @@ nodes:
     - design_user_interface_elements
     - design_app_architecture_interfaces
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether the full system integration was successful
+      key: integration_success
+      type: bool
+    - description: List of error messages encountered during integration (empty if
+        none)
+      key: integration_error_messages
+      type: List[str]
+    - description: Names of modules successfully integrated
+      key: modules_integrated
+      type: List[str]
+    - description: List of results for each integration test case (true = pass, false
+        = fail)
+      key: integration_test_results
+      type: List[bool]
+    - description: Whether core UI elements are functional following integration
+      key: ui_functional_status
+      type: bool
+    - description: Whether all API/data contracts between modules are verified for
+        compliance
+      key: api_contracts_verified
+      type: bool
+    - description: Whether application performance benchmarks are satisfied after
+        integration
+      key: performance_within_limits
+      type: bool
     prompt: Systematically integrate the audio processing feature extraction module,
       song database ingestion pipeline, trained song identification and artist page
       redirector models, user interface elements, and inter-module architecture interfaces
@@ -326,6 +729,52 @@ nodes:
     nodes_depended_on:
     - test_and_deploy_app_execution
     nodes_dependent_on: []
+    output_structure:
+    - description: Indicates whether continuous monitoring is active and functioning
+        as intended
+      key: monitoring_status
+      type: bool
+    - description: Status of the most recent update or patch (true if successful,
+        false otherwise)
+      key: last_update_status
+      type: bool
+    - description: Specifies if the last update cycle completed with zero downtime
+      key: zero_downtime_achieved
+      type: bool
+    - description: List of detected anomalies or incidents since last reporting window
+      key: detected_anomalies
+      type: List[str]
+    - description: Number of incidents or alerts resolved since the last patch cycle
+      key: resolved_incidents_count
+      type: int
+    - description: Current number of unresolved or active monitoring alerts
+      key: active_alerts_count
+      type: int
+    - description: List of recent system performance bottlenecks detected
+      key: performance_bottlenecks
+      type: List[str]
+    - description: Summaries or identifiers for major application-level crashes encountered
+      key: recent_crash_reports
+      type: List[str]
+    - description: Descriptions or IDs of the most recent hotfixes or patches applied
+      key: last_hotfixes_applied
+      type: List[str]
+    - description: Whether the most recent regression and smoke tests passed as part
+        of the update process
+      key: regression_test_passed
+      type: bool
+    - description: List of recent entries in the application change log documenting
+        updates, fixes, or changes
+      key: changelog_entries
+      type: List[str]
+    - description: Whether service-level agreement (SLA) obligations are currently
+        being met
+      key: sla_compliance_status
+      type: bool
+    - description: Identifier or description denoting the latest applied security
+        patch level
+      key: security_patch_level
+      type: str
     prompt: Continuously monitor the application in production using advanced monitoring
       tools for real-time metrics collection (CPU, memory, disk I/O, latency, error
       rates, service availability). Implement automated log aggregation and anomaly
@@ -350,6 +799,47 @@ nodes:
     nodes_depended_on:
     - test_and_deploy_app_preparation
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether all automated unit tests passed successfully
+      key: unit_test_passed
+      type: bool
+    - description: Whether all integration tests passed successfully
+      key: integration_test_passed
+      type: bool
+    - description: Whether all end-to-end tests passed successfully
+      key: e2e_test_passed
+      type: bool
+    - description: Total number of tests executed during this process
+      key: total_tests_run
+      type: int
+    - description: Overall code test coverage percentage (0-100)
+      key: test_coverage_percent
+      type: float
+    - description: Whether the deployment to production was successful
+      key: deployment_successful
+      type: bool
+    - description: The deployment strategy used (e.g., 'blue-green', 'canary', 'rolling')
+      key: deployment_strategy
+      type: str
+    - description: The version string of the build/artifact deployed
+      key: build_version
+      type: str
+    - description: Whether all post-deployment health checks passed
+      key: health_checks_passed
+      type: bool
+    - description: Whether monitoring and alerting systems are running after deployment
+      key: monitoring_activated
+      type: bool
+    - description: Whether post-deployment smoke tests passed
+      key: smoke_tests_passed
+      type: bool
+    - description: Indicates if an incident rollback was triggered during deployment
+      key: deployment_rollback_occurred
+      type: bool
+    - description: Notes, summary, or important information about the deployment (concatenated
+        as a single string if needed)
+      key: deployment_notes
+      type: str
     prompt: Perform automated unit, integration, and end-to-end tests on the application
       using configured CI/CD pipelines. Validate key functionalities, performance
       benchmarks, and security compliance. Upon passing all test suites, package the
@@ -371,6 +861,48 @@ nodes:
     nodes_depended_on:
     - integrate_modules
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether all modules were verified as fully integrated and coherent
+      key: integration_verification_passed
+      type: bool
+    - description: Number of static code analysis issues detected
+      key: static_analysis_issues_count
+      type: int
+    - description: Number of unresolved or problematic dependencies found
+      key: dependency_issues_count
+      type: int
+    - description: Whether automated build tools executed the build successfully
+      key: build_success
+      type: bool
+    - description: Whether all environment configurations for testing and deployment
+        were successful
+      key: environment_configuration_success
+      type: bool
+    - description: List of generated application manifests and configuration files
+      key: generated_manifests
+      type: List[str]
+    - description: Names of containerization descriptors created (e.g., Dockerfile)
+      key: containerization_files
+      type: List[str]
+    - description: Whether smoke tests passed in all target environments
+      key: smoke_test_passed
+      type: bool
+    - description: Whether builds were reproducible across different environments
+      key: reproducible_builds
+      type: bool
+    - description: The pre-release version control tag applied
+      key: pre_release_version_tag
+      type: str
+    - description: List of documented assumptions for QA and deployment
+      key: assumptions_documented
+      type: List[str]
+    - description: List of documented configuration rationales
+      key: config_rationales_documented
+      type: List[str]
+    - description: Documented list of system prerequisites for test and deployment
+        teams
+      key: system_prerequisites_documented
+      type: List[str]
     prompt: Systematically prepare the integrated application for robust testing and
       seamless deployment. Verify complete integration of all modules including the
       audio processing engine, song database ingestion, song identification models,
@@ -395,6 +927,64 @@ nodes:
     - develop_audio_processing_module_feature_extraction
     - build_song_database_data_ingestion
     nodes_dependent_on: []
+    output_structure:
+    - description: Flattened list of all feature vectors in the training split, concatenated
+        in row-major order.
+      key: train_feature_vectors
+      type: List[float]
+    - description: List of integer-encoded class labels for each training example.
+      key: train_labels
+      type: List[int]
+    - description: Flattened list of all feature vectors in the validation split,
+        concatenated in row-major order.
+      key: val_feature_vectors
+      type: List[float]
+    - description: List of integer-encoded class labels for each validation example.
+      key: val_labels
+      type: List[int]
+    - description: Flattened list of all feature vectors in the test split, concatenated
+        in row-major order.
+      key: test_feature_vectors
+      type: List[float]
+    - description: List of integer-encoded class labels for each test example.
+      key: test_labels
+      type: List[int]
+    - description: List of feature names (e.g., MFCC_1, chroma_c, spectral_centroid)
+        corresponding to columns in the feature vectors.
+      key: feature_names
+      type: List[str]
+    - description: List mapping class indices to canonical song label names (e.g.,
+        song titles or unique IDs).
+      key: label_names
+      type: List[str]
+    - description: List containing the example count for [train, validation, test]
+        splits, in that order.
+      key: split_sizes
+      type: List[int]
+    - description: Number of duplicate records identified and removed during preprocessing.
+      key: num_duplicates_removed
+      type: int
+    - description: Number of outlier samples filtered out from the dataset.
+      key: num_outliers_removed
+      type: int
+    - description: Total number of samples present before any preprocessing.
+      key: num_total_samples_input
+      type: int
+    - description: Total number of samples after all preprocessing steps.
+      key: num_total_samples_output
+      type: int
+    - description: String indicating the scaling or normalization method applied (e.g.,
+        'z-score', 'min-max', or 'none').
+      key: scaling_method
+      type: str
+    - description: String describing dataset balancing and splitting approach (e.g.,
+        'stratify_by_genre', 'random_shuffling').
+      key: sampling_strategy
+      type: str
+    - description: Summary report string detailing all applied preprocessing, sampling
+        statistics, feature distributions, and any notable warnings or corrections.
+      key: preprocessing_report
+      type: str
     prompt: "Systematically prepare the training dataset for the song identification\
       \ model: \n- Retrieve and merge extracted audio feature vectors (e.g., MFCCs,\
       \ chromagrams, spectral contrast, embeddings) from the audio processing module\
@@ -425,6 +1015,67 @@ nodes:
     nodes_depended_on:
     - train_song_identification_model_data_prep
     nodes_dependent_on: []
+    output_structure:
+    - description: Filesystem or object storage path of the final trained model artifact
+      key: model_artifact_path
+      type: str
+    - description: Final training accuracy attained by the model
+      key: final_train_accuracy
+      type: float
+    - description: Final validation accuracy attained by the model
+      key: final_validation_accuracy
+      type: float
+    - description: Final test set accuracy attained by the model
+      key: final_test_accuracy
+      type: float
+    - description: Final training loss value
+      key: final_train_loss
+      type: float
+    - description: Final validation loss value
+      key: final_validation_loss
+      type: float
+    - description: Final test set loss value
+      key: final_test_loss
+      type: float
+    - description: List of training accuracy values recorded after each epoch
+      key: training_accuracy_curve
+      type: List[float]
+    - description: List of validation accuracy values recorded after each epoch
+      key: validation_accuracy_curve
+      type: List[float]
+    - description: List of test accuracy values recorded after each epoch, if available
+      key: test_accuracy_curve
+      type: List[float]
+    - description: List of training loss values recorded after each epoch
+      key: training_loss_curve
+      type: List[float]
+    - description: List of validation loss values recorded after each epoch
+      key: validation_loss_curve
+      type: List[float]
+    - description: List of test loss values recorded after each epoch, if available
+      key: test_loss_curve
+      type: List[float]
+    - description: Whether early stopping was triggered during training
+      key: early_stopping_triggered
+      type: bool
+    - description: Total number of epochs the model was trained
+      key: num_epochs_trained
+      type: int
+    - description: Number of training samples used
+      key: total_training_samples
+      type: int
+    - description: Number of validation samples used
+      key: total_validation_samples
+      type: int
+    - description: Number of test samples used
+      key: total_test_samples
+      type: int
+    - description: List of all unique class labels used for identification
+      key: model_class_labels
+      type: List[str]
+    - description: List of data augmentation techniques applied during training
+      key: data_augmentation_methods
+      type: List[str]
     prompt: Train the song identification model using the prepared dataset, which
       contains extracted audio features and metadata from the preprocessed song database.
       Implement a deep learning pipeline—such as a convolutional neural network (CNN)
