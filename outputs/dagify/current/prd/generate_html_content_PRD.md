@@ -6,70 +6,45 @@ Create HTML output structure
 
 ## Conceptual Info
 
-Builds a minimal HTML5 document skeleton that displays song metadata and provides navigation links to musician profiles.
+The `generate_html_content` node composes a minimal HTML5 document that lists the extracted song metadata and provides navigation links to the associated musicians. It accepts ordered lists of titles, artists, albums, and genre tags produced by `process_song_metadata`, as well as the musician profile URLs and official website URLs from `generate_musician_links`, and returns a single string containing the full HTML skeleton.
 
 ## Docstring
 
 ### Summary
-Assemble a basic HTML5 skeleton incorporating song metadata and musician navigation links.
-The function aggregates lists of titles, artists, albums, genres, musician URLs, and official websites into a single HTML string ready for further styling and scripting.
+Assembles a basic HTML5 skeleton incorporating song metadata and musician navigation links.
 
 ### Parameters
 
-- **song_titles** (List[str]): Ordered list of matched song titles.
+- **song_titles** (List[str]): Ordered list of song titles.
 - **artist_names** (List[str]): Ordered list of artist names corresponding to the titles.
 - **album_names** (List[str]): Ordered list of album names where the songs appear.
-- **genre_tags** (List[str]): Ordered list of inferred music genre tags.
-- **musician_urls** (List[str]): List of deep links to artist profile pages.
-- **official_websites** (List[str]): List of official band or artist web presences.
+- **genre_tags** (List[str]): Ordered list of genre tags associated with each song.
+- **musician_urls** (List[str]): Ordered list of deep links to musician profiles.
+- **official_websites** (List[str]): Ordered list of official websites for the musicians.
 
 ### Returns
 
-str: A string containing a complete but minimal HTML5 document skeleton. The document includes a <head> section with a title derived from the first song/artist pair, and a <body> section that lists each song with its album and genre, followed by navigation links to each musician profile and official website.
+str: A complete HTML5 document as a string, ready to be injected with CSS and JavaScript.
 
 ### Raises
 
-- ValueError: Raised if any of the input lists are empty or if the input lists are of unequal length.
-- TypeError: Raised if any of the input parameters are not of type List[str].
+- ValueError: Raised when any of the input lists are empty or the list lengths differ, which would lead to mismatched metadata entries.
 
 ### Examples
 
 ```python
 >>> html = generate_html_content(
-
-...     ['Song A'],
-
-...     ['Artist X'],
-
-...     ['Album Y'],
-
-...     ['Pop'],
-
-...     ['https://artistx.com/profile'],
-
-...     ['https://artistx.com']
-
+...     song_titles=['Song A', 'Song B'],
+...     artist_names=['Artist A', 'Artist B'],
+...     album_names=['Album A', 'Album B'],
+...     genre_tags=['Rock', 'Jazz'],
+...     musician_urls=['https://music.com/artistA', 'https://music.com/artistB'],
+...     official_websites=['https://artistA.com', 'https://artistB.com']
 >>> )
->>> print(html)
-<!DOCTYPE html>\n<html>\n<head>\n<title>Song A - Artist X</title>\n</head>\n<body>\n<h1>Song A</h1>\n<p><strong>Artist:</strong> Artist X</p>\n<p><strong>Album:</strong> Album Y</p>\n<p><strong>Genre:</strong> Pop</p>\n<h2>Musician Links</h2>\n<ul>\n<li><a href="https://artistx.com/profile">Artist Profile</a></li>\n<li><a href="https://artistx.com">Official Website</a></li>\n</ul>\n</body>\n</html>
+<!DOCTYPE html>\n<html>\n<head>\n<title>Song Catalog</title>\n</head>\n<body>\n<h1>Song Catalog</h1>\n<ul>\n<li>Song A by Artist A (Album A) - Genres: Rock</li>\n<li>Song B by Artist B (Album B) - Genres: Jazz</li>\n</ul>\n<nav>\n<a href='https://music.com/artistA'>Artist A</a> | <a href='https://music.com/artistB'>Artist B</a>\n</nav>\n</body>\n</html>
 ```
 
 ```python
->>> html = generate_html_content(
-
-...     ['Song 1', 'Song 2'],
-
-...     ['Band A', 'Band B'],
-
-...     ['Album X', 'Album Y'],
-
-...     ['Rock', 'Jazz'],
-
-...     ['https://banda.com', 'https://bandb.com'],
-
-...     ['https://banda.com', 'https://bandb.com']
-
->>> )
->>> print(html.split('\n')[0])
-<!DOCTYPE html>
+>>> generate_html_content([], [], [], [], [], [])
+ValueError: All input lists must be non‑empty and of equal length.
 ```

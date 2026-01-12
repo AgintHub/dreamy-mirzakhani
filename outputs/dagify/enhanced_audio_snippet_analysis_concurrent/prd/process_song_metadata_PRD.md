@@ -6,57 +6,47 @@ Extract key metadata fields from database and web‑scraped results and collate 
 
 ## Conceptual Info
 
-Aggregates and normalises song metadata from the music database and web scraping sources into parallel lists that are ready for HTML rendering.
+Aggregates song metadata from multiple sources into a structured format for downstream HTML rendering.
 
 ## Docstring
 
 ### Summary
-Collects and aligns metadata from the database and web‑scraped results into four ordered lists: titles, artists, albums, and genre tags.
+Collects and organizes song metadata (titles, artists, albums, genre tags) from database search results and web‑scraped data.
 
 ### Parameters
 
-- **song_matches** (List[str]): Song titles returned by the music database search.
-- **relevance_scores** (List[float]): Relevance scores from the music database, corresponding to each title.
-- **additional_matches** (List[str]): Song titles scraped from web sources.
-- **web_scores** (List[float]): Relevance scores from the web scraping, corresponding to each scraped title.
+- **song_matches** (List[str]): List of song titles returned by the music database API.
+- **relevance_scores** (List[float]): Relevance scores corresponding to each title in song_matches.
+- **additional_matches** (str): Comma‑separated list of song titles retrieved via web scraping.
+- **web_scores** (float): Confidence metric indicating the quality of the web‑scraped matches.
 
 ### Returns
 
-Tuple[List[str], List[str], List[str], List[str]]: Four ordered lists:
-- `song_titles`: combined titles from database and web.
-- `artist_names`: artist names for each title.
-- `album_names`: album names for each title.
-- `genre_tags`: aggregated genre tags for each title.
+Dict[str, List[str]]: A dictionary with keys 'song_titles', 'artist_names', 'album_names', and 'genre_tags', each mapping to a list of strings.
 
 ### Raises
 
-- ValueError: If input lists have mismatched lengths or contain None values.
-- KeyError: If required metadata fields are missing from the input data.
+- ValueError: If the length of song_matches does not match relevance_scores.
+- TypeError: If any input is of an incorrect type.
 
 ### Examples
 
 ```python
->>> song_matches = ['Song A', 'Song B']
->>> relevance_scores = [0.92, 0.88]
->>> additional_matches = ['Song C']
->>> web_scores = [0.75]
->>> # Assume the function aggregates data from both sources
->>> titles, artists, albums, genres = process_song_metadata(song_matches, relevance_scores, additional_matches, web_scores)
-[['Song A', 'Song B', 'Song C'],
- ['Artist X', 'Artist Y', 'Artist Z'],
- ['Album 1', 'Album 2', 'Album 3'],
- ['Pop', 'Rock', 'Jazz']]
+>>> result = process_song_metadata(
+...     song_matches=["Bohemian Rhapsody"],
+...     relevance_scores=[0.97],
+...     additional_matches="Bohemian Rhapsody",
+...     web_scores=0.92)
+>>> print(result)
+{'song_titles': ['Bohemian Rhapsody'], 'artist_names': ['Queen'], 'album_names': ['A Night at the Opera'], 'genre_tags': ['Rock', 'Classic Rock']}
 ```
 
 ```python
->>> song_matches = ['Track 1']
->>> relevance_scores = [0.95]
->>> additional_matches = []
->>> web_scores = []
->>> # Single match from the database only
->>> titles, artists, albums, genres = process_song_metadata(song_matches, relevance_scores, additional_matches, web_scores)
-[['Track 1'],
- ['Artist A'],
- ['Album X'],
- ['Electronic']]
+>>> result = process_song_metadata(
+...     song_matches=["Imagine", "Let It Be"],
+...     relevance_scores=[0.88, 0.85],
+...     additional_matches="Imagine, Let It Be",
+...     web_scores=0.90)
+>>> print(result)
+{'song_titles': ['Imagine', 'Let It Be'], 'artist_names': ['John Lennon', 'The Beatles'], 'album_names': ['Imagine', 'Let It Be'], 'genre_tags': ['Pop', 'Rock']}
 ```

@@ -6,40 +6,49 @@ Query an external music database to find tracks that match the provided tonal an
 
 ## Conceptual Info
 
-The node interfaces with an external music database service, using the tonal key and fundamental frequency extracted from an audio snippet to retrieve a ranked list of potential matches. It serves as the bridge between low‑level acoustic analysis and high‑level music information retrieval.
+The node takes key tonal and pitch descriptors produced by audio analysis and uses them to query a music database, returning the most relevant song titles along with a confidence metric for each result.
 
 ## Docstring
 
 ### Summary
-Query an external music database to find tracks matching the specified key and pitch.
+Search a music database for tracks that match given tonal and pitch characteristics.
 
 ### Parameters
 
-- **tone** (str): Identified musical key (e.g., 'C major', 'A minor') produced by tonal_analysis.
-- **tone_confidence** (float): Reliability of the key detection, ranging from 0.0 to 1.0.
-- **fundamental_frequency** (float): Primary pitch frequency in Hz extracted by pitch_analysis.
-- **pitch_confidence** (float): Reliability of the pitch detection, ranging from 0.0 to 1.0.
+- **tone** (str): Identified musical key (e.g., 'C Major', 'A Minor').
+- **tone_confidence** (float): Confidence score of the tonal detection, ranging from 0.0 to 1.0.
+- **fundamental_frequency** (float): Estimated fundamental frequency (Hz) of the audio snippet.
+- **pitch_confidence** (float): Confidence score of the pitch detection, ranging from 0.0 to 1.0.
 
 ### Returns
 
-Tuple[List[str], List[float]]: A two‑element tuple where the first element is a list of matched song titles and the second is a list of relevance scores aligned with those titles.
+Tuple[List[str], List[float]]: A tuple where the first element is a list of matched song titles and the second element is a list of relevance scores corresponding to each title.
 
 ### Raises
 
-- ValueError: Raised if either confidence value is below 0.5, indicating unreliable input features.
-- ConnectionError: Raised if the external database service is unreachable or returns an error.
+- ValueError: If any of the input parameters are missing or have invalid types.
+- RuntimeError: If the external music database API is unreachable or returns an error.
 
 ### Examples
 
 ```python
->>> song_matches, relevance_scores = music_database_api('C major', 0.92, 440.0, 0.88)
-(['Song A', 'Song B', 'Song C'], [0.95, 0.87, 0.80])
+>>> song_matches, relevance_scores = music_database_api(
+...     tone='C Major',
+...     tone_confidence=0.95,
+...     fundamental_frequency=261.63,
+...     pitch_confidence=0.92)
+>>> print(song_matches)
+>>> print(relevance_scores)
+["Let It Be", "Here Comes the Sun", "Can't Help Falling in Love"]\n[0.87, 0.82, 0.79]
 ```
 
 ```python
->>> try:
-...     music_database_api('D minor', 0.45, 392.0, 0.90)
->>> except ValueError as e:
-...     print(e)
-"Confidence too low: key detection confidence is 0.45"
+>>> song_matches, relevance_scores = music_database_api(
+...     tone='A Minor',
+...     tone_confidence=0.88,
+...     fundamental_frequency=220.00,
+...     pitch_confidence=0.85)
+>>> print(len(song_matches))
+>>> print(relevance_scores[0])
+5\n0.91
 ```

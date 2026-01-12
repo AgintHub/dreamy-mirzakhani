@@ -6,37 +6,41 @@ Scrape additional music metadata from web sources using tonal and pitch characte
 
 ## Conceptual Info
 
-The node takes tonal and pitch data, queries web‑based music information sources (e.g., lyric sites, streaming APIs, fan forums), and returns a consolidated list of matching tracks along with a relevance score.
+The node performs a targeted web search for music tracks by using the detected tonal key and fundamental frequency as query constraints, returning a list of best‑matching titles and a confidence score for each match.
 
 ## Docstring
 
 ### Summary
-Collects music metadata from the web using tonal and pitch cues.
+Scrape web sources for music tracks that match the given tonal key and fundamental frequency.
 
 ### Parameters
 
-- **tone** (str): Identified musical key from tonal_analysis (e.g., "C major").
-- **tone_confidence** (float): Reliability of the tonal detection (0.0‑1.0).
-- **fundamental_frequency** (float): Primary pitch frequency extracted by pitch_analysis, in Hz.
-- **pitch_confidence** (float): Reliability of the pitch detection (0.0‑1.0).
+- **tone** (str): Identified musical key from tonal analysis (e.g., 'C# Major').
+- **tone_confidence** (float): Reliability score (0.0–1.0) of the tonal key detection.
+- **fundamental_frequency** (float): Estimated fundamental pitch in Hz from pitch analysis.
+- **pitch_confidence** (float): Reliability score (0.0–1.0) of the pitch detection.
 
 ### Returns
 
-Tuple[str, float]: A tuple containing the web‑sourced matches string and a relevance score float.
+(str, float): A tuple containing a comma‑separated string of matching song titles and a single float representing the average relevance score from the web source.
 
 ### Raises
 
-- ValueError: Raised if any input is missing or invalid (e.g., empty tone, negative frequency).
-- ConnectionError: Raised if the web query fails due to network issues.
+- ValueError: Raised if any of the required input parameters are missing or not within the expected ranges.
+- RuntimeError: Raised when the web request fails or returns an unexpected response format.
 
 ### Examples
 
 ```python
->>> matches, score = web_scraping_results('C major', 0.95, 110.0, 0.92)
-('Song A, Song B, Song C', 0.88)
+>>> titles, score = scrape_web_sources('C Major', 0.92, 261.63, 0.88)
+>>> print(titles)
+>>> print(score)
+"song A, song B, song C"\n0.89
 ```
 
 ```python
->>> matches, score = web_scraping_results('A minor', 0.80, 98.5, 0.75)
-('Track X, Track Y', 0.70)
+>>> titles, score = scrape_web_sources('G# Minor', 0.85, 220.00, 0.80)
+>>> print(titles)
+>>> print(score)
+"song X, song Y"\n0.75
 ```

@@ -6,40 +6,41 @@ Load an audio file from a local or remote source and provide the raw audio data 
 
 ## Conceptual Info
 
-Provides the foundational audio data and its descriptive statistics for downstream audio‑analysis tasks.
+The node encapsulates audio ingestion, decoding, and metadata extraction to provide a lightweight, transportable representation of an audio snippet.
 
 ## Docstring
 
 ### Summary
-Loads an audio file and returns its raw samples in a compact string along with sampling rate, file format, and a list of key metadata values.
+Load an audio file from a local path or URL, decode it, and return raw data plus essential metadata.
 
 ### Parameters
 
-- **file_path** (str): Path or URL to the audio file to be loaded.
+- **audio_uri** (str): A filesystem path or HTTP(S) URL pointing to the audio file to be loaded.
 
 ### Returns
 
-Dict[str, Union[str, int, List[str]]]: Dictionary containing `audio_data`, `sampling_rate`, `file_format`, and `metadata`.
+Dict[str, Any]: A dictionary with four keys:
+- audio_data (str): Base64‑encoded raw samples.
+- sampling_rate (int): Sample rate in Hz.
+- file_format (str): Audio file format.
+- metadata (List[str]): List of formatted strings describing duration, bit depth, channels, and loudness.
 
 ### Raises
 
-- FileNotFoundError: Raised if the file does not exist or cannot be accessed.
-- ValueError: Raised if the file format is unsupported or the file is corrupted.
+- FileNotFoundError: Raised when the local file does not exist or cannot be accessed.
+- ConnectionError: Raised when the remote URL cannot be reached or the download fails.
+- ValueError: Raised when the file format is unsupported or the file is corrupted.
 
 ### Examples
 
 ```python
->>> result = load_audio_snippet('/path/to/song.wav')
->>> print(result['file_format'])
+>>> result = load_audio_snippet('samples/track.wav')
 >>> print(result['sampling_rate'])
->>> print(result['metadata'])
-"WAV"
-"44100"
-"['duration: 3.12s', 'bit_depth: 16', 'channels: 2', 'loudness: -12.3 dB']"
+44100
 ```
 
 ```python
->>> result = load_audio_snippet('https://example.com/track.mp3')
->>> print(len(result['audio_data']))
-"123456"
+>>> result = load_audio_snippet('https://example.com/music.mp3')
+>>> print(result['file_format'])
+MP3
 ```

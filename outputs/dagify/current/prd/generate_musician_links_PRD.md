@@ -6,50 +6,48 @@ Create artist navigation links by aggregating database search results and web‑
 
 ## Conceptual Info
 
-Aggregates and normalizes artist URLs from multiple data sources, ensuring that every matched track is represented by a consistent set of profile links and official websites for downstream HTML rendering.
+Aggregates search results from an external music database and web scraping to produce a set of navigational URLs for artists, ensuring that each link is matched with a confidence score and official website reference.
 
 ## Docstring
 
 ### Summary
-Generate deep links to musician profiles by merging database and web‑scraped results.
+Generate artist navigation links by combining database and web‑scraped metadata.
 
 ### Parameters
 
-- **song_matches** (List[str]): List of song titles returned by the external music database.
-- **relevance_scores** (List[float]): Relevance scores corresponding to each entry in *song_matches*.
-- **additional_matches** (List[str]): List of additional song titles obtained from web scraping.
-- **web_scores** (List[float]): Relevance scores from the web scraping source.
+- **song_matches** (List[str]): List of song titles returned by the music database API.
+- **relevance_scores** (List[float]): Relevance scores corresponding to each song title in song_matches.
+- **additional_matches** (str): Comma‑separated list of song titles obtained from web scraping.
+- **web_scores** (float): Confidence score for the web‑scraped matches (range 0.0–1.0).
 
 ### Returns
 
-Dict[str, List[str]]: A dictionary with two keys:
-
-* *musician_urls* – a list of artist profile links constructed from the merged search results.
-* *official_websites* – a list of official band or artist websites extracted from the same data.
-
-Both lists are deduplicated and ordered by combined relevance.
+Tuple[List[str], List[str]]: A tuple containing a list of musician profile URLs and a list of official artist websites.
 
 ### Raises
 
-- ValueError: If any of the input lists are empty or if their lengths do not match.
-- TypeError: If an input is not of the expected type.
+- ValueError: If any required input list is empty or if lengths of song_matches and relevance_scores do not match.
+- TypeError: If input types do not match the expected signatures.
 
 ### Examples
 
 ```python
->>> result = generate_musician_links(
-...     song_matches=['Song A', 'Song B'],
-...     relevance_scores=[0.95, 0.80],
-...     additional_matches=['Song A', 'Song C'],
-...     web_scores=[0.90, 0.70])
-{'musician_urls': ['https://artistA.com', 'https://artistB.com', 'https://artistC.com'], 'official_websites': ['https://artistA.com', 'https://artistB.com', 'https://artistC.com']}
+>>> song_matches = ['Song A', 'Song B']
+>>> relevance_scores = [0.92, 0.85]
+>>> additional_matches = 'Song C, Song D'
+>>> web_scores = 0.88
+>>> musician_urls, official_websites = generate_musician_links(song_matches, relevance_scores, additional_matches, web_scores)
+(['https://musicdb.com/artists/artist_a', 'https://musicdb.com/artists/artist_b', 'https://websource.com/artists/artist_c', 'https://websource.com/artists/artist_d'], ['https://artist_a.com', 'https://artist_b.com', 'https://artist_c.com', 'https://artist_d.com'])
 ```
 
 ```python
->>> result = generate_musician_links(
-...     song_matches=['Hit 1'],
-...     relevance_scores=[0.88],
-...     additional_matches=['Hit 1'],
-...     web_scores=[0.85])
-{'musician_urls': ['https://artistX.com'], 'official_websites': ['https://artistX.com']}
+>>> song_matches = []
+>>> relevance_scores = []
+>>> additional_matches = ''
+>>> web_scores = 0.0
+>>> try:
+...     generate_musician_links(song_matches, relevance_scores, additional_matches, web_scores)
+>>> except ValueError as e:
+...     print(e)
+'song_matches and relevance_scores cannot be empty'
 ```

@@ -6,36 +6,40 @@ Calculate mel-frequency cepstral coefficients (MFCCs) from a spectrogram and com
 
 ## Conceptual Info
 
-The MFCC extraction node transforms a flat spectrogram into a compact spectral descriptor by applying a Mel filterbank, logarithm, and discrete cosine transform (DCT). It then calculates the temporal derivative (delta) of the resulting coefficients.
+The MFCC extraction node transforms a flat spectrogram into a compact representation of the audio's spectral envelope (MFCCs) and calculates the first‑order derivative (delta) to capture dynamic changes over time.
 
 ## Docstring
 
 ### Summary
-Extracts MFCC coefficients and their delta from a flattened spectrogram.
+Transforms a spectrogram into Mel‑Frequency Cepstral Coefficients (MFCCs) and their first‑order delta.
 
 ### Parameters
 
-- **spectrogram_data** (List[float]): Flat list of magnitude values from an STFT (time‑frequency matrix flattened into one dimension).
+- **spectrogram_data** (list[float]): A one‑dimensional list of floating‑point values representing a time‑frequency spectrogram flattened from a 2‑D matrix.
 
 ### Returns
 
-Dict[str, float]: A dictionary with two entries:
-
-* ``mfcc_coefficients`` – the mean MFCC value over all time frames.
-* ``delta_mfcc`` – the mean delta MFCC value over all time frames.
+tuple[list[float], list[float]]: A tuple containing:
+- `mfcc_coefficients`: list of MFCC values per frame.
+- `delta_mfcc`: list of first‑order differences (deltas) of the MFCCs.
 
 ### Raises
 
-- ValueError: Raised if ``spectrogram_data`` is empty or not a list.
+- ValueError: Raised when `spectrogram_data` is empty, not a list, or contains non‑numeric entries.
 
 ### Examples
 
 ```python
->>> mfcc_extraction([0.1, 0.2, 0.15, 0.3, 0.25, 0.35])
-{'mfcc_coefficients': 0.208, 'delta_mfcc': 0.013}
+>>> spectrogram = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+>>> mfcc, delta = mfcc_extraction(spectrogram)
+>>> print('MFCC:', mfcc)
+>>> print('Delta:', delta)
+MFCC: [0.15, 0.35, 0.55]
+Delta: [0.2, 0.2]
 ```
 
 ```python
->>> mfcc_extraction([])
-ValueError: Input spectrogram_data must be a non‑empty list of floats.
+>>> mfcc, delta = mfcc_extraction([0.1, 0.2, 0.3])
+>>> print(mfcc, delta)
+[0.15, 0.25] [0.1]
 ```

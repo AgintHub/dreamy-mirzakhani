@@ -6,101 +6,70 @@ Create HTML output structure
 
 ## Conceptual Info
 
-Builds a minimal but extensible HTML5 document skeleton that incorporates song metadata and musician navigation links, ready for subsequent CSS/JS injections.
+Builds a minimal HTML5 document skeleton that displays song metadata and provides navigation links to musician profiles.
 
 ## Docstring
 
 ### Summary
-Construct an HTML5 document skeleton using provided music metadata and artist links.
+Assemble a basic HTML5 skeleton incorporating song metadata and musician navigation links.
+The function aggregates lists of titles, artists, albums, genres, musician URLs, and official websites into a single HTML string ready for further styling and scripting.
 
 ### Parameters
 
 - **song_titles** (List[str]): Ordered list of matched song titles.
-- **artist_names** (List[str]): Ordered list of artist names corresponding to the songs.
+- **artist_names** (List[str]): Ordered list of artist names corresponding to the titles.
 - **album_names** (List[str]): Ordered list of album names where the songs appear.
-- **genre_tags** (List[str]): List of music genre tags inferred from the data.
-- **musician_urls** (List[str]): Artist profile links constructed from database and web sources.
-- **official_websites** (List[str]): Official band or artist web presences extracted from the same sources.
+- **genre_tags** (List[str]): Ordered list of inferred music genre tags.
+- **musician_urls** (List[str]): List of deep links to artist profile pages.
+- **official_websites** (List[str]): List of official band or artist web presences.
 
 ### Returns
 
-str: A complete HTML5 document string with placeholders for metadata and navigation links.
+str: A string containing a complete but minimal HTML5 document skeleton. The document includes a <head> section with a title derived from the first song/artist pair, and a <body> section that lists each song with its album and genre, followed by navigation links to each musician profile and official website.
 
 ### Raises
 
-- ValueError: Raised when any input list is empty or misaligned (different lengths).
+- ValueError: Raised if any of the input lists are empty or if the input lists are of unequal length.
+- TypeError: Raised if any of the input parameters are not of type List[str].
 
 ### Examples
 
 ```python
->>> html = build_html_structure(
-...     song_titles=['Imagine'],
-...     artist_names=['John Lennon'],
-...     album_names=['Imagine'],
-...     genre_tags=['Rock'],
-...     musician_urls=['https://en.wikipedia.org/wiki/John_Lennon'],
-...     official_websites=['https://johnlennon.com']
+>>> html = generate_html_content(
+
+...     ['Song A'],
+
+...     ['Artist X'],
+
+...     ['Album Y'],
+
+...     ['Pop'],
+
+...     ['https://artistx.com/profile'],
+
+...     ['https://artistx.com']
+
 >>> )
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Imagine - John Lennon</title>
-</head>
-<body>
-    <h1>Imagine</h1>
-    <p>Artist: John Lennon</p>
-    <p>Album: Imagine</p>
-    <p>Genre: Rock</p>
-    <nav>
-        <ul>
-            <li><a href="https://en.wikipedia.org/wiki/John_Lennon">John Lennon Profile</a></li>
-        </ul>
-    </nav>
-    <footer>
-        <p>Official site: <a href="https://johnlennon.com">johnlennon.com</a></p>
-    </footer>
-</body>
-</html>
+>>> print(html)
+<!DOCTYPE html>\n<html>\n<head>\n<title>Song A - Artist X</title>\n</head>\n<body>\n<h1>Song A</h1>\n<p><strong>Artist:</strong> Artist X</p>\n<p><strong>Album:</strong> Album Y</p>\n<p><strong>Genre:</strong> Pop</p>\n<h2>Musician Links</h2>\n<ul>\n<li><a href="https://artistx.com/profile">Artist Profile</a></li>\n<li><a href="https://artistx.com">Official Website</a></li>\n</ul>\n</body>\n</html>
 ```
 
 ```python
->>> html = build_html_structure(
-...     song_titles=['Song A', 'Song B'],
-...     artist_names=['Artist X', 'Artist Y'],
-...     album_names=['Album X', 'Album Y'],
-...     genre_tags=['Pop', 'Jazz'],
-...     musician_urls=['https://artistx.com', 'https://artisty.com'],
-...     official_websites=['https://artistx.com', 'https://artisty.com']
+>>> html = generate_html_content(
+
+...     ['Song 1', 'Song 2'],
+
+...     ['Band A', 'Band B'],
+
+...     ['Album X', 'Album Y'],
+
+...     ['Rock', 'Jazz'],
+
+...     ['https://banda.com', 'https://bandb.com'],
+
+...     ['https://banda.com', 'https://bandb.com']
+
 >>> )
+>>> print(html.split('\n')[0])
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Song A – Song B by Artist X – Artist Y</title>
-</head>
-<body>
-    <section>
-        <h1>Song A</h1>
-        <p>Artist: Artist X</p>
-        <p>Album: Album X</p>
-        <p>Genre: Pop</p>
-    </section>
-    <section>
-        <h1>Song B</h1>
-        <p>Artist: Artist Y</p>
-        <p>Album: Album Y</p>
-        <p>Genre: Jazz</p>
-    </section>
-    <nav>
-        <ul>
-            <li><a href="https://artistx.com">Artist X Profile</a></li>
-            <li><a href="https://artisty.com">Artist Y Profile</a></li>
-        </ul>
-    </nav>
-    <footer>
-        <p>Official sites: <a href="https://artistx.com">artistx.com</a>, <a href="https://artisty.com">artisty.com</a></p>
-    </footer>
-</body>
-</html>
 ```

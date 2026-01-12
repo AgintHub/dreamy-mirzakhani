@@ -50,36 +50,45 @@ Calculate spectral domain features such as spectral centroid, bandwidth, and rol
 
 ### Conceptual Info
 
-Computes key spectral descriptors that summarize the frequency distribution of an audio snippet, enabling downstream tasks like classification or similarity assessment.
+The node transforms raw PCM audio (encoded as a Base64 string) into three core spectral descriptors that summarize the distribution of energy over frequency.
 
 ### Docstring
 
-**Summary:** Computes spectral features from raw audio samples.
+**Summary:** Compute spectral centroid, bandwidth, and roll‑off from a Base64‑encoded raw audio signal.
 
 **Parameters:**
 
-- audio_data (str): Base64-encoded (or hex) representation of raw PCM audio samples.
-- sampling_rate (int): Sample rate of the audio in Hz.
-- file_format (str): Audio file encoding format (e.g., WAV, MP3, FLAC). Optional; used for logging.
-**Returns:** dict - Dictionary containing spectral_centroid, spectral_bandwidth, and rolloff_frequency as floats.
+- audio_data (str): Base64‑encoded representation of the raw audio samples (IEEE‑754 float32).
+- sampling_rate (int): Sampling frequency of the audio in Hertz.
+**Returns:** Dict[str, float] - Dictionary with keys 'spectral_centroid', 'spectral_bandwidth', and 'rolloff_frequency', each mapping to a float value.
 
 **Raises:**
 
-- ValueError: Raised if audio_data is empty or cannot be decoded.
-- RuntimeError: Raised if FFT computation fails.
+- ValueError: If `audio_data` is empty or cannot be decoded.
+- TypeError: If `sampling_rate` is not an integer or is <= 0.
+- RuntimeError: If the FFT computation fails or produces NaNs.
 **Examples:**
 
 ```python
->>> audio_b64 = 'dGhpcyBpcyBhIHNhbXBsZSBhdmFpbGFibGUgd2F5'
->>> features = extract_spectral_features(audio_b64, 44100, 'WAV')
-{'spectral_centroid': 2150.3, 'spectral_bandwidth': 180.7, 'rolloff_frequency': 3600.1}
+>>> import base64, numpy as np
+>>> fs = 8000
+>>> t = np.arange(0, 1, 1/fs)
+>>> s = 0.5 * np.sin(2 * np.pi * 440 * t)
+>>> audio_bytes = s.astype(np.float32).tobytes()
+>>> audio_b64 = base64.b64encode(audio_bytes).decode('utf-8')
+>>> result = extract_spectral_features(audio_b64, fs)
+{'spectral_centroid': 440.0, 'spectral_bandwidth': 0.0, 'rolloff_frequency': 220.0}
 ```
 
 ```python
->>> # Using a short sine wave snippet (encoded manually for illustration)
->>> audio_b64 = 'AAECAwQFBgcICQoLDA0ODxAREhM='
->>> features = extract_spectral_features(audio_b64, 8000, 'WAV')
-{'spectral_centroid': 2000.0, 'spectral_bandwidth': 0.0, 'rolloff_frequency': 4000.0}
+>>> import base64, numpy as np
+>>> fs = 8000
+>>> t = np.arange(0, 1, 1/fs)
+>>> s = 0.5 * np.sin(2 * np.pi * 440 * t) + 0.05 * np.random.randn(len(t))
+>>> audio_bytes = s.astype(np.float32).tobytes()
+>>> audio_b64 = base64.b64encode(audio_bytes).decode('utf-8')
+>>> result = extract_spectral_features(audio_b64, fs)
+{'spectral_centroid': 448.3, 'spectral_bandwidth': 50.7, 'rolloff_frequency': 350.1}
 ```
 
 
@@ -93,47 +102,40 @@ Calculate temporal domain features from raw audio data, returning the zero‑cro
 
 ### Conceptual Info
 
-This node transforms raw waveform samples into a compact set of descriptive statistics that capture the signal’s time‑domain behaviour.
+The node extracts key temporal characteristics from raw audio samples, providing foundational metrics for subsequent validation and analysis.
 
 ### Docstring
 
-**Summary:** Extracts zero‑crossing rate, energy, and entropy from a raw audio buffer and returns them as a tuple and a consolidated list.
+**Summary:** Extracts temporal domain features from an audio snippet.
 
 **Parameters:**
 
-- audio_data (str): Base64‑ or hex‑encoded representation of the raw audio samples.
-- sampling_rate (int): Sampling frequency of the audio in Hertz.
-- file_format (str): Encoding format of the audio file (e.g., WAV, MP3, FLAC).
-- metadata (list[str]): Additional metadata extracted by the loader; unused by this function but provided for consistency.
-**Returns:** tuple[float, float, float, list[float]] - A four‑element tuple containing zero_crossing_rate, energy, entropy, and a list of these three metrics.
+- audio_data (str): Base64‑encoded raw audio samples as produced by `load_audio_snippet`.
+- sampling_rate (int): Sampling frequency of the audio in Hertz, required to convert zero‑crossing counts to a per‑second rate.
+**Returns:** Tuple[float, float, float, List[float]] - A 4‑tuple containing zero_crossing_rate, energy, entropy, and a list of the three raw metrics.
 
 **Raises:**
 
-- ValueError: If audio_data cannot be decoded or is empty.
-- TypeError: If sampling_rate is not an integer or less than or equal to zero.
+- ValueError: Raised if `audio_data` is empty, cannot be decoded, or if `sampling_rate` is non‑positive.
+- RuntimeError: Raised if internal decoding or calculation fails.
 **Examples:**
 
 ```python
->>> # Example 1 – simple 4‑sample waveform encoded as hex
->>> audio_hex = '01020304'
->>> # bytes: 1
->>> 2
->>> 3
->>> 4"
->>> result = extract_temporal_features(audio_hex, 1, 'raw', [])
->>> print(result)
-(0.0, 30.0, 0.0, [0.0, 30.0, 0.0])
+>>> # Example 1: Simple 4‑sample waveform (1, -1, 1, -1) encoded in base64
+>>> import base64
+>>> raw_samples = bytes([1, 255, 1, 255])  # 255 interpreted as -1 in signed 8‑bit
+>>> b64_audio = base64.b64encode(raw_samples).decode('ascii')
+>>> zcr, energy, entropy, feats = extract_temporal_features(b64_audio, 2)
+>>> print(zcr, energy, entropy, feats)
+1.5 4.0 0.0 [1.5, 4.0, 0.0]
 ```
 
 ```python
->>> # Example 2 – a sine wave (encoded in base64 for brevity)
->>> import numpy as np, base64
->>> t = np.linspace(0, 1, 44100, endpoint=False)
->>> samples = np.int16(32767 * np.sin(2 * np.pi * 440 * t))
->>> audio_b64 = base64.b64encode(samples.tobytes()).decode('ascii')
->>> result = extract_temporal_features(audio_b64, 44100, 'wav', [])
->>> print(result[0])  # zero crossing rate per second
-≈ 880.0
+>>> # Example 2: Realistic audio snippet (placeholder base64 string)
+>>> b64_audio = 'U29tZSBwcm9kdWN0ZWRvbmUgYXR0YWNobWVudA=='
+>>> zcr, energy, entropy, feats = extract_temporal_features(b64_audio, 44100)
+>>> print(zcr, energy, entropy, feats)
+0.021 1234.5 1.23 [0.021, 1234.5, 1.23]
 ```
 
 
@@ -143,45 +145,43 @@ This node transforms raw waveform samples into a compact set of descriptive stat
 ## finalize_output
 
 ### Description
-Combine all document components
+Combine the base HTML skeleton with injected CSS and JavaScript to produce a ready‑to‑serve HTML document. The node collects the style and script snippets generated by `inject_style` and `inject_script`, inserts them into the appropriate sections of the HTML skeleton (typically within `<head>` for CSS and at the end of `<body>` for JS), and performs basic validation to ensure the resulting document is well‑formed. Rendering success and any errors encountered during injection are reported via output fields.
 
 ### Conceptual Info
 
-This node merges the base HTML structure with injected CSS and JavaScript, producing a fully rendered HTML document ready for display.
+The `finalize_output` node packages the raw HTML, CSS, and JavaScript produced earlier into a single, self‑contained HTML document. It is responsible for the final assembly step before the document is delivered to the user or stored.
 
 ### Docstring
 
-**Summary:** Render the final HTML document by embedding CSS and JS into the base HTML structure.
+**Summary:** Assemble a complete HTML document from a base skeleton, CSS, and JavaScript.
 
 **Parameters:**
 
-- html_structure (str): Base HTML5 skeleton generated by `generate_html_content`.
-- css_injection (str): CSS rules produced by `inject_style`.
-- js_injection (str): JavaScript code produced by `inject_script`.
-**Returns:** Dict[str, Union[str, bool, List[str]]] - Dictionary containing the rendered HTML string (`final_html`), a boolean status flag (`render_status`), and a list of error messages (`render_errors`).
+- css_injection (str): CSS rules generated by the `inject_style` node. These rules should be inserted into the `<style>` tag within the `<head>` section of the document.
+- js_injection (str): JavaScript code produced by the `inject_script` node. This code is inserted into a `<script>` tag placed just before the closing `</body>` tag.
+**Returns:** tuple[dict[str, Any]] - A dictionary containing:
+- `final_html` (str): The fully rendered HTML string.
+- `render_status` (bool): True if the document was assembled without critical errors.
+- `render_errors` (List[str]): Any non‑critical warnings or errors encountered during assembly.
 
 **Raises:**
 
-- ValueError: Raised when any of the inputs are empty or None.
-- RuntimeError: Raised when the rendering process encounters unexpected HTML structure or injection errors.
+- ValueError: If either `css_injection` or `js_injection` is an empty string, indicating a missing component.
+- SyntaxError: If the combined HTML string does not form a well‑structured HTML document after injection.
 **Examples:**
 
 ```python
->>> finalize_output(
-...     html_structure='<html><head></head><body></body></html>',
-...     css_injection='body{background:#f0f0f0}',
-...     js_injection='console.log("ready");'"
-                ")
-{'final_html': '<html><head><style>body{background:#f0f0f0}</style></head><body><script>console.log("ready");</script></body></html>', 'render_status': True, 'render_errors': []}
-```
-
-```python
->>> finalize_output(
-...     html_structure='<html></html>',
-...     css_injection='',
-...     js_injection=''"
-                ")
-{'final_html': '', 'render_status': False, 'render_errors': ['Missing CSS and JS injections']}
+>>> css = "body {background-color: #fafafa;}",
+>>> js = "console.log('Hello, world!');"
+>>> result = finalize_output(css_injection=css, js_injection=js)
+>>> print(result['render_status'])
+>>> print(result['final_html'][:120])
+True
+'<!DOCTYPE html><html><head><meta charset="utf-8"><title>Generated</title><style>body {background-color: #fafafa;}</style></head><body><div id="app">'
+            },
+            {
+              "lines": [
+                "css = "",
 ```
 
 
@@ -195,67 +195,42 @@ Create HTML output structure
 
 ### Conceptual Info
 
-Builds a minimal HTML5 document skeleton that displays song metadata and provides navigation links to musician profiles.
+The `generate_html_content` node composes a minimal HTML5 document that lists the extracted song metadata and provides navigation links to the associated musicians. It accepts ordered lists of titles, artists, albums, and genre tags produced by `process_song_metadata`, as well as the musician profile URLs and official website URLs from `generate_musician_links`, and returns a single string containing the full HTML skeleton.
 
 ### Docstring
 
-**Summary:** Assemble a basic HTML5 skeleton incorporating song metadata and musician navigation links.
-The function aggregates lists of titles, artists, albums, genres, musician URLs, and official websites into a single HTML string ready for further styling and scripting.
+**Summary:** Assembles a basic HTML5 skeleton incorporating song metadata and musician navigation links.
 
 **Parameters:**
 
-- song_titles (List[str]): Ordered list of matched song titles.
+- song_titles (List[str]): Ordered list of song titles.
 - artist_names (List[str]): Ordered list of artist names corresponding to the titles.
 - album_names (List[str]): Ordered list of album names where the songs appear.
-- genre_tags (List[str]): Ordered list of inferred music genre tags.
-- musician_urls (List[str]): List of deep links to artist profile pages.
-- official_websites (List[str]): List of official band or artist web presences.
-**Returns:** str - A string containing a complete but minimal HTML5 document skeleton. The document includes a <head> section with a title derived from the first song/artist pair, and a <body> section that lists each song with its album and genre, followed by navigation links to each musician profile and official website.
+- genre_tags (List[str]): Ordered list of genre tags associated with each song.
+- musician_urls (List[str]): Ordered list of deep links to musician profiles.
+- official_websites (List[str]): Ordered list of official websites for the musicians.
+**Returns:** str - A complete HTML5 document as a string, ready to be injected with CSS and JavaScript.
 
 **Raises:**
 
-- ValueError: Raised if any of the input lists are empty or if the input lists are of unequal length.
-- TypeError: Raised if any of the input parameters are not of type List[str].
+- ValueError: Raised when any of the input lists are empty or the list lengths differ, which would lead to mismatched metadata entries.
 **Examples:**
 
 ```python
 >>> html = generate_html_content(
-
-...     ['Song A'],
-
-...     ['Artist X'],
-
-...     ['Album Y'],
-
-...     ['Pop'],
-
-...     ['https://artistx.com/profile'],
-
-...     ['https://artistx.com']
-
+...     song_titles=['Song A', 'Song B'],
+...     artist_names=['Artist A', 'Artist B'],
+...     album_names=['Album A', 'Album B'],
+...     genre_tags=['Rock', 'Jazz'],
+...     musician_urls=['https://music.com/artistA', 'https://music.com/artistB'],
+...     official_websites=['https://artistA.com', 'https://artistB.com']
 >>> )
->>> print(html)
-<!DOCTYPE html>\n<html>\n<head>\n<title>Song A - Artist X</title>\n</head>\n<body>\n<h1>Song A</h1>\n<p><strong>Artist:</strong> Artist X</p>\n<p><strong>Album:</strong> Album Y</p>\n<p><strong>Genre:</strong> Pop</p>\n<h2>Musician Links</h2>\n<ul>\n<li><a href="https://artistx.com/profile">Artist Profile</a></li>\n<li><a href="https://artistx.com">Official Website</a></li>\n</ul>\n</body>\n</html>
+<!DOCTYPE html>\n<html>\n<head>\n<title>Song Catalog</title>\n</head>\n<body>\n<h1>Song Catalog</h1>\n<ul>\n<li>Song A by Artist A (Album A) - Genres: Rock</li>\n<li>Song B by Artist B (Album B) - Genres: Jazz</li>\n</ul>\n<nav>\n<a href='https://music.com/artistA'>Artist A</a> | <a href='https://music.com/artistB'>Artist B</a>\n</nav>\n</body>\n</html>
 ```
 
 ```python
->>> html = generate_html_content(
-
-...     ['Song 1', 'Song 2'],
-
-...     ['Band A', 'Band B'],
-
-...     ['Album X', 'Album Y'],
-
-...     ['Rock', 'Jazz'],
-
-...     ['https://banda.com', 'https://bandb.com'],
-
-...     ['https://banda.com', 'https://bandb.com']
-
->>> )
->>> print(html.split('\n')[0])
-<!DOCTYPE html>
+>>> generate_html_content([], [], [], [], [], [])
+ValueError: All input lists must be non‑empty and of equal length.
 ```
 
 
@@ -269,47 +244,45 @@ Create artist navigation links by aggregating database search results and web‑
 
 ### Conceptual Info
 
-Aggregates and normalizes artist URLs from multiple data sources, ensuring that every matched track is represented by a consistent set of profile links and official websites for downstream HTML rendering.
+Aggregates search results from an external music database and web scraping to produce a set of navigational URLs for artists, ensuring that each link is matched with a confidence score and official website reference.
 
 ### Docstring
 
-**Summary:** Generate deep links to musician profiles by merging database and web‑scraped results.
+**Summary:** Generate artist navigation links by combining database and web‑scraped metadata.
 
 **Parameters:**
 
-- song_matches (List[str]): List of song titles returned by the external music database.
-- relevance_scores (List[float]): Relevance scores corresponding to each entry in *song_matches*.
-- additional_matches (List[str]): List of additional song titles obtained from web scraping.
-- web_scores (List[float]): Relevance scores from the web scraping source.
-**Returns:** Dict[str, List[str]] - A dictionary with two keys:
-
-* *musician_urls* – a list of artist profile links constructed from the merged search results.
-* *official_websites* – a list of official band or artist websites extracted from the same data.
-
-Both lists are deduplicated and ordered by combined relevance.
+- song_matches (List[str]): List of song titles returned by the music database API.
+- relevance_scores (List[float]): Relevance scores corresponding to each song title in song_matches.
+- additional_matches (str): Comma‑separated list of song titles obtained from web scraping.
+- web_scores (float): Confidence score for the web‑scraped matches (range 0.0–1.0).
+**Returns:** Tuple[List[str], List[str]] - A tuple containing a list of musician profile URLs and a list of official artist websites.
 
 **Raises:**
 
-- ValueError: If any of the input lists are empty or if their lengths do not match.
-- TypeError: If an input is not of the expected type.
+- ValueError: If any required input list is empty or if lengths of song_matches and relevance_scores do not match.
+- TypeError: If input types do not match the expected signatures.
 **Examples:**
 
 ```python
->>> result = generate_musician_links(
-...     song_matches=['Song A', 'Song B'],
-...     relevance_scores=[0.95, 0.80],
-...     additional_matches=['Song A', 'Song C'],
-...     web_scores=[0.90, 0.70])
-{'musician_urls': ['https://artistA.com', 'https://artistB.com', 'https://artistC.com'], 'official_websites': ['https://artistA.com', 'https://artistB.com', 'https://artistC.com']}
+>>> song_matches = ['Song A', 'Song B']
+>>> relevance_scores = [0.92, 0.85]
+>>> additional_matches = 'Song C, Song D'
+>>> web_scores = 0.88
+>>> musician_urls, official_websites = generate_musician_links(song_matches, relevance_scores, additional_matches, web_scores)
+(['https://musicdb.com/artists/artist_a', 'https://musicdb.com/artists/artist_b', 'https://websource.com/artists/artist_c', 'https://websource.com/artists/artist_d'], ['https://artist_a.com', 'https://artist_b.com', 'https://artist_c.com', 'https://artist_d.com'])
 ```
 
 ```python
->>> result = generate_musician_links(
-...     song_matches=['Hit 1'],
-...     relevance_scores=[0.88],
-...     additional_matches=['Hit 1'],
-...     web_scores=[0.85])
-{'musician_urls': ['https://artistX.com'], 'official_websites': ['https://artistX.com']}
+>>> song_matches = []
+>>> relevance_scores = []
+>>> additional_matches = ''
+>>> web_scores = 0.0
+>>> try:
+...     generate_musician_links(song_matches, relevance_scores, additional_matches, web_scores)
+>>> except ValueError as e:
+...     print(e)
+'song_matches and relevance_scores cannot be empty'
 ```
 
 
@@ -323,34 +296,44 @@ Add JavaScript interactivity
 
 ### Conceptual Info
 
-Creates a JavaScript snippet that can be injected into an existing HTML skeleton to provide client‑side interactivity.
+Injects JavaScript to enhance the base HTML with dynamic interactivity.
 
 ### Docstring
 
-**Summary:** Injects a dynamic JavaScript snippet into the provided HTML structure, returning the script tag string.
+**Summary:** Generates JavaScript code that adds event listeners and dynamic behavior to the supplied HTML structure.
 
 **Parameters:**
 
-- html_structure (str): Base HTML document skeleton produced by generate_html_content.
-**Returns:** str - A JavaScript snippet wrapped in `<script>` tags, ready to be injected into the final HTML document.
+- html_structure (str): Base HTML skeleton string produced by `generate_html_content`.
+**Returns:** str - JavaScript code snippet that implements interactivity for the HTML document.
 
 **Raises:**
 
-- ValueError: If `html_structure` is an empty string.
-- TypeError: If `html_structure` is not of type `str`.
+- ValueError: Raised when `html_structure` is empty or not a string.
 **Examples:**
 
 ```python
->>> js_code = inject_script('<html><head></head><body></body></html>')
-'<script>/* dynamic JS */</script>'
+>>> js_code = inject_script('<!DOCTYPE html><html><head></head><body></body></html>')
+"// JavaScript that attaches click listeners to all <button> elements\n" +
+"document.addEventListener('DOMContentLoaded', () => {\n" +
+"  document.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => alert('Clicked!')));\n" +
+"});\n"
 ```
 
 ```python
->>> try:
-...     inject_script('')
->>> except ValueError as e:
-...     print(e)
-"html_structure cannot be empty."
+>>> html = ('<!DOCTYPE html><html><head></head><body>' +
+...        '<div id="counter">0</div>' +
+...        '<button id="inc">Increment</button>' +
+...        '</body></html>')
+>>> js_code = inject_script(html)
+"// JavaScript that increments a counter on button click\n" +
+"document.addEventListener('DOMContentLoaded', () => {\n" +
+"  const counter = document.getElementById('counter');\n" +
+"  const incBtn = document.getElementById('inc');\n" +
+"  incBtn.addEventListener('click', () => {\n" +
+"    counter.textContent = parseInt(counter.textContent) + 1;\n" +
+"  });\n" +
+"});\n"
 ```
 
 
@@ -364,44 +347,46 @@ Add CSS styling rules to an existing HTML document skeleton.
 
 ### Conceptual Info
 
-The `inject_style` node injects a responsive CSS block into a base HTML skeleton, returning the CSS as a string that can be embedded into the document.
+Provides responsive CSS rules that are injected into a basic HTML5 document skeleton, enabling layout, typography, and visual theming.
 
 ### Docstring
 
-**Summary:** Inject responsive CSS rules into an existing HTML skeleton.
+**Summary:** Generates a string of CSS style rules tailored to the supplied HTML skeleton. The function ensures the resulting CSS is responsive and minimally invasive, suitable for immediate inclusion in a `<style>` tag.
 
 **Parameters:**
 
-- html_structure (str): Base HTML5 document skeleton. Must contain at least `<html>` and `<head>` tags.
-**Returns:** str - CSS style block string that should be inserted inside the `<head>` of the provided HTML.
+- html_structure (str): Base HTML5 document skeleton. The function analyzes the presence of common containers (header, nav, main, footer) to inject context‑aware styles.
+**Returns:** str - A CSS string containing responsive style rules that can be inserted into the `<head>` of the HTML document.
 
 **Raises:**
 
-- ValueError: If `html_structure` is not a valid HTML string or lacks `<head>` tags.
+- ValueError: Raised when `html_structure` is an empty string or contains only whitespace.
+- TypeError: Raised when `html_structure` is not of type `str`.
 **Examples:**
 
 ```python
->>> html = """\
+>>> skeleton = """\
+>>> <!DOCTYPE html>\
 >>> <html>\
-...   <head>\
-...   </head>\
-...   <body>\
-...     <h1>Hello World</h1>\
-...   </body>\
->>> </html>\
->>> """
->>> css = inject_style(html)
+>>> <head>\
+...   <title>Test Page</title>\
+>>> </head>\
+>>> <body>\
+...   <header></header>\
+...   <main></main>\
+...   <footer></footer>\
+>>> </body>\
+>>> </html>"""
+>>> css = inject_style(skeleton)
 >>> print(css)
-"<style>\n  body {margin:0; font-family:sans-serif;}\n  @media (max-width:600px) {h1 {font-size:1.5rem;}}\n</style>"
+"""\n/* Base responsive styles */\nbody {\n  margin: 0;\n  font-family: Arial, sans-serif;\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\nheader, footer {\n  background: #f8f9fa;\n  padding: 1rem;\n}\nmain {\n  flex: 1;\n  padding: 1rem;\n}\n@media (min-width: 600px) {\n  main {\n    padding: 2rem;\n  }\n}\n"""
 ```
 
 ```python
->>> html_missing_head = "<html><body><p>No head</p></body></html>"
->>> try:
-...     inject_style(html_missing_head)
->>> except ValueError as e:
-...     print(str(e))
-"ValueError: html_structure must contain a <head> element"
+>>> skeleton = "<!DOCTYPE html><html><head><title></title></head><body></body></html>"
+>>> css = inject_style(skeleton)
+>>> print(css)
+"""\n/* Base responsive styles */\nbody {\n  margin: 0;\n  font-family: Arial, sans-serif;\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\n"""
 ```
 
 
@@ -415,37 +400,38 @@ Load an audio file from a local or remote source and provide the raw audio data 
 
 ### Conceptual Info
 
-Provides the foundational audio data and its descriptive statistics for downstream audio‑analysis tasks.
+The node encapsulates audio ingestion, decoding, and metadata extraction to provide a lightweight, transportable representation of an audio snippet.
 
 ### Docstring
 
-**Summary:** Loads an audio file and returns its raw samples in a compact string along with sampling rate, file format, and a list of key metadata values.
+**Summary:** Load an audio file from a local path or URL, decode it, and return raw data plus essential metadata.
 
 **Parameters:**
 
-- file_path (str): Path or URL to the audio file to be loaded.
-**Returns:** Dict[str, Union[str, int, List[str]]] - Dictionary containing `audio_data`, `sampling_rate`, `file_format`, and `metadata`.
+- audio_uri (str): A filesystem path or HTTP(S) URL pointing to the audio file to be loaded.
+**Returns:** Dict[str, Any] - A dictionary with four keys:
+- audio_data (str): Base64‑encoded raw samples.
+- sampling_rate (int): Sample rate in Hz.
+- file_format (str): Audio file format.
+- metadata (List[str]): List of formatted strings describing duration, bit depth, channels, and loudness.
 
 **Raises:**
 
-- FileNotFoundError: Raised if the file does not exist or cannot be accessed.
-- ValueError: Raised if the file format is unsupported or the file is corrupted.
+- FileNotFoundError: Raised when the local file does not exist or cannot be accessed.
+- ConnectionError: Raised when the remote URL cannot be reached or the download fails.
+- ValueError: Raised when the file format is unsupported or the file is corrupted.
 **Examples:**
 
 ```python
->>> result = load_audio_snippet('/path/to/song.wav')
->>> print(result['file_format'])
+>>> result = load_audio_snippet('samples/track.wav')
 >>> print(result['sampling_rate'])
->>> print(result['metadata'])
-"WAV"
-"44100"
-"['duration: 3.12s', 'bit_depth: 16', 'channels: 2', 'loudness: -12.3 dB']"
+44100
 ```
 
 ```python
->>> result = load_audio_snippet('https://example.com/track.mp3')
->>> print(len(result['audio_data']))
-"123456"
+>>> result = load_audio_snippet('https://example.com/music.mp3')
+>>> print(result['file_format'])
+MP3
 ```
 
 
@@ -459,33 +445,37 @@ Calculate mel-frequency cepstral coefficients (MFCCs) from a spectrogram and com
 
 ### Conceptual Info
 
-The MFCC extraction node transforms a flat spectrogram into a compact spectral descriptor by applying a Mel filterbank, logarithm, and discrete cosine transform (DCT). It then calculates the temporal derivative (delta) of the resulting coefficients.
+The MFCC extraction node transforms a flat spectrogram into a compact representation of the audio's spectral envelope (MFCCs) and calculates the first‑order derivative (delta) to capture dynamic changes over time.
 
 ### Docstring
 
-**Summary:** Extracts MFCC coefficients and their delta from a flattened spectrogram.
+**Summary:** Transforms a spectrogram into Mel‑Frequency Cepstral Coefficients (MFCCs) and their first‑order delta.
 
 **Parameters:**
 
-- spectrogram_data (List[float]): Flat list of magnitude values from an STFT (time‑frequency matrix flattened into one dimension).
-**Returns:** Dict[str, float] - A dictionary with two entries:
-
-* ``mfcc_coefficients`` – the mean MFCC value over all time frames.
-* ``delta_mfcc`` – the mean delta MFCC value over all time frames.
+- spectrogram_data (list[float]): A one‑dimensional list of floating‑point values representing a time‑frequency spectrogram flattened from a 2‑D matrix.
+**Returns:** tuple[list[float], list[float]] - A tuple containing:
+- `mfcc_coefficients`: list of MFCC values per frame.
+- `delta_mfcc`: list of first‑order differences (deltas) of the MFCCs.
 
 **Raises:**
 
-- ValueError: Raised if ``spectrogram_data`` is empty or not a list.
+- ValueError: Raised when `spectrogram_data` is empty, not a list, or contains non‑numeric entries.
 **Examples:**
 
 ```python
->>> mfcc_extraction([0.1, 0.2, 0.15, 0.3, 0.25, 0.35])
-{'mfcc_coefficients': 0.208, 'delta_mfcc': 0.013}
+>>> spectrogram = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+>>> mfcc, delta = mfcc_extraction(spectrogram)
+>>> print('MFCC:', mfcc)
+>>> print('Delta:', delta)
+MFCC: [0.15, 0.35, 0.55]
+Delta: [0.2, 0.2]
 ```
 
 ```python
->>> mfcc_extraction([])
-ValueError: Input spectrogram_data must be a non‑empty list of floats.
+>>> mfcc, delta = mfcc_extraction([0.1, 0.2, 0.3])
+>>> print(mfcc, delta)
+[0.15, 0.25] [0.1]
 ```
 
 
@@ -499,45 +489,34 @@ Generates high‑level audio representations by passing the raw audio through a 
 
 ### Conceptual Info
 
-The node encapsulates a lightweight deep‑learning inference step that transforms raw audio into two fixed‑length embeddings—one from a convolutional pathway capturing frequency‑domain structure, and another from a recurrent pathway capturing sequence‑level dynamics.
+This node transforms raw audio data into compact, learnable embeddings by applying a CNN to capture local spectral structures and an RNN to model sequential temporal dynamics. The resulting vectors can be used for downstream tasks such as similarity search, classification, or metadata enrichment.
 
 ### Docstring
 
-**Summary:** Generate deep learning features from raw audio data using CNN and RNN models.
+**Summary:** Extract deep learning‑based audio features using a CNN for spectral analysis and an RNN for temporal summarization.
 
 **Parameters:**
 
-- audio_data (str): Base64‑encoded or hex string representation of the raw audio samples.
-- sampling_rate (int): Sampling frequency of the audio in Hz.
-- file_format (str): Encoding format of the audio (e.g., 'WAV', 'MP3', 'FLAC').
-- metadata (List[str]): List of signal characteristics such as duration, bit depth, channel count, and loudness level.
-**Returns:** Dict[str, float] - A dictionary with keys 'cnn_features' and 'rnn_features', each mapping to a float embedding summarizing spectral and temporal information respectively.
+- audio_data (str): Base64‑encoded raw audio samples returned by `load_audio_snippet`.
+- sampling_rate (int): Sampling frequency of the audio in Hertz.
+**Returns:** Dict[str, float] - Dictionary containing `cnn_features` and `rnn_features` – each a scalar summarizing the high‑level representation extracted by the respective network.
 
 **Raises:**
 
-- ValueError: Raised when `audio_data` is empty or cannot be decoded.
-- TypeError: Raised if input types do not match the expected signatures.
-- RuntimeError: Raised when the CNN or RNN inference fails due to model errors or corrupted inputs.
+- ValueError: If `audio_data` is empty, not valid Base64, or decoding fails.
+- RuntimeError: If the CNN or RNN inference pipeline raises an exception (e.g., GPU out‑of‑memory, model file missing).
 **Examples:**
 
 ```python
->>> audio_data = 'UklGRiQAAABXQVZFZm10IBAAAAABAAEAgLsAAAB3AAABAAgAAQ==',
->>> sampling_rate = 44100,
->>> file_format = 'WAV',
->>> metadata = ['duration:3.5s', 'bit_depth:16', 'channels:2', 'loudness:-12dB']
->>> features = ml_feature_extraction(audio_data, sampling_rate, file_format, metadata)
->>> print(features['cnn_features'])
->>> print(features['rnn_features'])
-0.8735
-0.4562
+>>> cnn, rnn = ml_feature_extraction('UklGRi4AAABXRUJQVlA4TBEAAAAvAAAAAA', 44100)
+>>> print(cnn, rnn)
+0.123 0.456
 ```
 
 ```python
->>> try:
-...     ml_feature_extraction('', 44100, 'WAV', ['duration:3.5s'])
->>> except ValueError as e:
-...     print(str(e))
-"audio_data is empty or cannot be decoded"
+>>> result = ml_feature_extraction('invalid_base64_string', 44100)
+>>> print(result)
+ValueError: Invalid Base64 audio data.
 ```
 
 
@@ -551,37 +530,46 @@ Query an external music database to find tracks that match the provided tonal an
 
 ### Conceptual Info
 
-The node interfaces with an external music database service, using the tonal key and fundamental frequency extracted from an audio snippet to retrieve a ranked list of potential matches. It serves as the bridge between low‑level acoustic analysis and high‑level music information retrieval.
+The node takes key tonal and pitch descriptors produced by audio analysis and uses them to query a music database, returning the most relevant song titles along with a confidence metric for each result.
 
 ### Docstring
 
-**Summary:** Query an external music database to find tracks matching the specified key and pitch.
+**Summary:** Search a music database for tracks that match given tonal and pitch characteristics.
 
 **Parameters:**
 
-- tone (str): Identified musical key (e.g., 'C major', 'A minor') produced by tonal_analysis.
-- tone_confidence (float): Reliability of the key detection, ranging from 0.0 to 1.0.
-- fundamental_frequency (float): Primary pitch frequency in Hz extracted by pitch_analysis.
-- pitch_confidence (float): Reliability of the pitch detection, ranging from 0.0 to 1.0.
-**Returns:** Tuple[List[str], List[float]] - A two‑element tuple where the first element is a list of matched song titles and the second is a list of relevance scores aligned with those titles.
+- tone (str): Identified musical key (e.g., 'C Major', 'A Minor').
+- tone_confidence (float): Confidence score of the tonal detection, ranging from 0.0 to 1.0.
+- fundamental_frequency (float): Estimated fundamental frequency (Hz) of the audio snippet.
+- pitch_confidence (float): Confidence score of the pitch detection, ranging from 0.0 to 1.0.
+**Returns:** Tuple[List[str], List[float]] - A tuple where the first element is a list of matched song titles and the second element is a list of relevance scores corresponding to each title.
 
 **Raises:**
 
-- ValueError: Raised if either confidence value is below 0.5, indicating unreliable input features.
-- ConnectionError: Raised if the external database service is unreachable or returns an error.
+- ValueError: If any of the input parameters are missing or have invalid types.
+- RuntimeError: If the external music database API is unreachable or returns an error.
 **Examples:**
 
 ```python
->>> song_matches, relevance_scores = music_database_api('C major', 0.92, 440.0, 0.88)
-(['Song A', 'Song B', 'Song C'], [0.95, 0.87, 0.80])
+>>> song_matches, relevance_scores = music_database_api(
+...     tone='C Major',
+...     tone_confidence=0.95,
+...     fundamental_frequency=261.63,
+...     pitch_confidence=0.92)
+>>> print(song_matches)
+>>> print(relevance_scores)
+["Let It Be", "Here Comes the Sun", "Can't Help Falling in Love"]\n[0.87, 0.82, 0.79]
 ```
 
 ```python
->>> try:
-...     music_database_api('D minor', 0.45, 392.0, 0.90)
->>> except ValueError as e:
-...     print(e)
-"Confidence too low: key detection confidence is 0.45"
+>>> song_matches, relevance_scores = music_database_api(
+...     tone='A Minor',
+...     tone_confidence=0.88,
+...     fundamental_frequency=220.00,
+...     pitch_confidence=0.85)
+>>> print(len(song_matches))
+>>> print(relevance_scores[0])
+5\n0.91
 ```
 
 
@@ -591,40 +579,40 @@ The node interfaces with an external music database service, using the tonal key
 ## pitch_analysis
 
 ### Description
-Detect pitch characteristics
+Detect pitch characteristics by analyzing the Mel‑Frequency Cepstral Coefficients (MFCCs) and their first‑order deltas to estimate the dominant sinusoid frequency (fundamental_frequency) and the confidence of the detection (pitch_confidence).
 
 ### Conceptual Info
 
-The pitch_analysis node transforms the time‑domain audio signal into a set of pitch‑specific metrics.  It consumes the MFCC representation produced by the preceding mfcc_extraction node and applies a harmonic‑analysis algorithm (typically a combination of autocorrelation, YIN or cepstral‑based pitch‑tracking) to estimate the fundamental frequency (f0) and a confidence score indicating the reliability of that estimate.
+The node transforms the spectral envelope representation (MFCCs) into a pitch domain estimate, enabling downstream tasks such as key detection, database searching, and web scraping based on tonal and pitch signatures.
 
 ### Docstring
 
-**Summary:** Estimate the fundamental frequency and pitch confidence from MFCC features.
+**Summary:** Estimate the fundamental frequency and confidence of a pitch from MFCC features.
 
 **Parameters:**
 
-- mfcc_coefficients (List[float]): Temporal MFCC coefficients obtained from the spectrogram.  Each entry corresponds to a short‑time window and contains the mel‑frequency cepstral coefficients for that window.
-- delta_mfcc (List[float]): Delta (first‑derivative) MFCC coefficients representing the rate of change of the spectral envelope across successive windows.  These are used to improve pitch stability.
-**Returns:** Tuple[float, float] - A tuple containing the estimated fundamental frequency in hertz and a confidence score between 0.0 and 1.0.
+- mfcc_coefficients (List[float]): Sequence of Mel‑Frequency Cepstral Coefficients extracted from a spectrogram. These values capture the spectral envelope of the audio signal.
+- delta_mfcc (List[float]): First‑order time‑derivative of the MFCC coefficients, representing the rate of change of the spectral envelope.
+**Returns:** Tuple[float, float] - A tuple containing (fundamental_frequency, pitch_confidence). Both values are floats.
 
 **Raises:**
 
-- ValueError: Raised if either input list is empty or contains non‑numeric values.
-- RuntimeError: Raised if the pitch‑tracking algorithm fails to converge or cannot produce a reliable estimate.
+- ValueError: Raised if either `mfcc_coefficients` or `delta_mfcc` is empty or contains non‑finite values.
+- RuntimeError: Raised if the underlying pitch extraction algorithm fails to converge or encounters numerical instability.
 **Examples:**
 
 ```python
->>> mfcc = [0.1, 0.3, 0.2, 0.4, 0.5]
->>> delta = [0.02, 0.03, -0.01, 0.00, 0.04]
->>> f0, conf = pitch_analysis(mfcc, delta)
->>> print(f"f0={f0:.2f} Hz, confidence={conf:.2f}")
-f0=220.00 Hz, confidence=0.89
+>>> mfcc = [12.3, 10.1, 9.8, 8.7, 7.6, 6.5]
+>>> delta = [0.5, -0.3, 0.1, -0.2, 0.0, 0.1]
+>>> pitch_analysis(mfcc, delta)
+(110.2, 0.91)
 ```
 
 ```python
->>> f0, conf = pitch_analysis([], [])
->>> print('This line will not execute')
-ValueError: Input MFCC lists must contain at least one numeric element.
+>>> mfcc = [0.0, 0.0, 0.0, 0.0]
+>>> delta = [0.0, 0.0, 0.0, 0.0]
+>>> pitch_analysis(mfcc, delta)
+(0.0, 0.0)
 ```
 
 
@@ -638,54 +626,44 @@ Extract key metadata fields from database and web‑scraped results and collate 
 
 ### Conceptual Info
 
-Aggregates and normalises song metadata from the music database and web scraping sources into parallel lists that are ready for HTML rendering.
+Aggregates song metadata from multiple sources into a structured format for downstream HTML rendering.
 
 ### Docstring
 
-**Summary:** Collects and aligns metadata from the database and web‑scraped results into four ordered lists: titles, artists, albums, and genre tags.
+**Summary:** Collects and organizes song metadata (titles, artists, albums, genre tags) from database search results and web‑scraped data.
 
 **Parameters:**
 
-- song_matches (List[str]): Song titles returned by the music database search.
-- relevance_scores (List[float]): Relevance scores from the music database, corresponding to each title.
-- additional_matches (List[str]): Song titles scraped from web sources.
-- web_scores (List[float]): Relevance scores from the web scraping, corresponding to each scraped title.
-**Returns:** Tuple[List[str], List[str], List[str], List[str]] - Four ordered lists:
-- `song_titles`: combined titles from database and web.
-- `artist_names`: artist names for each title.
-- `album_names`: album names for each title.
-- `genre_tags`: aggregated genre tags for each title.
+- song_matches (List[str]): List of song titles returned by the music database API.
+- relevance_scores (List[float]): Relevance scores corresponding to each title in song_matches.
+- additional_matches (str): Comma‑separated list of song titles retrieved via web scraping.
+- web_scores (float): Confidence metric indicating the quality of the web‑scraped matches.
+**Returns:** Dict[str, List[str]] - A dictionary with keys 'song_titles', 'artist_names', 'album_names', and 'genre_tags', each mapping to a list of strings.
 
 **Raises:**
 
-- ValueError: If input lists have mismatched lengths or contain None values.
-- KeyError: If required metadata fields are missing from the input data.
+- ValueError: If the length of song_matches does not match relevance_scores.
+- TypeError: If any input is of an incorrect type.
 **Examples:**
 
 ```python
->>> song_matches = ['Song A', 'Song B']
->>> relevance_scores = [0.92, 0.88]
->>> additional_matches = ['Song C']
->>> web_scores = [0.75]
->>> # Assume the function aggregates data from both sources
->>> titles, artists, albums, genres = process_song_metadata(song_matches, relevance_scores, additional_matches, web_scores)
-[['Song A', 'Song B', 'Song C'],
- ['Artist X', 'Artist Y', 'Artist Z'],
- ['Album 1', 'Album 2', 'Album 3'],
- ['Pop', 'Rock', 'Jazz']]
+>>> result = process_song_metadata(
+...     song_matches=["Bohemian Rhapsody"],
+...     relevance_scores=[0.97],
+...     additional_matches="Bohemian Rhapsody",
+...     web_scores=0.92)
+>>> print(result)
+{'song_titles': ['Bohemian Rhapsody'], 'artist_names': ['Queen'], 'album_names': ['A Night at the Opera'], 'genre_tags': ['Rock', 'Classic Rock']}
 ```
 
 ```python
->>> song_matches = ['Track 1']
->>> relevance_scores = [0.95]
->>> additional_matches = []
->>> web_scores = []
->>> # Single match from the database only
->>> titles, artists, albums, genres = process_song_metadata(song_matches, relevance_scores, additional_matches, web_scores)
-[['Track 1'],
- ['Artist A'],
- ['Album X'],
- ['Electronic']]
+>>> result = process_song_metadata(
+...     song_matches=["Imagine", "Let It Be"],
+...     relevance_scores=[0.88, 0.85],
+...     additional_matches="Imagine, Let It Be",
+...     web_scores=0.90)
+>>> print(result)
+{'song_titles': ['Imagine', 'Let It Be'], 'artist_names': ['John Lennon', 'The Beatles'], 'album_names': ['Imagine', 'Let It Be'], 'genre_tags': ['Pop', 'Rock']}
 ```
 
 
@@ -699,37 +677,43 @@ Generate a frequency‑time spectrogram from validated audio feature vectors. Th
 
 ### Conceptual Info
 
-Transforms validated spectral and temporal audio features into a flat spectrogram suitable for downstream machine‑learning models and visualizations.
+Creates a flattened time‑frequency representation (spectrogram) from normalized spectral and temporal audio features, enabling further spectral analyses like MFCC extraction.
 
 ### Docstring
 
-**Summary:** Compute a short‑time Fourier transform (STFT) spectrogram from validated audio feature vectors and return a flattened list of magnitude values.
+**Summary:** Computes a short‑time Fourier transform (STFT) from validated, normalized audio features and returns a flattened spectrogram.
 
 **Parameters:**
 
-- normalized_spectral (List[float]): Normalized spectral feature vector produced by `validate_audio_features`.
-- normalized_temporal (List[float]): Normalized temporal feature vector produced by `validate_audio_features`.
-- validation_errors (List[str]): Log of any validation issues detected during feature normalization.
-**Returns:** List[float] - Flattened spectrogram magnitude values in row‑major order.
+- normalized_spectral (List[float]): Validated spectral features (centroid, bandwidth, roll‑off) scaled to [0, 1].
+- normalized_temporal (List[float]): Validated temporal features (zero‑crossing rate, energy, entropy) scaled to [0, 1].
+- validation_errors (List[str]): Log of any inconsistencies or corrections applied during feature validation.
+**Returns:** List[float] - Flattened spectrogram data as a one‑dimensional list of float values.
 
 **Raises:**
 
-- ValueError: Raised when `validation_errors` is not empty, indicating that input features failed validation.
-- TypeError: Raised if any of the input parameters are of an incompatible type (e.g., non‑list or list of non‑float elements).
+- ValueError: Raised if any input list is empty or contains non‑numeric values.
+- RuntimeError: Raised if STFT computation fails (e.g., due to incompatible dimensions).
 **Examples:**
 
 ```python
->>> spectrogram_data = spectrogram_creation([0.1, 0.2, 0.3, 0.4], [0.5, 0.6, 0.7, 0.8], [])
+>>> # Example 1: Simple 2×2 spectrogram
+>>> spectrogram_data = spectrogram_creation([0.2, 0.5, 0.7],
+...                                         [0.1, 0.3, 0.4],
+...                                         [])
 >>> print(spectrogram_data)
-[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+[0.2, 0.5, 0.7, 0.1, 0.3, 0.4]
 ```
 
 ```python
->>> try:
-...     spectrogram_creation([0.1, 0.2], [0.3, 0.4], ['error: spectrum too short'])
->>> except ValueError as e:
-...     print(e)
-ValueError: Validation errors present: ['error: spectrum too short']
+>>> # Example 2: 3×3 spectrogram (visualized as a matrix)
+>>> spectrogram = spectrogram_creation([0.1,0.2,0.3, 0.4,0.5,0.6, 0.7,0.8,0.9],
+...                                    [0.0,0.0,0.0, 0.0,0.0,0.0, 0.0,0.0,0.0],
+...                                    ["Outlier corrected"])
+>>> print(spectrogram)
+>>> print('Length:', len(spectrogram))
+[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+Length: 9
 ```
 
 
@@ -743,34 +727,31 @@ Identify tonal characteristics
 
 ### Conceptual Info
 
-Detects the musical key of an audio snippet by interpreting MFCC-derived features through a pretrained deep‑learning model, providing both a key label and confidence score.
+Transforms MFCC and delta‑MFCC features into a musical key classification and confidence score using a pre‑trained deep‑learning model.
 
 ### Docstring
 
-**Summary:** Detects the musical key (tone) of an audio snippet using MFCC inputs.
+**Summary:** Detects the key of an audio snippet from its MFCC representation.
 
 **Parameters:**
 
-- mfcc_coefficients (List[float]): Temporal MFCC feature vector extracted from the audio signal.
-- delta_mfcc (List[float]): Delta (first‑order difference) MFCC features capturing the rate of change of the spectral envelope.
-**Returns:** Tuple[str, float] - A tuple containing the identified musical key (e.g., 'C major') and a confidence score between 0.0 and 1.0.
+- mfcc_coefficients (List[float]): Sequence of mel‑frequency cepstral coefficients extracted from the spectrogram.
+- delta_mfcc (List[float]): First‑order delta of the MFCC coefficients, indicating the rate of change of the spectral envelope.
+**Returns:** Tuple[str, float] - A tuple containing the inferred musical key (e.g., "C major") and a confidence value between 0 and 1.
 
 **Raises:**
 
-- ValueError: Raised if either input list is empty or of mismatched length.
-- RuntimeError: Raised if the deep‑learning model cannot be loaded or executed.
+- ValueError: Raised if either input list is empty or not of numeric type.
 **Examples:**
 
 ```python
->>> tone, confidence = tonal_analysis(
-...     mfcc_coefficients=[0.23, -0.11, 0.56, ...],
-...     delta_mfcc=[0.02, -0.01, 0.03, ...])
-"C major", 0.92
+>>> tone, conf = tonal_analysis([0.12, 0.34, 0.56, 0.78], [0.02, 0.04, 0.03, 0.01])
+('C major', 0.92)
 ```
 
 ```python
->>> tone, confidence = tonal_analysis([0.1, -0.05, 0.3], [0.01, -0.02, 0.02])
-"G minor", 0.78
+>>> tone, conf = tonal_analysis([0.1, 0.2, 0.3], [0.01, 0.02, 0.03])
+('G minor', 0.85)
 ```
 
 
@@ -784,56 +765,37 @@ Normalizes and validates spectral, temporal, and deep‑learning features extrac
 
 ### Conceptual Info
 
-The node validates and normalizes audio feature vectors to provide a clean, consistent input set for spectrogram generation and downstream analytics.
+The node acts as a gatekeeper for audio feature streams, standardising numeric ranges and detecting corrupt or anomalous measurements before they propagate to later stages like spectrogram generation or machine‑learning pipelines.
 
 ### Docstring
 
-**Summary:** Validate and normalize audio features extracted from an audio snippet.
+**Summary:** Normalizes and validates spectral, temporal, and deep‑learning audio features, ensuring consistency and correcting outliers.
 
 **Parameters:**
 
-- spectral_centroid (float): Frequency band center of gravity.
-- spectral_bandwidth (float): Spread of frequency energy.
-- rolloff_frequency (float): Frequency cutoff point.
-- zero_crossing_rate (float): Rate of sign changes in the audio waveform per second.
-- energy (float): Sum of squared sample amplitudes, representing signal power.
-- entropy (float): Shannon entropy of the amplitude histogram.
-- cnn_features (float): Convolutional network output summarizing learned spectral patterns.
-- rnn_features (float): Recurrent network output summarizing learned temporal dynamics.
-**Returns:** Dict[str, List[float] | List[str]] - Dictionary with keys 'normalized_spectral', 'normalized_temporal', and 'validation_errors'.
+- spectral_centroid (float): Center of gravity of the spectral energy distribution (Hz).
+- spectral_bandwidth (float): Spread of the spectral energy (Hz).
+- rolloff_frequency (float): Frequency below which a specified percentage (typically 85%) of the spectral energy lies (Hz).
+- zero_crossing_rate (float): Rate of sign changes in the waveform per second.
+- energy (float): Sum of squared sample amplitudes (signal power).
+- entropy (float): Shannon entropy of the amplitude histogram (dimensionless).
+- cnn_features (List[float]): High‑level spectral pattern vector produced by the CNN branch.
+- rnn_features (List[float]): High‑level temporal dynamics vector produced by the RNN branch.
+**Returns:** Tuple[List[float], List[float], List[str]] - A tuple containing the normalized spectral feature list, the normalized temporal feature list, and a list of validation error messages.
 
 **Raises:**
 
-- ValueError: Raised if any required feature is missing or NaN.
-- TypeError: Raised if input types are not float.
+- ValueError: Raised if any required input is missing or not a numeric type.
 **Examples:**
 
 ```python
->>> validate_audio_features(
-...     spectral_centroid=1200.0,
-...     spectral_bandwidth=300.0,
-...     rolloff_frequency=8000.0,
-...     zero_crossing_rate=0.05,
-...     energy=5000.0,
-...     entropy=2.3,
-...     cnn_features=0.85,
-...     rnn_features=0.65)
->>> )
-{'normalized_spectral': [0.0, 0.2, 0.8], 'normalized_temporal': [0.05, 0.5, 0.7], 'validation_errors': []}
+>>> validate_audio_features(2000.0, 1000.0, 4000.0, 5.0, 1000.0, 0.5, [0.2, 0.3], [0.1, 0.4])
+([0.5, 0.4, 0.8], [0.5, 0.4, 0.5], [])
 ```
 
 ```python
->>> validate_audio_features(
-...     spectral_centroid=99999.0,  # unrealistic outlier
-...     spectral_bandwidth=300.0,
-...     rolloff_frequency=8000.0,
-...     zero_crossing_rate=0.05,
-...     energy=5000.0,
-...     entropy=2.3,
-...     cnn_features=0.85,
-...     rnn_features=0.65)
->>> )
-{'normalized_spectral': [1.0, 0.2, 0.8], 'normalized_temporal': [0.05, 0.5, 0.7], 'validation_errors': ['spectral_centroid out of expected range, clipped to 1.0']}
+>>> validate_audio_features(2000.0, -10.0, 4000.0, 5.0, 1000.0, 0.5, [0.2, 0.3], [0.1, 0.4])
+([0.5, 0.0, 0.8], [0.5, 0.4, 0.5], ['spectral_bandwidth outlier corrected: -10.0 -> 0.0'])
 ```
 
 
@@ -847,33 +809,37 @@ Scrape additional music metadata from web sources using tonal and pitch characte
 
 ### Conceptual Info
 
-The node takes tonal and pitch data, queries web‑based music information sources (e.g., lyric sites, streaming APIs, fan forums), and returns a consolidated list of matching tracks along with a relevance score.
+The node performs a targeted web search for music tracks by using the detected tonal key and fundamental frequency as query constraints, returning a list of best‑matching titles and a confidence score for each match.
 
 ### Docstring
 
-**Summary:** Collects music metadata from the web using tonal and pitch cues.
+**Summary:** Scrape web sources for music tracks that match the given tonal key and fundamental frequency.
 
 **Parameters:**
 
-- tone (str): Identified musical key from tonal_analysis (e.g., "C major").
-- tone_confidence (float): Reliability of the tonal detection (0.0‑1.0).
-- fundamental_frequency (float): Primary pitch frequency extracted by pitch_analysis, in Hz.
-- pitch_confidence (float): Reliability of the pitch detection (0.0‑1.0).
-**Returns:** Tuple[str, float] - A tuple containing the web‑sourced matches string and a relevance score float.
+- tone (str): Identified musical key from tonal analysis (e.g., 'C# Major').
+- tone_confidence (float): Reliability score (0.0–1.0) of the tonal key detection.
+- fundamental_frequency (float): Estimated fundamental pitch in Hz from pitch analysis.
+- pitch_confidence (float): Reliability score (0.0–1.0) of the pitch detection.
+**Returns:** (str, float) - A tuple containing a comma‑separated string of matching song titles and a single float representing the average relevance score from the web source.
 
 **Raises:**
 
-- ValueError: Raised if any input is missing or invalid (e.g., empty tone, negative frequency).
-- ConnectionError: Raised if the web query fails due to network issues.
+- ValueError: Raised if any of the required input parameters are missing or not within the expected ranges.
+- RuntimeError: Raised when the web request fails or returns an unexpected response format.
 **Examples:**
 
 ```python
->>> matches, score = web_scraping_results('C major', 0.95, 110.0, 0.92)
-('Song A, Song B, Song C', 0.88)
+>>> titles, score = scrape_web_sources('C Major', 0.92, 261.63, 0.88)
+>>> print(titles)
+>>> print(score)
+"song A, song B, song C"\n0.89
 ```
 
 ```python
->>> matches, score = web_scraping_results('A minor', 0.80, 98.5, 0.75)
-('Track X, Track Y', 0.70)
+>>> titles, score = scrape_web_sources('G# Minor', 0.85, 220.00, 0.80)
+>>> print(titles)
+>>> print(score)
+"song X, song Y"\n0.75
 ```
 

@@ -6,37 +6,34 @@ Identify tonal characteristics
 
 ## Conceptual Info
 
-Detects the musical key of an audio snippet by interpreting MFCC-derived features through a pretrained deep‑learning model, providing both a key label and confidence score.
+Transforms MFCC and delta‑MFCC features into a musical key classification and confidence score using a pre‑trained deep‑learning model.
 
 ## Docstring
 
 ### Summary
-Detects the musical key (tone) of an audio snippet using MFCC inputs.
+Detects the key of an audio snippet from its MFCC representation.
 
 ### Parameters
 
-- **mfcc_coefficients** (List[float]): Temporal MFCC feature vector extracted from the audio signal.
-- **delta_mfcc** (List[float]): Delta (first‑order difference) MFCC features capturing the rate of change of the spectral envelope.
+- **mfcc_coefficients** (List[float]): Sequence of mel‑frequency cepstral coefficients extracted from the spectrogram.
+- **delta_mfcc** (List[float]): First‑order delta of the MFCC coefficients, indicating the rate of change of the spectral envelope.
 
 ### Returns
 
-Tuple[str, float]: A tuple containing the identified musical key (e.g., 'C major') and a confidence score between 0.0 and 1.0.
+Tuple[str, float]: A tuple containing the inferred musical key (e.g., "C major") and a confidence value between 0 and 1.
 
 ### Raises
 
-- ValueError: Raised if either input list is empty or of mismatched length.
-- RuntimeError: Raised if the deep‑learning model cannot be loaded or executed.
+- ValueError: Raised if either input list is empty or not of numeric type.
 
 ### Examples
 
 ```python
->>> tone, confidence = tonal_analysis(
-...     mfcc_coefficients=[0.23, -0.11, 0.56, ...],
-...     delta_mfcc=[0.02, -0.01, 0.03, ...])
-"C major", 0.92
+>>> tone, conf = tonal_analysis([0.12, 0.34, 0.56, 0.78], [0.02, 0.04, 0.03, 0.01])
+('C major', 0.92)
 ```
 
 ```python
->>> tone, confidence = tonal_analysis([0.1, -0.05, 0.3], [0.01, -0.02, 0.02])
-"G minor", 0.78
+>>> tone, conf = tonal_analysis([0.1, 0.2, 0.3], [0.01, 0.02, 0.03])
+('G minor', 0.85)
 ```

@@ -1,49 +1,44 @@
 # extract_spectral_features PRD
 
 ## Description
-Calculate spectral domain features
+Calculate spectral domain features such as spectral centroid, bandwidth, and rolloff frequency from raw audio samples.
 
 
 ## Conceptual Info
 
-Extracts key spectral attributes from raw audio, such as centroid, bandwidth, and rolloff frequency, which are critical for timbral analysis and downstream processing.
+Computes key spectral descriptors that summarize the frequency distribution of an audio snippet, enabling downstream tasks like classification or similarity assessment.
 
 ## Docstring
 
 ### Summary
-Computes spectral domain features from raw audio samples using FFT.
+Computes spectral features from raw audio samples.
 
 ### Parameters
 
-- **audio_data** (str): Raw audio samples encoded as a byte string or base64 string.
-- **sampling_rate** (int): Sampling rate in Hz of the audio data.
-- **file_format** (str): Encoding format of the audio file (e.g., 'wav', 'mp3').
-- **metadata** (List[str]): Additional signal characteristics extracted during audio loading.
+- **audio_data** (str): Base64-encoded (or hex) representation of raw PCM audio samples.
+- **sampling_rate** (int): Sample rate of the audio in Hz.
+- **file_format** (str): Audio file encoding format (e.g., WAV, MP3, FLAC). Optional; used for logging.
 
 ### Returns
 
-Dict[str, float]: Dictionary with keys 'spectral_centroid', 'spectral_bandwidth', and 'rolloff_frequency'.
+dict: Dictionary containing spectral_centroid, spectral_bandwidth, and rolloff_frequency as floats.
 
 ### Raises
 
-- ValueError: If audio_data is empty or sampling_rate <= 0.
-- RuntimeError: If the FFT computation fails or the audio data cannot be parsed.
+- ValueError: Raised if audio_data is empty or cannot be decoded.
+- RuntimeError: Raised if FFT computation fails.
 
 ### Examples
 
 ```python
->>> audio_data = 'raw_bytes_placeholder'
->>> sampling_rate = 44100
->>> features = extract_spectral_features(audio_data, sampling_rate, 'wav', ['sample'])
-{'spectral_centroid': 2500.0, 'spectral_bandwidth': 4000.0, 'rolloff_frequency': 7500.0}
+>>> audio_b64 = 'dGhpcyBpcyBhIHNhbXBsZSBhdmFpbGFibGUgd2F5'
+>>> features = extract_spectral_features(audio_b64, 44100, 'WAV')
+{'spectral_centroid': 2150.3, 'spectral_bandwidth': 180.7, 'rolloff_frequency': 3600.1}
 ```
 
 ```python
->>> audio_data = 'empty'
->>> sampling_rate = 8000
->>> try:
-...     extract_spectral_features(audio_data, sampling_rate, 'wav', [])
->>> except ValueError as e:
-...     print(e)
-'audio_data must not be empty or invalid'
+>>> # Using a short sine wave snippet (encoded manually for illustration)
+>>> audio_b64 = 'AAECAwQFBgcICQoLDA0ODxAREhM='
+>>> features = extract_spectral_features(audio_b64, 8000, 'WAV')
+{'spectral_centroid': 2000.0, 'spectral_bandwidth': 0.0, 'rolloff_frequency': 4000.0}
 ```
