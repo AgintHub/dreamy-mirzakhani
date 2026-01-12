@@ -1,4 +1,4 @@
-dag_type: plain_text
+dag_type: typed
 description: Generated workflow from UI.
 name: music_sample_identifier_app
 nodes:
@@ -10,6 +10,27 @@ nodes:
     name: build_app_interface
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: A detailed document outlining the design decisions, wireframes,
+        and user flows for the application interface.
+      key: interface_design_document
+      type: str
+    - description: List of CSS breakpoints used to ensure a responsive design across
+        various screen sizes and devices.
+      key: responsive_breakpoints
+      type: List[str]
+    - description: List of accessibility features implemented, such as WCAG 2.1 guidelines
+        compliance, screen reader support, and keyboard navigation.
+      key: accessibility_features
+      type: List[str]
+    - description: List of techniques used to optimize the performance of the application
+        interface, such as code splitting, lazy loading, and caching.
+      key: performance_optimization_techniques
+      type: List[str]
+    - description: List of UI components used in the application, such as buttons,
+        forms, and navigation elements.
+      key: ui_components
+      type: List[str]
     prompt: Design and implement a modern, responsive web or mobile interface for
       the music sample identifier application, leveraging UI frameworks such as React
       or Angular, and incorporating essential features like music sample upload, audio
@@ -28,6 +49,25 @@ nodes:
     nodes_depended_on:
     - list_musicians
     nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the generated playlist
+      key: playlist_id
+      type: str
+    - description: List of track identifiers included in the playlist
+      key: track_ids
+      type: List[str]
+    - description: Name of the generated playlist
+      key: playlist_name
+      type: str
+    - description: Description of the playlist, including its theme and coherence
+      key: playlist_description
+      type: str
+    - description: Score representing the diversity of artists in the playlist
+      key: artist_diversity_score
+      type: float
+    - description: List of genres represented in the playlist
+      key: genre_representation
+      type: List[str]
     prompt: Design a playlist incorporating a diverse array of tracks from the listed
       musicians, utilizing natural language processing (NLP) and collaborative filtering
       algorithms to analyze the sampled songs' metadata, identify key themes and moods,
@@ -46,6 +86,31 @@ nodes:
     nodes_depended_on:
     - identify_sampled_songs
     nodes_dependent_on: []
+    output_structure:
+    - description: Title of the sampled song
+      key: song_title
+      type: str
+    - description: List of artist names associated with the sampled song
+      key: artist_names
+      type: List[str]
+    - description: Album information for the sampled song
+      key: album_info
+      type: str
+    - description: Release date of the sampled song
+      key: release_date
+      type: str
+    - description: List of genre classifications for the sampled song
+      key: genre_classifications
+      type: List[str]
+    - description: Tempo of the sampled song in beats per minute (BPM)
+      key: tempo
+      type: float
+    - description: Key of the sampled song
+      key: key
+      type: str
+    - description: Loudness of the sampled song in decibels (dB)
+      key: loudness
+      type: float
     prompt: Utilize a hybrid approach combining audio fingerprinting, Natural Language
       Processing (NLP), and metadata scraping to extract detailed metadata for the
       identified sampled songs. Specifically, retrieve song title, artist names, album
@@ -66,6 +131,31 @@ nodes:
     nodes_depended_on:
     - preprocess_audio_data
     nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the candidate track in the database.
+      key: track_id
+      type: str
+    - description: Confidence score (0.0 to 1.0) indicating the likelihood that the
+        candidate matches the sampled snippet.
+      key: confidence
+      type: float
+    - description: Start timestamp (in seconds) of the matched segment within the
+        sampled snippet.
+      key: start_time
+      type: float
+    - description: End timestamp (in seconds) of the matched segment within the sampled
+        snippet.
+      key: end_time
+      type: float
+    - description: Name of the artist of the candidate track.
+      key: artist_name
+      type: str
+    - description: Title of the candidate track.
+      key: track_title
+      type: str
+    - description: Release date of the candidate track (ISO 8601 format).
+      key: release_date
+      type: str
     prompt: "1. **Feature Extraction**: Convert the pre‑processed audio snippet into\
       \ a robust representation:\n   - Compute constant‑Q transform (CQT) spectrograms\
       \ and mel‑spectrograms using librosa.\n   - Derive MFCCs, chroma, and spectral\
@@ -97,6 +187,44 @@ nodes:
     - redirect_to_musicians_pages
     - offer_playlist_to_user
     nodes_dependent_on: []
+    output_structure:
+    - description: Identifier of the audio sample being processed
+      key: sample_id
+      type: str
+    - description: Whether the sample has been successfully identified
+      key: sample_identified
+      type: bool
+    - description: Number of candidate tracks returned by identification
+      key: identified_tracks_count
+      type: int
+    - description: List of unique musician identifiers extracted from identified tracks
+      key: musician_ids
+      type: List[str]
+    - description: Total number of musicians in the list
+      key: musician_count
+      type: int
+    - description: Identifier of the generated playlist
+      key: playlist_id
+      type: str
+    - description: Whether the playlist was successfully created
+      key: playlist_created
+      type: bool
+    - description: Number of tracks in the created playlist
+      key: playlist_track_count
+      type: int
+    - description: Error message if any operation failed, empty otherwise
+      key: error_message
+      type: str
+    - description: Whether a snackbar notification is currently visible
+      key: snackbar_visible
+      type: bool
+    - description: Content of the snackbar notification
+      key: snackbar_message
+      type: str
+    - description: Current loading state of the UI (e.g., idle, loading, success,
+        error)
+      key: loading_state
+      type: str
     prompt: Implement a React component that orchestrates the sample identification,
       musician listing, profile redirection, and playlist offering flows. Use TypeScript
       interfaces to define SampleInfo, Musician, and Playlist. Dispatch Redux actions
@@ -118,6 +246,19 @@ nodes:
     nodes_depended_on:
     - extract_song_metadata
     nodes_dependent_on: []
+    output_structure:
+    - description: List of unique identifiers for the musicians
+      key: musician_ids
+      type: List[str]
+    - description: List of names of the musicians
+      key: musician_names
+      type: List[str]
+    - description: List of lists containing aliases for each musician
+      key: musician_aliases
+      type: List[str]
+    - description: Whether the list of musicians has been deduplicated
+      key: is_deduplicated
+      type: bool
     prompt: Compile a detailed, canonicalized list of musicians from the metadata
       of the identified sampled songs, employing techniques such as artist name disambiguation
       and handling various aliasing and spelling variations. The metadata extraction
@@ -137,6 +278,32 @@ nodes:
     nodes_depended_on:
     - create_playlist
     nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the generated playlist.
+      key: playlist_id
+      type: str
+    - description: Total duration of the playlist in seconds.
+      key: total_duration_seconds
+      type: int
+    - description: Number of tracks included in the playlist.
+      key: track_count
+      type: int
+    - description: Ordered list of genres represented in the playlist.
+      key: genre_list
+      type: List[str]
+    - description: Parallel list indicating the number of tracks per genre in genre_list.
+      key: genre_counts
+      type: List[int]
+    - description: Indicates whether real‑time playback is enabled for the playlist.
+      key: playback_available
+      type: bool
+    - description: Indicates whether the save operation to the user’s library succeeded.
+      key: save_successful
+      type: bool
+    - description: Identifier for the telemetry log entry created for this playlist
+        interaction.
+      key: telemetry_log_id
+      type: str
     prompt: Render the playlist UI using React and TypeScript, consuming the JSON
       payload from the create_playlist node. Display track thumbnails, titles, and
       artists in a responsive grid. Enable a 'Play' button that streams audio via
@@ -154,6 +321,41 @@ nodes:
     nodes_depended_on:
     - record_audio_snippet
     nodes_dependent_on: []
+    output_structure:
+    - description: Base64-encoded binary payload of the processed audio ready for
+        downstream consumption.
+      key: processed_audio_base64
+      type: str
+    - description: Total duration of the processed audio in seconds.
+      key: duration_seconds
+      type: float
+    - description: Sampling rate of the processed audio in Hertz.
+      key: sample_rate_hz
+      type: int
+    - description: Audio codec used for encoding the processed audio (e.g., Opus,
+        PCM).
+      key: codec
+      type: str
+    - description: Confidence score (0.0–1.0) of Voice Activity Detection applied
+        during preprocessing.
+      key: vad_confidence
+      type: float
+    - description: Method used for noise reduction (e.g., spectral_subtraction, wiener_filter,
+        deep_learning).
+      key: noise_reduction_method
+      type: str
+    - description: Method used for audio normalization (e.g., peak_normalization,
+        loudness_normalization).
+      key: normalization_method
+      type: str
+    - description: Flattened list of extracted audio feature vectors (e.g., MFCCs,
+        chroma, spectral contrast).
+      key: feature_vectors
+      type: List[float]
+    - description: Indicates whether the preprocessing pipeline completed successfully
+        without critical errors.
+      key: processing_success
+      type: bool
     prompt: Execute a multi-stage audio preprocessing pipeline on the recorded audio
       data. First, apply noise reduction using advanced algorithms such as spectral
       subtraction, Wiener filtering, or deep learning-based methods. Next, perform
@@ -172,6 +374,26 @@ nodes:
     name: record_audio_snippet
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: Binary payload of the recorded audio snippet encoded with Opus
+      key: audio_data
+      type: str
+    - description: List containing metadata information such as duration, sample rate,
+        codec, and VAD confidence
+      key: metadata
+      type: List[str]
+    - description: Duration of the recorded audio snippet in seconds
+      key: duration
+      type: float
+    - description: Sample rate of the recorded audio snippet
+      key: sample_rate
+      type: int
+    - description: Codec used for encoding the audio snippet
+      key: codec
+      type: str
+    - description: Confidence score of the Voice Activity Detection
+      key: vad_confidence
+      type: float
     prompt: Initiate audio capture from the user’s microphone, record a 5‑second segment
       at a 48 kHz sample rate and 16‑bit depth, apply pre‑processing (normalization,
       silence trimming, and optional WebRTC Voice Activity Detection), encode the
@@ -188,6 +410,20 @@ nodes:
     nodes_depended_on:
     - list_musicians
     nodes_dependent_on: []
+    output_structure:
+    - description: List of URLs successfully redirected to the official pages of musicians
+      key: redirection_results
+      type: List[str]
+    - description: Number of successful redirections to musician profiles
+      key: successful_redirections_count
+      type: int
+    - description: List of exceptions or errors encountered during the redirection
+        process
+      key: redirection_exceptions
+      type: List[str]
+    - description: Whether the redirection process was successful overall
+      key: is_redirection_successful
+      type: bool
     prompt: Implement a sophisticated redirection mechanism to the official pages
       or profiles of the listed musicians. Utilize the compiled list of musicians
       from the sampled song metadata, and apply a hybrid approach combining natural
@@ -207,6 +443,37 @@ nodes:
     nodes_depended_on:
     - integrate_features
     nodes_dependent_on: []
+    output_structure:
+    - description: Overall pass/fail status of the test suite.
+      key: test_passed
+      type: bool
+    - description: Total number of test cases executed.
+      key: total_test_cases
+      type: int
+    - description: Number of test cases that passed.
+      key: passed_test_cases
+      type: int
+    - description: Number of test cases that failed.
+      key: failed_test_cases
+      type: int
+    - description: List of defect identifiers reported during testing.
+      key: defect_ids
+      type: List[str]
+    - description: Total number of defects found.
+      key: defect_count
+      type: int
+    - description: Whether the stress test (e.g., JMeter) passed.
+      key: stress_test_passed
+      type: bool
+    - description: Summary of performance metrics such as latency, throughput.
+      key: performance_metric_summary
+      type: str
+    - description: File path to the aggregated logs.
+      key: log_file_path
+      type: str
+    - description: High-level recommendations for optimization.
+      key: recommendation_summary
+      type: str
     prompt: Execute a thorough, multi-faceted testing regimen to comprehensively validate
       the music sample identifier app's functionality, leveraging a combination of
       black-box, white-box, and gray-box testing methodologies. Utilize a tech stack

@@ -1,4 +1,4 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: music_sample_identifier_app
 nodes:
@@ -18,19 +18,59 @@ nodes:
     - description: List of CSS breakpoints used to ensure a responsive design across
         various screen sizes and devices.
       key: responsive_breakpoints
-      type: List[str]
+      type: str
     - description: List of accessibility features implemented, such as WCAG 2.1 guidelines
         compliance, screen reader support, and keyboard navigation.
       key: accessibility_features
-      type: List[str]
+      type: str
     - description: List of techniques used to optimize the performance of the application
         interface, such as code splitting, lazy loading, and caching.
       key: performance_optimization_techniques
-      type: List[str]
+      type: str
     - description: List of UI components used in the application, such as buttons,
         forms, and navigation elements.
       key: ui_components
-      type: List[str]
+      type: str
+    prd:
+      conceptual_info: The build_app_interface node is responsible for designing and
+        developing a responsive, intuitive, and feature-rich user interface for the
+        music sample identifier application. It ensures a seamless user experience
+        across various devices and platforms by leveraging UI frameworks, wireframing
+        tools, and best practices in UX/UI design.
+      docstring:
+        examples:
+        - lines:
+          - interface_data = build_app_interface()
+          - print(interface_data['interface_design_document'])
+          - print(interface_data['responsive_breakpoints'])
+          - print(interface_data['accessibility_features'])
+          - print(interface_data['performance_optimization_techniques'])
+          - print(interface_data['ui_components'])
+          output: 'interface_design_document_content
+
+            [''breakpoint1'', ''breakpoint2'']
+
+            [''feature1'', ''feature2'']
+
+            [''technique1'', ''technique2'']
+
+            [''component1'', ''component2'']'
+        parameters: []
+        raises:
+        - description: If the interface design document is empty or not provided.
+          type: ValueError
+        - description: If the output structure types do not match the expected types.
+          type: TypeError
+        returns:
+          description: A dictionary containing the interface design document, responsive
+            breakpoints, accessibility features, performance optimization techniques,
+            and UI components used in the application interface.
+          type: '{interface_design_document: str, responsive_breakpoints: List[str],
+            accessibility_features: List[str], performance_optimization_techniques:
+            List[str], ui_components: List[str]}'
+        summary: Designs and implements a modern, responsive web or mobile interface
+          for the music sample identifier application, ensuring cross-browser or cross-platform
+          compatibility and optimizing for performance.
     prompt: Design and implement a modern, responsive web or mobile interface for
       the music sample identifier application, leveraging UI frameworks such as React
       or Angular, and incorporating essential features like music sample upload, audio
@@ -68,6 +108,45 @@ nodes:
     - description: List of genres represented in the playlist
       key: genre_representation
       type: List[str]
+    prd:
+      conceptual_info: This node generates a playlist based on the musicians identified
+        in the sampled songs, ensuring diversity and coherence through advanced algorithms.
+      docstring:
+        examples:
+        - lines:
+          - create_playlist(musician_ids=['M1', 'M2'], musician_names=['Artist1',
+            'Artist2'], musician_aliases=[['A1'], ['A2']])
+          output: '{''playlist_id'': ''P1'', ''track_ids'': [''T1'', ''T2''], ''playlist_name'':
+            ''Diverse Playlist'', ''playlist_description'': ''A mix of genres'', ''artist_diversity_score'':
+            0.8, ''genre_representation'': [''Rock'', ''Pop'']}'
+        parameters:
+        - description: List of unique identifiers for the musicians, derived from
+            the `list_musicians` node.
+          name: musician_ids
+          type: List[str]
+        - description: List of names of the musicians, used to inform the playlist's
+            thematic coherence.
+          name: musician_names
+          type: List[str]
+        - description: List of lists containing aliases for each musician, aiding
+            in disambiguation and comprehensive coverage.
+          name: musician_aliases
+          type: List[List[str]]
+        raises:
+        - description: If the input lists (`musician_ids`, `musician_names`, `musician_aliases`)
+            are inconsistent or empty.
+          type: ValueError
+        - description: If the graph-based ranking algorithm fails to converge or if
+            there's an issue with the MIR framework.
+          type: RuntimeError
+        returns:
+          description: A dictionary containing the generated playlist's details, including
+            its ID, track IDs, name, description, artist diversity score, and genre
+            representation.
+          type: Dict[str, Union[str, List[str], float]]
+        summary: Creates a playlist by analyzing sampled songs' metadata, applying
+          NLP and collaborative filtering, and ranking tracks based on a graph-based
+          model.
     prompt: Design a playlist incorporating a diverse array of tracks from the listed
       musicians, utilizing natural language processing (NLP) and collaborative filtering
       algorithms to analyze the sampled songs' metadata, identify key themes and moods,
@@ -92,7 +171,7 @@ nodes:
       type: str
     - description: List of artist names associated with the sampled song
       key: artist_names
-      type: List[str]
+      type: str
     - description: Album information for the sampled song
       key: album_info
       type: str
@@ -101,7 +180,7 @@ nodes:
       type: str
     - description: List of genre classifications for the sampled song
       key: genre_classifications
-      type: List[str]
+      type: str
     - description: Tempo of the sampled song in beats per minute (BPM)
       key: tempo
       type: float
@@ -111,6 +190,68 @@ nodes:
     - description: Loudness of the sampled song in decibels (dB)
       key: loudness
       type: float
+    prd:
+      conceptual_info: The extract_song_metadata node enriches the candidate tracks
+        identified by identify_sampled_songs with detailed, structured metadata. It
+        combines audio feature extraction, external music‑database lookups, and data
+        validation to produce a consistent set of attributes (title, artists, album,
+        release date, genre, tempo, key, loudness) for each sampled song, enabling
+        downstream processes such as playlist creation, musician deduplication, and
+        UI display.
+      docstring:
+        examples:
+        - lines:
+          - candidate_tracks = [{
+          - '  ''track_id'': ''12345'','
+          - '  ''confidence'': 0.92,'
+          - '  ''start_time'': 12.3,'
+          - '  ''end_time'': 45.6,'
+          - '  ''metadata'': {'
+          - '    ''artist_name'': ''The Sample Artists'','
+          - '    ''track_title'': ''Sample Tune'','
+          - '    ''release_date'': ''2020-07-15'''
+          - '  }'
+          - '}'
+          output: '[{\n  ''song_title'': ''Sample Tune'',\n  ''artist_names'': [''The
+            Sample Artists''],\n  ''album_info'': ''Unknown Album'',\n  ''release_date'':
+            ''2020-07-15'',\n  ''genre_classifications'': [''Electronic'', ''House''],\n  ''tempo'':
+            128.0,\n  ''key'': ''C minor'',\n  ''loudness'': -5.2\n}]'
+        - lines:
+          - candidate_tracks = [{
+          - '  ''track_id'': ''67890'','
+          - '  ''confidence'': 0.85,'
+          - '  ''start_time'': 0.0,'
+          - '  ''end_time'': 30.0,'
+          - '  ''metadata'': {'
+          - '    ''artist_name'': ''Another Artist'','
+          - '    ''track_title'': ''Another Sample'','
+          - '    ''release_date'': ''2018-03-22'''
+          - '  }'
+          - '}'
+          output: '[{\n  ''song_title'': ''Another Sample'',\n  ''artist_names'':
+            [''Another Artist''],\n  ''album_info'': ''Unknown Album'',\n  ''release_date'':
+            ''2018-03-22'',\n  ''genre_classifications'': [''Pop''],\n  ''tempo'':
+            110.0,\n  ''key'': ''G major'',\n  ''loudness'': -7.8\n}]'
+        parameters:
+        - description: List of candidate track objects returned by identify_sampled_songs.
+            Each object must contain at least 'track_id', 'confidence', 'start_time',
+            'end_time', and 'metadata' (which includes 'artist_name', 'track_title',
+            'release_date').
+          name: candidate_tracks
+          type: List[dict]
+        raises:
+        - description: If candidate_tracks is empty or missing required fields.
+          type: ValueError
+        - description: If external API calls (Discogs, MusicBrainz, Spotify) fail
+            or return inconsistent data.
+          type: RuntimeError
+        returns:
+          description: 'A list of metadata dictionaries, each containing the fields:
+            song_title (str), artist_names (List[str]), album_info (str), release_date
+            (str), genre_classifications (List[str]), tempo (float), key (str), loudness
+            (float).'
+          type: List[dict]
+        summary: Extracts detailed metadata for each sampled song candidate.
     prompt: Utilize a hybrid approach combining audio fingerprinting, Natural Language
       Processing (NLP), and metadata scraping to extract detailed metadata for the
       identified sampled songs. Specifically, retrieve song title, artist names, album
@@ -156,6 +297,35 @@ nodes:
     - description: Release date of the candidate track (ISO 8601 format).
       key: release_date
       type: str
+    prd:
+      conceptual_info: This node identifies sampled songs in an audio snippet using
+        a combination of audio fingerprinting, deep learning embeddings, and similarity
+        search.
+      docstring:
+        examples:
+        - lines:
+          - 'processed_audio_data = {''processed_audio_base64'': ''...'', ''duration_seconds'':
+            10.0, ''sample_rate_hz'': 44100, ''feature_vectors'': [...]'
+          - identified_tracks = identify_sampled_songs(processed_audio_data)
+          output: '[{''track_id'': ''TRK123'', ''confidence'': 0.9, ''start_time'':
+            2.5, ''end_time'': 5.0, ''artist_name'': ''Artist1'', ''track_title'':
+            ''Track1'', ''release_date'': ''2020-01-01''}]'
+        parameters:
+        - description: Preprocessed audio data containing base64 encoded audio, duration,
+            sample rate, and feature vectors.
+          name: processed_audio_data
+          type: dict
+        raises:
+        - description: If the input audio data is invalid or corrupted.
+          type: ValueError
+        - description: If the similarity search or fingerprint generation fails.
+          type: RuntimeError
+        returns:
+          description: A list of dictionaries containing track_id, confidence, start_time,
+            end_time, and metadata for each identified candidate track.
+          type: List[dict]
+        summary: Identifies sampled songs by extracting features, generating fingerprints,
+          and performing similarity search.
     prompt: "1. **Feature Extraction**: Convert the pre‑processed audio snippet into\
       \ a robust representation:\n   - Compute constant‑Q transform (CQT) spectrograms\
       \ and mel‑spectrograms using librosa.\n   - Derive MFCCs, chroma, and spectral\
@@ -212,7 +382,7 @@ nodes:
     - description: Number of tracks in the created playlist
       key: playlist_track_count
       type: int
-    - description: Error message if any operation failed, empty otherwise
+    - description: Error message if any operation failed, нашим otherwise
       key: error_message
       type: str
     - description: Whether a snackbar notification is currently visible
@@ -225,6 +395,44 @@ nodes:
         error)
       key: loading_state
       type: str
+    prd:
+      conceptual_info: This node integrates multiple functional modules into a cohesive
+        user interface, managing state and data flow between them.
+      docstring:
+        examples:
+        - lines:
+          - const sampleId = '12345';
+          - const musicianIds = ['musician1', 'musician2'];
+          - const result = integrateFeatures(sampleId, musicianIds);
+          - console.log(result);
+          output: '{sample_id: ''12345'', sample_identified: true, identified_tracks_count:
+            5, musician_ids: [''musician1'', ''musician2''], musician_count: 2, playlist_id:
+            ''playlist1'', playlist_created: true, playlist_track_count: 10, error_message:
+            '''', snackbar_visible: false, snackbar_message: '''', loading_state:
+            ''success''}'
+        parameters:
+        - description: Identifier of the audio sample being processed
+          name: sampleId
+          type: str
+        - description: List of unique musician identifiers extracted from identified
+            tracks
+          name: musicianIds
+          type: List[str]
+        raises:
+        - description: If any of the Redux actions fail or if there's an issue with
+            the UI components
+          type: Error
+        returns:
+          description: Object containing the state of the sample identification, musician
+            listing, and playlist generation processes, along with any error messages
+            or loading state information.
+          type: '{sample_id: str, sample_identified: bool, identified_tracks_count:
+            int, musician_ids: List[str], musician_count: int, playlist_id: str, playlist_created:
+            bool, playlist_track_count: int, error_message: str, snackbar_visible:
+            bool, snackbar_message: str, loading_state: str}'
+        summary: Implements a React component that orchestrates sample identification,
+          musician listing, profile redirection, and playlist offering flows, managing
+          state with Redux and using Material-UI components.
     prompt: Implement a React component that orchestrates the sample identification,
       musician listing, profile redirection, and playlist offering flows. Use TypeScript
       interfaces to define SampleInfo, Musician, and Playlist. Dispatch Redux actions
@@ -259,6 +467,31 @@ nodes:
     - description: Whether the list of musicians has been deduplicated
       key: is_deduplicated
       type: bool
+    prd:
+      conceptual_info: This node aggregates and deduplicates a list of musicians from
+        the metadata of sampled songs, ensuring a canonicalized and structured output
+        for downstream consumption.
+      docstring:
+        examples:
+        - lines:
+          - 'song_metadata = [{''artist_names'': [''Artist1'', ''Artist2'']}, {''artist_names'':
+            [''Artist2'', ''Artist3'']}]'
+          - list_musicians(song_metadata)
+          output: (['id1', 'id2', 'id3'], ['Artist1', 'Artist2', 'Artist3'], [['Alias1'],
+            ['Alias2'], ['Alias3']], True)
+        parameters:
+        - description: Metadata of the sampled songs, including artist names and other
+            relevant details extracted by the `extract_song_metadata` node.
+          name: song_metadata
+          type: List[Dict]
+        raises:
+        - description: If the input metadata is malformed or missing critical information.
+          type: ValueError
+        returns:
+          description: A tuple containing lists of musician IDs, names, aliases, and
+            a boolean indicating whether the list has been deduplicated.
+          type: Tuple[List[str], List[str], List[List[str]], bool]
+        summary: Aggregates and deduplicates musicians from sampled song metadata.
     prompt: Compile a detailed, canonicalized list of musicians from the metadata
       of the identified sampled songs, employing techniques such as artist name disambiguation
       and handling various aliasing and spelling variations. The metadata extraction
@@ -304,6 +537,37 @@ nodes:
         interaction.
       key: telemetry_log_id
       type: str
+    prd:
+      conceptual_info: The 'offer_playlist_to_user' node is responsible for presenting
+        a generated playlist to the user through a dynamic web interface. It enables
+        real-time playback, secure saving to the user's library, and provides analytics
+        on user interactions.
+      docstring:
+        examples:
+        - lines:
+          - 'playlist_data = {''playlist_id'': ''123'', ''tracks'': [...]}'
+          - result = offer_playlist_to_user(playlist_data)
+          output: '{''playlist_id'': ''123'', ''total_duration_seconds'': 3600, ''track_count'':
+            10, ''genre_list'': [''pop'', ''rock''], ''genre_counts'': [5, 5], ''playback_available'':
+            True, ''save_successful'': True, ''telemetry_log_id'': ''log_001''}'
+        parameters:
+        - description: JSON payload from the 'create_playlist' node containing playlist
+            details.
+          name: playlist_data
+          type: dict
+        raises:
+        - description: If OAuth2 token is expired or invalid.
+          type: OAuth2Error
+        - description: If real-time playback fails.
+          type: PlaybackError
+        - description: If saving to user's library fails.
+          type: SaveError
+        returns:
+          description: Output containing playlist ID, duration, track count, genre
+            information, playback and save status, and telemetry log ID.
+          type: dict
+        summary: Renders a playlist UI, enables playback and saving, and logs user
+          interactions.
     prompt: Render the playlist UI using React and TypeScript, consuming the JSON
       payload from the create_playlist node. Display track thumbnails, titles, and
       artists in a responsive grid. Enable a 'Play' button that streams audio via
@@ -356,6 +620,41 @@ nodes:
         without critical errors.
       key: processing_success
       type: bool
+    prd:
+      conceptual_info: This node applies advanced audio preprocessing techniques to
+        recorded audio data, including noise reduction, normalization, and feature
+        extraction, to prepare it for further analysis.
+      docstring:
+        examples:
+        - lines:
+          - audio_data = 'base64_encoded_audio_data'
+          - 'metadata = [''duration: 5.0'', ''sample_rate: 48000'', ''codec: Opus'',
+            ''vad_confidence: 0.8'']'
+          - result = preprocess_audio_data(audio_data, metadata)
+          output: '{''processed_audio_base64'': ''processed_base64_data'', ''duration_seconds'':
+            5.0, ''sample_rate_hz'': 48000, ''codec'': ''Opus'', ''vad_confidence'':
+            0.8, ''noise_reduction_method'': ''spectral_subtraction'', ''normalization_method'':
+            ''peak_normalization'', ''feature_vectors'': [0.1, 0.2, 0.3], ''processing_success'':
+            True}'
+        parameters:
+        - description: Base64-encoded binary payload of the recorded audio snippet.
+          name: audio_data
+          type: str
+        - description: List containing metadata information such as duration, sample
+            rate, codec, and VAD confidence.
+          name: metadata
+          type: List[str]
+        raises:
+        - description: If the input audio data is invalid or corrupted.
+          type: ValueError
+        - description: If an error occurs during the preprocessing pipeline.
+          type: RuntimeError
+        returns:
+          description: A dictionary containing the processed audio data, metadata,
+            and processing results.
+          type: Dict[str, Union[str, float, int, List[float], bool]]
+        summary: Executes a multi-stage audio preprocessing pipeline on recorded audio
+          data, applying noise reduction, normalization, and feature extraction.
     prompt: Execute a multi-stage audio preprocessing pipeline on the recorded audio
       data. First, apply noise reduction using advanced algorithms such as spectral
       subtraction, Wiener filtering, or deep learning-based methods. Next, perform
@@ -394,6 +693,35 @@ nodes:
     - description: Confidence score of the Voice Activity Detection
       key: vad_confidence
       type: float
+    prd:
+      conceptual_info: This node records a brief, high‑fidelity audio clip from the
+        microphone, applies real‑time preprocessing, encodes it with Opus, and returns
+        the binary payload together with essential metadata for downstream analysis.
+      docstring:
+        examples:
+        - lines:
+          - result = record_audio_snippet()
+          output: "{\n  \"audio_data\": \"<binary base64>\",\n  \"metadata\": [\"\
+            5.0\", \"48000\", \"Opus\", \"0.95\"],\n  \"duration\": 5.0,\n  \"sample_rate\"\
+            : 48000,\n  \"codec\": \"Opus\",\n  \"vad_confidence\": 0.95\n}"
+        - lines:
+          - "try:\n  record_audio_snippet()\nexcept PermissionError as e:\n  print(e)"
+          output: 'PermissionError: Microphone access denied.'
+        parameters: []
+        raises:
+        - description: Raised when the audio capture hardware fails or the recording
+            is interrupted.
+          type: AudioCaptureError
+        - description: Raised when the application does not have permission to access
+            the microphone.
+          type: PermissionError
+        returns:
+          description: Dictionary containing audio_data, metadata, duration, sample_rate,
+            codec, and vad_confidence.
+          type: dict
+        summary: Records a short audio snippet from the user's microphone, normalizes
+          and trims silence, optionally applies VAD, encodes the signal with Opus,
+          and returns the binary payload with metadata.
     prompt: Initiate audio capture from the user’s microphone, record a 5‑second segment
       at a 48 kHz sample rate and 16‑bit depth, apply pre‑processing (normalization,
       silence trimming, and optional WebRTC Voice Activity Detection), encode the
@@ -424,6 +752,44 @@ nodes:
     - description: Whether the redirection process was successful overall
       key: is_redirection_successful
       type: bool
+    prd:
+      conceptual_info: The node orchestrates a sophisticated redirection mechanism
+        to the official online presence of identified musicians, leveraging metadata
+        extracted from sampled songs. It utilizes a hybrid approach combining NLP
+        and machine learning to resolve official URLs accurately.
+      docstring:
+        examples:
+        - lines:
+          - musician_ids = ['123', '456']
+          - musician_names = ['Artist1', 'Artist2']
+          - musician_aliases = [['Alias1'], ['Alias2']]
+          - redirect_to_musicians_pages(musician_ids, musician_names, musician_aliases)
+          output: (['https://officialartist1.com', 'https://officialartist2.com'],
+            2, [], True)
+        parameters:
+        - description: List of unique identifiers for the musicians
+          name: musician_ids
+          type: List[str]
+        - description: List of names of the musicians
+          name: musician_names
+          type: List[str]
+        - description: List of lists containing aliases for each musician
+          name: musician_aliases
+          type: List[List[str]]
+        raises:
+        - description: If the input lists are of different lengths or if there are
+            duplicate musician IDs.
+          type: ValueError
+        - description: If there is a failure in DNS lookup or HTTP requests during
+            URL resolution.
+          type: ConnectionError
+        returns:
+          description: A tuple containing the list of URLs successfully redirected,
+            the number of successful redirections, a list of exceptions encountered,
+            and a boolean indicating overall success.
+          type: Tuple[List[str], int, List[str], bool]
+        summary: Redirects to the official online presence of identified musicians
+          using a hybrid NLP and machine learning approach.
     prompt: Implement a sophisticated redirection mechanism to the official pages
       or profiles of the listed musicians. Utilize the compiled list of musicians
       from the sampled song metadata, and apply a hybrid approach combining natural
@@ -474,6 +840,39 @@ nodes:
     - description: High-level recommendations for optimization.
       key: recommendation_summary
       type: str
+    prd:
+      conceptual_info: This node conducts comprehensive end-to-end testing of the
+        music sample identifier application, ensuring its functionality, robustness,
+        and performance are validated across various scenarios.
+      docstring:
+        examples:
+        - lines:
+          - 'test_app_functionality(integrate_features_output={''sample_id'': ''123'',
+            ''sample_identified'': True, ...})'
+          output: '{''test_passed'': True, ''total_test_cases'': 10, ''passed_test_cases'':
+            9, ''failed_test_cases'': 1, ''defect_ids'': [''DEF-1''], ''defect_count'':
+            1, ''stress_test_passed'': True, ''performance_metric_summary'': ''Average
+            latency: 200ms'', ''log_file_path'': ''/logs/test.log'', ''recommendation_summary'':
+            ''Optimize database queries''}'
+        parameters:
+        - description: Output from the 'integrate_features' node, containing the integrated
+            features of the application.
+          name: integrate_features_output
+          type: dict
+        raises:
+        - description: If the input from 'integrate_features' is invalid or missing
+            required fields.
+          type: ValueError
+        - description: If any of the testing processes (e.g., Selenium WebDriver,
+            Pytest, JMeter) encounter execution errors.
+          type: RuntimeError
+        returns:
+          description: A dictionary containing the test results, including pass/fail
+            status, test case counts, defect information, stress test results, performance
+            metrics, log file path, and recommendations.
+          type: dict
+        summary: Executes a multi-faceted testing regimen on the music sample identifier
+          app, validating its functionality and performance.
     prompt: Execute a thorough, multi-faceted testing regimen to comprehensively validate
       the music sample identifier app's functionality, leveraging a combination of
       black-box, white-box, and gray-box testing methodologies. Utilize a tech stack
