@@ -6,41 +6,34 @@ Load an audio file from a local or remote source and provide the raw audio data 
 
 ## Conceptual Info
 
-The node encapsulates audio ingestion, decoding, and metadata extraction to provide a lightweight, transportable representation of an audio snippet.
+Loads audio data and extracts relevant metadata.
 
 ## Docstring
 
 ### Summary
-Load an audio file from a local path or URL, decode it, and return raw data plus essential metadata.
+Loads an audio file and extracts its raw data and metadata.
 
 ### Parameters
 
-- **audio_uri** (str): A filesystem path or HTTP(S) URL pointing to the audio file to be loaded.
+- **file_path** (str): Path to the audio file (local or remote).
 
 ### Returns
 
-Dict[str, Any]: A dictionary with four keys:
-- audio_data (str): Base64‑encoded raw samples.
-- sampling_rate (int): Sample rate in Hz.
-- file_format (str): Audio file format.
-- metadata (List[str]): List of formatted strings describing duration, bit depth, channels, and loudness.
+Tuple[str, int, str, List[str]]: A tuple containing the Base64-encoded audio data, sampling rate, file format, and a list of metadata.
 
 ### Raises
 
-- FileNotFoundError: Raised when the local file does not exist or cannot be accessed.
-- ConnectionError: Raised when the remote URL cannot be reached or the download fails.
-- ValueError: Raised when the file format is unsupported or the file is corrupted.
+- FileNotFoundError: If the audio file is not found.
+- ValueError: If the audio file is corrupted or unsupported.
 
 ### Examples
 
 ```python
->>> result = load_audio_snippet('samples/track.wav')
->>> print(result['sampling_rate'])
-44100
+>>> load_audio_snippet('path/to/audio.wav')
+('base64_encoded_data', 44100, 'WAV', ['Duration: 10s', 'Bit Depth: 16', 'Channels: 2', 'Loudness: -20dB'])
 ```
 
 ```python
->>> result = load_audio_snippet('https://example.com/music.mp3')
->>> print(result['file_format'])
-MP3
+>>> load_audio_snippet('https://example.com/audio.mp3')
+('base64_encoded_data', 48000, 'MP3', ['Duration: 5s', 'Bit Depth: 24', 'Channels: 1', 'Loudness: -15dB'])
 ```

@@ -6,47 +6,33 @@ Extract key metadata fields from database and web‑scraped results and collate 
 
 ## Conceptual Info
 
-Aggregates song metadata from multiple sources into a structured format for downstream HTML rendering.
+This node processes metadata from multiple sources to organize song information into structured categories.
 
 ## Docstring
 
 ### Summary
-Collects and organizes song metadata (titles, artists, albums, genre tags) from database search results and web‑scraped data.
+Extracts and organizes song metadata from database and web sources into four lists: song titles, artist names, album names, and genre tags.
 
 ### Parameters
 
-- **song_matches** (List[str]): List of song titles returned by the music database API.
-- **relevance_scores** (List[float]): Relevance scores corresponding to each title in song_matches.
-- **additional_matches** (str): Comma‑separated list of song titles retrieved via web scraping.
-- **web_scores** (float): Confidence metric indicating the quality of the web‑scraped matches.
+- **music_database_api_results** (Tuple[List[str], List[float]]): Tuple containing song matches and their relevance scores from the music database API.
+- **web_scraping_results** (Tuple[str, float]): Tuple containing additional song matches from web scraping and their relevance scores.
 
 ### Returns
 
-Dict[str, List[str]]: A dictionary with keys 'song_titles', 'artist_names', 'album_names', and 'genre_tags', each mapping to a list of strings.
+Tuple[List[str], List[str], List[str], List[str]]: Tuple containing four lists: song titles, artist names, album names, and genre tags.
 
 ### Raises
 
-- ValueError: If the length of song_matches does not match relevance_scores.
-- TypeError: If any input is of an incorrect type.
+- ValueError: If the input data from either source is malformed or inconsistent.
 
 ### Examples
 
 ```python
->>> result = process_song_metadata(
-...     song_matches=["Bohemian Rhapsody"],
-...     relevance_scores=[0.97],
-...     additional_matches="Bohemian Rhapsody",
-...     web_scores=0.92)
->>> print(result)
-{'song_titles': ['Bohemian Rhapsody'], 'artist_names': ['Queen'], 'album_names': ['A Night at the Opera'], 'genre_tags': ['Rock', 'Classic Rock']}
-```
-
-```python
->>> result = process_song_metadata(
-...     song_matches=["Imagine", "Let It Be"],
-...     relevance_scores=[0.88, 0.85],
-...     additional_matches="Imagine, Let It Be",
-...     web_scores=0.90)
->>> print(result)
-{'song_titles': ['Imagine', 'Let It Be'], 'artist_names': ['John Lennon', 'The Beatles'], 'album_names': ['Imagine', 'Let It Be'], 'genre_tags': ['Pop', 'Rock']}
+>>> song_matches = ['Song1', 'Song2']
+>>> relevance_scores = [0.9, 0.8]
+>>> additional_matches = 'Song3,Song4'
+>>> web_scores = 0.85
+>>> process_song_metadata((song_matches, relevance_scores), (additional_matches, web_scores))
+(['Song1', 'Song2', 'Song3', 'Song4'], ['Artist1', 'Artist2', 'Artist3', 'Artist4'], ['Album1', 'Album2', 'Album3', 'Album4'], ['Rock', 'Pop', 'Jazz', 'Classical'])
 ```

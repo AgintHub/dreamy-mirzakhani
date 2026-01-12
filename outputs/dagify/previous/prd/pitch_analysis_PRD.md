@@ -6,39 +6,38 @@ Detect pitch characteristics by analyzing the Mel‑Frequency Cepstral Coefficie
 
 ## Conceptual Info
 
-The node transforms the spectral envelope representation (MFCCs) into a pitch domain estimate, enabling downstream tasks such as key detection, database searching, and web scraping based on tonal and pitch signatures.
+Analyzes MFCCs and their deltas to detect pitch characteristics, estimating the fundamental frequency and detection confidence.
 
 ## Docstring
 
 ### Summary
-Estimate the fundamental frequency and confidence of a pitch from MFCC features.
+Estimates the fundamental frequency and pitch confidence from MFCCs and their first-order deltas.
 
 ### Parameters
 
-- **mfcc_coefficients** (List[float]): Sequence of Mel‑Frequency Cepstral Coefficients extracted from a spectrogram. These values capture the spectral envelope of the audio signal.
-- **delta_mfcc** (List[float]): First‑order time‑derivative of the MFCC coefficients, representing the rate of change of the spectral envelope.
+- **mfcc_coefficients** (numpy.ndarray): Mel-Frequency Cepstral Coefficients representing the spectral envelope of the audio.
+- **delta_mfcc** (numpy.ndarray): First-order difference of the MFCCs, indicating the rate-of-change of the spectral envelope.
 
 ### Returns
 
-Tuple[float, float]: A tuple containing (fundamental_frequency, pitch_confidence). Both values are floats.
+Tuple[float, float]: A tuple containing the fundamental frequency and pitch confidence.
 
 ### Raises
 
-- ValueError: Raised if either `mfcc_coefficients` or `delta_mfcc` is empty or contains non‑finite values.
-- RuntimeError: Raised if the underlying pitch extraction algorithm fails to converge or encounters numerical instability.
+- ValueError: If MFCC coefficients or their deltas are not provided or are malformed.
 
 ### Examples
 
 ```python
->>> mfcc = [12.3, 10.1, 9.8, 8.7, 7.6, 6.5]
->>> delta = [0.5, -0.3, 0.1, -0.2, 0.0, 0.1]
->>> pitch_analysis(mfcc, delta)
-(110.2, 0.91)
+>>> mfcc_coefficients = np.array([...])  # Example MFCC coefficients
+>>> delta_mfcc = np.array([...])  # Example delta MFCC
+>>> fundamental_frequency, pitch_confidence = pitch_analysis(mfcc_coefficients, delta_mfcc)
+(220.5, 0.85)
 ```
 
 ```python
->>> mfcc = [0.0, 0.0, 0.0, 0.0]
->>> delta = [0.0, 0.0, 0.0, 0.0]
->>> pitch_analysis(mfcc, delta)
-(0.0, 0.0)
+>>> mfcc_coefficients = np.array([...])  # Another example MFCC coefficients
+>>> delta_mfcc = np.array([...])  # Corresponding delta MFCC
+>>> fundamental_frequency, pitch_confidence = pitch_analysis(mfcc_coefficients, delta_mfcc)
+(0.0, 0.1)
 ```

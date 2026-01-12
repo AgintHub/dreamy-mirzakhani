@@ -6,34 +6,38 @@ Identify tonal characteristics
 
 ## Conceptual Info
 
-Transforms MFCC and delta‑MFCC features into a musical key classification and confidence score using a pre‑trained deep‑learning model.
+This node analyzes audio signals to identify tonal characteristics using deep learning techniques. It takes the mel-frequency cepstral coefficients (MFCCs) and their first-order deltas as input, processes them through a deep learning model, and outputs the identified musical key along with the confidence of the detection.
 
 ## Docstring
 
 ### Summary
-Detects the key of an audio snippet from its MFCC representation.
+Analyze audio signal for tonal patterns using deep learning.
 
 ### Parameters
 
-- **mfcc_coefficients** (List[float]): Sequence of mel‑frequency cepstral coefficients extracted from the spectrogram.
-- **delta_mfcc** (List[float]): First‑order delta of the MFCC coefficients, indicating the rate of change of the spectral envelope.
+- **mfcc_coefficients** (float): Temporal MFCC feature representing the spectral envelope of the audio.
+- **delta_mfcc** (float): First-order difference of the MFCCs, indicating the rate-of-change of the spectral envelope.
 
 ### Returns
 
-Tuple[str, float]: A tuple containing the inferred musical key (e.g., "C major") and a confidence value between 0 and 1.
+Tuple[str, float]: A tuple containing the identified musical key (str) and the tonal detection reliability (float).
 
 ### Raises
 
-- ValueError: Raised if either input list is empty or not of numeric type.
+- ValueError: If the input MFCC coefficients or their deltas are invalid or inconsistent.
 
 ### Examples
 
 ```python
->>> tone, conf = tonal_analysis([0.12, 0.34, 0.56, 0.78], [0.02, 0.04, 0.03, 0.01])
-('C major', 0.92)
+>>> mfcc_coefficients = [0.1, 0.2, 0.3]
+>>> delta_mfcc = [0.01, 0.02, 0.03]
+>>> tonal_analysis(mfcc_coefficients, delta_mfcc)
+('C Major', 0.85)
 ```
 
 ```python
->>> tone, conf = tonal_analysis([0.1, 0.2, 0.3], [0.01, 0.02, 0.03])
-('G minor', 0.85)
+>>> mfcc_coefficients = [0.4, 0.5, 0.6]
+>>> delta_mfcc = [0.04, 0.05, 0.06]
+>>> tonal_analysis(mfcc_coefficients, delta_mfcc)
+('G Minor', 0.78)
 ```
