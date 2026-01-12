@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A workflow for creating an app that identifies sampled songs in a given
-  audio snippet and provides links to the musicians' pages.
+dag_type: typed
+description: Generated workflow from UI.
 name: sample_based_music_discovery
 nodes:
   build_sample_database:
@@ -9,6 +8,20 @@ nodes:
     name: build_sample_database
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the sample database
+      key: database_id
+      type: str
+    - description: Number of song samples in the database
+      key: sample_count
+      type: int
+    - description: List of audio features extracted for each sample (e.g., spectrograms,
+        MFCCs, chroma features)
+      key: audio_features
+      type: List[str]
+    - description: List of unique identifiers for each song sample in the database
+      key: sample_ids
+      type: List[str]
     prompt: Gather a large dataset of song samples and their corresponding audio features.
       Store them in a database for efficient querying.
   create_app_interface:
@@ -17,6 +30,20 @@ nodes:
     name: create_app_interface
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: The designed app interface layout and user experience
+      key: app_interface_design
+      type: str
+    - description: Whether the app interface supports uploading audio snippets
+      key: upload_audio_snippet_functionality
+      type: bool
+    - description: Whether the app interface supports displaying matching songs
+      key: display_matching_songs_functionality
+      type: bool
+    - description: Whether the app interface supports generating links to musicians'
+        pages
+      key: musician_page_link_generation
+      type: bool
     prompt: Design an intuitive app interface that allows users to upload audio snippets
       and displays the matching songs with links to the musicians' pages.
   extract_audio_features:
@@ -26,6 +53,19 @@ nodes:
     nodes_depended_on:
     - load_audio_snippet
     nodes_dependent_on: []
+    output_structure:
+    - description: Spectrogram features of the audio snippet
+      key: spectrogram
+      type: List[float]
+    - description: Mel-frequency cepstral coefficients (MFCCs) of the audio snippet
+      key: mfccs
+      type: List[float]
+    - description: Chroma features of the audio snippet
+      key: chroma_features
+      type: List[float]
+    - description: Whether the feature extraction was successful
+      key: feature_extraction_status
+      type: bool
     prompt: Extract features such as spectrograms, mel-frequency cepstral coefficients
       (MFCCs), or chroma features from the audio snippet.
   generate_song_links:
@@ -35,6 +75,22 @@ nodes:
     nodes_depended_on:
     - retrieve_song_metadata
     nodes_dependent_on: []
+    output_structure:
+    - description: List of song titles
+      key: song_titles
+      type: List[str]
+    - description: List of artist names
+      key: artist_names
+      type: List[str]
+    - description: List of album information
+      key: album_info
+      type: List[str]
+    - description: List of links to the musicians' pages
+      key: musician_page_links
+      type: List[str]
+    - description: List of links to the songs on music streaming platforms
+      key: streaming_platform_links
+      type: List[str]
     prompt: Use the retrieved metadata to generate links to the musicians' pages on
       music streaming platforms or social media.
   integrate_app_components:
@@ -46,6 +102,22 @@ nodes:
     - generate_song_links
     - create_app_interface
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether the app interface has been successfully integrated
+      key: app_interface_status
+      type: bool
+    - description: List of audio analysis results
+      key: audio_analysis_results
+      type: List[float]
+    - description: Whether the sample database has been successfully integrated
+      key: sample_database_status
+      type: bool
+    - description: List of errors encountered during integration
+      key: integration_errors
+      type: List[str]
+    - description: List of performance metrics for the integrated app
+      key: app_performance_metrics
+      type: List[float]
     prompt: Integrate the audio analysis, sample database, and app interface components
       into a seamless user experience.
   load_audio_snippet:
@@ -54,6 +126,16 @@ nodes:
     name: load_audio_snippet
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: Path to the loaded audio file
+      key: audio_file_path
+      type: str
+    - description: Extracted audio features such as spectrograms or MFCCs
+      key: audio_features
+      type: List[float]
+    - description: Whether the audio file was loaded successfully
+      key: loading_status
+      type: bool
     prompt: Load the input audio file and extract its audio features.
   query_sample_database:
     agent: false
@@ -63,6 +145,16 @@ nodes:
     - extract_audio_features
     - build_sample_database
     nodes_dependent_on: []
+    output_structure:
+    - description: List of potential matching song samples
+      key: matching_samples
+      type: List[str]
+    - description: List of confidence scores for each matching sample
+      key: sample_confidence_scores
+      type: List[float]
+    - description: Whether the query was successful
+      key: query_status
+      type: bool
     prompt: Use the extracted audio features to query the sample database and retrieve
       a list of potential matching samples.
   rank_and_filter_matches:
@@ -72,6 +164,16 @@ nodes:
     nodes_depended_on:
     - query_sample_database
     nodes_dependent_on: []
+    output_structure:
+    - description: List of IDs of the matching samples
+      key: sample_ids
+      type: List[str]
+    - description: List of similarity scores corresponding to the matching samples
+      key: similarity_scores
+      type: List[float]
+    - description: Whether the output is valid
+      key: is_valid
+      type: bool
     prompt: Rank the matching samples based on their similarity to the input audio
       snippet and filter out low-confidence matches.
   retrieve_song_metadata:
@@ -81,6 +183,19 @@ nodes:
     nodes_depended_on:
     - rank_and_filter_matches
     nodes_dependent_on: []
+    output_structure:
+    - description: List of song titles for the matching songs
+      key: song_titles
+      type: List[str]
+    - description: List of artist names for the matching songs
+      key: artist_names
+      type: List[str]
+    - description: List of album information for the matching songs
+      key: album_info
+      type: List[str]
+    - description: Whether the metadata retrieval was successful
+      key: metadata_retrieval_status
+      type: bool
     prompt: Retrieve metadata such as song titles, artist names, and album information
       for the matching songs.
   test_and_refine_app:
@@ -90,5 +205,22 @@ nodes:
     nodes_depended_on:
     - integrate_app_components
     nodes_dependent_on: []
+    output_structure:
+    - description: Rating of the app's performance, ranging from 0 to 1
+      key: app_performance_rating
+      type: float
+    - description: List of accuracy metrics, such as precision, recall, and F1 score
+      key: accuracy_metrics
+      type: List[float]
+    - description: Feedback from users on their experience with the app
+      key: user_experience_feedback
+      type: str
+    - description: List of recommendations for refining the app's performance and
+        user experience
+      key: refinement_recommendations
+      type: List[str]
+    - description: Whether the app has been successfully tested and refined
+      key: testing_status
+      type: bool
     prompt: Test the app with various audio snippets and refine its performance, accuracy,
       and user experience as needed.
