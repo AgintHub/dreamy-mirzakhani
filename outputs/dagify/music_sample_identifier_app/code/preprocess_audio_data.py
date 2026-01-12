@@ -5,13 +5,19 @@ from typing import List
 class RecordAudioSnippetOutput(BaseModel):
     """Pydantic model for record_audio_snippet node outputs."""
     audio_data: str = (
-        Field(..., description="Binary payload of the recorded audio snippet encoded with Opus")
+        Field(..., description = (
+            "Binary payload of the recorded audio snippet encoded with Opus")
+        )
     )
     metadata: List[str] = (
-        Field(..., description="List containing metadata information such as duration, sample rate, codec, and VAD confidence")
+        Field(..., description = (
+            "List containing metadata information such as duration, sample rate, codec, and VAD confidence")
+        )
     )
     duration: float = (
-        Field(..., description="Duration of the recorded audio snippet in seconds")
+        Field(..., description = (
+            "Duration of the recorded audio snippet in seconds")
+        )
     )
     sample_rate: int = (
         Field(..., description="Sample rate of the recorded audio snippet")
@@ -20,38 +26,56 @@ class RecordAudioSnippetOutput(BaseModel):
         Field(..., description="Codec used for encoding the audio snippet")
     )
     vad_confidence: float = (
-        Field(..., description="Confidence score of the Voice Activity Detection")
+        Field(..., description = (
+            "Confidence score of the Voice Activity Detection")
+        )
     )
 
 
 class PreprocessAudioDataOutput(BaseModel):
     """Pydantic model for preprocess_audio_data node outputs."""
     processed_audio_base64: str = (
-        Field(..., description="Base64-encoded binary payload of the processed audio ready for downstream consumption.")
+        Field(..., description = (
+            "Base64-encoded binary payload of the processed audio ready for downstream consumption.")
+        )
     )
     duration_seconds: float = (
-        Field(..., description="Total duration of the processed audio in seconds.")
+        Field(..., description = (
+            "Total duration of the processed audio in seconds.")
+        )
     )
     sample_rate_hz: int = (
         Field(..., description="Sampling rate of the processed audio in Hertz.")
     )
     codec: str = (
-        Field(..., description="Audio codec used for encoding the processed audio (e.g., Opus, PCM).")
+        Field(..., description = (
+            "Audio codec used for encoding the processed audio (e.g., Opus, PCM).")
+        )
     )
     vad_confidence: float = (
-        Field(..., description="Confidence score (0.0\u20131.0) of Voice Activity Detection applied during preprocessing.")
+        Field(..., description = (
+            "Confidence score (0.0\u20131.0) of Voice Activity Detection applied during preprocessing.")
+        )
     )
     noise_reduction_method: str = (
-        Field(..., description="Method used for noise reduction (e.g., spectral_subtraction, wiener_filter, deep_learning).")
+        Field(..., description = (
+            "Method used for noise reduction (e.g., spectral_subtraction, wiener_filter, deep_learning).")
+        )
     )
     normalization_method: str = (
-        Field(..., description="Method used for audio normalization (e.g., peak_normalization, loudness_normalization).")
+        Field(..., description = (
+            "Method used for audio normalization (e.g., peak_normalization, loudness_normalization).")
+        )
     )
     feature_vectors: List[float] = (
-        Field(..., description="Flattened list of extracted audio feature vectors (e.g., MFCCs, chroma, spectral contrast).")
+        Field(..., description = (
+            "Flattened list of extracted audio feature vectors (e.g., MFCCs, chroma, spectral contrast).")
+        )
     )
     processing_success: bool = (
-        Field(..., description="Indicates whether the preprocessing pipeline completed successfully without critical errors.")
+        Field(..., description = (
+            "Indicates whether the preprocessing pipeline completed successfully without critical errors.")
+        )
     )
 
 

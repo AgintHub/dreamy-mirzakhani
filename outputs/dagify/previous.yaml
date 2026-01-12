@@ -1,12 +1,49 @@
-dag_type: spec
+dag_type: stub
 description: Generated workflow from UI.
 name: music_sample_identifier_app
 nodes:
   build_app_interface:
     agent: false
+    code_node_type: stub
     description: Design and develop a responsive, intuitive, and feature-rich user
       interface for the music sample identifier application, ensuring seamless user
       experience across various devices and platforms.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass BuildAppInterfaceOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for build_app_interface node outputs.\"\"\"\n    interface_design_document:\
+      \ str = (\n        Field(..., description=\"A detailed document outlining the\
+      \ design decisions, wireframes, and user flows for the application interface.\"\
+      )\n    )\n    responsive_breakpoints: str = (\n        Field(..., description=\"\
+      List of CSS breakpoints used to ensure a responsive design across various screen\
+      \ sizes and devices.\")\n    )\n    accessibility_features: str = (\n      \
+      \  Field(..., description=\"List of accessibility features implemented, such\
+      \ as WCAG 2.1 guidelines compliance, screen reader support, and keyboard navigation.\"\
+      )\n    )\n    performance_optimization_techniques: str = (\n        Field(...,\
+      \ description=\"List of techniques used to optimize the performance of the application\
+      \ interface, such as code splitting, lazy loading, and caching.\")\n    )\n\
+      \    ui_components: str = (\n        Field(..., description=\"List of UI components\
+      \ used in the application, such as buttons, forms, and navigation elements.\"\
+      )\n    )\n\n\ndef build_app_interface(general_input: str, **kwargs) -> BuildAppInterfaceOutput:\n\
+      \    \"\"\"\n    Designs and implements a modern, responsive web or mobile interface\
+      \ for the\n    music sample identifier application, ensuring cross-browser or\
+      \ cross-\n    platform compatibility and optimizing for performance.\n\n   \
+      \ Returns\n    -------\n    {interface_design_document: str, responsive_breakpoints:\
+      \ List[str], accessibility_features: List[str], performance_optimization_techniques:\
+      \ List[str], ui_components: List[str]}\n        A dictionary containing the\
+      \ interface design document, responsive\n        breakpoints, accessibility\
+      \ features, performance optimization\n        techniques, and UI components\
+      \ used in the application interface.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If the interface design document is empty or not provided.\n    TypeError\n\
+      \        If the output structure types do not match the expected types.\n\n\
+      \    Examples\n    --------\n    >>> interface_data = build_app_interface()\n\
+      \    >>> print(interface_data['interface_design_document'])\n    >>> print(interface_data['responsive_breakpoints'])\n\
+      \    >>> print(interface_data['accessibility_features'])\n    >>> print(interface_data['performance_optimization_techniques'])\n\
+      \    >>> print(interface_data['ui_components'])\n    interface_design_document_content\n\
+      \    ['breakpoint1', 'breakpoint2']\n    ['feature1', 'feature2']\n    ['technique1',\
+      \ 'technique2']\n    ['component1', 'component2']\n\n    \"\"\"\n    return\
+      \ BuildAppInterfaceOutput(\n        interface_design_document=\"\",\n      \
+      \  responsive_breakpoints=\"\",\n        accessibility_features=\"\",\n    \
+      \    performance_optimization_techniques=\"\",\n        ui_components=\"\",\n\
+      \    )"
     name: build_app_interface
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -80,11 +117,56 @@ nodes:
       for prototyping, and implement a responsive design that adapts to various screen
       sizes and devices. Incorporate accessibility features as per WCAG 2.1 guidelines
       to ensure inclusivity.
+    shims: []
   create_playlist:
     agent: false
+    code_node_type: stub
     description: Curates a playlist featuring a diverse selection of songs from the
       identified musicians, leveraging their sampled songs' metadata to inform the
       playlist's thematic and sonic coherence.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ListMusiciansOutput(BaseModel):\n    \"\"\"Pydantic model for list_musicians\
+      \ node outputs.\"\"\"\n    musician_ids: List[str] = (\n        Field(..., description=\"\
+      List of unique identifiers for the musicians\")\n    )\n    musician_names:\
+      \ List[str] = (\n        Field(..., description=\"List of names of the musicians\"\
+      )\n    )\n    musician_aliases: List[str] = (\n        Field(..., description=\"\
+      List of lists containing aliases for each musician\")\n    )\n    is_deduplicated:\
+      \ bool = (\n        Field(..., description=\"Whether the list of musicians has\
+      \ been deduplicated\")\n    )\n\n\nclass CreatePlaylistOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for create_playlist node outputs.\"\"\"\n    playlist_id:\
+      \ str = (\n        Field(..., description=\"Unique identifier for the generated\
+      \ playlist\")\n    )\n    track_ids: List[str] = (\n        Field(..., description=\"\
+      List of track identifiers included in the playlist\")\n    )\n    playlist_name:\
+      \ str = (\n        Field(..., description=\"Name of the generated playlist\"\
+      )\n    )\n    playlist_description: str = (\n        Field(..., description=\"\
+      Description of the playlist, including its theme and coherence\")\n    )\n \
+      \   artist_diversity_score: float = (\n        Field(..., description=\"Score\
+      \ representing the diversity of artists in the playlist\")\n    )\n    genre_representation:\
+      \ List[str] = (\n        Field(..., description=\"List of genres represented\
+      \ in the playlist\")\n    )\n\n\ndef create_playlist(list_musicians_input: ListMusiciansOutput,\
+      \ **kwargs) -> CreatePlaylistOutput:\n    \"\"\"\n    Creates a playlist by\
+      \ analyzing sampled songs' metadata, applying NLP and\n    collaborative filtering,\
+      \ and ranking tracks based on a graph-based model.\n\n    Parameters\n    ----------\n\
+      \    musician_ids : List[str]\n        List of unique identifiers for the musicians,\
+      \ derived from the\n        `list_musicians` node.\n    musician_names : List[str]\n\
+      \        List of names of the musicians, used to inform the playlist's\n   \
+      \     thematic coherence.\n    musician_aliases : List[List[str]]\n        List\
+      \ of lists containing aliases for each musician, aiding in\n        disambiguation\
+      \ and comprehensive coverage.\n\n    Returns\n    -------\n    Dict[str, Union[str,\
+      \ List[str], float]]\n        A dictionary containing the generated playlist's\
+      \ details, including\n        its ID, track IDs, name, description, artist diversity\
+      \ score, and\n        genre representation.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If the input lists (`musician_ids`, `musician_names`,\n        `musician_aliases`)\
+      \ are inconsistent or empty.\n    RuntimeError\n        If the graph-based ranking\
+      \ algorithm fails to converge or if there's\n        an issue with the MIR framework.\n\
+      \n    Examples\n    --------\n    >>> create_playlist(musician_ids=['M1', 'M2'],\
+      \ musician_names=['Artist1',\n    'Artist2'], musician_aliases=[['A1'], ['A2']])\n\
+      \    {'playlist_id': 'P1', 'track_ids': ['T1', 'T2'], 'playlist_name': 'Diverse\n\
+      \    Playlist', 'playlist_description': 'A mix of genres',\n    'artist_diversity_score':\
+      \ 0.8, 'genre_representation': ['Rock', 'Pop']}\n\n    \"\"\"\n    return CreatePlaylistOutput(\n\
+      \        playlist_id=\"\",\n        track_ids=[],\n        playlist_name=\"\"\
+      ,\n        playlist_description=\"\",\n        artist_diversity_score=0.0,\n\
+      \        genre_representation=[],\n    )"
     name: create_playlist
     nodes_depended_on:
     - list_musicians
@@ -157,10 +239,72 @@ nodes:
       tempo, key, energy) and ensure a smooth, context-aware transition between tracks.
       Consider factors such as artist diversity, genre representation, and playlist
       flow to craft an engaging and dynamic listening experience.
+    shims: []
   extract_song_metadata:
     agent: false
+    code_node_type: stub
     description: Extracts comprehensive metadata for the identified sampled songs,
       leveraging advanced audio analysis and metadata retrieval techniques.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass IdentifySampledSongsOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for identify_sampled_songs node outputs.\"\"\"\n \
+      \   track_id: str = (\n        Field(..., description=\"Unique identifier for\
+      \ the candidate track in the database.\")\n    )\n    confidence: float = (\n\
+      \        Field(..., description=\"Confidence score (0.0 to 1.0) indicating the\
+      \ likelihood that the candidate matches the sampled snippet.\")\n    )\n   \
+      \ start_time: float = (\n        Field(..., description=\"Start timestamp (in\
+      \ seconds) of the matched segment within the sampled snippet.\")\n    )\n  \
+      \  end_time: float = (\n        Field(..., description=\"End timestamp (in seconds)\
+      \ of the matched segment within the sampled snippet.\")\n    )\n    artist_name:\
+      \ str = (\n        Field(..., description=\"Name of the artist of the candidate\
+      \ track.\")\n    )\n    track_title: str = Field(..., description=\"Title of\
+      \ the candidate track.\")\n    release_date: str = (\n        Field(..., description=\"\
+      Release date of the candidate track (ISO 8601 format).\")\n    )\n\n\nclass\
+      \ ExtractSongMetadataOutput(BaseModel):\n    \"\"\"Pydantic model for extract_song_metadata\
+      \ node outputs.\"\"\"\n    song_title: str = Field(..., description=\"Title\
+      \ of the sampled song\")\n    artist_names: str = (\n        Field(..., description=\"\
+      List of artist names associated with the sampled song\")\n    )\n    album_info:\
+      \ str = (\n        Field(..., description=\"Album information for the sampled\
+      \ song\")\n    )\n    release_date: str = (\n        Field(..., description=\"\
+      Release date of the sampled song\")\n    )\n    genre_classifications: str =\
+      \ (\n        Field(..., description=\"List of genre classifications for the\
+      \ sampled song\")\n    )\n    tempo: float = (\n        Field(..., description=\"\
+      Tempo of the sampled song in beats per minute (BPM)\")\n    )\n    key: str\
+      \ = Field(..., description=\"Key of the sampled song\")\n    loudness: float\
+      \ = (\n        Field(..., description=\"Loudness of the sampled song in decibels\
+      \ (dB)\")\n    )\n\n\ndef extract_song_metadata(identify_sampled_songs_input:\
+      \ IdentifySampledSongsOutput, **kwargs) -> ExtractSongMetadataOutput:\n    \"\
+      \"\"\n    Extracts detailed metadata for each sampled song candidate.\n\n  \
+      \  Parameters\n    ----------\n    candidate_tracks : List[dict]\n        List\
+      \ of candidate track objects returned by identify_sampled_songs.\n        Each\
+      \ object must contain at least 'track_id', 'confidence',\n        'start_time',\
+      \ 'end_time', and 'metadata' (which includes\n        'artist_name', 'track_title',\
+      \ 'release_date').\n\n    Returns\n    -------\n    List[dict]\n        A list\
+      \ of metadata dictionaries, each containing the fields:\n        song_title\
+      \ (str), artist_names (List[str]), album_info (str),\n        release_date (str),\
+      \ genre_classifications (List[str]), tempo\n        (float), key (str), loudness\
+      \ (float).\n\n    Raises\n    ------\n    ValueError\n        If candidate_tracks\
+      \ is empty or missing required fields.\n    RuntimeError\n        If external\
+      \ API calls (Discogs, MusicBrainz, Spotify) fail or return\n        inconsistent\
+      \ data.\n\n    Examples\n    --------\n    >>> candidate_tracks = [{\n    ...\
+      \   'track_id': '12345',\n    ...   'confidence': 0.92,\n    ...   'start_time':\
+      \ 12.3,\n    ...   'end_time': 45.6,\n    ...   'metadata': {\n    ...     'artist_name':\
+      \ 'The Sample Artists',\n    ...     'track_title': 'Sample Tune',\n    ...\
+      \     'release_date': '2020-07-15'\n    ...   }\n    >>> }\n    [{\\n  'song_title':\
+      \ 'Sample Tune',\\n  'artist_names': ['The Sample\n    Artists'],\\n  'album_info':\
+      \ 'Unknown Album',\\n  'release_date':\n    '2020-07-15',\\n  'genre_classifications':\
+      \ ['Electronic', 'House'],\\n\n    'tempo': 128.0,\\n  'key': 'C minor',\\n\
+      \  'loudness': -5.2\\n}]\n\n    >>> candidate_tracks = [{\n    ...   'track_id':\
+      \ '67890',\n    ...   'confidence': 0.85,\n    ...   'start_time': 0.0,\n  \
+      \  ...   'end_time': 30.0,\n    ...   'metadata': {\n    ...     'artist_name':\
+      \ 'Another Artist',\n    ...     'track_title': 'Another Sample',\n    ... \
+      \    'release_date': '2018-03-22'\n    ...   }\n    >>> }\n    [{\\n  'song_title':\
+      \ 'Another Sample',\\n  'artist_names': ['Another\n    Artist'],\\n  'album_info':\
+      \ 'Unknown Album',\\n  'release_date':\n    '2018-03-22',\\n  'genre_classifications':\
+      \ ['Pop'],\\n  'tempo': 110.0,\\n\n    'key': 'G major',\\n  'loudness': -7.8\\\
+      n}]\n\n    \"\"\"\n    return ExtractSongMetadataOutput(\n        song_title=\"\
+      \",\n        artist_names=\"\",\n        album_info=\"\",\n        release_date=\"\
+      \",\n        genre_classifications=\"\",\n        tempo=0.0,\n        key=\"\
+      \",\n        loudness=0.0,\n    )"
     name: extract_song_metadata
     nodes_depended_on:
     - identify_sampled_songs
@@ -260,14 +404,69 @@ nodes:
       like Discogs, MusicBrainz, or Spotify, and utilize libraries such as tinytag,
       mutagen, or librosa for audio feature extraction. Ensure data consistency and
       accuracy by implementing data validation and normalization techniques.
+    shims: []
   identify_sampled_songs:
     agent: false
+    code_node_type: stub
     description: Detects and identifies the original songs sampled within a recorded
       audio snippet by combining traditional audio fingerprinting techniques (Chromaprint,
       pHash) with deep‑learning embeddings (VGGish/PANNs) and efficient approximate
       nearest‑neighbor similarity search (FAISS/Annoy). The node outputs a ranked
       list of candidate tracks, confidence scores, and relevant metadata, enabling
       downstream verification and attribution.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass PreprocessAudioDataOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ preprocess_audio_data node outputs.\"\"\"\n    processed_audio_base64: str\
+      \ = (\n        Field(..., description=\"Base64-encoded binary payload of the\
+      \ processed audio ready for downstream consumption.\")\n    )\n    duration_seconds:\
+      \ float = (\n        Field(..., description=\"Total duration of the processed\
+      \ audio in seconds.\")\n    )\n    sample_rate_hz: int = (\n        Field(...,\
+      \ description=\"Sampling rate of the processed audio in Hertz.\")\n    )\n \
+      \   codec: str = (\n        Field(..., description=\"Audio codec used for encoding\
+      \ the processed audio (e.g., Opus, PCM).\")\n    )\n    vad_confidence: float\
+      \ = (\n        Field(..., description=\"Confidence score (0.0\\u20131.0) of\
+      \ Voice Activity Detection applied during preprocessing.\")\n    )\n    noise_reduction_method:\
+      \ str = (\n        Field(..., description=\"Method used for noise reduction\
+      \ (e.g., spectral_subtraction, wiener_filter, deep_learning).\")\n    )\n  \
+      \  normalization_method: str = (\n        Field(..., description=\"Method used\
+      \ for audio normalization (e.g., peak_normalization, loudness_normalization).\"\
+      )\n    )\n    feature_vectors: List[float] = (\n        Field(..., description=\"\
+      Flattened list of extracted audio feature vectors (e.g., MFCCs, chroma, spectral\
+      \ contrast).\")\n    )\n    processing_success: bool = (\n        Field(...,\
+      \ description=\"Indicates whether the preprocessing pipeline completed successfully\
+      \ without critical errors.\")\n    )\n\n\nclass IdentifySampledSongsOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for identify_sampled_songs node outputs.\"\"\"\n \
+      \   track_id: str = (\n        Field(..., description=\"Unique identifier for\
+      \ the candidate track in the database.\")\n    )\n    confidence: float = (\n\
+      \        Field(..., description=\"Confidence score (0.0 to 1.0) indicating the\
+      \ likelihood that the candidate matches the sampled snippet.\")\n    )\n   \
+      \ start_time: float = (\n        Field(..., description=\"Start timestamp (in\
+      \ seconds) of the matched segment within the sampled snippet.\")\n    )\n  \
+      \  end_time: float = (\n        Field(..., description=\"End timestamp (in seconds)\
+      \ of the matched segment within the sampled snippet.\")\n    )\n    artist_name:\
+      \ str = (\n        Field(..., description=\"Name of the artist of the candidate\
+      \ track.\")\n    )\n    track_title: str = Field(..., description=\"Title of\
+      \ the candidate track.\")\n    release_date: str = (\n        Field(..., description=\"\
+      Release date of the candidate track (ISO 8601 format).\")\n    )\n\n\ndef identify_sampled_songs(preprocess_audio_data_input:\
+      \ PreprocessAudioDataOutput, **kwargs) -> IdentifySampledSongsOutput:\n    \"\
+      \"\"\n    Identifies sampled songs by extracting features, generating fingerprints,\n\
+      \    and performing similarity search.\n\n    Parameters\n    ----------\n \
+      \   processed_audio_data : dict\n        Preprocessed audio data containing\
+      \ base64 encoded audio, duration,\n        sample rate, and feature vectors.\n\
+      \n    Returns\n    -------\n    List[dict]\n        A list of dictionaries containing\
+      \ track_id, confidence, start_time,\n        end_time, and metadata for each\
+      \ identified candidate track.\n\n    Raises\n    ------\n    ValueError\n  \
+      \      If the input audio data is invalid or corrupted.\n    RuntimeError\n\
+      \        If the similarity search or fingerprint generation fails.\n\n    Examples\n\
+      \    --------\n    >>> processed_audio_data = {'processed_audio_base64': '...',\n\
+      \    'duration_seconds': 10.0, 'sample_rate_hz': 44100, 'feature_vectors': [...]\n\
+      \    >>> identified_tracks = identify_sampled_songs(processed_audio_data)\n\
+      \    [{'track_id': 'TRK123', 'confidence': 0.9, 'start_time': 2.5, 'end_time':\n\
+      \    5.0, 'artist_name': 'Artist1', 'track_title': 'Track1', 'release_date':\n\
+      \    '2020-01-01'}]\n\n    \"\"\"\n    return IdentifySampledSongsOutput(\n\
+      \        track_id=\"\",\n        confidence=0.0,\n        start_time=0.0,\n\
+      \        end_time=0.0,\n        artist_name=\"\",\n        track_title=\"\"\
+      ,\n        release_date=\"\",\n    )"
     name: identify_sampled_songs
     nodes_depended_on:
     - preprocess_audio_data
@@ -344,13 +543,104 @@ nodes:
       \n5. **Logging & Auditing**: Persist the query parameters, feature vectors,\
       \ and match results in a structured log for reproducibility.\n\n**Output Format**:\
       \ JSON array of objects `{track_id, confidence, start_time, end_time, metadata}`."
+    shims: []
   integrate_features:
     agent: false
+    code_node_type: stub
     description: Seamlessly merges the functional modules—sample identification, musician
       listing, profile redirection, and playlist generation—into a cohesive, responsive
       user interface, synchronizing data flows and UI state using React with TypeScript,
       Redux Toolkit for state management, and Material‑UI components, while ensuring
       accessibility and performance.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass BuildAppInterfaceOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ build_app_interface node outputs.\"\"\"\n    interface_design_document: str\
+      \ = (\n        Field(..., description=\"A detailed document outlining the design\
+      \ decisions, wireframes, and user flows for the application interface.\")\n\
+      \    )\n    responsive_breakpoints: str = (\n        Field(..., description=\"\
+      List of CSS breakpoints used to ensure a responsive design across various screen\
+      \ sizes and devices.\")\n    )\n    accessibility_features: str = (\n      \
+      \  Field(..., description=\"List of accessibility features implemented, such\
+      \ as WCAG 2.1 guidelines compliance, screen reader support, and keyboard navigation.\"\
+      )\n    )\n    performance_optimization_techniques: str = (\n        Field(...,\
+      \ description=\"List of techniques used to optimize the performance of the application\
+      \ interface, such as code splitting, lazy loading, and caching.\")\n    )\n\
+      \    ui_components: str = (\n        Field(..., description=\"List of UI components\
+      \ used in the application, such as buttons, forms, and navigation elements.\"\
+      )\n    )\n\n\nclass RedirectToMusiciansPagesOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for redirect_to_musicians_pages node outputs.\"\"\"\n    redirection_results:\
+      \ List[str] = (\n        Field(..., description=\"List of URLs successfully\
+      \ redirected to the official pages of musicians\")\n    )\n    successful_redirections_count:\
+      \ int = (\n        Field(..., description=\"Number of successful redirections\
+      \ to musician profiles\")\n    )\n    redirection_exceptions: List[str] = (\n\
+      \        Field(..., description=\"List of exceptions or errors encountered during\
+      \ the redirection process\")\n    )\n    is_redirection_successful: bool = (\n\
+      \        Field(..., description=\"Whether the redirection process was successful\
+      \ overall\")\n    )\n\n\nclass OfferPlaylistToUserOutput(BaseModel):\n    \"\
+      \"\"Pydantic model for offer_playlist_to_user node outputs.\"\"\"\n    playlist_id:\
+      \ str = (\n        Field(..., description=\"Unique identifier for the generated\
+      \ playlist.\")\n    )\n    total_duration_seconds: int = (\n        Field(...,\
+      \ description=\"Total duration of the playlist in seconds.\")\n    )\n    track_count:\
+      \ int = (\n        Field(..., description=\"Number of tracks included in the\
+      \ playlist.\")\n    )\n    genre_list: List[str] = (\n        Field(..., description=\"\
+      Ordered list of genres represented in the playlist.\")\n    )\n    genre_counts:\
+      \ List[int] = (\n        Field(..., description=\"Parallel list indicating the\
+      \ number of tracks per genre in genre_list.\")\n    )\n    playback_available:\
+      \ bool = (\n        Field(..., description=\"Indicates whether real\\u2011time\
+      \ playback is enabled for the playlist.\")\n    )\n    save_successful: bool\
+      \ = (\n        Field(..., description=\"Indicates whether the save operation\
+      \ to the user\\u2019s library succeeded.\")\n    )\n    telemetry_log_id: str\
+      \ = (\n        Field(..., description=\"Identifier for the telemetry log entry\
+      \ created for this playlist interaction.\")\n    )\n\n\nclass IntegrateFeaturesOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for integrate_features node outputs.\"\"\"\n    sample_id:\
+      \ str = (\n        Field(..., description=\"Identifier of the audio sample being\
+      \ processed\")\n    )\n    sample_identified: bool = (\n        Field(..., description=\"\
+      Whether the sample has been successfully identified\")\n    )\n    identified_tracks_count:\
+      \ int = (\n        Field(..., description=\"Number of candidate tracks returned\
+      \ by identification\")\n    )\n    musician_ids: List[str] = (\n        Field(...,\
+      \ description=\"List of unique musician identifiers extracted from identified\
+      \ tracks\")\n    )\n    musician_count: int = (\n        Field(..., description=\"\
+      Total number of musicians in the list\")\n    )\n    playlist_id: str = (\n\
+      \        Field(..., description=\"Identifier of the generated playlist\")\n\
+      \    )\n    playlist_created: bool = (\n        Field(..., description=\"Whether\
+      \ the playlist was successfully created\")\n    )\n    playlist_track_count:\
+      \ int = (\n        Field(..., description=\"Number of tracks in the created\
+      \ playlist\")\n    )\n    error_message: str = (\n        Field(..., description=\"\
+      Error message if any operation failed, \\u043d\\u0430\\u0448\\u0438\\u043c otherwise\"\
+      )\n    )\n    snackbar_visible: bool = (\n        Field(..., description=\"\
+      Whether a snackbar notification is currently visible\")\n    )\n    snackbar_message:\
+      \ str = (\n        Field(..., description=\"Content of the snackbar notification\"\
+      )\n    )\n    loading_state: str = (\n        Field(..., description=\"Current\
+      \ loading state of the UI (e.g., idle, loading, success, error)\")\n    )\n\n\
+      \ndef integrate_features(build_app_interface_input: BuildAppInterfaceOutput,\
+      \ redirect_to_musicians_pages_input: RedirectToMusiciansPagesOutput, offer_playlist_to_user_input:\
+      \ OfferPlaylistToUserOutput, **kwargs) -> IntegrateFeaturesOutput:\n    \"\"\
+      \"\n    Implements a React component that orchestrates sample identification,\n\
+      \    musician listing, profile redirection, and playlist offering flows, managing\n\
+      \    state with Redux and using Material-UI components.\n\n    Parameters\n\
+      \    ----------\n    sampleId : str\n        Identifier of the audio sample\
+      \ being processed\n    musicianIds : List[str]\n        List of unique musician\
+      \ identifiers extracted from identified tracks\n\n    Returns\n    -------\n\
+      \    {sample_id: str, sample_identified: bool, identified_tracks_count: int,\
+      \ musician_ids: List[str], musician_count: int, playlist_id: str, playlist_created:\
+      \ bool, playlist_track_count: int, error_message: str, snackbar_visible: bool,\
+      \ snackbar_message: str, loading_state: str}\n        Object containing the\
+      \ state of the sample identification, musician\n        listing, and playlist\
+      \ generation processes, along with any error\n        messages or loading state\
+      \ information.\n\n    Raises\n    ------\n    Error\n        If any of the Redux\
+      \ actions fail or if there's an issue with the UI\n        components\n\n  \
+      \  Examples\n    --------\n    >>> const sampleId = '12345';\n    >>> const\
+      \ musicianIds = ['musician1', 'musician2'];\n    >>> const result = integrateFeatures(sampleId,\
+      \ musicianIds);\n    >>> console.log(result);\n    {sample_id: '12345', sample_identified:\
+      \ true, identified_tracks_count: 5,\n    musician_ids: ['musician1', 'musician2'],\
+      \ musician_count: 2, playlist_id:\n    'playlist1', playlist_created: true,\
+      \ playlist_track_count: 10,\n    error_message: '', snackbar_visible: false,\
+      \ snackbar_message: '',\n    loading_state: 'success'}\n\n    \"\"\"\n    return\
+      \ IntegrateFeaturesOutput(\n        sample_id=\"\",\n        sample_identified=False,\n\
+      \        identified_tracks_count=0,\n        musician_ids=[],\n        musician_count=0,\n\
+      \        playlist_id=\"\",\n        playlist_created=False,\n        playlist_track_count=0,\n\
+      \        error_message=\"\",\n        snackbar_visible=False,\n        snackbar_message=\"\
+      \",\n        loading_state=\"\",\n    )"
     name: integrate_features
     nodes_depended_on:
     - build_app_interface
@@ -446,10 +736,49 @@ nodes:
       handling with try/catch and display Snackbar notifications. Finally, expose
       a function exposePlaylistToUser(playlistId) that opens a modal with playback
       controls and options to save or share.
+    shims: []
   list_musicians:
     agent: false
+    code_node_type: stub
     description: Aggregates and deduplicates a comprehensive list of musicians involved
       in the sampled songs, leveraging metadata extracted from the identified samples.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ExtractSongMetadataOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ extract_song_metadata node outputs.\"\"\"\n    song_title: str = Field(...,\
+      \ description=\"Title of the sampled song\")\n    artist_names: str = (\n  \
+      \      Field(..., description=\"List of artist names associated with the sampled\
+      \ song\")\n    )\n    album_info: str = (\n        Field(..., description=\"\
+      Album information for the sampled song\")\n    )\n    release_date: str = (\n\
+      \        Field(..., description=\"Release date of the sampled song\")\n    )\n\
+      \    genre_classifications: str = (\n        Field(..., description=\"List of\
+      \ genre classifications for the sampled song\")\n    )\n    tempo: float = (\n\
+      \        Field(..., description=\"Tempo of the sampled song in beats per minute\
+      \ (BPM)\")\n    )\n    key: str = Field(..., description=\"Key of the sampled\
+      \ song\")\n    loudness: float = (\n        Field(..., description=\"Loudness\
+      \ of the sampled song in decibels (dB)\")\n    )\n\n\nclass ListMusiciansOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for list_musicians node outputs.\"\"\"\n    musician_ids:\
+      \ List[str] = (\n        Field(..., description=\"List of unique identifiers\
+      \ for the musicians\")\n    )\n    musician_names: List[str] = (\n        Field(...,\
+      \ description=\"List of names of the musicians\")\n    )\n    musician_aliases:\
+      \ List[str] = (\n        Field(..., description=\"List of lists containing aliases\
+      \ for each musician\")\n    )\n    is_deduplicated: bool = (\n        Field(...,\
+      \ description=\"Whether the list of musicians has been deduplicated\")\n   \
+      \ )\n\n\ndef list_musicians(extract_song_metadata_input: ExtractSongMetadataOutput,\
+      \ **kwargs) -> ListMusiciansOutput:\n    \"\"\"\n    Aggregates and deduplicates\
+      \ musicians from sampled song metadata.\n\n    Parameters\n    ----------\n\
+      \    song_metadata : List[Dict]\n        Metadata of the sampled songs, including\
+      \ artist names and other\n        relevant details extracted by the `extract_song_metadata`\
+      \ node.\n\n    Returns\n    -------\n    Tuple[List[str], List[str], List[List[str]],\
+      \ bool]\n        A tuple containing lists of musician IDs, names, aliases, and\
+      \ a\n        boolean indicating whether the list has been deduplicated.\n\n\
+      \    Raises\n    ------\n    ValueError\n        If the input metadata is malformed\
+      \ or missing critical information.\n\n    Examples\n    --------\n    >>> song_metadata\
+      \ = [{'artist_names': ['Artist1', 'Artist2']},\n    {'artist_names': ['Artist2',\
+      \ 'Artist3']}]\n    >>> list_musicians(song_metadata)\n    (['id1', 'id2', 'id3'],\
+      \ ['Artist1', 'Artist2', 'Artist3'], [['Alias1'],\n    ['Alias2'], ['Alias3']],\
+      \ True)\n\n    \"\"\"\n    return ListMusiciansOutput(\n        musician_ids=[],\n\
+      \        musician_names=[],\n        musician_aliases=[],\n        is_deduplicated=False,\n\
+      \    )"
     name: list_musicians
     nodes_depended_on:
     - extract_song_metadata
@@ -500,13 +829,60 @@ nodes:
       such as song title, artist names, and album details. Implement data processing
       using pandas for data manipulation and scikit-learn for entity resolution. Ensure
       the output is structured and easily consumable by downstream nodes.
+    shims: []
   offer_playlist_to_user:
     agent: false
+    code_node_type: stub
     description: Presents the generated playlist to the user through a dynamic, web‑based
       interface, offering real‑time playback, secure save operations to the user’s
       streaming library, and optional local caching. The node integrates with OAuth2
       token management, the Web Audio API for streaming, and a telemetry backend for
       analytics, ensuring a seamless and interactive user experience.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass CreatePlaylistOutput(BaseModel):\n    \"\"\"Pydantic model for create_playlist\
+      \ node outputs.\"\"\"\n    playlist_id: str = (\n        Field(..., description=\"\
+      Unique identifier for the generated playlist\")\n    )\n    track_ids: List[str]\
+      \ = (\n        Field(..., description=\"List of track identifiers included in\
+      \ the playlist\")\n    )\n    playlist_name: str = (\n        Field(..., description=\"\
+      Name of the generated playlist\")\n    )\n    playlist_description: str = (\n\
+      \        Field(..., description=\"Description of the playlist, including its\
+      \ theme and coherence\")\n    )\n    artist_diversity_score: float = (\n   \
+      \     Field(..., description=\"Score representing the diversity of artists in\
+      \ the playlist\")\n    )\n    genre_representation: List[str] = (\n        Field(...,\
+      \ description=\"List of genres represented in the playlist\")\n    )\n\n\nclass\
+      \ OfferPlaylistToUserOutput(BaseModel):\n    \"\"\"Pydantic model for offer_playlist_to_user\
+      \ node outputs.\"\"\"\n    playlist_id: str = (\n        Field(..., description=\"\
+      Unique identifier for the generated playlist.\")\n    )\n    total_duration_seconds:\
+      \ int = (\n        Field(..., description=\"Total duration of the playlist in\
+      \ seconds.\")\n    )\n    track_count: int = (\n        Field(..., description=\"\
+      Number of tracks included in the playlist.\")\n    )\n    genre_list: List[str]\
+      \ = (\n        Field(..., description=\"Ordered list of genres represented in\
+      \ the playlist.\")\n    )\n    genre_counts: List[int] = (\n        Field(...,\
+      \ description=\"Parallel list indicating the number of tracks per genre in genre_list.\"\
+      )\n    )\n    playback_available: bool = (\n        Field(..., description=\"\
+      Indicates whether real\\u2011time playback is enabled for the playlist.\")\n\
+      \    )\n    save_successful: bool = (\n        Field(..., description=\"Indicates\
+      \ whether the save operation to the user\\u2019s library succeeded.\")\n   \
+      \ )\n    telemetry_log_id: str = (\n        Field(..., description=\"Identifier\
+      \ for the telemetry log entry created for this playlist interaction.\")\n  \
+      \  )\n\n\ndef offer_playlist_to_user(create_playlist_input: CreatePlaylistOutput,\
+      \ **kwargs) -> OfferPlaylistToUserOutput:\n    \"\"\"\n    Renders a playlist\
+      \ UI, enables playback and saving, and logs user\n    interactions.\n\n    Parameters\n\
+      \    ----------\n    playlist_data : dict\n        JSON payload from the 'create_playlist'\
+      \ node containing playlist\n        details.\n\n    Returns\n    -------\n \
+      \   dict\n        Output containing playlist ID, duration, track count, genre\n\
+      \        information, playback and save status, and telemetry log ID.\n\n  \
+      \  Raises\n    ------\n    OAuth2Error\n        If OAuth2 token is expired or\
+      \ invalid.\n    PlaybackError\n        If real-time playback fails.\n    SaveError\n\
+      \        If saving to user's library fails.\n\n    Examples\n    --------\n\
+      \    >>> playlist_data = {'playlist_id': '123', 'tracks': [...]}\n    >>> result\
+      \ = offer_playlist_to_user(playlist_data)\n    {'playlist_id': '123', 'total_duration_seconds':\
+      \ 3600, 'track_count': 10,\n    'genre_list': ['pop', 'rock'], 'genre_counts':\
+      \ [5, 5], 'playback_available':\n    True, 'save_successful': True, 'telemetry_log_id':\
+      \ 'log_001'}\n\n    \"\"\"\n    return OfferPlaylistToUserOutput(\n        playlist_id=\"\
+      \",\n        total_duration_seconds=0,\n        track_count=0,\n        genre_list=[],\n\
+      \        genre_counts=[],\n        playback_available=False,\n        save_successful=False,\n\
+      \        telemetry_log_id=\"\",\n    )"
     name: offer_playlist_to_user
     nodes_depended_on:
     - create_playlist
@@ -576,11 +952,68 @@ nodes:
       token. Implement graceful error handling for token expiration, fallback to local
       IndexedDB storage, and log user interactions to a telemetry service via gRPC.
       Provide a concise summary of the playlist’s total duration and genre distribution.
+    shims: []
   preprocess_audio_data:
     agent: false
+    code_node_type: stub
     description: Applies sophisticated audio preprocessing techniques to recorded
       audio data to prepare it for analysis, including noise reduction, normalization,
       and feature extraction.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass RecordAudioSnippetOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ record_audio_snippet node outputs.\"\"\"\n    audio_data: str = (\n      \
+      \  Field(..., description=\"Binary payload of the recorded audio snippet encoded\
+      \ with Opus\")\n    )\n    metadata: List[str] = (\n        Field(..., description=\"\
+      List containing metadata information such as duration, sample rate, codec, and\
+      \ VAD confidence\")\n    )\n    duration: float = (\n        Field(..., description=\"\
+      Duration of the recorded audio snippet in seconds\")\n    )\n    sample_rate:\
+      \ int = (\n        Field(..., description=\"Sample rate of the recorded audio\
+      \ snippet\")\n    )\n    codec: str = (\n        Field(..., description=\"Codec\
+      \ used for encoding the audio snippet\")\n    )\n    vad_confidence: float =\
+      \ (\n        Field(..., description=\"Confidence score of the Voice Activity\
+      \ Detection\")\n    )\n\n\nclass PreprocessAudioDataOutput(BaseModel):\n   \
+      \ \"\"\"Pydantic model for preprocess_audio_data node outputs.\"\"\"\n    processed_audio_base64:\
+      \ str = (\n        Field(..., description=\"Base64-encoded binary payload of\
+      \ the processed audio ready for downstream consumption.\")\n    )\n    duration_seconds:\
+      \ float = (\n        Field(..., description=\"Total duration of the processed\
+      \ audio in seconds.\")\n    )\n    sample_rate_hz: int = (\n        Field(...,\
+      \ description=\"Sampling rate of the processed audio in Hertz.\")\n    )\n \
+      \   codec: str = (\n        Field(..., description=\"Audio codec used for encoding\
+      \ the processed audio (e.g., Opus, PCM).\")\n    )\n    vad_confidence: float\
+      \ = (\n        Field(..., description=\"Confidence score (0.0\\u20131.0) of\
+      \ Voice Activity Detection applied during preprocessing.\")\n    )\n    noise_reduction_method:\
+      \ str = (\n        Field(..., description=\"Method used for noise reduction\
+      \ (e.g., spectral_subtraction, wiener_filter, deep_learning).\")\n    )\n  \
+      \  normalization_method: str = (\n        Field(..., description=\"Method used\
+      \ for audio normalization (e.g., peak_normalization, loudness_normalization).\"\
+      )\n    )\n    feature_vectors: List[float] = (\n        Field(..., description=\"\
+      Flattened list of extracted audio feature vectors (e.g., MFCCs, chroma, spectral\
+      \ contrast).\")\n    )\n    processing_success: bool = (\n        Field(...,\
+      \ description=\"Indicates whether the preprocessing pipeline completed successfully\
+      \ without critical errors.\")\n    )\n\n\ndef preprocess_audio_data(record_audio_snippet_input:\
+      \ RecordAudioSnippetOutput, **kwargs) -> PreprocessAudioDataOutput:\n    \"\"\
+      \"\n    Executes a multi-stage audio preprocessing pipeline on recorded audio\
+      \ data,\n    applying noise reduction, normalization, and feature extraction.\n\
+      \n    Parameters\n    ----------\n    audio_data : str\n        Base64-encoded\
+      \ binary payload of the recorded audio snippet.\n    metadata : List[str]\n\
+      \        List containing metadata information such as duration, sample rate,\n\
+      \        codec, and VAD confidence.\n\n    Returns\n    -------\n    Dict[str,\
+      \ Union[str, float, int, List[float], bool]]\n        A dictionary containing\
+      \ the processed audio data, metadata, and\n        processing results.\n\n \
+      \   Raises\n    ------\n    ValueError\n        If the input audio data is invalid\
+      \ or corrupted.\n    RuntimeError\n        If an error occurs during the preprocessing\
+      \ pipeline.\n\n    Examples\n    --------\n    >>> audio_data = 'base64_encoded_audio_data'\n\
+      \    >>> metadata = ['duration: 5.0', 'sample_rate: 48000', 'codec: Opus',\n\
+      \    'vad_confidence: 0.8']\n    >>> result = preprocess_audio_data(audio_data,\
+      \ metadata)\n    {'processed_audio_base64': 'processed_base64_data', 'duration_seconds':\
+      \ 5.0,\n    'sample_rate_hz': 48000, 'codec': 'Opus', 'vad_confidence': 0.8,\n\
+      \    'noise_reduction_method': 'spectral_subtraction', 'normalization_method':\n\
+      \    'peak_normalization', 'feature_vectors': [0.1, 0.2, 0.3],\n    'processing_success':\
+      \ True}\n\n    \"\"\"\n    return PreprocessAudioDataOutput(\n        processed_audio_base64=\"\
+      \",\n        duration_seconds=0.0,\n        sample_rate_hz=0,\n        codec=\"\
+      \",\n        vad_confidence=0.0,\n        noise_reduction_method=\"\",\n   \
+      \     normalization_method=\"\",\n        feature_vectors=[],\n        processing_success=False,\n\
+      \    )"
     name: preprocess_audio_data
     nodes_depended_on:
     - record_audio_snippet
@@ -664,12 +1097,44 @@ nodes:
       features that can be used for further analysis. Utilize libraries such as Librosa
       or PyAudio for audio processing, and consider employing machine learning models
       for noise reduction and feature extraction.
+    shims: []
   record_audio_snippet:
     agent: false
+    code_node_type: stub
     description: Captures a short, high‑fidelity audio segment from the user’s device,
       performs real‑time pre‑processing (normalization, silence trimming, VAD), encodes
       the signal with Opus, and stores the result in a temporary buffer with comprehensive
       metadata for downstream processing.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass RecordAudioSnippetOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ record_audio_snippet node outputs.\"\"\"\n    audio_data: str = (\n      \
+      \  Field(..., description=\"Binary payload of the recorded audio snippet encoded\
+      \ with Opus\")\n    )\n    metadata: List[str] = (\n        Field(..., description=\"\
+      List containing metadata information such as duration, sample rate, codec, and\
+      \ VAD confidence\")\n    )\n    duration: float = (\n        Field(..., description=\"\
+      Duration of the recorded audio snippet in seconds\")\n    )\n    sample_rate:\
+      \ int = (\n        Field(..., description=\"Sample rate of the recorded audio\
+      \ snippet\")\n    )\n    codec: str = (\n        Field(..., description=\"Codec\
+      \ used for encoding the audio snippet\")\n    )\n    vad_confidence: float =\
+      \ (\n        Field(..., description=\"Confidence score of the Voice Activity\
+      \ Detection\")\n    )\n\n\ndef record_audio_snippet(general_input: str, **kwargs)\
+      \ -> RecordAudioSnippetOutput:\n    \"\"\"\n    Records a short audio snippet\
+      \ from the user's microphone, normalizes and\n    trims silence, optionally\
+      \ applies VAD, encodes the signal with Opus, and\n    returns the binary payload\
+      \ with metadata.\n\n    Returns\n    -------\n    dict\n        Dictionary containing\
+      \ audio_data, metadata, duration, sample_rate,\n        codec, and vad_confidence.\n\
+      \n    Raises\n    ------\n    AudioCaptureError\n        Raised when the audio\
+      \ capture hardware fails or the recording is\n        interrupted.\n    PermissionError\n\
+      \        Raised when the application does not have permission to access the\n\
+      \        microphone.\n\n    Examples\n    --------\n    >>> result = record_audio_snippet()\n\
+      \    {\n      \"audio_data\": \"<binary base64>\",\n      \"metadata\": [\"\
+      5.0\", \"48000\", \"Opus\", \"0.95\"],\n      \"duration\": 5.0,\n      \"sample_rate\"\
+      : 48000,\n      \"codec\": \"Opus\",\n      \"vad_confidence\": 0.95\n    }\n\
+      \n    >>> try:\n  record_audio_snippet()\nexcept PermissionError as e:\n  print(e)\n\
+      \    PermissionError: Microphone access denied.\n\n    \"\"\"\n    return RecordAudioSnippetOutput(\n\
+      \        audio_data=\"\",\n        metadata=[],\n        duration=0.0,\n   \
+      \     sample_rate=0,\n        codec=\"\",\n        vad_confidence=0.0,\n   \
+      \ )"
     name: record_audio_snippet
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -729,11 +1194,52 @@ nodes:
       together with metadata (duration, sample rate, codec, and VAD confidence). This
       snippet is ready for downstream speech‑to‑text or acoustic‑feature extraction
       modules.
+    shims: []
   redirect_to_musicians_pages:
     agent: false
+    code_node_type: stub
     description: Orchestrates a seamless redirection to the official online presence
       of the identified musicians, leveraging the metadata extracted from the sampled
       songs.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ListMusiciansOutput(BaseModel):\n    \"\"\"Pydantic model for list_musicians\
+      \ node outputs.\"\"\"\n    musician_ids: List[str] = (\n        Field(..., description=\"\
+      List of unique identifiers for the musicians\")\n    )\n    musician_names:\
+      \ List[str] = (\n        Field(..., description=\"List of names of the musicians\"\
+      )\n    )\n    musician_aliases: List[str] = (\n        Field(..., description=\"\
+      List of lists containing aliases for each musician\")\n    )\n    is_deduplicated:\
+      \ bool = (\n        Field(..., description=\"Whether the list of musicians has\
+      \ been deduplicated\")\n    )\n\n\nclass RedirectToMusiciansPagesOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for redirect_to_musicians_pages node outputs.\"\"\"\
+      \n    redirection_results: List[str] = (\n        Field(..., description=\"\
+      List of URLs successfully redirected to the official pages of musicians\")\n\
+      \    )\n    successful_redirections_count: int = (\n        Field(..., description=\"\
+      Number of successful redirections to musician profiles\")\n    )\n    redirection_exceptions:\
+      \ List[str] = (\n        Field(..., description=\"List of exceptions or errors\
+      \ encountered during the redirection process\")\n    )\n    is_redirection_successful:\
+      \ bool = (\n        Field(..., description=\"Whether the redirection process\
+      \ was successful overall\")\n    )\n\n\ndef redirect_to_musicians_pages(list_musicians_input:\
+      \ ListMusiciansOutput, **kwargs) -> RedirectToMusiciansPagesOutput:\n    \"\"\
+      \"\n    Redirects to the official online presence of identified musicians using\
+      \ a\n    hybrid NLP and machine learning approach.\n\n    Parameters\n    ----------\n\
+      \    musician_ids : List[str]\n        List of unique identifiers for the musicians\n\
+      \    musician_names : List[str]\n        List of names of the musicians\n  \
+      \  musician_aliases : List[List[str]]\n        List of lists containing aliases\
+      \ for each musician\n\n    Returns\n    -------\n    Tuple[List[str], int, List[str],\
+      \ bool]\n        A tuple containing the list of URLs successfully redirected,\
+      \ the\n        number of successful redirections, a list of exceptions encountered,\n\
+      \        and a boolean indicating overall success.\n\n    Raises\n    ------\n\
+      \    ValueError\n        If the input lists are of different lengths or if there\
+      \ are\n        duplicate musician IDs.\n    ConnectionError\n        If there\
+      \ is a failure in DNS lookup or HTTP requests during URL\n        resolution.\n\
+      \n    Examples\n    --------\n    >>> musician_ids = ['123', '456']\n    >>>\
+      \ musician_names = ['Artist1', 'Artist2']\n    >>> musician_aliases = [['Alias1'],\
+      \ ['Alias2']]\n    >>> redirect_to_musicians_pages(musician_ids, musician_names,\n\
+      \    musician_aliases)\n    (['https://officialartist1.com', 'https://officialartist2.com'],\
+      \ 2, [],\n    True)\n\n    \"\"\"\n    return RedirectToMusiciansPagesOutput(\n\
+      \        redirection_results=[],\n        successful_redirections_count=0,\n\
+      \        redirection_exceptions=[],\n        is_redirection_successful=False,\n\
+      \    )"
     name: redirect_to_musicians_pages
     nodes_depended_on:
     - list_musicians
@@ -800,11 +1306,74 @@ nodes:
       URL changes, and profile consolidations. Provide a concise summary of the redirection
       process, including the number of successful redirections and any encountered
       exceptions.
+    shims: []
   test_app_functionality:
     agent: false
+    code_node_type: stub
     description: Conducts comprehensive, end-to-end testing of the music sample identifier
       app to validate its overall functionality, robustness, and performance across
       diverse scenarios and edge cases.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass IntegrateFeaturesOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ integrate_features node outputs.\"\"\"\n    sample_id: str = (\n        Field(...,\
+      \ description=\"Identifier of the audio sample being processed\")\n    )\n \
+      \   sample_identified: bool = (\n        Field(..., description=\"Whether the\
+      \ sample has been successfully identified\")\n    )\n    identified_tracks_count:\
+      \ int = (\n        Field(..., description=\"Number of candidate tracks returned\
+      \ by identification\")\n    )\n    musician_ids: List[str] = (\n        Field(...,\
+      \ description=\"List of unique musician identifiers extracted from identified\
+      \ tracks\")\n    )\n    musician_count: int = (\n        Field(..., description=\"\
+      Total number of musicians in the list\")\n    )\n    playlist_id: str = (\n\
+      \        Field(..., description=\"Identifier of the generated playlist\")\n\
+      \    )\n    playlist_created: bool = (\n        Field(..., description=\"Whether\
+      \ the playlist was successfully created\")\n    )\n    playlist_track_count:\
+      \ int = (\n        Field(..., description=\"Number of tracks in the created\
+      \ playlist\")\n    )\n    error_message: str = (\n        Field(..., description=\"\
+      Error message if any operation failed, \\u043d\\u0430\\u0448\\u0438\\u043c otherwise\"\
+      )\n    )\n    snackbar_visible: bool = (\n        Field(..., description=\"\
+      Whether a snackbar notification is currently visible\")\n    )\n    snackbar_message:\
+      \ str = (\n        Field(..., description=\"Content of the snackbar notification\"\
+      )\n    )\n    loading_state: str = (\n        Field(..., description=\"Current\
+      \ loading state of the UI (e.g., idle, loading, success, error)\")\n    )\n\n\
+      \nclass TestAppFunctionalityOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ test_app_functionality node outputs.\"\"\"\n    test_passed: bool = (\n  \
+      \      Field(..., description=\"Overall pass/fail status of the test suite.\"\
+      )\n    )\n    total_test_cases: int = (\n        Field(..., description=\"Total\
+      \ number of test cases executed.\")\n    )\n    passed_test_cases: int = (\n\
+      \        Field(..., description=\"Number of test cases that passed.\")\n   \
+      \ )\n    failed_test_cases: int = (\n        Field(..., description=\"Number\
+      \ of test cases that failed.\")\n    )\n    defect_ids: List[str] = (\n    \
+      \    Field(..., description=\"List of defect identifiers reported during testing.\"\
+      )\n    )\n    defect_count: int = Field(..., description=\"Total number of defects\
+      \ found.\")\n    stress_test_passed: bool = (\n        Field(..., description=\"\
+      Whether the stress test (e.g., JMeter) passed.\")\n    )\n    performance_metric_summary:\
+      \ str = (\n        Field(..., description=\"Summary of performance metrics such\
+      \ as latency, throughput.\")\n    )\n    log_file_path: str = (\n        Field(...,\
+      \ description=\"File path to the aggregated logs.\")\n    )\n    recommendation_summary:\
+      \ str = (\n        Field(..., description=\"High-level recommendations for optimization.\"\
+      )\n    )\n\n\ndef test_app_functionality(integrate_features_input: IntegrateFeaturesOutput,\
+      \ **kwargs) -> TestAppFunctionalityOutput:\n    \"\"\"\n    Executes a multi-faceted\
+      \ testing regimen on the music sample identifier app,\n    validating its functionality\
+      \ and performance.\n\n    Parameters\n    ----------\n    integrate_features_output\
+      \ : dict\n        Output from the 'integrate_features' node, containing the\
+      \ integrated\n        features of the application.\n\n    Returns\n    -------\n\
+      \    dict\n        A dictionary containing the test results, including pass/fail\n\
+      \        status, test case counts, defect information, stress test results,\n\
+      \        performance metrics, log file path, and recommendations.\n\n    Raises\n\
+      \    ------\n    ValueError\n        If the input from 'integrate_features'\
+      \ is invalid or missing\n        required fields.\n    RuntimeError\n      \
+      \  If any of the testing processes (e.g., Selenium WebDriver, Pytest,\n    \
+      \    JMeter) encounter execution errors.\n\n    Examples\n    --------\n   \
+      \ >>> test_app_functionality(integrate_features_output={'sample_id': '123',\n\
+      \    'sample_identified': True, ...})\n    {'test_passed': True, 'total_test_cases':\
+      \ 10, 'passed_test_cases': 9,\n    'failed_test_cases': 1, 'defect_ids': ['DEF-1'],\
+      \ 'defect_count': 1,\n    'stress_test_passed': True, 'performance_metric_summary':\
+      \ 'Average latency:\n    200ms', 'log_file_path': '/logs/test.log', 'recommendation_summary':\n\
+      \    'Optimize database queries'}\n\n    \"\"\"\n    return TestAppFunctionalityOutput(\n\
+      \        test_passed=False,\n        total_test_cases=0,\n        passed_test_cases=0,\n\
+      \        failed_test_cases=0,\n        defect_ids=[],\n        defect_count=0,\n\
+      \        stress_test_passed=False,\n        performance_metric_summary=\"\"\
+      ,\n        log_file_path=\"\",\n        recommendation_summary=\"\",\n    )"
     name: test_app_functionality
     nodes_depended_on:
     - integrate_features
@@ -884,3 +1453,4 @@ nodes:
       node. Perform stress testing using Apache JMeter, analyze logs using ELK Stack,
       and monitor performance metrics. Document test results, including any defects
       or areas for improvement, and provide recommendations for optimization and refinement.
+    shims: []
