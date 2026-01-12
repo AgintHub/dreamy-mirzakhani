@@ -6,38 +6,37 @@ Identify tonal characteristics
 
 ## Conceptual Info
 
-The `tonal_analysis` node takes MFCC features derived from an audio signal and uses a pre‑trained deep neural network to infer the musical key (e.g., C‑major, A‑minor) present in the clip. It also returns a confidence score indicating how reliably the key was detected.
+The tonal_analysis node uses a deep‑learning model trained on MFCC representations to infer the dominant musical key of an audio snippet. It outputs the key name and a confidence score reflecting the model’s certainty.
 
 ## Docstring
 
 ### Summary
-Infer the musical key from MFCC features and return a confidence score.
+Detects the musical key from MFCC inputs using a pretrained deep learning model.
 
 ### Parameters
 
-- **mfcc_coefficients** (List[float]): Temporal MFCC feature vectors extracted by the `mfcc_extraction` node.
-- **delta_mfcc** (List[float]): First‑order delta MFCC values indicating the rate of change in the MFCCs.
+- **mfcc_coefficients** (float): Mel‑frequency cepstral coefficient features extracted from the audio snippet.
+- **delta_mfcc** (float): First‑order differences of the MFCCs, capturing temporal dynamics.
 
 ### Returns
 
-Tuple[str, float]: A tuple containing the detected musical key (e.g., 'C Major') and a confidence score between 0 and 1.
+Tuple[str, float]: A tuple containing the detected key (`tone`) and a confidence value (`tone_confidence`).
 
 ### Raises
 
-- ValueError: Raised if either `mfcc_coefficients` or `delta_mfcc` is empty or not a list of floats.
+- ValueError: If either `mfcc_coefficients` or `delta_mfcc` is None or NaN.
+- RuntimeError: If the deep‑learning inference engine fails or the model file is missing.
 
 ### Examples
 
 ```python
->>> tone, confidence = tonal_analysis([0.12, 0.09, 0.07, 0.04], [0.01, 0.02, 0.01, 0.00])
-"('C Major', 0.92)"
+>>> tone, conf = tonal_analysis(0.58, 0.12)
+>>> print(f"Key: {tone}, Confidence: {conf:.2f}")
+"Key: C Major, Confidence: 0.93"
 ```
 
 ```python
->>> # Error case – empty MFCC list
->>> try:
-...     tonal_analysis([], [0.01, 0.02])
->>> except ValueError as e:
-...     print(e)
-"Input MFCC lists must be non‑empty."
+>>> tone, conf = tonal_analysis(0.42, -0.03)
+>>> print(tone, conf)
+"F Minor 0.76"
 ```

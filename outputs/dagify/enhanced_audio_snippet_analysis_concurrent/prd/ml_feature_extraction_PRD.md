@@ -6,48 +6,42 @@ Generate deep learning features using CNN and RNN architectures
 
 ## Conceptual Info
 
-Extract high‑level audio embeddings from a raw waveform using pretrained convolutional and recurrent neural networks. These embeddings capture both spectral textures and temporal dynamics, enabling downstream tasks such as classification, similarity search, or augmentation.
+Extracts high‑level deep‑learning embeddings from raw audio by feeding the waveform through a CNN backbone followed by an RNN, producing compact scalar summaries of learned spectral and temporal characteristics.
 
 ## Docstring
 
 ### Summary
-Generate deep learning features using CNN and RNN architectures.
+Generate deep learning features from raw audio using a convolutional‑plus‑recurrent architecture.
 
 ### Parameters
 
-- **audio_data** (str): Raw audio sample data as a byte string or base64‑encoded string.
-- **sampling_rate** (int): Sample rate of the audio in Hz.
-- **file_format** (str): Encoding format of the input audio (e.g., 'wav', 'mp3').
-- **metadata** (List[str]): Additional signal characteristics extracted by the loader.
+- **audio_data** (str): Raw audio bytes (e.g., WAV or MP3 payload) obtained from `load_audio_snippet`.
+- **sampling_rate** (int): Sampling rate of the audio signal in Hz.
+- **file_format** (str): Encoding format of the audio file (e.g., "wav", "mp3").
+- **metadata** (List[str]): Optional list of pre‑computed signal characteristics (e.g., spectral centroid, zero‑crossing rate).
 
 ### Returns
 
-Tuple[List[float], List[float]]: A tuple containing (cnn_features, rnn_features). Each list holds floating‑point embeddings of the same dimensionality.
+Dict[str, float]: A dictionary containing two scalar features:
+- `cnn_features`: A single float summarizing the convolutional network’s output.
+- `rnn_features`: A single float summarizing the recurrent network’s output.
 
 ### Raises
 
-- ValueError: Raised if audio_data is empty or cannot be decoded.
-- TypeError: Raised when input types do not match expected signatures.
-- RuntimeError: Raised if the deep‑learning model inference fails.
+- ValueError: Raised when `audio_data` is empty or None.
+- RuntimeError: Raised if the underlying deep‑learning inference fails (e.g., GPU out‑of‑memory, model file missing).
 
 ### Examples
 
 ```python
->>> cnn, rnn = ml_feature_extraction(
-...     audio_data='\x00\x01\x02',
-...     sampling_rate=44100,
-...     file_format='wav',
-...     metadata=['mono', 'stereo']
->>> )
-([0.12, 0.45, 0.78, 0.33], [0.56, 0.89, 0.11, 0.22])
+>>> result = ml_feature_extraction('\x00\x01\x02', 44100, 'wav', ['centroid: 2000', 'rolloff: 3000'])
+{'cnn_features': 0.123, 'rnn_features': 0.456}
 ```
 
 ```python
->>> cnn, rnn = ml_feature_extraction(
-...     audio_data='\x00\x01',
-...     sampling_rate=48000,
-...     file_format='mp3',
-...     metadata=[]
->>> )
-([0.10, 0.34, 0.67, 0.29], [0.51, 0.83, 0.09, 0.18])
+>>> try:
+...     ml_feature_extraction('', 44100, 'wav', [])
+>>> except ValueError as e:
+...     print(e)
+"audio_data must not be empty"
 ```

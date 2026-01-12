@@ -6,46 +6,35 @@ Calculate mel-frequency cepstral coefficients
 
 ## Conceptual Info
 
-This node transforms a time‑frequency spectrogram into a compact representation suitable for audio analysis and machine‑learning pipelines. It computes Mel‑frequency cepstral coefficients (MFCCs) and their first‑order derivatives (delta MFCCs) which capture perceptual spectral envelopes and temporal dynamics of the signal.
+Transforms a frequency‑time representation (spectrogram) into mel‑frequency cepstral coefficients (MFCCs) and their first‑derivative (delta) features, enabling compact spectral representation for machine‑learning pipelines.
 
 ## Docstring
 
 ### Summary
-Convert a spectrogram into MFCCs and delta MFCCs.
+Compute Mel‑Frequency Cepstral Coefficients and delta features from a flattened spectrogram.
 
 ### Parameters
 
-- **spectrogram_data** (List[float]): 1‑D flattened array representing the magnitude of the short‑time Fourier transform. The array is expected to be in the same shape produced by the spectrogram_creation node.
+- **spectrogram_data** (List[float]): 1‑D list containing the spectrogram matrix flattened in row‑major order.
 
 ### Returns
 
-Tuple[List[float], List[float]]: A tuple containing: (mfcc_coefficients, delta_mfcc). Both are 1‑D lists of floats where each element corresponds to a time frame.
+Dict[str, float]: Dictionary with keys 'mfcc_coefficients' and 'delta_mfcc' holding the average MFCC value and its first‑difference. The values are floating‑point numbers summarising the spectral envelope and its temporal change.
 
 ### Raises
 
-- ValueError: Raised if spectrogram_data is empty or not a list.
-- RuntimeError: Raised if the internal MFCC transform fails (e.g., due to insufficient data length).
+- ValueError: Raised if `spectrogram_data` is empty or not a list of floats.
 
 ### Examples
 
 ```python
->>> # A minimal 3‑frame spectrogram (flattened)
->>> spectrogram = [0.10, 0.20, 0.30,
-...                0.40, 0.50, 0.60,
-...                0.70, 0.80, 0.90]
->>> # Compute MFCCs
->>> mfcc, delta = mfcc_extraction(spectrogram)
->>> print(mfcc)
->>> print(delta)
-['0.12', '0.23', '0.34']
-['0.01', '-0.02', '0.00']
+>>> mfcc_extraction([0.1, 0.2, 0.3, 0.4])
+{'mfcc_coefficients': 0.25, 'delta_mfcc': 0.05}
 ```
 
 ```python
->>> # Invalid input triggers error
->>> try:
-...     mfcc_extraction([])
->>> except ValueError as e:
-...     print(e)
-"spectrogram_data must be a non‑empty list of floats"
+>>> # A longer spectrogram (flattened) example
+>>> data = [0.1] * 1024  # 32×32 spectrogram flattened
+>>> mfcc_extraction(data)
+{'mfcc_coefficients': 0.10, 'delta_mfcc': 0.00}
 ```

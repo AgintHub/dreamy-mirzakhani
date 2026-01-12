@@ -6,37 +6,45 @@ Scrape additional music metadata
 
 ## Conceptual Info
 
-Collect supplementary music metadata from external web sources based on tonal and pitch characteristics derived from audio analysis.
+Collect and rank music metadata from online sources using pitch and tonal cues.
 
 ## Docstring
 
 ### Summary
-Retrieve additional music metadata from web sources using tonal and pitch information.
+Scrape the web for music metadata that matches given tonal and pitch characteristics, returning a string of matches and a relevance score.
 
 ### Parameters
 
-- **tone** (str): Identified musical key from tonal_analysis.
-- **tone_confidence** (float): Confidence score of the tonal detection.
-- **fundamental_frequency** (float): Primary pitch frequency from pitch_analysis.
-- **pitch_confidence** (float): Reliability of the pitch detection.
+- **tone** (str): Musical key identified by the tonal_analysis node.
+- **tone_confidence** (float): Confidence level of the tonal detection.
+- **fundamental_frequency** (float): Primary pitch frequency determined by pitch_analysis.
+- **pitch_confidence** (float): Confidence level of the pitch detection.
 
 ### Returns
 
-Tuple[List[str], List[float]]: Tuple containing a list of web‑sourced matches and a list of corresponding relevance scores.
+Dict[str, Any]: A dictionary with keys:
+  * 'additional_matches' (str): concatenated list of web‑sourced song or artist names.
+  * 'web_scores' (float): overall relevance score for the web results.
 
 ### Raises
 
-- ValueError: If any input parameter is missing or of incorrect type.
-- RuntimeError: If web scraping fails or returns no results.
+- ValueError: Raised if any input is None or has an unexpected type.
+- ConnectionError: Raised when network requests to the web sources fail.
 
 ### Examples
 
 ```python
->>> matches, scores = web_scraping_results('C Major', 0.95, 261.63, 0.90)
-(['Song A', 'Song B'], [0.90, 0.80])
+>>> matches, scores = web_scraping_results('C', 0.96, 440.0, 0.92)
+>>> print(matches)
+>>> print(scores)
+"Song1;Song2;Song3"
+0.88
 ```
 
 ```python
->>> matches, scores = web_scraping_results('A Minor', 0.88, 220.00, 0.85)
-(['Track X', 'Track Y', 'Track Z'], [0.88, 0.75, 0.65])
+>>> result = web_scraping_results('G#', 0.85, 329.63, 0.80)
+>>> print(result['additional_matches'])
+>>> print(result['web_scores'])
+"TrackA;TrackB"
+0.75
 ```

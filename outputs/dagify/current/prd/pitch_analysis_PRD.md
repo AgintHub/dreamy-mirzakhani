@@ -6,39 +6,38 @@ Detect pitch characteristics
 
 ## Conceptual Info
 
-Detect pitch characteristics from MFCC representations.
+Detect pitch characteristics
 
 ## Docstring
 
 ### Summary
-Estimates the fundamental pitch frequency and its confidence using MFCC and delta-MFCC features.
+Estimates the fundamental frequency of an audio frame and returns a confidence metric for the detection.
 
 ### Parameters
 
-- **mfcc_coefficients** (List[float]): Temporal MFCC coefficients extracted from the audio.
-- **delta_mfcc** (List[float]): Rate‑of‑change MFCC features representing spectral dynamics.
+- **mfcc_coefficients** (float): Temporal MFCC feature extracted from the audio spectrogram.
+- **delta_mfcc** (float): Rate‑of‑change of the MFCC feature, used as an auxiliary cue for pitch stability.
 
 ### Returns
 
-dict: A dictionary containing the estimated fundamental frequency (float) and a confidence score (float).
+Tuple[float, float]: A tuple containing the estimated fundamental frequency (in Hz) and a confidence score (0.0‑1.0).
 
 ### Raises
 
-- ValueError: If either input list is empty or contains non‑numeric values.
-- RuntimeError: If the pitch estimation algorithm fails to converge or produces invalid results.
+- ValueError: Raised when either input is None, empty, or not a numeric value.
+- RuntimeError: Raised if the internal pitch estimation algorithm fails to converge.
 
 ### Examples
 
 ```python
->>> mfcc_coeffs = [0.12, 0.15, 0.13, 0.10, 0.08]
->>> delta_mfcc = [0.02, 0.01, 0.02, 0.01, 0.00]
->>> result = pitch_analysis(mfcc_coeffs, delta_mfcc)
-{'fundamental_frequency': 440.0, 'pitch_confidence': 0.92}
+>>> pitch_analysis(120.0, 0.5)
+(120.0, 0.92)
 ```
 
 ```python
->>> mfcc_coeffs = [0.05, 0.04, 0.06, 0.07]
->>> delta_mfcc = [0.01, 0.02, 0.01, 0.00]
->>> result = pitch_analysis(mfcc_coeffs, delta_mfcc)
-{'fundamental_frequency': 220.0, 'pitch_confidence': 0.85}
+>>> try:
+...     pitch_analysis(-5, 0)
+>>> except ValueError as e:
+...     print('Error:', e)
+"Error: Invalid MFCC input: value must be positive and numeric."
 ```

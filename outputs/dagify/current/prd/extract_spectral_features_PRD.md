@@ -6,37 +6,44 @@ Calculate spectral domain features
 
 ## Conceptual Info
 
-Computes key spectral metrics (centroid, bandwidth, roll‑off) from raw audio samples using FFT‑based analysis.
+Extracts key spectral attributes from raw audio, such as centroid, bandwidth, and rolloff frequency, which are critical for timbral analysis and downstream processing.
 
 ## Docstring
 
 ### Summary
-Computes spectral features from raw audio samples.
+Computes spectral domain features from raw audio samples using FFT.
 
 ### Parameters
 
-- **audio_data** (str): Raw audio samples as a string or byte buffer.
-- **sampling_rate** (int): Sampling rate (samples per second) of the audio signal.
+- **audio_data** (str): Raw audio samples encoded as a byte string or base64 string.
+- **sampling_rate** (int): Sampling rate in Hz of the audio data.
+- **file_format** (str): Encoding format of the audio file (e.g., 'wav', 'mp3').
+- **metadata** (List[str]): Additional signal characteristics extracted during audio loading.
 
 ### Returns
 
-dict: Dictionary with keys 'spectral_centroid', 'spectral_bandwidth', and 'rolloff_frequency', each a float representing the computed metric.
+Dict[str, float]: Dictionary with keys 'spectral_centroid', 'spectral_bandwidth', and 'rolloff_frequency'.
 
 ### Raises
 
-- ValueError: Raised when `audio_data` is empty or contains no valid samples.
-- TypeError: Raised when `sampling_rate` is not a positive integer.
+- ValueError: If audio_data is empty or sampling_rate <= 0.
+- RuntimeError: If the FFT computation fails or the audio data cannot be parsed.
 
 ### Examples
 
 ```python
->>> result = extract_spectral_features(audio_data=b'\x00\x01\x02...', sampling_rate=44100)
->>> print(result['spectral_centroid'])
-2500.0
+>>> audio_data = 'raw_bytes_placeholder'
+>>> sampling_rate = 44100
+>>> features = extract_spectral_features(audio_data, sampling_rate, 'wav', ['sample'])
+{'spectral_centroid': 2500.0, 'spectral_bandwidth': 4000.0, 'rolloff_frequency': 7500.0}
 ```
 
 ```python
->>> result = extract_spectral_features(audio_data=b'\x00\x00\x00...', sampling_rate=48000)
->>> print(result['rolloff_frequency'])
-12000.0
+>>> audio_data = 'empty'
+>>> sampling_rate = 8000
+>>> try:
+...     extract_spectral_features(audio_data, sampling_rate, 'wav', [])
+>>> except ValueError as e:
+...     print(e)
+'audio_data must not be empty or invalid'
 ```

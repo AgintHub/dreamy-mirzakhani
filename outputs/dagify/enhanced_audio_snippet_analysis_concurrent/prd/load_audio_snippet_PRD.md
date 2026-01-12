@@ -6,45 +6,43 @@ Load audio file with metadata extraction
 
 ## Conceptual Info
 
-The `load_audio_snippet` node reads an audio file from disk, extracts the raw sample data, the sample rate, the file format, and generates a short textual summary of key signal characteristics (duration, channel count, bit depth, etc.). This node serves as the foundational data source for all downstream audio‑feature extraction and analysis nodes.
+The `load_audio_snippet` node reads an audio file from disk (or a remote source), decodes its waveform into raw samples, and extracts fundamental metadata—including sampling rate, format, and key signal statistics. The data is returned in a lightweight, serializable form for downstream analysis.
 
 ## Docstring
 
 ### Summary
-Read an audio file and return raw data and metadata.
+Load an audio file and extract basic metadata for further analysis.
 
 ### Parameters
 
-- **audio_file_path** (str): File system path to the audio file to be loaded.
+- **audio_file_path** (str): Filesystem path or URL to the audio file to be loaded.
 
 ### Returns
 
-Dict[str, Any]: Dictionary containing four keys:
-- `audio_data` (str): Raw audio samples as bytes or base64 string.
-- `sampling_rate` (int): Sample rate in Hz.
-- `file_format` (str): Audio file format (e.g., 'wav', 'mp3').
-- `metadata` (List[str]): Human‑readable list of signal characteristics such as duration, channels, and bit depth.
+Dict[str, Any]: Dictionary containing `audio_data` (raw samples), `sampling_rate` (Hz), `file_format` (e.g., 'wav'), and `metadata` (list of descriptive strings).
 
 ### Raises
 
-- FileNotFoundError: Raised when the specified file does not exist.
-- ValueError: Raised when the file format is unsupported or the file is corrupted.
-- IOError: Raised on low‑level I/O errors during file read.
+- FileNotFoundError: Raised if the specified file does not exist or cannot be accessed.
+- ValueError: Raised if the file format is unsupported or the file is corrupted.
+- RuntimeError: Raised for low‑level decoding failures (e.g., I/O errors during read).
 
 ### Examples
 
 ```python
->>> audio_info = load_audio_snippet('samples/example.wav')
->>> print(audio_info['sampling_rate'])
->>> print(audio_info['metadata'])
+>>> result = load_audio_snippet('samples/beat.wav')
+>>> print(result['sampling_rate'])  # 44100
+>>> print(result['file_format'])    # 'wav'
+>>> print(len(result['metadata']))  # 4
 44100
-['duration: 3.58s', 'channels: 2', 'bit depth: 16']
+wav
+4
 ```
 
 ```python
 >>> try:
-...     load_audio_snippet('nonexistent.mp3')
+...     load_audio_snippet('missing.mp3')
 >>> except FileNotFoundError as e:
-...     print('Error:', e)
-Error: [Errno 2] No such file or directory: 'nonexistent.mp3'
+...     print(str(e))
+'File not found: missing.mp3'
 ```
