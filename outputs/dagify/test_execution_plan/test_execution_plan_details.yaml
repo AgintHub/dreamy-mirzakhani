@@ -1,5 +1,5 @@
-dag_type: plain_text
-description: A highly concurrent workflow for testing execution plans
+dag_type: typed
+description: Generated workflow from UI.
 name: test_execution_plan
 nodes:
   analyze_test_results:
@@ -9,6 +9,22 @@ nodes:
     nodes_depended_on:
     - execute_test_cases
     nodes_dependent_on: []
+    output_structure:
+    - description: The outcome of the test, e.g., pass, fail, incomplete
+      key: test_outcome
+      type: str
+    - description: List of deviations found between actual and expected results
+      key: deviations_found
+      type: List[str]
+    - description: List of defects identified during the test
+      key: defects_identified
+      type: List[str]
+    - description: List of areas for improvement identified during the test
+      key: areas_for_improvement
+      type: List[str]
+    - description: Whether the test results are valid and reliable
+      key: test_result_status
+      type: bool
     prompt: Evaluate the test results, comparing the actual outcomes to the expected
       results, and identify any deviations, defects, or areas for improvement.
   create_test_environment:
@@ -18,6 +34,25 @@ nodes:
     nodes_depended_on:
     - design_test_cases
     nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the created test environment
+      key: environment_id
+      type: str
+    - description: List of hardware components needed for the environment
+      key: hardware_required
+      type: List[str]
+    - description: List of software packages installed in the environment
+      key: software_installed
+      type: List[str]
+    - description: Indicates whether network settings have been configured
+      key: network_configured
+      type: bool
+    - description: True if the environment is fully ready for test execution
+      key: environment_ready
+      type: bool
+    - description: Estimated time in minutes to set up the environment
+      key: setup_time_minutes
+      type: int
     prompt: Set up the necessary infrastructure, tools, and configurations to support
       the test, including any required hardware, software, or network components.
   define_test_objective:
@@ -26,6 +61,16 @@ nodes:
     name: define_test_objective
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: The primary objective of the test
+      key: test_objective
+      type: str
+    - description: List of key performance indicators (KPIs) for the test
+      key: key_performance_indicators
+      type: List[str]
+    - description: List of desired outcomes for the test
+      key: desired_outcomes
+      type: List[str]
     prompt: Clearly state the primary objective of the test, including key performance
       indicators (KPIs) and desired outcomes.
   design_test_cases:
@@ -35,6 +80,25 @@ nodes:
     nodes_depended_on:
     - develop_test_strategy
     nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for each test case
+      key: test_case_id
+      type: str
+    - description: List of input values for each test case
+      key: test_inputs
+      type: List[str]
+    - description: List of expected output values for each test case
+      key: expected_outputs
+      type: List[str]
+    - description: Test data used for each test case
+      key: test_data
+      type: str
+    - description: Whether the test objective is validated by the test case
+      key: test_objective_validated
+      type: bool
+    - description: Whether the test scope is covered by the test case
+      key: test_scope_covered
+      type: bool
     prompt: Create a set of detailed test cases, including inputs, expected outputs,
       and test data, to validate the test objective and scope.
   develop_test_strategy:
@@ -45,6 +109,22 @@ nodes:
     - define_test_objective
     - identify_test_scope
     nodes_dependent_on: []
+    output_structure:
+    - description: High-level description of the test approach
+      key: test_approach
+      type: str
+    - description: List of testing methodologies to be used
+      key: test_methodologies
+      type: List[str]
+    - description: List of testing techniques to be employed
+      key: test_techniques
+      type: List[str]
+    - description: List of types of tests to be performed
+      key: test_types
+      type: List[str]
+    - description: Whether the test strategy is valid and comprehensive
+      key: strategy_valid
+      type: bool
     prompt: Create a high-level plan outlining the approach, methodology, and techniques
       to be used for the test, including the types of tests to be performed.
   execute_test_cases:
@@ -54,6 +134,22 @@ nodes:
     nodes_depended_on:
     - create_test_environment
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether the test case execution was successful
+      key: test_case_execution_status
+      type: bool
+    - description: Actual results of the test cases
+      key: actual_test_results
+      type: str
+    - description: List of defects or issues encountered during test case execution
+      key: defects_or_issues_encountered
+      type: List[str]
+    - description: Details of the test environment used for execution
+      key: test_environment_details
+      type: str
+    - description: Details of the test data used for execution
+      key: test_data_used
+      type: str
     prompt: Run the test cases, using the designed test data and environment, and
       capture the actual results and any defects or issues encountered.
   identify_test_scope:
@@ -63,6 +159,19 @@ nodes:
     nodes_depended_on:
     - define_test_objective
     nodes_dependent_on: []
+    output_structure:
+    - description: Description of the test scope
+      key: test_scope_description
+      type: str
+    - description: List of components, systems, or processes to be tested
+      key: components_to_test
+      type: List[str]
+    - description: List of boundaries and limitations of the test
+      key: test_boundaries
+      type: List[str]
+    - description: Whether the test scope is valid and well-defined
+      key: scope_validation_status
+      type: bool
     prompt: Determine the boundaries and limitations of the test, including the specific
       components, systems, or processes to be tested.
   report_test_findings:
@@ -72,6 +181,22 @@ nodes:
     nodes_depended_on:
     - analyze_test_results
     nodes_dependent_on: []
+    output_structure:
+    - description: Summary of the test results
+      key: test_results_summary
+      type: str
+    - description: List of defects or issues found during testing
+      key: defects_found
+      type: List[str]
+    - description: List of recommendations for future testing or improvements
+      key: recommendations
+      type: List[str]
+    - description: Whether the test was successful or not
+      key: test_status
+      type: bool
+    - description: Test score based on the results
+      key: test_score
+      type: float
     prompt: Document the test results, including any defects or issues found, and
       provide recommendations for future testing or improvements to the system or
       process under test.
