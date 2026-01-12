@@ -1,100 +1,299 @@
 dag_type: plain_text
-description: Identify audio samples by breaking down tasks into fundamental steps
+description: Generated workflow from UI.
 name: audio_sample_identifier
 nodes:
   build_song_database_data_ingestion:
     agent: false
-    description: Populate the song database with songs and their features
+    description: Efficiently ingest and populate the song database with a comprehensive
+      collection of songs and their associated metadata, technical audio features
+      (such as tempo, key, duration, loudness, and spectral descriptors), as well
+      as relevant attributes like genre, artist, release year, and album. Ensure data
+      is validated, normalized, and adheres to the schema designed for optimal storage,
+      indexing, and querying. The ingestion process should be robust against duplicates,
+      handle missing or malformed data gracefully, and record provenance information
+      (such as data sources and timestamps) for auditing and reproducibility.
     name: build_song_database_data_ingestion
     nodes_depended_on:
     - build_song_database_schema
-    nodes_dependent_on:
-    - train_song_identification_model_data_prep
-    prompt: Ingest data into the song database
+    nodes_dependent_on: []
+    prompt: 'Ingest song data into the newly created database schema. Load a diverse
+      set of songs, ensuring for each entry the inclusion of core fields—title, artist,
+      album, genre, release year, and unique identifiers. Supplement each song with
+      technical audio features like tempo (BPM), key (musical scale), duration (in
+      seconds), loudness (in dB), and additional descriptors (e.g., MFCCs, spectral
+      centroid). Validate incoming data against the schema, normalize categorical
+      values (such as genres and artists), and de-duplicate entries. If available,
+      capture and log data provenance (source and ingestion timestamp). Execute bulk
+      insertion using efficient batch processing and transactional safety guarantees—rolling
+      back or flagging any problematic records. After ingestion, report key statistics:
+      total records ingested, duplicates resolved, and any schema validation errors.'
   build_song_database_schema:
     agent: false
-    description: Create the database schema for storing songs
+    description: Architect and formalize a robust, normalized relational database
+      schema tailored for full-featured song data management, including entity relationships,
+      metadata fields, scalability considerations, and provisions for advanced querying
+      and integrity. The design must ensure optimal performance and seamless integration
+      within the overall app architecture.
     name: build_song_database_schema
     nodes_depended_on:
     - design_app_architecture_components
-    nodes_dependent_on:
-    - build_song_database_data_ingestion
-    prompt: Design the schema for the song database
+    nodes_dependent_on: []
+    prompt: Design a comprehensive, normalized relational database schema optimized
+      for efficient storage and querying of song-related data within the application's
+      architecture. Specify the table structures, including primary keys, foreign
+      key relationships, indexes for frequent lookup fields, and requisite constraints
+      for data integrity. Account for fundamental song metadata (such as title, artist,
+      album, genre, duration, release date, and track number), and extensibility for
+      future enhancements (e.g., lyrics, audio features, user-generated ratings).
+      Ensure the schema supports scalable associations with artists and albums, facilitates
+      search and retrieval for high-volume usage, and enforces referential integrity
+      across all related entities. Deliver the schema as SQL DDL (Data Definition
+      Language) statements with commentary to explain design decisions and critical
+      technical considerations.
   design_app_architecture_components:
     agent: false
-    description: Break down the app architecture into its constituent parts
+    description: Systematically decompose the application architecture into detailed,
+      well-defined technical components—covering presentation layers, domain logic,
+      data persistence, API interfaces, integrations, third-party services, security
+      modules, and infrastructure elements—ensuring each constituent part is precisely
+      delineated in terms of its responsibilities, interactions, and implementation
+      technologies.
     name: design_app_architecture_components
     nodes_depended_on:
     - design_app_architecture_overview
-    nodes_dependent_on:
-    - develop_audio_processing_module
-    prompt: Identify the individual components of the app architecture
+    nodes_dependent_on: []
+    prompt: 'Break down the app architecture into its granular technical layers and
+      components. For each of the following categories, specify the concrete elements,
+      patterns, technologies, and responsibilities involved:
+
+
+      1. Presentation/UI Layer: Define the frameworks (e.g., React, Flutter), component
+      hierarchies, routing, UI state management, and theming.
+
+      2. Domain/Business Logic: Outline core application logic, domain-driven design
+      (DDD) aggregates, services, and relevant patterns (e.g., CQRS, event sourcing).
+
+      3. Data Access & Persistence: Detail database engines (SQL/NoSQL), ORM/ODM frameworks,
+      data schema, caching strategies, and migration/versioning approaches.
+
+      4. API & Integration Layer: Specify REST, GraphQL, gRPC, or WebSocket endpoints,
+      API gateways, service discovery mechanisms, and contract validation.
+
+      5. External Services: List third-party dependencies (auth, payments, analytics),
+      their integration method, and error/resilience handling.
+
+      6. Security Modules: Explain authentication, authorization, encryption, secrets
+      management, and compliance considerations.
+
+      7. Infrastructure: Enumerate hosting solutions (cloud/on-prem), containerization
+      (Docker/Kubernetes), CI/CD pipelines, monitoring/logging, and scaling strategies.
+
+
+      For each component, describe its purpose, technical approach, technology choices,
+      and how it interacts with other architectural elements. Present the breakdown
+      in a structured format (table or diagram, if possible) for maximum clarity.'
   design_app_architecture_interfaces:
     agent: false
-    description: Create interfaces for the app architecture components
+    description: Define precise technical interfaces, contracts, and communication
+      protocols between core architectural components, ensuring alignment with the
+      high-level design and enabling modular, maintainable system integration.
     name: design_app_architecture_interfaces
     nodes_depended_on:
     - design_app_architecture_overview
-    nodes_dependent_on:
-    - integrate_modules
-    prompt: Design the interfaces between the components of the app architecture
+    nodes_dependent_on: []
+    prompt: Design and document robust interfaces between architectural components
+      including service APIs, internal module boundary contracts, data access patterns,
+      and system-to-system communication protocols. Specify details such as API endpoint
+      definitions (HTTP verbs, JSON schemas), authentication/authorization mechanisms
+      (OAuth2, JWT), message serialization formats (gRPC, Avro), circuit breakers,
+      retries, logging/monitoring semantics, idempotency patterns, and cross-cutting
+      concerns like request tracing. Establish interface versioning strategy, backward
+      compatibility rules, and error handling contracts (HTTP status codes, error
+      payload formats). Align interface design with the app's high-level architectural
+      principles, security postures, and scalability requirements.
   design_app_architecture_overview:
     agent: false
-    description: Design the overall architecture of the app
+    description: Define a holistic, production-grade technical architecture for the
+      application, incorporating modern software engineering patterns, system resilience
+      principles, and performance optimization strategies across client, server, and
+      data tiers.
     name: design_app_architecture_overview
     nodes_depended_on: []
-    nodes_dependent_on:
-    - design_app_architecture_components
-    - design_app_architecture_interfaces
-    prompt: Create a high-level overview of the app architecture
+    nodes_dependent_on: []
+    prompt: Design a comprehensive application architecture that includes a detailed
+      breakdown of client-server communication protocols (REST/gRPC/WebSockets), data
+      layer architecture (relational/non-relational databases, caching strategies,
+      and data partitioning), microservices architecture (if applicable) with service
+      discovery mechanisms, security frameworks (OAuth2/JWT, encryption in-transit/at-rest),
+      real-time processing pipelines, scalability patterns (horizontal/vertical scaling,
+      load balancing), observability solutions (logging, metrics, distributed tracing),
+      and infrastructure considerations (containerization with Kubernetes, CI/CD pipelines,
+      and cost optimization). Include technical trade-offs between monolithic vs.
+      microservices approaches, latency vs. throughput requirements, fault tolerance
+      mechanisms, and compliance with relevant industry standards (e.g., GDPR, HIPAA).
+      Document the architecture using UML diagrams and architecture decision records
+      (ADRs).
   design_user_interface_elements:
     agent: false
-    description: Create the UI elements such as buttons and input fields
+    description: Define and implement interactive UI components including buttons,
+      input fields, modals, accordions, and navigation elements with semantic structure
+      and accessibility features, ensuring alignment with the established layout and
+      design system.
     name: design_user_interface_elements
     nodes_depended_on:
     - design_user_interface_layout
-    nodes_dependent_on:
-    - integrate_modules
-    prompt: Design the individual elements of the user interface
+    nodes_dependent_on: []
+    prompt: 'Design and document the following UI elements with technical specifications:
+      (1) interactive controls (buttons, sliders, checkboxes) with hover/focus/disabled
+      states, (2) form components (text fields, dropdowns, date pickers) with validation
+      cues and error states, (3) navigational elements (tabs, breadcrumbs, search
+      bars) with responsive behavior. Incorporate platform-specific design patterns,
+      accessibility standards (ARIA roles, WCAG 2.1 AA compliance), and visual hierarchy
+      principles (typography, color contrast, spacing). Reference the established
+      layout framework and apply component libraries or style sheets for consistent
+      theming and reusability.'
   design_user_interface_layout:
     agent: false
-    description: Design the overall layout of the user interface
+    description: Architects the comprehensive, user-centered interface layout by integrating
+      best practices of responsive design, usability heuristics, and modern UI/UX
+      frameworks. Ensures cohesive alignment with previously defined app architecture
+      components, logical information hierarchy, intuitive navigation flows, adaptive
+      breakpoints, accessibility standards (WCAG), and pixel density awareness—setting
+      a robust visual and interactive foundation for the final application.
     name: design_user_interface_layout
     nodes_depended_on:
     - design_app_architecture_components
-    nodes_dependent_on:
-    - design_user_interface_elements
-    prompt: Create a layout for the user interface
+    nodes_dependent_on: []
+    prompt: Develop a detailed, technically sound user interface layout that reflects
+      the specified app architecture components. Specify an adaptive grid or flexbox
+      system, define regions for navigation, content, inputs, notifications, and other
+      functional modules. Illustrate the spatial hierarchy, responsive breakpoints,
+      alignment rules, and margin/padding conventions. Ensure adherence to accessibility
+      guidelines (e.g., contrast, keyboard navigation, screen reader compatibility).
+      Document modal flows and interaction patterns for primary tasks. Annotate your
+      layout with component boundaries, z-index layering for overlays, device scaling
+      strategies (e.g., retina readiness), and integration points for UI frameworks
+      such as Material Design or Tailwind CSS. Present layout diagrams or wireframes
+      (textual or pseudo-visual if graphics are not possible), and explain how the
+      layout underpins usability, extensibility, and architectural cohesion within
+      the app’s modular structure.
   develop_artist_page_redirector_model_integration:
     agent: false
-    description: Integrate the model with the redirector module
+    description: Seamlessly integrate the trained song identification model into the
+      artist page redirector module. This step ensures that the redirector can leverage
+      model predictions to efficiently route user requests or queries to the correct
+      artist pages, thereby enhancing the accuracy and responsiveness of user navigation.
+      Incorporate robust error handling, graceful fallback mechanisms, and asynchronous
+      model invocation to maintain high throughput. Ensure compatibility with API
+      endpoints, adherence to security and privacy standards, and optimize inference
+      latency for seamless user experience.
     name: develop_artist_page_redirector_model_integration
     nodes_depended_on:
     - train_song_identification_model_training
-    nodes_dependent_on:
-    - integrate_modules
-    prompt: Integrate the trained model with the artist page redirector
+    nodes_dependent_on: []
+    prompt: 'Integrate the trained song identification model into the artist page
+      redirector module with the following technical requirements:
+
+      - Expose the model''s inference function as an asynchronous service or microservice,
+      enabling batch or real-time prediction.
+
+      - Interface the redirector logic with the model''s API endpoint—in-process or
+      over HTTP/gRPC as appropriate.
+
+      - Implement robust error handling for prediction failures, with fallback to
+      rule-based logic or default routing.
+
+      - Ensure input data transformation and normalization in line with model training
+      specifications (e.g., feature encoding, string preprocessing).
+
+      - Optimize model loading for low-latency inference (consider model warm-up routines
+      and connection pooling if remote).
+
+      - Validate integration by running test cases simulating diverse user queries,
+      verifying correct redirection outcomes.
+
+      - Log integration events and prediction results with timestamps for monitoring
+      and debugging.
+
+      - Ensure compliance with all privacy, security, and data retention requirements
+      for served predictions.
+
+      Document deployment instructions, configuration options, and recommended validation/checklist
+      steps for seamless handoff and maintenance.'
   develop_audio_processing_module_codec:
     agent: false
-    description: Create the codec for processing audio snippets
+    description: Design and implement a robust audio codec tailored for the audio
+      processing module. The codec should enable efficient encoding and decoding of
+      audio snippets, supporting standard and high-fidelity audio formats (e.g., PCM,
+      AAC, or Opus), variable bitrates, and real-time processing capabilities. Ensure
+      compatibility with the overall application architecture as defined in prior
+      design stages, with clear interfaces for integration with input/output pipelines.
+      Address error resilience, scalability, and extensibility for future enhancements
+      such as streaming and adaptive bitrate control.
     name: develop_audio_processing_module_codec
     nodes_depended_on:
     - design_app_architecture_components
-    nodes_dependent_on:
-    - develop_audio_processing_module_feature_extraction
-    prompt: Develop the codec for the audio processing module
+    nodes_dependent_on: []
+    prompt: Engineer a high-performance audio codec for the audio processing module.
+      Architect the codec to support encoding and decoding of audio snippets in widely
+      adopted formats (e.g., PCM, AAC, Opus), allowing for configurable sampling rates
+      (e.g., 16kHz, 44.1kHz), variable bitrates, and low-latency real-time operations.
+      Implement robust error handling and buffer management, with interfaces compatible
+      with the modular app architecture and seamless integration into audio input/output
+      pipelines. Include adaptive bitrate adjustments, support for streaming, and
+      extensibility hooks for advanced audio effects (e.g., noise reduction, gain
+      normalization). Document all APIs and provide comprehensive test coverage for
+      audio data integrity, performance, and edge cases (e.g., corrupted frames, incomplete
+      packets).
   develop_audio_processing_module_feature_extraction:
     agent: false
-    description: Extract features from audio snippets
+    description: Design and implement a sophisticated audio feature extraction component
+      that ingests codec-processed audio snippets and outputs a rich set of discriminative
+      audio features. This module should support robust time-domain, frequency-domain,
+      and time–frequency representations (such as MFCCs, chroma features, spectral
+      contrast, zero-crossing rate, RMS energy, spectral centroid, bandwidth, and
+      roll-off). Ensure the extraction process is configurable for windowing strategy,
+      hop size, preprocessing (e.g., normalization, silence removal), and feature
+      aggregation. The component must be extensible for additional feature types (e.g.,
+      pitch, tonnetz, onset envelope) and optimized for efficiency with batch and
+      streaming inference compatibility.
     name: develop_audio_processing_module_feature_extraction
     nodes_depended_on:
     - develop_audio_processing_module_codec
-    nodes_dependent_on:
-    - train_song_identification_model_data_prep
-    prompt: Develop the feature extraction component of the audio processing module
+    nodes_dependent_on: []
+    prompt: 'Develop an advanced audio feature extraction component for the audio
+      processing module. The implementation should:
+
+      - Accept codec-standardized audio snippets as input.
+
+      - Extract a comprehensive suite of audio features, including but not limited
+      to: Mel-frequency cepstral coefficients (MFCCs), chroma vectors, spectral contrast,
+      spectral centroid, bandwidth, spectral roll-off, zero-crossing rate, RMS energy,
+      and optionally pitch and tonnetz features.
+
+      - Support multiple configurable parameters, including window size, hop length,
+      feature dimensionality, feature aggregation methods, and optional preprocessing
+      steps such as SSL normalization and silence trimming.
+
+      - Enable both batch and streaming feature extraction modes for real-time and
+      offline processing.
+
+      - Be modular and extensible, allowing for rapid integration of new feature types
+      and preprocessing techniques.
+
+      - Optimize for computational efficiency and memory usage, utilizing libraries
+      such as librosa, torchaudio, or custom DSP routines where required.
+
+      Document the API, input/output formats, and provide clear instructions for integration
+      with the overarching audio processing system.'
   integrate_modules:
     agent: false
-    description: Integrate the individual modules into a single app
+    description: Unify all developed modules—including audio feature extraction, song
+      database ingestion, model training and integration, user interface elements,
+      and architecture interfaces—into a robust, scalable application. Ensure seamless
+      interoperability via well-defined interfaces, implement data flow orchestration
+      across modules, and rigorously validate end-to-end integration for functional,
+      UI, and system requirements.
     name: integrate_modules
     nodes_depended_on:
     - develop_audio_processing_module_feature_extraction
@@ -103,51 +302,137 @@ nodes:
     - develop_artist_page_redirector_model_integration
     - design_user_interface_elements
     - design_app_architecture_interfaces
-    nodes_dependent_on:
-    - test_and_deploy_app_preparation
-    prompt: Integrate the developed modules into a cohesive app
+    nodes_dependent_on: []
+    prompt: Systematically integrate the audio processing feature extraction module,
+      song database ingestion pipeline, trained song identification and artist page
+      redirector models, user interface elements, and inter-module architecture interfaces
+      into a cohesive application. Ensure all components interact through type-safe,
+      versioned APIs or standardized data contracts. Synchronize module initialization,
+      establish message or event passing mechanisms (as needed), and implement rigorous
+      integration testing including unit, interface, and end-to-end tests. Address
+      exception propagation, error handling, and resource cleanup across module boundaries.
+      Validate that the assembled application complies with functional requirements,
+      performance constraints, and maintains a responsive, intuitive user experience
+      throughout.
   monitor_and_update_app:
     agent: false
-    description: Monitor and update the app
+    description: 'Implements a robust production-level application lifecycle process:
+      incorporates continuous runtime monitoring, proactive performance and health
+      diagnostics, automated anomaly alerting, and a systematic update/patch workflow
+      including zero-downtime deployment strategies, rapid rollback protocols, and
+      rigorous post-update validation to ensure optimal availability, reliability,
+      and security of the deployed application.'
     name: monitor_and_update_app
     nodes_depended_on:
     - test_and_deploy_app_execution
     nodes_dependent_on: []
-    prompt: Monitor the app's performance and update it regularly
+    prompt: Continuously monitor the application in production using advanced monitoring
+      tools for real-time metrics collection (CPU, memory, disk I/O, latency, error
+      rates, service availability). Implement automated log aggregation and anomaly
+      detection via alerting mechanisms (e.g., Grafana, Prometheus, ELK stack, CloudWatch).
+      Regularly review and analyze performance bottlenecks, crash reports, and customer
+      feedback. Schedule and execute rolling updates and hotfixes using CI/CD pipelines,
+      prioritizing security patches, dependency upgrades, and performance optimizations.
+      Validate updates through automated regression and smoke testing, ensuring zero-downtime
+      deployments and immediate rollback on detected failures. Document changes and
+      maintain a changelog for traceability. Ensure compliance with SLAs and security
+      standards throughout the monitoring and update cycle.
   test_and_deploy_app_execution:
     agent: false
-    description: Test the app and deploy it to production
+    description: Execute a comprehensive end-to-end testing and deployment routine
+      for the application. Incorporate automated unit, integration, and end-to-end
+      tests to validate all functional and non-functional requirements. Upon successful
+      test completion, perform a production-grade deployment, including artifact packaging,
+      versioning, environment configuration, and rollout with strategies such as blue-green
+      or canary deployments. Implement built-in health checks, post-deployment validations,
+      and monitoring hook-ups to ensure application reliability and rollback readiness.
     name: test_and_deploy_app_execution
     nodes_depended_on:
     - test_and_deploy_app_preparation
-    nodes_dependent_on:
-    - monitor_and_update_app
-    prompt: Test and deploy the app
+    nodes_dependent_on: []
+    prompt: Perform automated unit, integration, and end-to-end tests on the application
+      using configured CI/CD pipelines. Validate key functionalities, performance
+      benchmarks, and security compliance. Upon passing all test suites, package the
+      application build, apply versioning, and deploy to the production environment
+      utilizing a robust deployment strategy (such as blue-green or canary). After
+      deployment, trigger health checks and smoke tests, confirm correct environment
+      variables and configuration secrets, and activate monitoring with alerting.
+      Provide a detailed report of test coverage and deployment status, including
+      incident rollbacks if necessary.
   test_and_deploy_app_preparation:
     agent: false
-    description: Prepare the app for testing
+    description: Conduct a comprehensive technical preparation of the fully integrated
+      application, ensuring all modules function coherently by executing dependency
+      management, code validation, build automation, environment setup, and pre-deployment
+      checks. Ready the application for rigorous automated, manual, and performance
+      testing workflows, while generating all artifacts and documentation required
+      for error-free deployment and maintainability.
     name: test_and_deploy_app_preparation
     nodes_depended_on:
     - integrate_modules
-    nodes_dependent_on:
-    - test_and_deploy_app_execution
-    prompt: Prepare the app for testing and deployment
+    nodes_dependent_on: []
+    prompt: Systematically prepare the integrated application for robust testing and
+      seamless deployment. Verify complete integration of all modules including the
+      audio processing engine, song database ingestion, song identification models,
+      artist page redirection, user interface, and architecture interfaces. Perform
+      static code analysis and dependency checks. Set up automated build tools and
+      CI/CD pipelines. Conduct environment configuration for both testing (unit and
+      integration) and deployment stages. Generate application manifests, environment
+      variables, and containerization descriptors (e.g., Dockerfile, docker-compose.yml).
+      Apply pre-release version control tagging, run smoke tests, and ensure reproducibility
+      of builds across varied target environments. Document any assumptions, configuration
+      rationales, and system prerequisites required for QA and deployment teams.
   train_song_identification_model_data_prep:
     agent: false
-    description: Prepare the data for model training
+    description: Conducts comprehensive preprocessing and structuring of the integrated
+      audio feature data and song metadata to ensure high-quality, model-ready datasets
+      for robust song identification. Includes precise cleaning, normalization, augmentation,
+      stratification, and merging of extracted audio features with canonical song
+      database records, enforcing data integrity, consistency, and optimal input formats
+      for downstream supervised learning pipelines.
     name: train_song_identification_model_data_prep
     nodes_depended_on:
     - develop_audio_processing_module_feature_extraction
     - build_song_database_data_ingestion
-    nodes_dependent_on:
-    - train_song_identification_model_training
-    prompt: Prepare data for training the song identification model
+    nodes_dependent_on: []
+    prompt: "Systematically prepare the training dataset for the song identification\
+      \ model: \n- Retrieve and merge extracted audio feature vectors (e.g., MFCCs,\
+      \ chromagrams, spectral contrast, embeddings) from the audio processing module\
+      \ with canonical song metadata and labels from the ingested song database.\n\
+      - Enforce strict data consistency by removing duplicates, reconciling indexing\
+      \ mismatches, and ensuring referential integrity between audio features and\
+      \ song records.\n- Apply feature engineering, normalization (e.g., z-score,\
+      \ min-max scaling), and outlier removal to enhance feature distribution homogeneity.\n\
+      - Implement dataset balancing and stratified sampling by genre, artist, or other\
+      \ relevant categorical variables to address class imbalance.\n- Generate multiple\
+      \ training splits (train/validation/test) with non-leakage constraints, and\
+      \ persist datasets in high-efficiency formats (e.g., Parquet, HDF5, TFRecord).\n\
+      - Log preprocessing statistics and output a summary report detailing sampling,\
+      \ feature statistics, and any transformations applied, ensuring full reproducibility\
+      \ and auditability."
   train_song_identification_model_training:
     agent: false
-    description: Train the model using the prepared data
+    description: Leverages fully preprocessed and feature-extracted audio data alongside
+      an integrated, structured song database to train a state-of-the-art song identification
+      model. Utilizes advanced machine learning techniques—such as convolutional or
+      recurrent neural networks—and rigorous training protocols, including stratified
+      train/validation/test splits, normalized feature scaling, and class imbalance
+      management. Employs cross-entropy loss, early stopping, data augmentation, and
+      real-time monitoring of learning curves. Produces a performant, generalizable
+      model capable of robust, accurate identification across diverse genres and recording
+      conditions.
     name: train_song_identification_model_training
     nodes_depended_on:
     - train_song_identification_model_data_prep
-    nodes_dependent_on:
-    - develop_artist_page_redirector_model_integration
-    prompt: Train the song identification model
+    nodes_dependent_on: []
+    prompt: Train the song identification model using the prepared dataset, which
+      contains extracted audio features and metadata from the preprocessed song database.
+      Implement a deep learning pipeline—such as a convolutional neural network (CNN)
+      or transformer architecture—optimized for audio classification. Incorporate
+      stratified splitting (train/validation/test), real-time feature normalization
+      (e.g., z-standardization), and data augmentation (pitch shift, time stretch,
+      noise injection) to enhance model robustness. Use appropriate loss functions
+      such as categorical cross-entropy, and enforce early stopping or learning rate
+      scheduling to mitigate overfitting. Track training, validation, and test accuracy
+      as well as loss curves throughout the training lifecycle. Output the final trained
+      model and a summary of key training metrics.
