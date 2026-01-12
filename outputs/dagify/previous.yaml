@@ -1,54 +1,58 @@
 dag_type: plain_text
-description: Execute the 'test' objective as a series of fundamental steps.
-name: test_workflow
+description: A highly concurrent workflow for testing purpose 2
+name: test_2_workflow
 nodes:
-  analyze_test_results:
+  step_1:
     agent: false
-    description: Evaluate the outcome of the testing approach and identify areas for
-      improvement.
-    name: analyze_test_results
-    nodes_depended_on:
-    - execute_testing_strategy
-    nodes_dependent_on: []
-    prompt: Analyze the results of the testing strategy.
-  determine_test_outcome:
-    agent: false
-    description: Conclude the test by deciding whether it was successful or not.
-    name: determine_test_outcome
-    nodes_depended_on:
-    - analyze_test_results
-    nodes_dependent_on: []
-    prompt: Determine the outcome of the test based on the analysis.
-  evaluate_test_objective:
-    agent: false
-    description: Determine the next step based on the parsed objective.
-    name: evaluate_test_objective
-    nodes_depended_on:
-    - parse_test_objective
-    nodes_dependent_on: []
-    prompt: Evaluate the extracted objective against predefined criteria to determine
-      a course of action.
-  execute_testing_strategy:
-    agent: false
-    description: Perform the chosen testing approach to achieve the objective.
-    name: execute_testing_strategy
-    nodes_depended_on:
-    - select_test_strategy
-    nodes_dependent_on: []
-    prompt: Implement the selected testing strategy.
-  parse_test_objective:
-    agent: false
-    description: Parse the test objective and extract the main purpose.
-    name: parse_test_objective
+    description: Initialize test environment
+    name: step_1
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Take the input 'test' and identify its primary objective.
-  select_test_strategy:
+    nodes_dependent_on:
+    - step_2
+    - step_3
+    prompt: Set up test environment with necessary dependencies
+  step_2:
     agent: false
-    description: Select a testing approach that aligns with the determined course
-      of action.
-    name: select_test_strategy
+    description: Prepare test data
+    name: step_2
     nodes_depended_on:
-    - evaluate_test_objective
+    - step_1
+    nodes_dependent_on:
+    - step_4
+    prompt: Generate test data for the workflow
+  step_3:
+    agent: false
+    description: Configure test parameters
+    name: step_3
+    nodes_depended_on:
+    - step_1
+    nodes_dependent_on:
+    - step_5
+    prompt: Define test parameters for the workflow
+  step_4:
+    agent: false
+    description: Run test scenario 1
+    name: step_4
+    nodes_depended_on:
+    - step_2
+    nodes_dependent_on:
+    - step_6
+    prompt: Execute test scenario 1 with prepared data
+  step_5:
+    agent: false
+    description: Run test scenario 2
+    name: step_5
+    nodes_depended_on:
+    - step_3
+    nodes_dependent_on:
+    - step_6
+    prompt: Execute test scenario 2 with configured parameters
+  step_6:
+    agent: false
+    description: Analyze test results
+    name: step_6
+    nodes_depended_on:
+    - step_4
+    - step_5
     nodes_dependent_on: []
-    prompt: Choose a testing strategy based on the evaluated objective.
+    prompt: Compare and analyze results from test scenarios 1 and 2
