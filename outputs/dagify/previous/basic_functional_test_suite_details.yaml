@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A structured test execution plan covering requirement verification, test
-  design, execution coordination, defect tracking and reporting
+dag_type: typed
+description: Generated workflow from UI.
 name: basic_functional_test_suite
 nodes:
   create_defect_template:
@@ -9,8 +8,45 @@ nodes:
     name: create_defect_template
     nodes_depended_on:
     - identify_test_requirements
-    nodes_dependent_on:
-    - log_defects
+    nodes_dependent_on: []
+    output_structure:
+    - description: The title or short summary of the defect
+      key: defect_title
+      type: str
+    - description: Detailed description of the defect
+      key: defect_description
+      type: str
+    - description: Ordered list of steps required to reproduce the defect
+      key: reproduction_steps
+      type: List[str]
+    - description: The expected outcome if the defect were not present
+      key: expected_result
+      type: str
+    - description: The actual outcome observed when the defect occurs
+      key: actual_result
+      type: str
+    - description: Numeric severity rating (e.g., 1 = critical, 5 = trivial)
+      key: severity_level
+      type: int
+    - description: Numeric priority rating for defect handling
+      key: priority_level
+      type: int
+    - description: Identifier of the requirement that the defect relates to
+      key: requirement_id
+      type: str
+    - description: Identifier of the test case that failed
+      key: test_case_id
+      type: str
+    - description: Name of the person who logged the defect
+      key: reporter_name
+      type: str
+    - description: Date when the defect was logged (ISO 8601 format)
+      key: date_reported
+      type: str
+    - description: Current status of the defect (e.g., Open, In Progress, Resolved,
+        Closed)
+      key: status
+      type: str
     prompt: Define fields and structure for consistent bug tracking including title,
       description, steps, expected/actual results, and metadata fields
   create_test_cases:
@@ -19,10 +55,29 @@ nodes:
     name: create_test_cases
     nodes_depended_on:
     - identify_test_requirements
-    nodes_dependent_on:
-    - execute_unit_tests
-    - execute_integration_tests
-    - execute_system_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifiers for each test case
+      key: test_case_ids
+      type: List[str]
+    - description: Identifier of the requirement each test case verifies
+      key: requirement_ids
+      type: List[str]
+    - description: Brief title summarising the purpose of each test case
+      key: test_titles
+      type: List[str]
+    - description: Detailed description of what the test case validates
+      key: test_descriptions
+      type: List[str]
+    - description: Semicolon‑separated list of steps to execute the test case
+      key: test_steps
+      type: List[str]
+    - description: Expected outcome for each test case
+      key: expected_results
+      type: List[str]
+    - description: Priority level of each test case (1 = high, 5 = low)
+      key: priority_levels
+      type: List[int]
     prompt: Design 50-100 test cases covering all listed requirements with test steps,
       expected results, and priority levels
   define_test_scope:
@@ -30,9 +85,17 @@ nodes:
     description: Establish boundaries and objectives of the testing cycle
     name: define_test_scope
     nodes_depended_on: []
-    nodes_dependent_on:
-    - create_test_cases
-    - setup_test_environment
+    nodes_dependent_on: []
+    output_structure:
+    - description: Description of the system boundaries to be tested
+      key: system_boundaries
+      type: str
+    - description: Objectives that the test cycle aims to achieve
+      key: testing_objectives
+      type: str
+    - description: Criteria that determine whether the system meets the required standards
+      key: acceptance_criteria
+      type: str
     prompt: Create a 200-word scope document defining system boundaries, testing objectives,
       and acceptance criteria for the test cycle
   execute_integration_tests:
@@ -43,9 +106,40 @@ nodes:
     - create_test_cases
     - setup_test_environment
     - prepare_test_data
-    nodes_dependent_on:
-    - log_defects
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: Identifiers for each executed integration test case.
+      key: test_case_id
+      type: List[str]
+    - description: Component(s) whose interface or dependency was validated in each
+        test case.
+      key: component_under_test
+      type: List[str]
+    - description: Pass (true) or fail (false) status for each test case.
+      key: execution_status
+      type: List[bool]
+    - description: Execution duration in seconds for each test case.
+      key: execution_time_seconds
+      type: List[float]
+    - description: Error or failure message for failed test cases; empty string for
+        passed cases.
+      key: error_message
+      type: List[str]
+    - description: List of components affected or involved in the test case.
+      key: affected_components
+      type: List[str]
+    - description: Total number of integration test cases executed.
+      key: total_tests_run
+      type: int
+    - description: Number of test cases that passed.
+      key: passed_count
+      type: int
+    - description: Number of test cases that failed.
+      key: failed_count
+      type: int
+    - description: 'Overall stability flag: true if all tests passed, false otherwise.'
+      key: is_stable
+      type: bool
     prompt: Execute test cases validating interface/dependency relationships with
       associated test data and document execution results
   execute_system_tests:
@@ -56,9 +150,33 @@ nodes:
     - create_test_cases
     - setup_test_environment
     - prepare_test_data
-    nodes_dependent_on:
-    - log_defects
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: Identifiers of the system test cases executed
+      key: test_case_ids
+      type: List[str]
+    - description: Boolean flag indicating pass (true) or fail (false) for each test
+        case
+      key: passed_flags
+      type: List[bool]
+    - description: Execution time in seconds for each test case
+      key: execution_times
+      type: List[float]
+    - description: List of defect identifiers discovered during execution
+      key: defect_ids
+      type: List[str]
+    - description: Total number of test cases executed
+      key: total_tests
+      type: int
+    - description: Number of test cases that passed
+      key: total_passed
+      type: int
+    - description: Number of test cases that failed
+      key: total_failed
+      type: int
+    - description: Overall pass rate expressed as a decimal between 0 and 1
+      key: overall_pass_rate
+      type: float
     prompt: Execute end-to-end test cases against complete system with associated
       test data and document execution results
   execute_unit_tests:
@@ -69,9 +187,29 @@ nodes:
     - create_test_cases
     - setup_test_environment
     - prepare_test_data
-    nodes_dependent_on:
-    - log_defects
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: Identifiers of each unit test case executed
+      key: test_case_ids
+      type: List[str]
+    - description: Number of test cases that passed
+      key: passed_count
+      type: int
+    - description: Number of test cases that failed
+      key: failed_count
+      type: int
+    - description: Percentage of test cases that passed (0.0 to 1.0)
+      key: pass_rate
+      type: float
+    - description: Identifiers of test cases that failed
+      key: failed_test_ids
+      type: List[str]
+    - description: Human‑readable failure details for each failed test case
+      key: failure_descriptions
+      type: List[str]
+    - description: True if all unit tests passed, otherwise False
+      key: is_successful
+      type: bool
     prompt: Execute test cases targeting atomic functionality with associated test
       data and document execution results
   generate_test_report:
@@ -84,6 +222,39 @@ nodes:
     - execute_system_tests
     - retest_defects
     nodes_dependent_on: []
+    output_structure:
+    - description: Total number of test cases executed
+      key: total_tests
+      type: int
+    - description: Number of test cases that passed
+      key: passed_tests
+      type: int
+    - description: Number of test cases that failed
+      key: failed_tests
+      type: int
+    - description: Percentage of tests that passed (0.0 to 100.0)
+      key: pass_rate
+      type: float
+    - description: Percentage of tests that failed (0.0 to 100.0)
+      key: fail_rate
+      type: float
+    - description: Total number of defects logged during the test cycle
+      key: defect_count
+      type: int
+    - description: Counts of defects categorized by severity level in order [low,
+        medium, high]
+      key: defects_by_severity
+      type: List[int]
+    - description: Overall trend indicator (positive for improvement, negative for
+        regression)
+      key: trend_score
+      type: float
+    - description: Indicates if the system meets release readiness criteria
+      key: ready_for_release
+      type: bool
+    - description: Date the report was generated (YYYY-MM-DD)
+      key: report_date
+      type: str
     prompt: Create test summary including pass/fail rates, defect statistics, trend
       analysis, and readiness assessment
   identify_test_requirements:
@@ -92,9 +263,17 @@ nodes:
     name: identify_test_requirements
     nodes_depended_on:
     - define_test_scope
-    nodes_dependent_on:
-    - create_test_cases
-    - create_defect_template
+    nodes_dependent_on: []
+    output_structure:
+    - description: Sequential numeric IDs assigned to each requirement
+      key: requirement_ids
+      type: List[int]
+    - description: Textual description of each testable requirement
+      key: requirement_descriptions
+      type: List[str]
+    - description: Priority ranking for each requirement (1 = highest, 50 = lowest)
+      key: priority_levels
+      type: List[int]
     prompt: Generate a prioritized list of 25-50 testable requirements from documentation
       based on the established test scope
   log_defects:
@@ -105,9 +284,47 @@ nodes:
     - execute_unit_tests
     - execute_integration_tests
     - execute_system_tests
-    nodes_dependent_on:
-    - retest_defects
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique numeric identifier of the test case that failed
+      key: test_case_id
+      type: int
+    - description: Human‑readable name or description of the test case
+      key: test_name
+      type: str
+    - description: ISO 8601 timestamp when the test case was executed
+      key: execution_timestamp
+      type: str
+    - description: 'Category of the test: unit, integration, or system'
+      key: test_type
+      type: str
+    - description: Configuration or environment where the failure occurred
+      key: environment
+      type: str
+    - description: Ordered list of steps to reproduce the failure
+      key: reproduction_steps
+      type: List[str]
+    - description: Result that was expected according to the test specification
+      key: expected_result
+      type: str
+    - description: Result that actually occurred during the test run
+      key: actual_result
+      type: str
+    - description: 'Textual severity classification: Low, Medium, High, or Critical'
+      key: severity_level
+      type: str
+    - description: Numeric code for severity (1=Low, 2=Medium, 3=High, 4=Critical)
+      key: severity_code
+      type: int
+    - description: Identifier assigned to the logged defect in the tracking system
+      key: defect_id
+      type: str
+    - description: 'Current status of the defect: Open, In Progress, Fixed, or Closed'
+      key: defect_status
+      type: str
+    - description: Additional notes or observations about the failure
+      key: comments
+      type: str
     prompt: Document failed test cases with detailed reproduction steps, expected
       vs actual results, and severity classification
   prepare_test_data:
@@ -117,10 +334,28 @@ nodes:
     nodes_depended_on:
     - setup_test_environment
     - identify_test_requirements
-    nodes_dependent_on:
-    - execute_unit_tests
-    - execute_integration_tests
-    - execute_system_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the requirement being tested
+      key: requirement_id
+      type: str
+    - description: Short title or description of the requirement
+      key: requirement_title
+      type: str
+    - description: Data type expected for this requirement (e.g., int, float, str,
+        bool)
+      key: data_type
+      type: str
+    - description: List of synthetic values that satisfy the requirement
+      key: valid_samples
+      type: List[str]
+    - description: List of synthetic values that intentionally violate the requirement
+      key: invalid_samples
+      type: List[str]
+    - description: Total number of sample values generated (sum of valid and invalid
+        samples)
+      key: sample_count
+      type: int
     prompt: Create synthetic test data with valid/invalid values for each identified
       requirement needing verifiable input
   retest_defects:
@@ -129,8 +364,26 @@ nodes:
     name: retest_defects
     nodes_depended_on:
     - log_defects
-    nodes_dependent_on:
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of defect identifiers that were retested
+      key: retested_defect_ids
+      type: List[str]
+    - description: Number of defects that passed retest
+      key: retest_pass_count
+      type: int
+    - description: Number of defects that failed retest
+      key: retest_fail_count
+      type: int
+    - description: Whether all retested defects passed
+      key: overall_retest_success
+      type: bool
+    - description: Date when the retest was performed
+      key: retest_date
+      type: str
+    - description: Brief summary of retest outcomes and observations
+      key: retest_summary
+      type: str
     prompt: Execute previously failed test cases against fixed system to verify resolution
       and document retest outcomes
   setup_test_environment:
@@ -139,9 +392,30 @@ nodes:
     name: setup_test_environment
     nodes_depended_on:
     - define_test_scope
-    nodes_dependent_on:
-    - execute_unit_tests
-    - execute_integration_tests
-    - execute_system_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Name of the test environment instance
+      key: environment_name
+      type: str
+    - description: List of required hardware components and specifications
+      key: hardware_configurations
+      type: List[str]
+    - description: List of software versions, patches, and configurations needed
+      key: software_configurations
+      type: List[str]
+    - description: List of network settings such as IP ranges, port mappings, and
+        protocols
+      key: network_parameters
+      type: List[str]
+    - description: Step‑by‑step instructions for populating the environment with test
+        data
+      key: data_setup_steps
+      type: List[str]
+    - description: File system path or URL to the full configuration document
+      key: configuration_document_path
+      type: str
+    - description: Indicates whether the environment was successfully configured
+      key: setup_success
+      type: bool
     prompt: Document all required hardware/software configurations, network parameters,
       and data setup steps for test environment
