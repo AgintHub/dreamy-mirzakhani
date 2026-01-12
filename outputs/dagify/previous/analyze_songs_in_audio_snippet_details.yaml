@@ -1,73 +1,189 @@
 dag_type: plain_text
-description: Create an app that identifies the underlying songs in an audio snippet
+description: Generated workflow from UI.
 name: analyze_songs_in_audio_snippet
 nodes:
   display_results:
     agent: false
-    description: Displays the generated results page in the user's browser
+    description: Displays the generated HTML results page in the user's browser, incorporating
+      the identified songs and links to musician pages, while ensuring proper rendering,
+      error handling, and user experience optimizations. This node takes the output
+      of the generate_results_page node as input and renders the resulting HTML page,
+      applying various techniques to enhance performance, security, and accessibility.
     name: display_results
     nodes_depended_on:
     - generate_results_page
     nodes_dependent_on: []
-    prompt: Display the generated results page in the user's browser
+    prompt: Render the generated HTML results page in the user's browser, incorporating
+      identified songs and links to musician pages, while ensuring proper handling
+      of CSS and JavaScript resources, and maintaining a responsive design to accommodate
+      various screen sizes and devices. Implement appropriate error handling mechanisms
+      to manage potential rendering issues, such as missing or malformed HTML elements,
+      and provide a smooth user experience through optimizations like asynchronous
+      resource loading, caching, and content delivery network (CDN) integration. Enable
+      interactive features, including hover effects, tooltips, and click events, to
+      enhance user engagement and provide an immersive experience. Utilize web development
+      best practices, such as semantic HTML, modular CSS, and ES6+ JavaScript syntax,
+      to ensure maintainability, readability, and cross-browser compatibility. Execute
+      the rendering process within a sandboxed environment to prevent potential security
+      vulnerabilities and ensure the confidentiality, integrity, and availability
+      of user data.
   extract_features_from_audio:
     agent: false
-    description: Extracts audio features such as frequency, amplitude, and timbre
+    description: Extracts a comprehensive set of audio features, including spectral
+      characteristics such as frequency, amplitude, and timbre, as well as temporal
+      attributes like rhythm, tempo, and beat, utilizing techniques like Mel-Frequency
+      Cepstral Coefficients (MFCCs), spectrograms, and wavelet transforms to capture
+      nuanced patterns and structures within the audio signal, facilitating subsequent
+      analysis, classification, or processing tasks.
     name: extract_features_from_audio
     nodes_depended_on:
     - load_audio_snippet
     nodes_dependent_on: []
-    prompt: Extract audio features using a suitable algorithm
+    prompt: Extract audio features from the loaded audio snippet using a combination
+      of time-domain and frequency-domain analysis techniques. Apply algorithms such
+      as Fast Fourier Transform (FFT), Short-Time Fourier Transform (STFT), or Continuous
+      Wavelet Transform (CWT) to decompose the signal into its constituent components.
+      Compute spectral features like spectral centroid, bandwidth, and rolloff frequency,
+      as well as temporal features like zero-crossing rate, energy, and entropy. Utilize
+      machine learning-based approaches, such as convolutional neural networks (CNNs)
+      or recurrent neural networks (RNNs), to learn feature representations from the
+      audio data. Ensure the extracted features are robust, informative, and relevant
+      for downstream applications, such as music classification, speech recognition,
+      or audio event detection.
   fetch_music_metadata:
     agent: false
-    description: Fetches metadata for matching songs, including title, artist, and
-      links to musician pages
+    description: Executes a sophisticated metadata retrieval process, leveraging music
+      databases, APIs, and web crawling techniques to fetch comprehensive metadata
+      for matching songs, including title, artist, album, genre, release date, duration,
+      bitrate, sample rate, and links to musician pages, official websites, and social
+      media profiles. Applies robust error handling, data validation, sanitization,
+      and normalization to ensure high-quality metadata, and utilizes music information
+      retrieval (MIR) techniques, such as acoustic fingerprinting, audio feature extraction,
+      and natural language processing (NLP), to guarantee accurate and comprehensive
+      metadata retrieval.
     name: fetch_music_metadata
     nodes_depended_on:
     - query_music_database
     nodes_dependent_on: []
-    prompt: Fetch metadata for matching songs, including title, artist, and links
-      to musician pages
+    prompt: Fetch metadata for matching songs by executing a high-fidelity, API-driven
+      query, incorporating robust error handling, and retrieving pertinent information,
+      including title, artist, album, genre, release date, duration, bitrate, sample
+      rate, and links to musician pages, official websites, and social media profiles.
+      Leverage music information retrieval (MIR) techniques, such as acoustic fingerprinting,
+      audio feature extraction, and natural language processing (NLP), to ensure accurate
+      and comprehensive metadata retrieval. Implement data validation, sanitization,
+      and normalization to ensure consistency and quality of the fetched metadata,
+      and apply data transformation and aggregation techniques to facilitate downstream
+      processing and analysis.
   generate_results_page:
     agent: false
-    description: Generates an HTML page with the identified songs and links to their
-      musician pages
+    description: Generates a rich, interactive HTML5 results page displaying the identified
+      songs, complete with links to their corresponding musician pages, leveraging
+      responsive web design principles, semantic markup, and cutting-edge front-end
+      development techniques to deliver an exceptional user experience, while ensuring
+      accessibility, cross-browser compatibility, and optimal search engine discoverability.
     name: generate_results_page
     nodes_depended_on:
     - fetch_music_metadata
     nodes_dependent_on: []
-    prompt: Generate an HTML page displaying the identified songs with links to their
-      corresponding musician pages
+    prompt: Generate an HTML5-compliant results page showcasing the identified songs,
+      each accompanied by its corresponding metadata—title, artist, release year,
+      and genres—alongside dynamically generated links to their respective musician
+      pages, incorporating microformats for enhanced semantic markup and SEO optimization.
+      Implement a responsive, mobile-first design utilizing CSS3 media queries, ensuring
+      cross-browser compatibility and accessibility compliance. Leverage JavaScript
+      libraries, such as React or Angular, to create a dynamic, interactive user interface
+      that facilitates effortless navigation and exploratory discovery of related
+      artists and songs. Integrate a robust, client-side filtering and sorting mechanism,
+      utilizing WebStorage for caching and optimized performance. Incorporate OpenGraph
+      protocol metadata for seamless social media sharing and provide a bookmarkable,
+      RESTful URL scheme for easy reference and deep linking. Ensure adherence to
+      HTML validation standards and perform thorough unit testing, integration testing,
+      and UI automation testing to guarantee a seamless, error-free user experience.
   identify_tone_and_pitch:
     agent: false
-    description: Identifies the tone and pitch of the audio snippet using machine
-      learning algorithms
+    description: Employs a multimodal, deep-learning framework incorporating convolutional
+      neural networks (CNNs) and recurrent neural networks (RNNs) to identify the
+      tone and pitch of an audio snippet, leveraging spectrogram and mel-frequency
+      cepstral coefficient (MFCC) features extracted from the audio signal, and utilizing
+      techniques such as transfer learning and data augmentation to enhance model
+      robustness and generalizability.
     name: identify_tone_and_pitch
     nodes_depended_on:
     - extract_features_from_audio
     nodes_dependent_on: []
-    prompt: Determine the tone and pitch of the audio snippet
+    prompt: Utilize a spectrogram-based, CNN-RNN hybrid architecture to identify the
+      tone and pitch of the audio snippet, applying Fourier transform, short-time
+      Fourier transform (STFT), and mel-scale filtering to extract discriminative
+      features from the audio signal, and then process these features with a mel-frequency
+      cepstral coefficient (MFCC) analyzer to generate a compact, tone-pitch representation
+      that can be fed into a machine learning model for classification and regression
+      tasks, incorporating regularization techniques such as dropout, L1, and L2 regularization,
+      and optimization algorithms like stochastic gradient descent (SGD), Adam, and
+      RMSProp to ensure model convergence and accuracy, and finally, evaluate model
+      performance using metrics like mean squared error (MSE), mean absolute error
+      (MAE), and R-squared to assess tone-pitch identification accuracy and robustness.
   load_audio_snippet:
     agent: false
-    description: Loads the audio snippet from a local file
+    description: Loads a user-specified audio snippet from a local file system, performing
+      essential preprocessing steps such as sampling rate adjustment, noise suppression,
+      and spectral normalization to guarantee compatibility and optimal quality for
+      subsequent processing, analysis, and visualization tasks. Leverages advanced
+      audio signal processing libraries and frameworks to facilitate efficient, flexible,
+      and high-fidelity audio data loading, while maintaining detailed metadata and
+      provenance information to support rigorous downstream applications.
     name: load_audio_snippet
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Load the audio snippet from a file
+    prompt: Load a precisely specified audio snippet from a local file system, applying
+      sampling rate conversion, noise reduction, and spectral normalization as necessary,
+      to ensure seamless integration with downstream processing and analysis stages.
+      Utilize librosa, pydub, or similar libraries to facilitate lossless compression,
+      audio data type conversion, and compatibility with various formats such as WAV,
+      MP3, and FLAC. Provide rich metadata, including audio signal characteristics,
+      file format specifics, and loading parameters, to inform subsequent operations
+      and ensure end-to-end data provenance.
   query_music_database:
     agent: false
-    description: Queries a music database using APIs or web crawling to identify matching
-      songs
+    description: Performs an exhaustive, multi-modal query on a comprehensive music
+      database to identify songs that match the specified tone and pitch characteristics,
+      utilizing advanced audio feature extraction, machine learning, and NLP techniques
+      to optimize search results and provide relevant song recommendations.
     name: query_music_database
     nodes_depended_on:
     - identify_tone_and_pitch
     nodes_dependent_on: []
-    prompt: Query a music database based on the identified tone and pitch
+    prompt: Execute a multi-modal query on the music database by leveraging APIs,
+      web scraping, and metadata extraction techniques to identify matching songs
+      based on the previously identified tone and pitch characteristics. Apply advanced
+      audio feature extraction methods, such as Mel-Frequency Cepstral Coefficients
+      (MFCCs), spectral centroid, and chroma features, to generate a robust query
+      fingerprint. Utilize Natural Language Processing (NLP) and machine learning
+      algorithms, including collaborative filtering and content-based filtering, to
+      refine search results and recommend relevant songs. Integrate with music information
+      retrieval (MIR) systems and ontologies, such as MusicBrainz and AcousticBrainz,
+      to enhance query precision and recall. Present the search results in a structured
+      format, including song metadata, audio previews, and relevance scores, to facilitate
+      further analysis and processing.
   update_music_database:
     agent: false
-    description: Updates the music database with the newly fetched metadata
+    description: Performs a metadata-driven update of the music database, incorporating
+      newly fetched song attributes—such as title, artist, and musician links—into
+      the database schema, while maintaining referential integrity, ensuring data
+      freshness, and providing a transparent and auditable update history. This process
+      involves data ingestion, entity resolution, data normalization, and consistency
+      checks to guarantee a unified and reliable music information repository.
     name: update_music_database
     nodes_depended_on:
     - fetch_music_metadata
     nodes_dependent_on: []
-    prompt: Update the music database with the newly fetched metadata
+    prompt: Update the music database by integrating the newly fetched metadata—title,
+      artist, and links to musician pages—into the existing dataset, ensuring data
+      consistency and handling potential duplicates through idempotent insertion or
+      UPSERT operations. Apply data validation, sanitization, and normalization techniques
+      to guarantee data integrity, and utilize transactional semantics to maintain
+      database consistency. Perform data indexing and caching to enhance query performance,
+      and establish data retention and versioning policies to facilitate auditing
+      and rollback capabilities. Implement a logging mechanism to track database updates,
+      and enforce access control and authentication measures to prevent unauthorized
+      modifications.

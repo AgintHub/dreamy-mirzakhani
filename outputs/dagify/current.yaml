@@ -1,4 +1,4 @@
-dag_type: plain_text
+dag_type: typed
 description: Generated workflow from UI.
 name: analyze_songs_in_audio_snippet
 nodes:
@@ -13,6 +13,22 @@ nodes:
     nodes_depended_on:
     - generate_results_page
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether the HTML results page was successfully rendered in the
+        user's browser
+      key: rendering_status
+      type: bool
+    - description: List of any rendering errors or issues encountered during the process
+      key: rendering_errors
+      type: List[str]
+    - description: List of metrics related to user interaction with the rendered HTML
+        page, such as time spent on page, hover events, and click events
+      key: user_interaction_metrics
+      type: List[float]
+    - description: List of performance metrics related to the rendering process, such
+        as load time, rendering time, and resource loading time
+      key: performance_metrics
+      type: List[float]
     prompt: Render the generated HTML results page in the user's browser, incorporating
       identified songs and links to musician pages, while ensuring proper handling
       of CSS and JavaScript resources, and maintaining a responsive design to accommodate
@@ -39,6 +55,35 @@ nodes:
     nodes_depended_on:
     - load_audio_snippet
     nodes_dependent_on: []
+    output_structure:
+    - description: The spectral centroid of the audio signal, representing the weighted
+        mean of the frequency spectrum
+      key: spectral_centroid
+      type: float
+    - description: The spectral bandwidth of the audio signal, representing the range
+        of frequencies present in the signal
+      key: spectral_bandwidth
+      type: float
+    - description: The rolloff frequency of the audio signal, representing the frequency
+        below which a certain percentage of the signal's energy lies
+      key: rolloff_frequency
+      type: float
+    - description: The zero-crossing rate of the audio signal, representing the number
+        of times the signal crosses the zero amplitude axis
+      key: zero_crossing_rate
+      type: float
+    - description: The energy of the audio signal, representing the total amount of
+        energy present in the signal
+      key: energy
+      type: float
+    - description: The entropy of the audio signal, representing the amount of uncertainty
+        or randomness present in the signal
+      key: entropy
+      type: float
+    - description: A list of temporal features extracted from the audio signal, including
+        rhythm, tempo, and beat
+      key: temporal_features
+      type: List[float]
     prompt: Extract audio features from the loaded audio snippet using a combination
       of time-domain and frequency-domain analysis techniques. Apply algorithms such
       as Fast Fourier Transform (FFT), Short-Time Fourier Transform (STFT), or Continuous
@@ -65,6 +110,40 @@ nodes:
     nodes_depended_on:
     - query_music_database
     nodes_dependent_on: []
+    output_structure:
+    - description: List of song titles
+      key: song_titles
+      type: List[str]
+    - description: List of artist names
+      key: artist_names
+      type: List[str]
+    - description: List of album names
+      key: album_names
+      type: List[str]
+    - description: List of genres
+      key: genres
+      type: List[str]
+    - description: List of release dates
+      key: release_dates
+      type: List[str]
+    - description: List of song durations in seconds
+      key: durations
+      type: List[int]
+    - description: List of bitrates
+      key: bitrates
+      type: List[int]
+    - description: List of sample rates
+      key: sample_rates
+      type: List[int]
+    - description: List of links to musician pages
+      key: musician_page_links
+      type: List[str]
+    - description: List of links to official websites
+      key: official_website_links
+      type: List[str]
+    - description: List of social media links
+      key: social_media_links
+      type: List[str]
     prompt: Fetch metadata for matching songs by executing a high-fidelity, API-driven
       query, incorporating robust error handling, and retrieving pertinent information,
       including title, artist, album, genre, release date, duration, bitrate, sample
@@ -86,6 +165,23 @@ nodes:
     nodes_depended_on:
     - fetch_music_metadata
     nodes_dependent_on: []
+    output_structure:
+    - description: The generated HTML content of the results page
+      key: html_content
+      type: str
+    - description: List of metadata for each identified song, including title, artist,
+        and release year
+      key: song_metadata
+      type: List[str]
+    - description: List of links to the musician pages
+      key: musician_links
+      type: List[str]
+    - description: The title of the generated results page
+      key: page_title
+      type: str
+    - description: Whether the results page was generated successfully
+      key: success_status
+      type: bool
     prompt: Generate an HTML5-compliant results page showcasing the identified songs,
       each accompanied by its corresponding metadata—title, artist, release year,
       and genres—alongside dynamically generated links to their respective musician
@@ -112,6 +208,24 @@ nodes:
     nodes_depended_on:
     - extract_features_from_audio
     nodes_dependent_on: []
+    output_structure:
+    - description: The identified tone of the audio snippet
+      key: tone
+      type: str
+    - description: The identified pitch of the audio snippet
+      key: pitch
+      type: float
+    - description: The confidence level of the tone and pitch identification
+      key: confidence_level
+      type: float
+    - description: The error metric used to evaluate model performance, such as mean
+        squared error (MSE) or mean absolute error (MAE)
+      key: error_metric
+      type: float
+    - description: The list of features used to identify the tone and pitch, such
+        as spectral centroid or rolloff frequency
+      key: identified_features
+      type: List[str]
     prompt: Utilize a spectrogram-based, CNN-RNN hybrid architecture to identify the
       tone and pitch of the audio snippet, applying Fourier transform, short-time
       Fourier transform (STFT), and mel-scale filtering to extract discriminative
@@ -135,6 +249,20 @@ nodes:
     name: load_audio_snippet
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: The loaded audio data as a string
+      key: audio_data
+      type: str
+    - description: The sampling rate of the loaded audio data
+      key: sampling_rate
+      type: int
+    - description: The file format of the loaded audio data (e.g. WAV, MP3, FLAC)
+      key: file_format
+      type: str
+    - description: A list of metadata fields, including audio signal characteristics
+        and loading parameters
+      key: metadata
+      type: List[str]
     prompt: Load a precisely specified audio snippet from a local file system, applying
       sampling rate conversion, noise reduction, and spectral normalization as necessary,
       to ensure seamless integration with downstream processing and analysis stages.
@@ -153,6 +281,19 @@ nodes:
     nodes_depended_on:
     - identify_tone_and_pitch
     nodes_dependent_on: []
+    output_structure:
+    - description: List of song titles that match the specified tone and pitch characteristics
+      key: song_matches
+      type: List[str]
+    - description: List of song metadata, including artist, album, and genre
+      key: song_metadata
+      type: List[str]
+    - description: List of relevance scores corresponding to each song match
+      key: relevance_scores
+      type: List[float]
+    - description: List of audio preview URLs or IDs for each song match
+      key: audio_previews
+      type: List[str]
     prompt: Execute a multi-modal query on the music database by leveraging APIs,
       web scraping, and metadata extraction techniques to identify matching songs
       based on the previously identified tone and pitch characteristics. Apply advanced
@@ -177,6 +318,16 @@ nodes:
     nodes_depended_on:
     - fetch_music_metadata
     nodes_dependent_on: []
+    output_structure:
+    - description: Indicates whether the database update was successful
+      key: update_status
+      type: bool
+    - description: The number of records updated in the database
+      key: updated_record_count
+      type: int
+    - description: A log of changes made during the update process
+      key: update_log
+      type: List[str]
     prompt: Update the music database by integrating the newly fetched metadata—title,
       artist, and links to musician pages—into the existing dataset, ensuring data
       consistency and handling potential duplicates through idempotent insertion or
