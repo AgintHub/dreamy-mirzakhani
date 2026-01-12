@@ -1,58 +1,99 @@
 dag_type: plain_text
-description: A highly concurrent workflow for testing purpose 2
-name: test_2_workflow
+description: A workflow that executes test number 3, collects its output, evaluates
+  success, logs the result, and notifies developers if needed.
+name: run_test_3
 nodes:
-  step_1:
+  collect_test_output:
     agent: false
-    description: Initialize test environment
-    name: step_1
+    description: Collects all output produced by test 3.
+    name: collect_test_output
+    nodes_depended_on:
+    - execute_test_3
+    nodes_dependent_on:
+    - evaluate_test_pass_fail
+    prompt: Gather the logs, test reports, and any generated artifacts from the execution
+      of test 3. Store them in a structured format for analysis.
+  evaluate_test_pass_fail:
+    agent: false
+    description: Assesses the success status of test 3.
+    name: evaluate_test_pass_fail
+    nodes_depended_on:
+    - collect_test_output
+    nodes_dependent_on:
+    - log_test_result
+    prompt: Compare the collected output against the expected results defined in the
+      specification. Determine whether test 3 passes or fails and note any discrepancies.
+  execute_test_3:
+    agent: false
+    description: Runs test 3 and records its execution output.
+    name: execute_test_3
+    nodes_depended_on:
+    - prepare_test_environment
+    - generate_test_data
+    - mock_external_services
+    nodes_dependent_on:
+    - collect_test_output
+    prompt: Run the test code for test 3 using the prepared environment, generated
+      data, and mocks. Capture all logs and artifacts produced during execution.
+  generate_test_data:
+    agent: false
+    description: Produces the input data for test 3.
+    name: generate_test_data
+    nodes_depended_on:
+    - retrieve_test_3_spec
+    nodes_dependent_on:
+    - execute_test_3
+    prompt: Generate the data required for test 3 as described in the specification.
+      Output the data in the required format and store it in the designated test data
+      directory.
+  log_test_result:
+    agent: false
+    description: Logs the outcome of test 3.
+    name: log_test_result
+    nodes_depended_on:
+    - evaluate_test_pass_fail
+    nodes_dependent_on:
+    - notify_developers
+    prompt: Record the test result (pass/fail), evaluation details, and any relevant
+      artifacts in the test management system.
+  mock_external_services:
+    agent: false
+    description: Sets up mock services to isolate test 3 from external dependencies.
+    name: mock_external_services
+    nodes_depended_on:
+    - retrieve_test_3_spec
+    nodes_dependent_on:
+    - execute_test_3
+    prompt: Create mocks for any external services that test 3 interacts with. Ensure
+      the mocks return the responses defined in the specification.
+  notify_developers:
+    agent: false
+    description: Alerts developers about the completion and result of test 3.
+    name: notify_developers
+    nodes_depended_on:
+    - log_test_result
+    nodes_dependent_on: []
+    prompt: Send a notification to the development team with the test result and a
+      summary of any failures. Include links to the detailed logs and artifacts.
+  prepare_test_environment:
+    agent: false
+    description: Creates the runtime environment needed for test 3.
+    name: prepare_test_environment
+    nodes_depended_on:
+    - retrieve_test_3_spec
+    nodes_dependent_on:
+    - execute_test_3
+    prompt: Set up the test environment according to the specification. Configure
+      environment variables, install dependencies, and ensure the required services
+      are running.
+  retrieve_test_3_spec:
+    agent: false
+    description: Obtains the detailed specification for test 3.
+    name: retrieve_test_3_spec
     nodes_depended_on: []
     nodes_dependent_on:
-    - step_2
-    - step_3
-    prompt: Set up test environment with necessary dependencies
-  step_2:
-    agent: false
-    description: Prepare test data
-    name: step_2
-    nodes_depended_on:
-    - step_1
-    nodes_dependent_on:
-    - step_4
-    prompt: Generate test data for the workflow
-  step_3:
-    agent: false
-    description: Configure test parameters
-    name: step_3
-    nodes_depended_on:
-    - step_1
-    nodes_dependent_on:
-    - step_5
-    prompt: Define test parameters for the workflow
-  step_4:
-    agent: false
-    description: Run test scenario 1
-    name: step_4
-    nodes_depended_on:
-    - step_2
-    nodes_dependent_on:
-    - step_6
-    prompt: Execute test scenario 1 with prepared data
-  step_5:
-    agent: false
-    description: Run test scenario 2
-    name: step_5
-    nodes_depended_on:
-    - step_3
-    nodes_dependent_on:
-    - step_6
-    prompt: Execute test scenario 2 with configured parameters
-  step_6:
-    agent: false
-    description: Analyze test results
-    name: step_6
-    nodes_depended_on:
-    - step_4
-    - step_5
-    nodes_dependent_on: []
-    prompt: Compare and analyze results from test scenarios 1 and 2
+    - prepare_test_environment
+    - generate_test_data
+    - mock_external_services
+    prompt: Fetch the specification for test number 3 from the test management repository.
+      Provide the test name, purpose, required inputs, and expected outputs.
