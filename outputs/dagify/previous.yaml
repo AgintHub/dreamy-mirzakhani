@@ -1,6 +1,6 @@
 dag_type: plain_text
-description: Generated workflow from UI with enhanced detail in each step to support
-  comprehensive fund formation.
+description: Generated workflow from UI with more detailed planning steps to support
+  comprehensive fund setup.
 name: build_hedge_fund
 nodes:
   choose_investment_strategy:
@@ -13,6 +13,7 @@ nodes:
     nodes_dependent_on:
     - define_asset_universe
     - set_performance_and_risk_targets
+    - design_risk_management_framework
     prompt: Choose one primary hedge fund strategy (e.g., long/short equity, global
       macro, event-driven, quantitative arbitrage). Provide a detailed one-sentence
       justification explaining how this strategy directly supports the stated fund
@@ -21,7 +22,8 @@ nodes:
       signals the strategy relies on (e.g., earnings revisions, macro indicators,
       volatility patterns). Add a second sentence outlining the typical holding period
       (e.g., days to months) and a third listing data sources required (e.g., Bloomberg,
-      alternative data feeds, earnings transcripts).
+      alternative data feeds, earnings transcripts). Provide specific examples of
+      trade entry and exit triggers based on these signals.
   choose_legal_entity_type:
     agent: false
     description: Determine the appropriate legal structure for the fund based on jurisdiction
@@ -40,7 +42,8 @@ nodes:
       note any restrictions on investor nationality or capital movement. Add a second
       sentence describing the implications for fund formation timeline and documentation
       (e.g., 'Delaware LP requires certificate of limited partnership and limited
-      partnership agreement, adding 2–3 weeks to setup').
+      partnership agreement, adding 2–3 weeks to setup'). List required governing
+      documents, signing authorities, and custodial setup prerequisites.
   clarify_fund_objectives:
     agent: false
     description: Define the core business and investment goals of the hedge fund.
@@ -48,8 +51,8 @@ nodes:
     nodes_depended_on: []
     nodes_dependent_on:
     - choose_investment_strategy
-    - define_investor_profile
     - select_jurisdiction
+    - define_investor_profile
     - set_performance_and_risk_targets
     prompt: List the primary objectives for creating this hedge fund, including investment
       purpose, target returns, competitive differentiation, and long-term vision.
@@ -77,7 +80,9 @@ nodes:
       descriptions or content. Ensure flow logically supports investor decision-making.
       Add a second line under each title specifying the data source (e.g., ''Target
       Returns → based on 5-year backtest'') and confidence level of projection (e.g.,
-      high, medium).'
+      high, medium). For each slide, list required approvals (e.g., ''legal must review
+      terms slide'') and version control policy (e.g., investor-specific versions
+      archived monthly).'
   create_hiring_plan:
     agent: false
     description: Define the core team structure for launch.
@@ -93,7 +98,8 @@ nodes:
       or outsourced. Prioritize roles critical to execution, compliance, reporting,
       and investor relations. Align with governance and workflow needs. For each role,
       add required qualifications (e.g., 'CFA preferred', 'Series 7/63'), and estimated
-      time-to-hire from launch milestone.
+      time-to-hire from launch milestone. Include reporting structure, onboarding
+      checklist, and key performance indicators (KPIs) for first 90 days in role.
   define_asset_universe:
     agent: false
     description: Identify the specific financial instruments the fund will trade.
@@ -108,7 +114,8 @@ nodes:
       typical liquidity profile, and trading hours. Provide only names and metadata—do
       not include weights, allocations, or rationales. Add a column 'Settlement Convention
       (e.g., T+2, T+1)' and 'Instrument Complexity Level (Low/Medium/High)' for operational
-      planning.
+      planning. For each instrument, specify clearing method (central counterparty
+      or bilateral), margin requirements, and any currency conversion dependencies.
   define_investor_profile:
     agent: false
     description: Characterize the ideal investors for the fund.
@@ -125,7 +132,9 @@ nodes:
       origin. Include how investor expectations will influence fee design and reporting
       cadence. Limit response to one concise paragraph without markdown. Add a second
       paragraph outlining investor communication preferences (e.g., monthly reports,
-      quarterly calls) and preferred reporting format (PDF, dashboard).
+      quarterly calls) and preferred reporting format (PDF, dashboard). For each preference,
+      indicate whether it is mandatory or optional for operational feasibility. Include
+      data retention and privacy requirements based on investor jurisdiction.
   define_technology_stack:
     agent: false
     description: Specify the software and systems required for operations.
@@ -140,7 +149,9 @@ nodes:
       note whether it is commercial, open-source, or proprietary. Do not include vendor
       names or pricing. Add a third column ''Integration Method'' (e.g., API, file
       upload, manual entry) and a fourth ''Data Latency Requirement'' (e.g., real-time,
-      T+1).'
+      T+1). Include disaster recovery requirements (e.g., dual data centers), cybersecurity
+      measures (e.g., SOC 2 compliance), and user access controls (e.g., MFA required
+      for trade entry).'
   design_compliance_program:
     agent: false
     description: Build a structured internal compliance framework.
@@ -156,7 +167,9 @@ nodes:
       review by CCO with legal counsel''). Keep mappings specific and actionable.
       Include policies for trade surveillance, personal trading, and code of ethics
       enforcement. Add a third column ''Audit Trail Method'' (e.g., system log, signed
-      document) and a fourth ''Review Frequency''.'
+      document) and a fourth ''Review Frequency''. Include employee training requirements,
+      whistleblower protocol, and breach escalation path (e.g., board notification
+      within 24 hours).'
   design_risk_management_framework:
     agent: false
     description: Establish the core risk control mechanisms for the fund.
@@ -173,6 +186,8 @@ nodes:
       aligns with the defined risk targets. Use bullet points only—avoid prose paragraphs.
       For each control, add a second line specifying how it will be monitored (e.g.,
       'automated risk system alert', 'daily manual review by PM') and who is responsible.
+      Include override protocols (e.g., who can suspend a stop-loss and under what
+      conditions) and audit frequency (e.g., monthly back-testing of VaR model).
   develop_timeline_and_milestones:
     agent: false
     description: Establish a detailed 12-month launch plan with key deadlines.
@@ -190,7 +205,9 @@ nodes:
       Present as a list with Month | Key Milestone. For each milestone, list the responsible
       party (internal or provider). Highlight dependencies between steps. For each
       milestone, add estimated duration and a ''Critical Path'' flag (Yes/No) to prioritize
-      execution focus.'
+      execution focus. Include buffer periods (e.g., 2-week contingency for tech integration),
+      milestone completion criteria (e.g., ''admin contract signed and KYC completed''),
+      and review gates (e.g., board approval before roadshow).'
   draft_fee_structure:
     agent: false
     description: Propose the fund’s management and performance fee model.
@@ -207,7 +224,9 @@ nodes:
       fees), investor expectations, and competitive benchmarking within the strategy
       and jurisdiction. Include how fees are calculated and when they are collected.
       Add a second paragraph explaining the waterfall mechanism (if applicable) and
-      how clawbacks are handled, ensuring investor protection and transparency.
+      how clawbacks are handled, ensuring investor protection and transparency. Include
+      fee offset policy (e.g., performance fee waived if management fee exceeds profits),
+      expense cap terms, and audit rights for fee verification.
   draft_operations_workflow:
     agent: false
     description: Map the daily operational lifecycle of the fund.
@@ -226,7 +245,9 @@ nodes:
       and note the expected turnaround time (e.g., T+0, T+1). Keep descriptions to
       one sentence per step. Highlight any steps requiring manual intervention. For
       each step, add a second sentence naming the responsible party (role or provider)
-      and the technology used (to be aligned later with tech stack).'
+      and the technology used (to be aligned later with tech stack). Include error
+      resolution pathways (e.g., failed trade correction within 2 hours) and data
+      reconciliation checkpoints (e.g., daily P&L vs. NAV).'
   estimate_setup_and_operating_costs:
     agent: false
     description: Produce a preliminary cost model for launching and running the fund.
@@ -242,7 +263,9 @@ nodes:
       section titled ''One-Time Setup Costs'' with the same format. Justify high-cost
       items based on provider complexity or regulatory demands. Add a third column
       ''Frequency'' (e.g., one-time, monthly, annual) and note whether each cost is
-      fixed or variable.'
+      fixed or variable. Include cost sensitivity ranges (e.g., ''auditor: $30k–$50k
+      depending on jurisdiction'') and budget approval workflow (e.g., CFO signs off
+      on monthly tech spend).'
   identify_regulatory_requirements:
     agent: false
     description: Document mandatory regulatory filings and registrations.
@@ -257,7 +280,10 @@ nodes:
       frequency (e.g., annual, quarterly). For each, note whether it applies to the
       fund, advisor, or both. Do not elaborate on content or process. Add a second
       column 'Responsible Party' (e.g., CCO, Legal Counsel) and a third 'Filing Deadline
-      After Trigger Event (e.g., 15 days)', to support compliance scheduling.
+      After Trigger Event (e.g., 15 days)', to support compliance scheduling. Include
+      whether filings require third-party attestation, audit confirmation, or investor
+      consent. Specify data privacy compliance obligations (e.g., GDPR, CCPA) relevant
+      to investor data handling.
   list_service_providers:
     agent: false
     description: Identify required third-party service providers for fund operations.
@@ -274,7 +300,8 @@ nodes:
       List provider types and required capabilities only—do not include names, fees,
       or selection criteria. For each provider, add a second line outlining coordination
       frequency (e.g., daily, monthly) and primary interface role (e.g., CFO, CCO,
-      Portfolio Manager).'
+      Portfolio Manager). Include service level agreement (SLA) expectations (e.g.,
+      ''NAV delivered by 10 AM ET T+1'') and escalation protocols for discrepancies.'
   outline_governance_structure:
     agent: false
     description: Define key internal roles and decision-making authorities.
@@ -289,7 +316,8 @@ nodes:
       lines, and regulatory accountability (e.g., 'signs Form ADV disclosures'). Include
       whether each role is outsourced or internal. Add a second sentence for each
       role specifying escalation procedures and communication cadence with investors
-      or regulators.
+      or regulators. Define quorum requirements for committee decisions, frequency
+      of meetings, and documentation standards for minutes and approvals.
   produce_final_fund_plan_summary:
     agent: false
     description: Deliver a consolidated executive summary of the complete fund plan.
@@ -304,7 +332,9 @@ nodes:
       risk controls, operations, fees, and launch timeline. Write in clear, professional
       prose suitable for leadership or investor review. Avoid jargon and prioritize
       clarity and coherence. Ensure each section references the most conservative
-      assumption from earlier steps to maintain credibility.'
+      assumption from earlier steps to maintain credibility. Tag all assumptions (e.g.,
+      ''based on 6-month hiring window'') and include risk disclaimers (e.g., ''delays
+      in tech deployment may extend launch'').'
   select_jurisdiction:
     agent: false
     description: Choose the legal domicile for the fund that aligns with strategic
@@ -314,6 +344,7 @@ nodes:
     - clarify_fund_objectives
     nodes_dependent_on:
     - choose_legal_entity_type
+    - identify_regulatory_requirements
     - list_service_providers
     - outline_governance_structure
     prompt: Select one primary fund domicile (e.g., Cayman Islands, Delaware, Luxembourg)
@@ -324,7 +355,8 @@ nodes:
       supports access to target investors and compliance with cross-border marketing
       rules. Include a sentence on how the jurisdiction influences investor eligibility
       (e.g., non-US reporting investors) and another on how it affects regulatory
-      filing frequency and complexity.
+      filing frequency and complexity. Specify any local capital controls, withholding
+      taxes, or treaty limitations that impact offshore operations.
   set_performance_and_risk_targets:
     agent: false
     description: Establish measurable financial and risk benchmarks for fund performance.
@@ -336,6 +368,7 @@ nodes:
     nodes_dependent_on:
     - design_risk_management_framework
     - draft_fee_structure
+    - develop_timeline_and_milestones
     prompt: 'Define annual quantitative targets for gross return, volatility (standard
       deviation), Sharpe ratio, and maximum drawdown. Present as a 4-row table with
       two columns: Metric | Target Value. Ensure targets reflect realistic expectations
@@ -343,4 +376,6 @@ nodes:
       targets align with investor return expectations and risk tolerance as previously
       defined. Add two sentences explaining how exceeding or underperforming each
       target will trigger review processes (e.g., strategy reassessment, investor
-      notification).'
+      notification). Specify threshold levels (e.g., 15% drawdown → automatic PM review)
+      and reporting timelines (e.g., within 5 business days). Include scenarios for
+      temporary vs. structural underperformance.'
