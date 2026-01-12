@@ -1,56 +1,127 @@
 dag_type: plain_text
-description: Identify underlying songs from an audio snippet and redirect to musicians'
-  pages
-name: audiosamplesongidentifier
+description: Process an audio snippet to identify sampled songs and redirect to artist
+  pages using parallelized steps
+name: identify_songs_and_redirect
 nodes:
-  extractaudiofeatures:
+  aggregateredirecturls:
     agent: false
-    description: Extract relevant audio features from the input snippet
-    name: extractaudiofeatures
+    description: Compile all found artist links into a user-presentable format
+    name: aggregateredirecturls
+    nodes_depended_on:
+    - generateredirecturlsegment1
+    - generateredirecturlsegment2
+    nodes_dependent_on: []
+    prompt: Create a JSON output listing all identified artists and their profile
+      URLs, ordered by match confidence. Include metadata validation status flags.
+  extracttrackmetadatasegment1:
+    agent: false
+    description: Gather artist and track data for the top match from segment 1
+    name: extracttrackmetadatasegment1
+    nodes_depended_on:
+    - querymusicdatabasesegment1
+    nodes_dependent_on:
+    - generateredirecturlsegment1
+    prompt: 'From the top match in segment 1 results, extract: artist name, track
+      title, ISRC, and artist profile URL. Validate metadata consistency.'
+  extracttrackmetadatasegment2:
+    agent: false
+    description: Gather artist and track data for the top match from segment 2
+    name: extracttrackmetadatasegment2
+    nodes_depended_on:
+    - querymusicdatabasesegment2
+    nodes_dependent_on:
+    - generateredirecturlsegment2
+    prompt: 'From the top match in segment 2 results, extract: artist name, track
+      title, ISRC, and artist profile URL. Validate metadata consistency.'
+  generateaudiofingerprintsegment1:
+    agent: false
+    description: Create a unique fingerprint for the first segmented audio
+    name: generateaudiofingerprintsegment1
+    nodes_depended_on:
+    - splitaudiosegments
+    nodes_dependent_on:
+    - querymusicdatabasesegment1
+    prompt: Extract spectral features and generate an audio fingerprint for the first
+      segment using Mel-frequency cepstral coefficients (MFCCs). Return the fingerprint
+      hash.
+  generateaudiofingerprintsegment2:
+    agent: false
+    description: Create a unique fingerprint for the second segmented audio
+    name: generateaudiofingerprintsegment2
+    nodes_depended_on:
+    - splitaudiosegments
+    nodes_dependent_on:
+    - querymusicdatabasesegment2
+    prompt: Extract spectral features and generate an audio fingerprint for the second
+      segment using Mel-frequency cepstral coefficients (MFCCs). Return the fingerprint
+      hash.
+  generateredirecturlsegment1:
+    agent: false
+    description: Create a direct link to the first identified artist's page
+    name: generateredirecturlsegment1
+    nodes_depended_on:
+    - extracttrackmetadatasegment1
+    nodes_dependent_on:
+    - aggregateredirecturls
+    prompt: Using streaming platform API (Spotify/YouTube), generate a direct artist
+      profile URL for the metadata from segment 1.
+  generateredirecturlsegment2:
+    agent: false
+    description: Create a direct link to the second identified artist's page
+    name: generateredirecturlsegment2
+    nodes_depended_on:
+    - extracttrackmetadatasegment2
+    nodes_dependent_on:
+    - aggregateredirecturls
+    prompt: Using streaming platform API (Spotify/YouTube), generate a direct artist
+      profile URL for the metadata from segment 2.
+  preprocessaudio:
+    agent: false
+    description: Normalize and clean the audio for consistent processing
+    name: preprocessaudio
+    nodes_depended_on:
+    - receiveaudioinput
+    nodes_dependent_on:
+    - splitaudiosegments
+    prompt: Normalize audio levels, trim silence, and convert to mono. Return the
+      processed audio file.
+  querymusicdatabasesegment1:
+    agent: false
+    description: Search music recognition database using the first segment's fingerprint
+    name: querymusicdatabasesegment1
+    nodes_depended_on:
+    - generateaudiofingerprintsegment1
+    nodes_dependent_on:
+    - extracttrackmetadatasegment1
+    prompt: Search MusicDNS or Chirp's database with the fingerprint from segment
+      1. Return the top 3 best matches with confidence scores.
+  querymusicdatabasesegment2:
+    agent: false
+    description: Search music recognition database using the second segment's fingerprint
+    name: querymusicdatabasesegment2
+    nodes_depended_on:
+    - generateaudiofingerprintsegment2
+    nodes_dependent_on:
+    - extracttrackmetadatasegment2
+    prompt: Search MusicDNS or Chirp's database with the fingerprint from segment
+      2. Return the top 3 best matches with confidence scores.
+  receiveaudioinput:
+    agent: false
+    description: Accept the audio input snippet from the user
+    name: receiveaudioinput
     nodes_depended_on: []
     nodes_dependent_on:
-    - identifypotentialsongs
-    prompt: Extract audio features such as melody, rhythm, and spectral characteristics
-      from the input audio snippet.
-  formatredirectlinks:
+    - preprocessaudio
+    prompt: Accept the audio input snippet from the user. Ensure it's in a supported
+      format (e.g., WAV, MP3). Return a confirmation that the audio has been received.
+  splitaudiosegments:
     agent: false
-    description: Format the retrieved musician information into redirect links
-    name: formatredirectlinks
+    description: Divide the audio into distinct segments for parallel analysis
+    name: splitaudiosegments
     nodes_depended_on:
-    - retrievemusicianinfo
-    nodes_dependent_on: []
-    prompt: Format the retrieved musician information into clickable links or redirect
-      URLs that the user can access.
-  identifypotentialsongs:
-    agent: false
-    description: Compare extracted features against a database to identify potential
-      matching songs
-    name: identifypotentialsongs
-    nodes_depended_on:
-    - extractaudiofeatures
+    - preprocessaudio
     nodes_dependent_on:
-    - verifysongmatches
-    prompt: Use the extracted audio features to query a database of song features
-      and identify potential matching songs.
-  retrievemusicianinfo:
-    agent: false
-    description: Retrieve information about the musicians associated with the verified
-      song matches
-    name: retrievemusicianinfo
-    nodes_depended_on:
-    - verifysongmatches
-    nodes_dependent_on:
-    - formatredirectlinks
-    prompt: Query a database or API to retrieve information about the musicians associated
-      with the verified song matches, including their profile pages or relevant links.
-  verifysongmatches:
-    agent: false
-    description: Verify the identified potential song matches using a more detailed
-      comparison
-    name: verifysongmatches
-    nodes_depended_on:
-    - identifypotentialsongs
-    nodes_dependent_on:
-    - retrievemusicianinfo
-    prompt: Perform a more detailed comparison between the input audio snippet and
-      the identified potential song matches to verify the matches.
+    - generateaudiofingerprintsegment1
+    - generateaudiofingerprintsegment2
+    prompt: Split audio into 2 time-domain segments for parallel processing while
+      preserving contextual information.
