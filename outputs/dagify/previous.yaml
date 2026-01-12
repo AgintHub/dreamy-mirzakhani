@@ -1,130 +1,59 @@
 dag_type: plain_text
-description: A detailed workflow for designing and building a rocket ship
-name: build_a_rocket_ship
+description: A workflow for testing specific steps in the testing process
+name: test_workflows
 nodes:
-  assemble_rocket_ship_structure_and_components:
+  analyze_results:
     agent: false
-    description: Assembles the rocket ship structure and components.
-    name: assemble_rocket_ship_structure_and_components
+    description: Analyze the results of the test
+    name: analyze_results
     nodes_depended_on:
-    - fabricate_rocket_ship_structure_and_components
-    nodes_dependent_on:
-    - integrate_rocket_ship_systems_and_propulsion
-    prompt: Assemble the rocket ship structure and components into the final assembly.
-      Provide a detailed description of the assembly process and any challenges encountered.
-  choose_rocket_ship_design_configuration:
-    agent: false
-    description: Chooses a rocket ship design configuration based on the mission objectives.
-    name: choose_rocket_ship_design_configuration
-    nodes_depended_on:
-    - define_rocket_ship_mission_objectives
-    nodes_dependent_on:
-    - design_rocket_ship_propulsion_system
-    - design_rocket_ship_structure_and_materials
-    prompt: Choose a rocket ship design configuration based on the mission objectives,
-      including the choice of propulsion system, structure, and materials. Provide
-      a brief description of the design choices and their justifications.
-  conduct_rocket_ship_performance_tests:
-    agent: false
-    description: Conducts rocket ship performance tests.
-    name: conduct_rocket_ship_performance_tests
-    nodes_depended_on:
-    - integrate_rocket_ship_systems_and_propulsion
+    - execute_test
     nodes_dependent_on: []
-    prompt: Conduct comprehensive performance tests of the rocket ship, including
-      thrust, stability, and communication. Provide a report detailing the test results
-      and any areas for improvement.
-  define_rocket_ship_mission_objectives:
+    prompt: Analyze the results of the test
+  create_test_data:
     agent: false
-    description: Defines the mission objectives and purpose of the rocket ship.
-    name: define_rocket_ship_mission_objectives
+    description: Create the test data according to the test plan
+    name: create_test_data
+    nodes_depended_on:
+    - define_test_plan
+    nodes_dependent_on: []
+    prompt: Create the test data according to the test plan
+  define_test_plan:
+    agent: false
+    description: Define the test plan based on the objectives
+    name: define_test_plan
+    nodes_depended_on:
+    - determine_test_objectives
+    nodes_dependent_on: []
+    prompt: Define the test plan based on the objectives
+  determine_test_objectives:
+    agent: false
+    description: Determine the objectives for the test
+    name: determine_test_objectives
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Describe the mission objectives of the rocket ship, including launch window,
-      target planet, and specific scientific or exploration goals. Provide a brief
-      description of the mission's purpose and expected outcomes.
-  design_rocket_ship_avionics_and_electronics:
+    prompt: What are the objectives for the test?
+  document_findings:
     agent: false
-    description: Designs a rocket ship avionics and electronics system.
-    name: design_rocket_ship_avionics_and_electronics
+    description: Document the findings of the test
+    name: document_findings
     nodes_depended_on:
-    - choose_rocket_ship_design_configuration
+    - analyze_results
     nodes_dependent_on: []
-    prompt: Design a rocket ship avionics and electronics system, including the choice
-      of control systems, navigation, communication, and safety systems. Provide a
-      detailed description of the avionics and electronics system.
-  design_rocket_ship_propulsion_system:
+    prompt: Document the findings of the test
+  execute_test:
     agent: false
-    description: Designs a rocket ship propulsion system.
-    name: design_rocket_ship_propulsion_system
+    description: Execute the test using the test data
+    name: execute_test
     nodes_depended_on:
-    - choose_rocket_ship_design_configuration
+    - create_test_data
     nodes_dependent_on: []
-    prompt: Design a rocket ship propulsion system based on the chosen design configuration,
-      including the choice of engines, fuel, and power management. Provide a detailed
-      description of the propulsion system's components and performance characteristics.
-  design_rocket_ship_structure_and_materials:
+    prompt: Execute the test using the test data
+  implement_changes:
     agent: false
-    description: Designs a rocket ship structure and materials.
-    name: design_rocket_ship_structure_and_materials
+    description: Implement the necessary changes based on the findings
+    name: implement_changes
     nodes_depended_on:
-    - choose_rocket_ship_design_configuration
-    nodes_dependent_on:
-    - validate_rocket_ship_structural_integrity
-    prompt: Design a rocket ship structure and materials based on the chosen design
-      configuration, including the choice of materials, structure, and manufacturing
-      processes. Provide a detailed description of the structure and materials.
-  fabricate_rocket_ship_structure_and_components:
-    agent: false
-    description: Fabricates the rocket ship structure and components.
-    name: fabricate_rocket_ship_structure_and_components
-    nodes_depended_on:
-    - design_rocket_ship_structure_and_materials
-    - design_rocket_ship_propulsion_system
-    - design_rocket_ship_avionics_and_electronics
-    nodes_dependent_on:
-    - assemble_rocket_ship_structure_and_components
-    prompt: Fabricate the rocket ship structure and components based on the designed
-      dimensions and performance specifications. Provide a detailed description of
-      the fabrication process and materials used.
-  finalize_rocket_ship_pre-launch_preparations:
-    agent: false
-    description: Finalizes rocket ship pre-launch preparations.
-    name: finalize_rocket_ship_pre-launch_preparations
-    nodes_depended_on:
-    - conduct_rocket_ship_performance_tests
-    nodes_dependent_on:
-    - prepare_rocket_ship_for_launch
-    prompt: Finalize all pre-launch preparations, including fueling, system checks,
-      and weather forecasting. Provide a detailed description of the preparation process.
-  integrate_rocket_ship_systems_and_propulsion:
-    agent: false
-    description: Integrates the rocket ship systems and propulsion.
-    name: integrate_rocket_ship_systems_and_propulsion
-    nodes_depended_on:
-    - assemble_rocket_ship_structure_and_components
+    - document_findings
     nodes_dependent_on: []
-    prompt: Integrate the rocket ship systems, including propulsion, avionics, and
-      electronics, with the assembled structure and components. Provide a detailed
-      description of the integration process and any challenges encountered.
-  validate_rocket_ship_avionics_and_electronics:
-    agent: false
-    description: Validates the performance and reliability of the rocket ship avionics
-      and electronics system.
-    name: validate_rocket_ship_avionics_and_electronics
-    nodes_depended_on:
-    - design_rocket_ship_avionics_and_electronics
-    nodes_dependent_on: []
-    prompt: Validate the performance and reliability of the rocket ship avionics and
-      electronics system through detailed analysis and testing. Provide a report detailing
-      the validation results.
-  validate_rocket_ship_structural_integrity:
-    agent: false
-    description: Validates the structural integrity of the rocket ship design.
-    name: validate_rocket_ship_structural_integrity
-    nodes_depended_on:
-    - design_rocket_ship_structure_and_materials
-    nodes_dependent_on: []
-    prompt: Validate the structural integrity of the rocket ship design using detailed
-      stress and load analysis and wind tunnel testing. Provide a report detailing
-      the validation results.
+    prompt: Implement the necessary changes based on the findings
