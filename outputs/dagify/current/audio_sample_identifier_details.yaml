@@ -1,6 +1,6 @@
 dag_type: plain_text
-description: This workflow identifies the songs that were sampled in a given audio
-  snippet and provides the user with links to the pages of the musicians.
+description: Identify the songs sampled in an audio snippet and direct the user to
+  the musicians' pages.
 name: audio_sample_identifier
 nodes:
   build_music_database:
@@ -37,11 +37,11 @@ nodes:
     description: Extract relevant features from the preprocessed audio snippet.
     name: extract_audio_features
     nodes_depended_on:
-    - load_and_preprocess_audio
+    - preprocess_audio
     nodes_dependent_on:
     - query_music_database
     prompt: Extract features such as spectrograms, mel-frequency cepstral coefficients,
-      and chroma features from the preprocessed audio snippet.
+      and chroma features from the audio snippet.
   get_musician_pages:
     agent: false
     description: Get the pages of the musicians whose songs were sampled.
@@ -63,15 +63,25 @@ nodes:
     - get_musician_pages
     prompt: Analyze the query results to identify the songs that were sampled in the
       audio snippet.
-  load_and_preprocess_audio:
+  load_audio_snippet:
     agent: false
-    description: Load and preprocess the audio snippet to prepare it for analysis.
-    name: load_and_preprocess_audio
+    description: Load the audio snippet to be analyzed.
+    name: load_audio_snippet
     nodes_depended_on: []
     nodes_dependent_on:
+    - preprocess_audio
+    prompt: Load the audio file and convert it to a format suitable for analysis,
+      such as WAV or MP3.
+  preprocess_audio:
+    agent: false
+    description: Preprocess the audio snippet to enhance quality and remove noise.
+    name: preprocess_audio
+    nodes_depended_on:
+    - load_audio_snippet
+    nodes_dependent_on:
     - extract_audio_features
-    prompt: Load the audio file, convert it to a suitable format, apply noise reduction
-      and equalization techniques to enhance the audio quality.
+    prompt: Apply noise reduction and equalization techniques to the audio snippet
+      to enhance quality.
   query_music_database:
     agent: false
     description: Query the music database to find matching songs.
