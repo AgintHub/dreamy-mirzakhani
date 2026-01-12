@@ -1,102 +1,220 @@
 dag_type: plain_text
-description: A workflow to build an app that identifies sampled songs, lists musicians,
-  and creates playlists
+description: Generated workflow from UI.
 name: music_sample_identifier_app
 nodes:
   build_app_interface:
     agent: false
-    description: Build the user interface for the music sample identifier app
+    description: Design and develop a responsive, intuitive, and feature-rich user
+      interface for the music sample identifier application, ensuring seamless user
+      experience across various devices and platforms.
     name: build_app_interface
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Design and implement a user-friendly interface for the app, incorporating
-      all the necessary features
+    prompt: Design and implement a modern, responsive web or mobile interface for
+      the music sample identifier application, leveraging UI frameworks such as React
+      or Angular, and incorporating essential features like music sample upload, audio
+      analysis, and results display. Ensure cross-browser or cross-platform compatibility,
+      optimize for performance, and adhere to best practices in user experience (UX)
+      and user interface (UI) design. Utilize wireframing tools like Figma or Sketch
+      for prototyping, and implement a responsive design that adapts to various screen
+      sizes and devices. Incorporate accessibility features as per WCAG 2.1 guidelines
+      to ensure inclusivity.
   create_playlist:
     agent: false
-    description: Create a playlist from the identified musicians
+    description: Curates a playlist featuring a diverse selection of songs from the
+      identified musicians, leveraging their sampled songs' metadata to inform the
+      playlist's thematic and sonic coherence.
     name: create_playlist
     nodes_depended_on:
     - list_musicians
     nodes_dependent_on: []
-    prompt: Generate a playlist featuring songs by the musicians involved in the sampled
-      songs
+    prompt: Design a playlist incorporating a diverse array of tracks from the listed
+      musicians, utilizing natural language processing (NLP) and collaborative filtering
+      algorithms to analyze the sampled songs' metadata, identify key themes and moods,
+      and create a cohesive listening experience. Employ a graph-based approach to
+      model the relationships between musicians, songs, and genres, and apply a ranking
+      algorithm (e.g., PageRank) to prioritize tracks for inclusion. Utilize a music
+      information retrieval (MIR) framework to extract relevant audio features (e.g.,
+      tempo, key, energy) and ensure a smooth, context-aware transition between tracks.
+      Consider factors such as artist diversity, genre representation, and playlist
+      flow to craft an engaging and dynamic listening experience.
   extract_song_metadata:
     agent: false
-    description: Extract metadata for the identified sampled songs
+    description: Extracts comprehensive metadata for the identified sampled songs,
+      leveraging advanced audio analysis and metadata retrieval techniques.
     name: extract_song_metadata
     nodes_depended_on:
     - identify_sampled_songs
     nodes_dependent_on: []
-    prompt: Retrieve metadata such as song title, artist names, and album information
+    prompt: Utilize a hybrid approach combining audio fingerprinting, Natural Language
+      Processing (NLP), and metadata scraping to extract detailed metadata for the
+      identified sampled songs. Specifically, retrieve song title, artist names, album
+      information, release dates, genre classifications, and relevant audio features
+      such as tempo, key, and loudness. Employ APIs from music information databases
+      like Discogs, MusicBrainz, or Spotify, and utilize libraries such as tinytag,
+      mutagen, or librosa for audio feature extraction. Ensure data consistency and
+      accuracy by implementing data validation and normalization techniques.
   identify_sampled_songs:
     agent: false
-    description: Identify the songs that the recorded audio snippet samples from
+    description: Detects and identifies the original songs sampled within a recorded
+      audio snippet by combining traditional audio fingerprinting techniques (Chromaprint,
+      pHash) with deep‑learning embeddings (VGGish/PANNs) and efficient approximate
+      nearest‑neighbor similarity search (FAISS/Annoy). The node outputs a ranked
+      list of candidate tracks, confidence scores, and relevant metadata, enabling
+      downstream verification and attribution.
     name: identify_sampled_songs
     nodes_depended_on:
     - preprocess_audio_data
     nodes_dependent_on: []
-    prompt: Use audio fingerprinting or recognition algorithms to identify the underlying
-      sampled songs
+    prompt: "1. **Feature Extraction**: Convert the pre‑processed audio snippet into\
+      \ a robust representation:\n   - Compute constant‑Q transform (CQT) spectrograms\
+      \ and mel‑spectrograms using librosa.\n   - Derive MFCCs, chroma, and spectral\
+      \ contrast features.\n   - Apply a deep‑learning embedding model (e.g., VGGish\
+      \ or PANNs) to obtain a 128‑dimensional latent vector.\n\n2. **Fingerprint Generation**:\
+      \ Generate compact fingerprints for the snippet:\n   - Use the Chromaprint algorithm\
+      \ (via Acoustid) to produce a 64‑bit hash.\n   - Create a perceptual hash (pHash)\
+      \ from the CQT spectrogram for cross‑validation.\n\n3. **Similarity Search**:\
+      \ Query a curated database of known tracks:\n   - Store database fingerprints\
+      \ in an approximate nearest neighbor index (FAISS or Annoy).\n   - Perform a\
+      \ two‑stage search: first match Chromaprint hashes, then refine with cosine\
+      \ similarity on VGGish embeddings.\n\n4. **Result Consolidation**: Return the\
+      \ top‑k candidate tracks with match scores:\n   - Include confidence percentages,\
+      \ sample timestamps, and the original track metadata (artist, title, release).\n\
+      \   - Flag any ambiguous matches (score < 0.7) for downstream verification.\n\
+      \n5. **Logging & Auditing**: Persist the query parameters, feature vectors,\
+      \ and match results in a structured log for reproducibility.\n\n**Output Format**:\
+      \ JSON array of objects `{track_id, confidence, start_time, end_time, metadata}`."
   integrate_features:
     agent: false
-    description: Integrate the identified features into the app interface
+    description: Seamlessly merges the functional modules—sample identification, musician
+      listing, profile redirection, and playlist generation—into a cohesive, responsive
+      user interface, synchronizing data flows and UI state using React with TypeScript,
+      Redux Toolkit for state management, and Material‑UI components, while ensuring
+      accessibility and performance.
     name: integrate_features
     nodes_depended_on:
     - build_app_interface
     - redirect_to_musicians_pages
     - offer_playlist_to_user
     nodes_dependent_on: []
-    prompt: Combine the user interface with the functionality to identify sampled
-      songs, list musicians, redirect to their pages, and offer playlists
+    prompt: Implement a React component that orchestrates the sample identification,
+      musician listing, profile redirection, and playlist offering flows. Use TypeScript
+      interfaces to define SampleInfo, Musician, and Playlist. Dispatch Redux actions
+      to fetch samples, retrieve musician data, and create playlists. On sample detection,
+      dispatch identifySample(sampleId). Then dispatch listMusicians(sampleId) to
+      populate a list. Each musician name should be a React Router <Link> that navigates
+      to /musicians/:id, triggering redirectToMusicianPage action. Offer an 'Add to
+      Playlist' button that dispatches createPlaylist(musicianIds). Ensure the UI
+      updates via Redux selectors, uses Material‑UI Card components for visual consistency,
+      and employs memoization (React.memo, useMemo) for performance. Include error
+      handling with try/catch and display Snackbar notifications. Finally, expose
+      a function exposePlaylistToUser(playlistId) that opens a modal with playback
+      controls and options to save or share.
   list_musicians:
     agent: false
-    description: List the musicians involved in the sampled songs
+    description: Aggregates and deduplicates a comprehensive list of musicians involved
+      in the sampled songs, leveraging metadata extracted from the identified samples.
     name: list_musicians
     nodes_depended_on:
     - extract_song_metadata
     nodes_dependent_on: []
-    prompt: Compile a list of musicians from the metadata of the identified sampled
-      songs
+    prompt: Compile a detailed, canonicalized list of musicians from the metadata
+      of the identified sampled songs, employing techniques such as artist name disambiguation
+      and handling various aliasing and spelling variations. The metadata extraction
+      is facilitated by the `extract_song_metadata` node, utilizing a combination
+      of APIs, databases, and machine learning algorithms to retrieve relevant information
+      such as song title, artist names, and album details. Implement data processing
+      using pandas for data manipulation and scikit-learn for entity resolution. Ensure
+      the output is structured and easily consumable by downstream nodes.
   offer_playlist_to_user:
     agent: false
-    description: Offer the created playlist to the user
+    description: Presents the generated playlist to the user through a dynamic, web‑based
+      interface, offering real‑time playback, secure save operations to the user’s
+      streaming library, and optional local caching. The node integrates with OAuth2
+      token management, the Web Audio API for streaming, and a telemetry backend for
+      analytics, ensuring a seamless and interactive user experience.
     name: offer_playlist_to_user
     nodes_depended_on:
     - create_playlist
     nodes_dependent_on: []
-    prompt: Present the generated playlist to the user and provide options to save
-      or play it
+    prompt: Render the playlist UI using React and TypeScript, consuming the JSON
+      payload from the create_playlist node. Display track thumbnails, titles, and
+      artists in a responsive grid. Enable a 'Play' button that streams audio via
+      the Web Audio API and a 'Save' button that triggers a POST request to the user’s
+      library endpoint (e.g., Spotify /v1/me/library/playlists) using an OAuth2 access
+      token. Implement graceful error handling for token expiration, fallback to local
+      IndexedDB storage, and log user interactions to a telemetry service via gRPC.
+      Provide a concise summary of the playlist’s total duration and genre distribution.
   preprocess_audio_data:
     agent: false
-    description: Preprocess the recorded audio data for analysis
+    description: Applies sophisticated audio preprocessing techniques to recorded
+      audio data to prepare it for analysis, including noise reduction, normalization,
+      and feature extraction.
     name: preprocess_audio_data
     nodes_depended_on:
     - record_audio_snippet
     nodes_dependent_on: []
-    prompt: Apply necessary audio preprocessing techniques such as noise reduction
-      and normalization
+    prompt: Execute a multi-stage audio preprocessing pipeline on the recorded audio
+      data. First, apply noise reduction using advanced algorithms such as spectral
+      subtraction, Wiener filtering, or deep learning-based methods. Next, perform
+      audio normalization using techniques like peak normalization or loudness normalization
+      to ensure consistent volume levels. Then, extract relevant audio features such
+      as Mel-Frequency Cepstral Coefficients (MFCCs), spectral features, or rhythm
+      features that can be used for further analysis. Utilize libraries such as Librosa
+      or PyAudio for audio processing, and consider employing machine learning models
+      for noise reduction and feature extraction.
   record_audio_snippet:
     agent: false
-    description: Record a snippet of audio from the user
+    description: Captures a short, high‑fidelity audio segment from the user’s device,
+      performs real‑time pre‑processing (normalization, silence trimming, VAD), encodes
+      the signal with Opus, and stores the result in a temporary buffer with comprehensive
+      metadata for downstream processing.
     name: record_audio_snippet
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Capture a short audio clip from the user's device
+    prompt: Initiate audio capture from the user’s microphone, record a 5‑second segment
+      at a 48 kHz sample rate and 16‑bit depth, apply pre‑processing (normalization,
+      silence trimming, and optional WebRTC Voice Activity Detection), encode the
+      raw PCM data with the Opus codec (bitrate 64 kbps), and return the binary payload
+      together with metadata (duration, sample rate, codec, and VAD confidence). This
+      snippet is ready for downstream speech‑to‑text or acoustic‑feature extraction
+      modules.
   redirect_to_musicians_pages:
     agent: false
-    description: Redirect the user to the pages of the identified musicians
+    description: Orchestrates a seamless redirection to the official online presence
+      of the identified musicians, leveraging the metadata extracted from the sampled
+      songs.
     name: redirect_to_musicians_pages
     nodes_depended_on:
     - list_musicians
     nodes_dependent_on: []
-    prompt: Provide links or redirects to the official pages or profiles of the listed
-      musicians
+    prompt: Implement a sophisticated redirection mechanism to the official pages
+      or profiles of the listed musicians. Utilize the compiled list of musicians
+      from the sampled song metadata, and apply a hybrid approach combining natural
+      language processing (NLP) and machine learning algorithms to accurately resolve
+      the official URLs. Employ a robust URL resolution technique, incorporating DNS
+      lookup, HTTP header analysis, and HTML parsing to ensure the redirection is
+      both accurate and efficient. Handle edge cases such as musician name variations,
+      URL changes, and profile consolidations. Provide a concise summary of the redirection
+      process, including the number of successful redirections and any encountered
+      exceptions.
   test_app_functionality:
     agent: false
-    description: Test the overall functionality of the music sample identifier app
+    description: Conducts comprehensive, end-to-end testing of the music sample identifier
+      app to validate its overall functionality, robustness, and performance across
+      diverse scenarios and edge cases.
     name: test_app_functionality
     nodes_depended_on:
     - integrate_features
     nodes_dependent_on: []
-    prompt: Conduct thorough testing to ensure the app works as expected across different
-      scenarios and inputs
+    prompt: Execute a thorough, multi-faceted testing regimen to comprehensively validate
+      the music sample identifier app's functionality, leveraging a combination of
+      black-box, white-box, and gray-box testing methodologies. Utilize a tech stack
+      that includes Selenium WebDriver for UI automation, Pytest for unit and integration
+      testing, and Docker for containerization. Validate the app's ability to accurately
+      identify sampled songs using algorithms such as Shazam's audio fingerprinting
+      and dynamic time warping, list musicians, redirect to their pages, and offer
+      playlists, ensuring seamless integration with features developed in the 'integrate_features'
+      node. Perform stress testing using Apache JMeter, analyze logs using ELK Stack,
+      and monitor performance metrics. Document test results, including any defects
+      or areas for improvement, and provide recommendations for optimization and refinement.
