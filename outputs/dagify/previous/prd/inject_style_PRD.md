@@ -6,47 +6,49 @@ Add CSS styling rules to an existing HTML document skeleton.
 
 ## Conceptual Info
 
-The `inject_style` node injects a responsive CSS block into a base HTML skeleton, returning the CSS as a string that can be embedded into the document.
+Provides responsive CSS rules that are injected into a basic HTML5 document skeleton, enabling layout, typography, and visual theming.
 
 ## Docstring
 
 ### Summary
-Inject responsive CSS rules into an existing HTML skeleton.
+Generates a string of CSS style rules tailored to the supplied HTML skeleton. The function ensures the resulting CSS is responsive and minimally invasive, suitable for immediate inclusion in a `<style>` tag.
 
 ### Parameters
 
-- **html_structure** (str): Base HTML5 document skeleton. Must contain at least `<html>` and `<head>` tags.
+- **html_structure** (str): Base HTML5 document skeleton. The function analyzes the presence of common containers (header, nav, main, footer) to inject context‑aware styles.
 
 ### Returns
 
-str: CSS style block string that should be inserted inside the `<head>` of the provided HTML.
+str: A CSS string containing responsive style rules that can be inserted into the `<head>` of the HTML document.
 
 ### Raises
 
-- ValueError: If `html_structure` is not a valid HTML string or lacks `<head>` tags.
+- ValueError: Raised when `html_structure` is an empty string or contains only whitespace.
+- TypeError: Raised when `html_structure` is not of type `str`.
 
 ### Examples
 
 ```python
->>> html = """\
+>>> skeleton = """\
+>>> <!DOCTYPE html>\
 >>> <html>\
-...   <head>\
-...   </head>\
-...   <body>\
-...     <h1>Hello World</h1>\
-...   </body>\
->>> </html>\
->>> """
->>> css = inject_style(html)
+>>> <head>\
+...   <title>Test Page</title>\
+>>> </head>\
+>>> <body>\
+...   <header></header>\
+...   <main></main>\
+...   <footer></footer>\
+>>> </body>\
+>>> </html>"""
+>>> css = inject_style(skeleton)
 >>> print(css)
-"<style>\n  body {margin:0; font-family:sans-serif;}\n  @media (max-width:600px) {h1 {font-size:1.5rem;}}\n</style>"
+"""\n/* Base responsive styles */\nbody {\n  margin: 0;\n  font-family: Arial, sans-serif;\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\nheader, footer {\n  background: #f8f9fa;\n  padding: 1rem;\n}\nmain {\n  flex: 1;\n  padding: 1rem;\n}\n@media (min-width: 600px) {\n  main {\n    padding: 2rem;\n  }\n}\n"""
 ```
 
 ```python
->>> html_missing_head = "<html><body><p>No head</p></body></html>"
->>> try:
-...     inject_style(html_missing_head)
->>> except ValueError as e:
-...     print(str(e))
-"ValueError: html_structure must contain a <head> element"
+>>> skeleton = "<!DOCTYPE html><html><head><title></title></head><body></body></html>"
+>>> css = inject_style(skeleton)
+>>> print(css)
+"""\n/* Base responsive styles */\nbody {\n  margin: 0;\n  font-family: Arial, sans-serif;\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\n"""
 ```

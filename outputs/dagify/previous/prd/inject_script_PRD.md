@@ -6,37 +6,47 @@ Add JavaScript interactivity
 
 ## Conceptual Info
 
-Creates a JavaScript snippet that can be injected into an existing HTML skeleton to provide client‑side interactivity.
+Injects JavaScript to enhance the base HTML with dynamic interactivity.
 
 ## Docstring
 
 ### Summary
-Injects a dynamic JavaScript snippet into the provided HTML structure, returning the script tag string.
+Generates JavaScript code that adds event listeners and dynamic behavior to the supplied HTML structure.
 
 ### Parameters
 
-- **html_structure** (str): Base HTML document skeleton produced by generate_html_content.
+- **html_structure** (str): Base HTML skeleton string produced by `generate_html_content`.
 
 ### Returns
 
-str: A JavaScript snippet wrapped in `<script>` tags, ready to be injected into the final HTML document.
+str: JavaScript code snippet that implements interactivity for the HTML document.
 
 ### Raises
 
-- ValueError: If `html_structure` is an empty string.
-- TypeError: If `html_structure` is not of type `str`.
+- ValueError: Raised when `html_structure` is empty or not a string.
 
 ### Examples
 
 ```python
->>> js_code = inject_script('<html><head></head><body></body></html>')
-'<script>/* dynamic JS */</script>'
+>>> js_code = inject_script('<!DOCTYPE html><html><head></head><body></body></html>')
+"// JavaScript that attaches click listeners to all <button> elements\n" +
+"document.addEventListener('DOMContentLoaded', () => {\n" +
+"  document.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => alert('Clicked!')));\n" +
+"});\n"
 ```
 
 ```python
->>> try:
-...     inject_script('')
->>> except ValueError as e:
-...     print(e)
-"html_structure cannot be empty."
+>>> html = ('<!DOCTYPE html><html><head></head><body>' +
+...        '<div id="counter">0</div>' +
+...        '<button id="inc">Increment</button>' +
+...        '</body></html>')
+>>> js_code = inject_script(html)
+"// JavaScript that increments a counter on button click\n" +
+"document.addEventListener('DOMContentLoaded', () => {\n" +
+"  const counter = document.getElementById('counter');\n" +
+"  const incBtn = document.getElementById('inc');\n" +
+"  incBtn.addEventListener('click', () => {\n" +
+"    counter.textContent = parseInt(counter.textContent) + 1;\n" +
+"  });\n" +
+"});\n"
 ```

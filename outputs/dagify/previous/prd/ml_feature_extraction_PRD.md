@@ -6,48 +6,37 @@ Generates high‑level audio representations by passing the raw audio through a 
 
 ## Conceptual Info
 
-The node encapsulates a lightweight deep‑learning inference step that transforms raw audio into two fixed‑length embeddings—one from a convolutional pathway capturing frequency‑domain structure, and another from a recurrent pathway capturing sequence‑level dynamics.
+This node transforms raw audio data into compact, learnable embeddings by applying a CNN to capture local spectral structures and an RNN to model sequential temporal dynamics. The resulting vectors can be used for downstream tasks such as similarity search, classification, or metadata enrichment.
 
 ## Docstring
 
 ### Summary
-Generate deep learning features from raw audio data using CNN and RNN models.
+Extract deep learning‑based audio features using a CNN for spectral analysis and an RNN for temporal summarization.
 
 ### Parameters
 
-- **audio_data** (str): Base64‑encoded or hex string representation of the raw audio samples.
-- **sampling_rate** (int): Sampling frequency of the audio in Hz.
-- **file_format** (str): Encoding format of the audio (e.g., 'WAV', 'MP3', 'FLAC').
-- **metadata** (List[str]): List of signal characteristics such as duration, bit depth, channel count, and loudness level.
+- **audio_data** (str): Base64‑encoded raw audio samples returned by `load_audio_snippet`.
+- **sampling_rate** (int): Sampling frequency of the audio in Hertz.
 
 ### Returns
 
-Dict[str, float]: A dictionary with keys 'cnn_features' and 'rnn_features', each mapping to a float embedding summarizing spectral and temporal information respectively.
+Dict[str, float]: Dictionary containing `cnn_features` and `rnn_features` – each a scalar summarizing the high‑level representation extracted by the respective network.
 
 ### Raises
 
-- ValueError: Raised when `audio_data` is empty or cannot be decoded.
-- TypeError: Raised if input types do not match the expected signatures.
-- RuntimeError: Raised when the CNN or RNN inference fails due to model errors or corrupted inputs.
+- ValueError: If `audio_data` is empty, not valid Base64, or decoding fails.
+- RuntimeError: If the CNN or RNN inference pipeline raises an exception (e.g., GPU out‑of‑memory, model file missing).
 
 ### Examples
 
 ```python
->>> audio_data = 'UklGRiQAAABXQVZFZm10IBAAAAABAAEAgLsAAAB3AAABAAgAAQ==',
->>> sampling_rate = 44100,
->>> file_format = 'WAV',
->>> metadata = ['duration:3.5s', 'bit_depth:16', 'channels:2', 'loudness:-12dB']
->>> features = ml_feature_extraction(audio_data, sampling_rate, file_format, metadata)
->>> print(features['cnn_features'])
->>> print(features['rnn_features'])
-0.8735
-0.4562
+>>> cnn, rnn = ml_feature_extraction('UklGRi4AAABXRUJQVlA4TBEAAAAvAAAAAA', 44100)
+>>> print(cnn, rnn)
+0.123 0.456
 ```
 
 ```python
->>> try:
-...     ml_feature_extraction('', 44100, 'WAV', ['duration:3.5s'])
->>> except ValueError as e:
-...     print(str(e))
-"audio_data is empty or cannot be decoded"
+>>> result = ml_feature_extraction('invalid_base64_string', 44100)
+>>> print(result)
+ValueError: Invalid Base64 audio data.
 ```

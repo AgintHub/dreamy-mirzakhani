@@ -6,48 +6,39 @@ Calculate spectral domain features such as spectral centroid, bandwidth, and rol
 
 ## Conceptual Info
 
-The node transforms raw PCM audio (encoded as a Base64 string) into three core spectral descriptors that summarize the distribution of energy over frequency.
+This node extracts key spectral features from raw audio data, enabling analysis of frequency domain characteristics.
 
 ## Docstring
 
 ### Summary
-Compute spectral centroid, bandwidth, and roll‑off from a Base64‑encoded raw audio signal.
+Calculates spectral centroid, bandwidth, and rolloff frequency from raw audio samples using FFT and spectral analysis.
 
 ### Parameters
 
-- **audio_data** (str): Base64‑encoded representation of the raw audio samples (IEEE‑754 float32).
-- **sampling_rate** (int): Sampling frequency of the audio in Hertz.
+- **audio_data** (str): Base64-encoded representation of raw audio samples from load_audio_snippet
+- **sampling_rate** (int): Sampling frequency of the audio in Hertz from load_audio_snippet
 
 ### Returns
 
-Dict[str, float]: Dictionary with keys 'spectral_centroid', 'spectral_bandwidth', and 'rolloff_frequency', each mapping to a float value.
+tuple[float, float, float]: Contains spectral_centroid, spectral_bandwidth, and rolloff_frequency representing different aspects of the audio's frequency domain characteristics.
 
 ### Raises
 
-- ValueError: If `audio_data` is empty or cannot be decoded.
-- TypeError: If `sampling_rate` is not an integer or is <= 0.
-- RuntimeError: If the FFT computation fails or produces NaNs.
+- ValueError: If audio_data is empty or sampling_rate is non-positive.
+- TypeError: If audio_data is not a string or sampling_rate is not an integer.
 
 ### Examples
 
 ```python
->>> import base64, numpy as np
->>> fs = 8000
->>> t = np.arange(0, 1, 1/fs)
->>> s = 0.5 * np.sin(2 * np.pi * 440 * t)
->>> audio_bytes = s.astype(np.float32).tobytes()
->>> audio_b64 = base64.b64encode(audio_bytes).decode('utf-8')
->>> result = extract_spectral_features(audio_b64, fs)
-{'spectral_centroid': 440.0, 'spectral_bandwidth': 0.0, 'rolloff_frequency': 220.0}
+>>> audio_data = 'base64_encoded_audio_data'
+>>> sampling_rate = 44100
+>>> spectral_centroid, spectral_bandwidth, rolloff_frequency = extract_spectral_features(audio_data, sampling_rate)
+(450.0, 200.0, 800.0)
 ```
 
 ```python
->>> import base64, numpy as np
->>> fs = 8000
->>> t = np.arange(0, 1, 1/fs)
->>> s = 0.5 * np.sin(2 * np.pi * 440 * t) + 0.05 * np.random.randn(len(t))
->>> audio_bytes = s.astype(np.float32).tobytes()
->>> audio_b64 = base64.b64encode(audio_bytes).decode('utf-8')
->>> result = extract_spectral_features(audio_b64, fs)
-{'spectral_centroid': 448.3, 'spectral_bandwidth': 50.7, 'rolloff_frequency': 350.1}
+>>> invalid_audio_data = ''
+>>> sampling_rate = 0
+>>> extract_spectral_features(invalid_audio_data, sampling_rate)
+ValueError: Audio data cannot be empty and sampling rate must be positive.
 ```

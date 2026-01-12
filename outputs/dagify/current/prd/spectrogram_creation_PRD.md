@@ -6,46 +6,38 @@ Generate a frequency‑time spectrogram from validated audio feature vectors. Th
 
 ## Conceptual Info
 
-Creates a flattened time‑frequency representation (spectrogram) from normalized spectral and temporal audio features, enabling further spectral analyses like MFCC extraction.
+This node generates a frequency-time spectrogram from validated audio features using STFT, preparing the data for further audio processing tasks.
 
 ## Docstring
 
 ### Summary
-Computes a short‑time Fourier transform (STFT) from validated, normalized audio features and returns a flattened spectrogram.
+Create a spectrogram from validated audio features using STFT.
 
 ### Parameters
 
 - **normalized_spectral** (List[float]): Validated spectral features (centroid, bandwidth, roll‑off) scaled to [0, 1].
 - **normalized_temporal** (List[float]): Validated temporal features (zero‑crossing rate, energy, entropy) scaled to [0, 1].
-- **validation_errors** (List[str]): Log of any inconsistencies or corrections applied during feature validation.
 
 ### Returns
 
-List[float]: Flattened spectrogram data as a one‑dimensional list of float values.
+List[float]: Flattened time-frequency representation of the audio signal.
 
 ### Raises
 
-- ValueError: Raised if any input list is empty or contains non‑numeric values.
-- RuntimeError: Raised if STFT computation fails (e.g., due to incompatible dimensions).
+- ValueError: If input features are not properly normalized or are inconsistent.
 
 ### Examples
 
 ```python
->>> # Example 1: Simple 2×2 spectrogram
->>> spectrogram_data = spectrogram_creation([0.2, 0.5, 0.7],
-...                                         [0.1, 0.3, 0.4],
-...                                         [])
->>> print(spectrogram_data)
-[0.2, 0.5, 0.7, 0.1, 0.3, 0.4]
+>>> normalized_spectral = [0.5, 0.3, 0.2]
+>>> normalized_temporal = [0.1, 0.7, 0.4]
+>>> spectrogram_data = spectrogram_creation(normalized_spectral, normalized_temporal)
+[0.25, 0.15, 0.1, 0.35, 0.21, 0.14]
 ```
 
 ```python
->>> # Example 2: 3×3 spectrogram (visualized as a matrix)
->>> spectrogram = spectrogram_creation([0.1,0.2,0.3, 0.4,0.5,0.6, 0.7,0.8,0.9],
-...                                    [0.0,0.0,0.0, 0.0,0.0,0.0, 0.0,0.0,0.0],
-...                                    ["Outlier corrected"])
->>> print(spectrogram)
->>> print('Length:', len(spectrogram))
-[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-Length: 9
+>>> normalized_spectral = [0.8, 0.4, 0.6]
+>>> normalized_temporal = [0.2, 0.9, 0.3]
+>>> spectrogram_data = spectrogram_creation(normalized_spectral, normalized_temporal)
+[0.4, 0.2, 0.3, 0.6, 0.45, 0.3]
 ```
