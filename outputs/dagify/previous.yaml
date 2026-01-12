@@ -1,43 +1,130 @@
 dag_type: plain_text
-description: A minimal workflow that verifies the literal string 'test' by checking
-  its type, comparing its value, and producing a pass/fail result.
-name: simple_test_workflow
+description: A detailed workflow for designing and building a rocket ship
+name: build_a_rocket_ship
 nodes:
-  check_type:
+  assemble_rocket_ship_structure_and_components:
     agent: false
-    description: Confirm the input is a string.
-    name: check_type
+    description: Assembles the rocket ship structure and components.
+    name: assemble_rocket_ship_structure_and_components
     nodes_depended_on:
-    - provide_input
+    - fabricate_rocket_ship_structure_and_components
     nodes_dependent_on:
-    - generate_output
-    prompt: Verify that the input is of type string. If it is not, produce an error
-      message.
-  compare_value:
+    - integrate_rocket_ship_systems_and_propulsion
+    prompt: Assemble the rocket ship structure and components into the final assembly.
+      Provide a detailed description of the assembly process and any challenges encountered.
+  choose_rocket_ship_design_configuration:
     agent: false
-    description: Compare the input string to the expected value.
-    name: compare_value
+    description: Chooses a rocket ship design configuration based on the mission objectives.
+    name: choose_rocket_ship_design_configuration
     nodes_depended_on:
-    - provide_input
+    - define_rocket_ship_mission_objectives
     nodes_dependent_on:
-    - generate_output
-    prompt: Compare the input string to the literal 'test'. Return true if they match,
-      false otherwise.
-  generate_output:
+    - design_rocket_ship_propulsion_system
+    - design_rocket_ship_structure_and_materials
+    prompt: Choose a rocket ship design configuration based on the mission objectives,
+      including the choice of propulsion system, structure, and materials. Provide
+      a brief description of the design choices and their justifications.
+  conduct_rocket_ship_performance_tests:
     agent: false
-    description: Produce the final pass/fail result.
-    name: generate_output
+    description: Conducts rocket ship performance tests.
+    name: conduct_rocket_ship_performance_tests
     nodes_depended_on:
-    - check_type
-    - compare_value
+    - integrate_rocket_ship_systems_and_propulsion
     nodes_dependent_on: []
-    prompt: If the comparison result is true, output 'PASS'; otherwise output 'FAIL'.
-  provide_input:
+    prompt: Conduct comprehensive performance tests of the rocket ship, including
+      thrust, stability, and communication. Provide a report detailing the test results
+      and any areas for improvement.
+  define_rocket_ship_mission_objectives:
     agent: false
-    description: Provide the test input string.
-    name: provide_input
+    description: Defines the mission objectives and purpose of the rocket ship.
+    name: define_rocket_ship_mission_objectives
     nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Describe the mission objectives of the rocket ship, including launch window,
+      target planet, and specific scientific or exploration goals. Provide a brief
+      description of the mission's purpose and expected outcomes.
+  design_rocket_ship_avionics_and_electronics:
+    agent: false
+    description: Designs a rocket ship avionics and electronics system.
+    name: design_rocket_ship_avionics_and_electronics
+    nodes_depended_on:
+    - choose_rocket_ship_design_configuration
+    nodes_dependent_on: []
+    prompt: Design a rocket ship avionics and electronics system, including the choice
+      of control systems, navigation, communication, and safety systems. Provide a
+      detailed description of the avionics and electronics system.
+  design_rocket_ship_propulsion_system:
+    agent: false
+    description: Designs a rocket ship propulsion system.
+    name: design_rocket_ship_propulsion_system
+    nodes_depended_on:
+    - choose_rocket_ship_design_configuration
+    nodes_dependent_on: []
+    prompt: Design a rocket ship propulsion system based on the chosen design configuration,
+      including the choice of engines, fuel, and power management. Provide a detailed
+      description of the propulsion system's components and performance characteristics.
+  design_rocket_ship_structure_and_materials:
+    agent: false
+    description: Designs a rocket ship structure and materials.
+    name: design_rocket_ship_structure_and_materials
+    nodes_depended_on:
+    - choose_rocket_ship_design_configuration
     nodes_dependent_on:
-    - check_type
-    - compare_value
-    prompt: Return the string 'test' as the input for this workflow.
+    - validate_rocket_ship_structural_integrity
+    prompt: Design a rocket ship structure and materials based on the chosen design
+      configuration, including the choice of materials, structure, and manufacturing
+      processes. Provide a detailed description of the structure and materials.
+  fabricate_rocket_ship_structure_and_components:
+    agent: false
+    description: Fabricates the rocket ship structure and components.
+    name: fabricate_rocket_ship_structure_and_components
+    nodes_depended_on:
+    - design_rocket_ship_structure_and_materials
+    - design_rocket_ship_propulsion_system
+    - design_rocket_ship_avionics_and_electronics
+    nodes_dependent_on:
+    - assemble_rocket_ship_structure_and_components
+    prompt: Fabricate the rocket ship structure and components based on the designed
+      dimensions and performance specifications. Provide a detailed description of
+      the fabrication process and materials used.
+  finalize_rocket_ship_pre-launch_preparations:
+    agent: false
+    description: Finalizes rocket ship pre-launch preparations.
+    name: finalize_rocket_ship_pre-launch_preparations
+    nodes_depended_on:
+    - conduct_rocket_ship_performance_tests
+    nodes_dependent_on:
+    - prepare_rocket_ship_for_launch
+    prompt: Finalize all pre-launch preparations, including fueling, system checks,
+      and weather forecasting. Provide a detailed description of the preparation process.
+  integrate_rocket_ship_systems_and_propulsion:
+    agent: false
+    description: Integrates the rocket ship systems and propulsion.
+    name: integrate_rocket_ship_systems_and_propulsion
+    nodes_depended_on:
+    - assemble_rocket_ship_structure_and_components
+    nodes_dependent_on: []
+    prompt: Integrate the rocket ship systems, including propulsion, avionics, and
+      electronics, with the assembled structure and components. Provide a detailed
+      description of the integration process and any challenges encountered.
+  validate_rocket_ship_avionics_and_electronics:
+    agent: false
+    description: Validates the performance and reliability of the rocket ship avionics
+      and electronics system.
+    name: validate_rocket_ship_avionics_and_electronics
+    nodes_depended_on:
+    - design_rocket_ship_avionics_and_electronics
+    nodes_dependent_on: []
+    prompt: Validate the performance and reliability of the rocket ship avionics and
+      electronics system through detailed analysis and testing. Provide a report detailing
+      the validation results.
+  validate_rocket_ship_structural_integrity:
+    agent: false
+    description: Validates the structural integrity of the rocket ship design.
+    name: validate_rocket_ship_structural_integrity
+    nodes_depended_on:
+    - design_rocket_ship_structure_and_materials
+    nodes_dependent_on: []
+    prompt: Validate the structural integrity of the rocket ship design using detailed
+      stress and load analysis and wind tunnel testing. Provide a report detailing
+      the validation results.
