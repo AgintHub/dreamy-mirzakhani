@@ -1,54 +1,54 @@
 dag_type: plain_text
-description: A detailed workflow for processing the 'test' objective, decomposing
-  into atomic, concurrent steps.
+description: Execute the 'test' objective as a series of fundamental steps.
 name: test_workflow
 nodes:
-  collect_results:
+  analyze_test_results:
     agent: false
-    description: Aggregate test results into a structured format for review or further
-      processing.
-    name: collect_results
+    description: Evaluate the outcome of the testing approach and identify areas for
+      improvement.
+    name: analyze_test_results
     nodes_depended_on:
-    - perform_test
-    nodes_dependent_on:
-    - finalize_output
-    prompt: Gather all output data, results, or outcomes from the testing process
-      for reporting.
-  finalize_output:
-    agent: false
-    description: Conclude the workflow by producing a comprehensive final report or
-      response.
-    name: finalize_output
-    nodes_depended_on:
-    - collect_results
+    - execute_testing_strategy
     nodes_dependent_on: []
-    prompt: Format and prepare the final output, report, or response based on gathered
-      results, for delivery or review.
-  initialize_task:
+    prompt: Analyze the results of the testing strategy.
+  determine_test_outcome:
     agent: false
-    description: Set up initial context and environment for the test operation.
-    name: initialize_task
+    description: Conclude the test by deciding whether it was successful or not.
+    name: determine_test_outcome
+    nodes_depended_on:
+    - analyze_test_results
+    nodes_dependent_on: []
+    prompt: Determine the outcome of the test based on the analysis.
+  evaluate_test_objective:
+    agent: false
+    description: Determine the next step based on the parsed objective.
+    name: evaluate_test_objective
+    nodes_depended_on:
+    - parse_test_objective
+    nodes_dependent_on: []
+    prompt: Evaluate the extracted objective against predefined criteria to determine
+      a course of action.
+  execute_testing_strategy:
+    agent: false
+    description: Perform the chosen testing approach to achieve the objective.
+    name: execute_testing_strategy
+    nodes_depended_on:
+    - select_test_strategy
+    nodes_dependent_on: []
+    prompt: Implement the selected testing strategy.
+  parse_test_objective:
+    agent: false
+    description: Parse the test objective and extract the main purpose.
+    name: parse_test_objective
     nodes_depended_on: []
-    nodes_dependent_on:
-    - preprocess_test_input
-    prompt: Confirm receipt of the task 'test' and prepare initial environment settings.
-  perform_test:
+    nodes_dependent_on: []
+    prompt: Take the input 'test' and identify its primary objective.
+  select_test_strategy:
     agent: false
-    description: Carry out the core testing operation, independent of other tasks.
-    name: perform_test
+    description: Select a testing approach that aligns with the determined course
+      of action.
+    name: select_test_strategy
     nodes_depended_on:
-    - preprocess_test_input
-    nodes_dependent_on:
-    - collect_results
-    prompt: Execute the testing procedure based on preprocessed input data, including
-      any validations or computations needed.
-  preprocess_test_input:
-    agent: false
-    description: Transform and prepare the raw test input data for the testing process.
-    name: preprocess_test_input
-    nodes_depended_on:
-    - initialize_task
-    nodes_dependent_on:
-    - perform_test
-    prompt: Analyze and preprocess the 'test' input to extract key parameters or data
-      points required for execution.
+    - evaluate_test_objective
+    nodes_dependent_on: []
+    prompt: Choose a testing strategy based on the evaluated objective.

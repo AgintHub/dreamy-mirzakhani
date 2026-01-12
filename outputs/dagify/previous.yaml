@@ -1,59 +1,72 @@
 dag_type: plain_text
-description: A workflow for testing specific steps in the testing process
-name: test_workflows
+description: A workflow that achieves the objective of testing a task or function.
+name: test_objective_workflow
 nodes:
-  analyze_results:
+  define_test_criteria:
     agent: false
-    description: Analyze the results of the test
-    name: analyze_results
-    nodes_depended_on:
-    - execute_test
-    nodes_dependent_on: []
-    prompt: Analyze the results of the test
-  create_test_data:
-    agent: false
-    description: Create the test data according to the test plan
-    name: create_test_data
-    nodes_depended_on:
-    - define_test_plan
-    nodes_dependent_on: []
-    prompt: Create the test data according to the test plan
-  define_test_plan:
-    agent: false
-    description: Define the test plan based on the objectives
-    name: define_test_plan
-    nodes_depended_on:
-    - determine_test_objectives
-    nodes_dependent_on: []
-    prompt: Define the test plan based on the objectives
-  determine_test_objectives:
-    agent: false
-    description: Determine the objectives for the test
-    name: determine_test_objectives
+    description: Establish clear, specific, and measurable requirements for the test
+    name: define_test_criteria
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: What are the objectives for the test?
-  document_findings:
+    prompt: Define the specific criteria for testing this task or function. What success
+      conditions must be met?
+  document_results:
     agent: false
-    description: Document the findings of the test
-    name: document_findings
+    description: Create a transparent and complete record of the test's outcomes
+    name: document_results
     nodes_depended_on:
-    - analyze_results
+    - verify_output
+    - validate_edge_cases
     nodes_dependent_on: []
-    prompt: Document the findings of the test
-  execute_test:
+    prompt: Document the test results, including observations, successes, and failures.
+      Describe any issues that arose during testing.
+  generate_test_data:
     agent: false
-    description: Execute the test using the test data
-    name: execute_test
+    description: Develop relevant test inputs that validate the task or function's
+      execution
+    name: generate_test_data
     nodes_depended_on:
-    - create_test_data
-    nodes_dependent_on: []
-    prompt: Execute the test using the test data
-  implement_changes:
+    - setup_test_environment
+    nodes_dependent_on:
+    - identify_execution_path
+    prompt: Create data necessary to execute the task or function along the identified
+      execution path.
+  identify_execution_path:
     agent: false
-    description: Implement the necessary changes based on the findings
-    name: implement_changes
+    description: Pinpoint the key execution flow that should be tested
+    name: identify_execution_path
     nodes_depended_on:
-    - document_findings
+    - setup_test_environment
     nodes_dependent_on: []
-    prompt: Implement the necessary changes based on the findings
+    prompt: Determine the primary execution path through the task or function to focus
+      the test.
+  setup_test_environment:
+    agent: false
+    description: Prepare the necessary context and input data to conduct a fair and
+      relevant test
+    name: setup_test_environment
+    nodes_depended_on:
+    - define_test_criteria
+    nodes_dependent_on: []
+    prompt: Set up the test environment and necessary input data. Identify potential
+      edge cases that could impact the test's correctness
+  validate_edge_cases:
+    agent: false
+    description: Validate the task or function's performance with uncommon or unusual
+      inputs
+    name: validate_edge_cases
+    nodes_depended_on:
+    - generate_test_data
+    nodes_dependent_on: []
+    prompt: Test edge cases to ensure the task or function operates correctly under
+      unexpected inputs or execution paths.
+  verify_output:
+    agent: false
+    description: Confirm that the task or function's outputs align with expectations
+    name: verify_output
+    nodes_depended_on:
+    - generate_test_data
+    - identify_execution_path
+    nodes_dependent_on: []
+    prompt: Verify that the task or function outputs meet the established test criteria
+      and execution path.
