@@ -6,53 +6,50 @@ Calculate temporal domain features from raw audio data, returning the zero‑cro
 
 ## Conceptual Info
 
-Computes time‑domain descriptors from raw audio samples, providing insight into waveform complexity and power.
+This node transforms raw waveform samples into a compact set of descriptive statistics that capture the signal’s time‑domain behaviour.
 
 ## Docstring
 
 ### Summary
-Extract key temporal metrics (zero‑crossing rate, energy, entropy) from raw audio samples.
+Extracts zero‑crossing rate, energy, and entropy from a raw audio buffer and returns them as a tuple and a consolidated list.
 
 ### Parameters
 
-- **audio_data** (str): Raw audio samples typically returned by `load_audio_snippet`. The function expects a contiguous sequence of PCM sample values encoded as a string or byte array.
-- **sampling_rate** (int): Sampling rate (samples per second) of the audio data, used to convert raw counts into time‑based rates.
-- **metadata** (list[str] | None): Optional list of metadata strings from `load_audio_snippet`. Ignored by the function but accepted for API consistency.
+- **audio_data** (str): Base64‑ or hex‑encoded representation of the raw audio samples.
+- **sampling_rate** (int): Sampling frequency of the audio in Hertz.
+- **file_format** (str): Encoding format of the audio file (e.g., WAV, MP3, FLAC).
+- **metadata** (list[str]): Additional metadata extracted by the loader; unused by this function but provided for consistency.
 
 ### Returns
 
-dict: Dictionary containing the computed temporal features:
-
-```python
-{
-    "zero_crossing_rate": float,
-    "energy": float,
-    "entropy": float,
-    "temporal_features": List[float],
-}
-```
+tuple[float, float, float, list[float]]: A four‑element tuple containing zero_crossing_rate, energy, entropy, and a list of these three metrics.
 
 ### Raises
 
-- ValueError: If `audio_data` is empty or contains no valid samples.
-- TypeError: If inputs are of incompatible types (e.g., non‑numeric samples).
+- ValueError: If audio_data cannot be decoded or is empty.
+- TypeError: If sampling_rate is not an integer or less than or equal to zero.
 
 ### Examples
 
 ```python
->>> # Example 1: Simple 5‑sample signal
->>> audio_data = "\x00\x01\x00\xff\x00"  # 0, 1, 0, -1, 0 (little‑endian bytes)
->>> sampling_rate = 1
->>> features = extract_temporal_features(audio_data, sampling_rate)
->>> print(features)
-{'zero_crossing_rate': 2.0, 'energy': 2.0, 'entropy': 1.0, 'temporal_features': [2.0, 2.0, 1.0]}
+>>> # Example 1 – simple 4‑sample waveform encoded as hex
+>>> audio_hex = '01020304'
+>>> # bytes: 1
+>>> 2
+>>> 3
+>>> 4"
+>>> result = extract_temporal_features(audio_hex, 1, 'raw', [])
+>>> print(result)
+(0.0, 30.0, 0.0, [0.0, 30.0, 0.0])
 ```
 
 ```python
->>> # Example 2: Silence – zero energy and entropy
->>> audio_data = "\x00\x00\x00\x00"  # four zero samples
->>> sampling_rate = 4
->>> features = extract_temporal_features(audio_data, sampling_rate)
->>> print(features)
-{'zero_crossing_rate': 0.0, 'energy': 0.0, 'entropy': 0.0, 'temporal_features': [0.0, 0.0, 0.0]}
+>>> # Example 2 – a sine wave (encoded in base64 for brevity)
+>>> import numpy as np, base64
+>>> t = np.linspace(0, 1, 44100, endpoint=False)
+>>> samples = np.int16(32767 * np.sin(2 * np.pi * 440 * t))
+>>> audio_b64 = base64.b64encode(samples.tobytes()).decode('ascii')
+>>> result = extract_temporal_features(audio_b64, 44100, 'wav', [])
+>>> print(result[0])  # zero crossing rate per second
+≈ 880.0
 ```

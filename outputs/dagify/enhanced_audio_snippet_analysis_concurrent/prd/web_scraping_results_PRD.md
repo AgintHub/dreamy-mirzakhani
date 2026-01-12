@@ -1,50 +1,42 @@
 # web_scraping_results PRD
 
 ## Description
-Scrape additional music metadata
+Scrape additional music metadata from web sources using tonal and pitch characteristics as search criteria.
 
 
 ## Conceptual Info
 
-Collect and rank music metadata from online sources using pitch and tonal cues.
+The node takes tonal and pitch data, queries web‑based music information sources (e.g., lyric sites, streaming APIs, fan forums), and returns a consolidated list of matching tracks along with a relevance score.
 
 ## Docstring
 
 ### Summary
-Scrape the web for music metadata that matches given tonal and pitch characteristics, returning a string of matches and a relevance score.
+Collects music metadata from the web using tonal and pitch cues.
 
 ### Parameters
 
-- **tone** (str): Musical key identified by the tonal_analysis node.
-- **tone_confidence** (float): Confidence level of the tonal detection.
-- **fundamental_frequency** (float): Primary pitch frequency determined by pitch_analysis.
-- **pitch_confidence** (float): Confidence level of the pitch detection.
+- **tone** (str): Identified musical key from tonal_analysis (e.g., "C major").
+- **tone_confidence** (float): Reliability of the tonal detection (0.0‑1.0).
+- **fundamental_frequency** (float): Primary pitch frequency extracted by pitch_analysis, in Hz.
+- **pitch_confidence** (float): Reliability of the pitch detection (0.0‑1.0).
 
 ### Returns
 
-Dict[str, Any]: A dictionary with keys:
-  * 'additional_matches' (str): concatenated list of web‑sourced song or artist names.
-  * 'web_scores' (float): overall relevance score for the web results.
+Tuple[str, float]: A tuple containing the web‑sourced matches string and a relevance score float.
 
 ### Raises
 
-- ValueError: Raised if any input is None or has an unexpected type.
-- ConnectionError: Raised when network requests to the web sources fail.
+- ValueError: Raised if any input is missing or invalid (e.g., empty tone, negative frequency).
+- ConnectionError: Raised if the web query fails due to network issues.
 
 ### Examples
 
 ```python
->>> matches, scores = web_scraping_results('C', 0.96, 440.0, 0.92)
->>> print(matches)
->>> print(scores)
-"Song1;Song2;Song3"
-0.88
+>>> matches, score = web_scraping_results('C major', 0.95, 110.0, 0.92)
+('Song A, Song B, Song C', 0.88)
 ```
 
 ```python
->>> result = web_scraping_results('G#', 0.85, 329.63, 0.80)
->>> print(result['additional_matches'])
->>> print(result['web_scores'])
-"TrackA;TrackB"
-0.75
+>>> matches, score = web_scraping_results('A minor', 0.80, 98.5, 0.75)
+('Track X, Track Y', 0.70)
 ```

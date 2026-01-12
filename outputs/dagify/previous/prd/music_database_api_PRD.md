@@ -6,37 +6,38 @@ Query an external music database to find tracks that match the provided tonal an
 
 ## Conceptual Info
 
-The node acts as a bridge between low‑level audio analysis (tonal and pitch) and high‑level semantic information by querying a music database to retrieve candidate tracks.
+This node performs an external lookup of tracks that best match the tonal key and fundamental pitch detected from an audio snippet.  It serves as the bridge between low‑level audio analysis and high‑level music metadata retrieval, feeding subsequent nodes that assemble artist links and render the final HTML.
 
 ## Docstring
 
 ### Summary
-Queries a music database using tonal and pitch information and returns candidate song titles with relevance scores.
+Query an external music database for songs matching a given musical key and pitch.
 
 ### Parameters
 
-- **tone** (str): Identified musical key from tonal_analysis.
-- **tone_confidence** (float): Confidence value (0‑1) for the identified key.
-- **fundamental_frequency** (float): Fundamental pitch frequency in Hz from pitch_analysis.
-- **pitch_confidence** (float): Confidence value (0‑1) for the pitch estimation.
+- **tone** (str): Identified musical key (e.g., 'C major', 'A minor').
+- **fundamental_frequency** (float): Estimated fundamental frequency in hertz.
 
 ### Returns
 
-Tuple[List[str], List[float]]: A tuple containing a list of matching song titles and a parallel list of relevance scores.
+Tuple[List[str], List[float]]: A tuple where the first element is a list of matched song titles and the second element is a list of corresponding relevance scores.
 
 ### Raises
 
-- ValueError: Raised if any confidence input is outside the range [0, 1] or if tone is empty.
-- RuntimeError: Raised if the external database query fails or times out.
+- ValueError: If either `tone` or `fundamental_frequency` is missing or empty.
+- ConnectionError: If the external music database API cannot be reached.
 
 ### Examples
 
 ```python
->>> matches, scores = music_database_api('C', 0.95, 440.0, 0.90)
-(['Song A', 'Song B'], [0.98, 0.92])
+>>> matches, scores = music_database_api('C major', 440.0)
+(['Song A', 'Song B'], [0.95, 0.88])
 ```
 
 ```python
->>> matches, scores = music_database_api('G', 0.60, 220.0, 0.50)
-([], [])
+>>> try:
+...     music_database_api('', 440.0)
+>>> except ValueError as e:
+...     print(e)
+"tone is required and cannot be empty."
 ```

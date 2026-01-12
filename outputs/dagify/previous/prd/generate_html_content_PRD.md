@@ -6,72 +6,101 @@ Create HTML output structure
 
 ## Conceptual Info
 
-Creates a minimal HTML5 skeleton populated with metadata and navigation links for the identified songs and artists, serving as the foundation for subsequent styling and scripting.
+Builds a minimal but extensible HTML5 document skeleton that incorporates song metadata and musician navigation links, ready for subsequent CSS/JS injections.
 
 ## Docstring
 
 ### Summary
-Generates a foundational HTML5 document string from song metadata and musician links.
+Construct an HTML5 document skeleton using provided music metadata and artist links.
 
 ### Parameters
 
-- **song_titles** (List[str]): List of song titles returned by the process_song_metadata node.
-- **artist_names** (List[str]): List of artist names returned by the process_song_metadata node.
-- **album_names** (List[str]): List of album names returned by the process_song_metadata node.
-- **genre_tags** (List[str]): List of genre tags returned by the process_song_metadata node.
-- **musician_urls** (List[str]): List of deep links to musician profiles returned by generate_musician_links.
-- **official_websites** (List[str]): List of official web presences for the artists returned by generate_musician_links.
+- **song_titles** (List[str]): Ordered list of matched song titles.
+- **artist_names** (List[str]): Ordered list of artist names corresponding to the songs.
+- **album_names** (List[str]): Ordered list of album names where the songs appear.
+- **genre_tags** (List[str]): List of music genre tags inferred from the data.
+- **musician_urls** (List[str]): Artist profile links constructed from database and web sources.
+- **official_websites** (List[str]): Official band or artist web presences extracted from the same sources.
 
 ### Returns
 
-str: A complete HTML5 document string containing a header, a list of songs with metadata, and a navigation section for musicians.
+str: A complete HTML5 document string with placeholders for metadata and navigation links.
 
 ### Raises
 
-- ValueError: Raised if any of the required input lists is missing or empty.
+- ValueError: Raised when any input list is empty or misaligned (different lengths).
 
 ### Examples
 
 ```python
->>> html = generate_html_content(
-...     song_titles=['Song A'],
-...     artist_names=['Artist X'],
-...     album_names=['Album Y'],
+>>> html = build_html_structure(
+...     song_titles=['Imagine'],
+...     artist_names=['John Lennon'],
+...     album_names=['Imagine'],
 ...     genre_tags=['Rock'],
-...     musician_urls=['https://music.com/artistx'],
-...     official_websites=['https://artistx.com']
+...     musician_urls=['https://en.wikipedia.org/wiki/John_Lennon'],
+...     official_websites=['https://johnlennon.com']
 >>> )
->>> print(html[:200])
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Song Metadata</title>
+    <meta charset="UTF-8">
+    <title>Imagine - John Lennon</title>
 </head>
 <body>
-<h1>Song List</h1>
-<ul>
-  <li>Song A – Artist X (Album Y) [Rock]</li>
-</ul>
-<nav>
-  <h2>Artists</h2>
-  <ul>
-    <li><a href="https://music.com/artistx">Artist X</a> – <a href="https://artistx.com">Official Website</a></li>
-  </ul>
-</nav>
+    <h1>Imagine</h1>
+    <p>Artist: John Lennon</p>
+    <p>Album: Imagine</p>
+    <p>Genre: Rock</p>
+    <nav>
+        <ul>
+            <li><a href="https://en.wikipedia.org/wiki/John_Lennon">John Lennon Profile</a></li>
+        </ul>
+    </nav>
+    <footer>
+        <p>Official site: <a href="https://johnlennon.com">johnlennon.com</a></p>
+    </footer>
 </body>
 </html>
 ```
 
 ```python
->>> html = generate_html_content(
+>>> html = build_html_structure(
 ...     song_titles=['Song A', 'Song B'],
 ...     artist_names=['Artist X', 'Artist Y'],
-...     album_names=['Album Y', 'Album Z'],
-...     genre_tags=['Rock', 'Jazz'],
-...     musician_urls=['https://music.com/artistx', 'https://music.com/artisty'],
+...     album_names=['Album X', 'Album Y'],
+...     genre_tags=['Pop', 'Jazz'],
+...     musician_urls=['https://artistx.com', 'https://artisty.com'],
 ...     official_websites=['https://artistx.com', 'https://artisty.com']
 >>> )
->>> print(html.count('<li>'))
-4
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Song A – Song B by Artist X – Artist Y</title>
+</head>
+<body>
+    <section>
+        <h1>Song A</h1>
+        <p>Artist: Artist X</p>
+        <p>Album: Album X</p>
+        <p>Genre: Pop</p>
+    </section>
+    <section>
+        <h1>Song B</h1>
+        <p>Artist: Artist Y</p>
+        <p>Album: Album Y</p>
+        <p>Genre: Jazz</p>
+    </section>
+    <nav>
+        <ul>
+            <li><a href="https://artistx.com">Artist X Profile</a></li>
+            <li><a href="https://artisty.com">Artist Y Profile</a></li>
+        </ul>
+    </nav>
+    <footer>
+        <p>Official sites: <a href="https://artistx.com">artistx.com</a>, <a href="https://artisty.com">artisty.com</a></p>
+    </footer>
+</body>
+</html>
 ```

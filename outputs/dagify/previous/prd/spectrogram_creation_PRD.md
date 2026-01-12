@@ -6,41 +6,35 @@ Generate spectrogram representation
 
 ## Conceptual Info
 
-The spectrogram_creation node transforms validated audio features into a 2‑D time‑frequency representation. It accepts the normalized spectral and temporal feature vectors produced by validate_audio_features, applies a short‑time Fourier transform (STFT) or a suitable reconstruction algorithm, and emits a flattened spectrogram matrix that will be consumed by downstream MFCC extraction.
+The spectrogram_creation node transforms validated audio features into a two‑dimensional frequency‑time representation (spectrogram) and flattens it for downstream processing (e.g., MFCC extraction).
 
 ## Docstring
 
 ### Summary
-Compute a spectrogram from validated audio features.
+Create a flattened spectrogram matrix from validated audio features using Short‑Time Fourier Transform (STFT).
 
 ### Parameters
 
-- **normalized_spectral** (List[float]): List of normalized spectral feature values produced by validate_audio_features.
-- **normalized_temporal** (List[float]): List of normalized temporal feature values produced by validate_audio_features.
-- **validation_errors** (List[str]): List of validation error messages, if any, from validate_audio_features.
+- **normalized_spectral** (List[float]): Validated spectral features (e.g., spectral centroid, bandwidth, rolloff). These values are assumed to be normalized and ready for STFT computation.
+- **normalized_temporal** (List[float]): Validated temporal features (e.g., zero‑crossing rate, energy, entropy). These provide the time‑domain context for the STFT.
 
 ### Returns
 
-List[float]: Flattened spectrogram data. The matrix is arranged row‑major where each consecutive block of ``frequency_bins`` floats represents one time‑frame.
+List[float]: A one‑dimensional list representing the flattened spectrogram matrix. Each contiguous block of values corresponds to a frequency bin across all time frames.
 
 ### Raises
 
-- ValueError: Raised when ``validation_errors`` is non‑empty, indicating that the input features failed validation.
+- ValueError: If either input list is empty or contains non‑numeric values.
+- RuntimeError: If the STFT calculation fails (e.g., due to incompatible input shapes).
 
 ### Examples
 
 ```python
->>> normalized_spectral = [0.1, 0.2, 0.3],
->>> normalized_temporal = [0.4, 0.5, 0.6],
->>> validation_errors = [],
->>> spectrogram = spectrogram_creation(normalized_spectral, normalized_temporal, validation_errors)
-[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+>>> spectrogram = spectrogram_creation([1.0, 2.0], [0.5, 1.5])
+[1.0, 2.0, 0.5, 1.5]
 ```
 
 ```python
->>> normalized_spectral = [0.05, 0.15, 0.25],
->>> normalized_temporal = [0.35, 0.45, 0.55],
->>> validation_errors = ['Out of range values'],
->>> spectrogram_creation(normalized_spectral, normalized_temporal, validation_errors)
-ValueError: Validation errors present: ['Out of range values']
+>>> spectrogram = spectrogram_creation([0.1, 0.2, 0.3], [0.01, 0.02, 0.03])
+[0.1, 0.2, 0.3, 0.01, 0.02, 0.03]
 ```

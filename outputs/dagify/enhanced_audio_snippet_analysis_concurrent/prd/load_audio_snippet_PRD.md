@@ -1,48 +1,45 @@
 # load_audio_snippet PRD
 
 ## Description
-Load audio file with metadata extraction
+Load an audio file from a local or remote source and provide the raw audio data in a compact string format along with key metadata such as sample rate, file format, duration, bit depth, channel count, and loudness.
 
 
 ## Conceptual Info
 
-The `load_audio_snippet` node reads an audio file from disk (or a remote source), decodes its waveform into raw samples, and extracts fundamental metadata—including sampling rate, format, and key signal statistics. The data is returned in a lightweight, serializable form for downstream analysis.
+Provides the foundational audio data and its descriptive statistics for downstream audio‑analysis tasks.
 
 ## Docstring
 
 ### Summary
-Load an audio file and extract basic metadata for further analysis.
+Loads an audio file and returns its raw samples in a compact string along with sampling rate, file format, and a list of key metadata values.
 
 ### Parameters
 
-- **audio_file_path** (str): Filesystem path or URL to the audio file to be loaded.
+- **file_path** (str): Path or URL to the audio file to be loaded.
 
 ### Returns
 
-Dict[str, Any]: Dictionary containing `audio_data` (raw samples), `sampling_rate` (Hz), `file_format` (e.g., 'wav'), and `metadata` (list of descriptive strings).
+Dict[str, Union[str, int, List[str]]]: Dictionary containing `audio_data`, `sampling_rate`, `file_format`, and `metadata`.
 
 ### Raises
 
-- FileNotFoundError: Raised if the specified file does not exist or cannot be accessed.
+- FileNotFoundError: Raised if the file does not exist or cannot be accessed.
 - ValueError: Raised if the file format is unsupported or the file is corrupted.
-- RuntimeError: Raised for low‑level decoding failures (e.g., I/O errors during read).
 
 ### Examples
 
 ```python
->>> result = load_audio_snippet('samples/beat.wav')
->>> print(result['sampling_rate'])  # 44100
->>> print(result['file_format'])    # 'wav'
->>> print(len(result['metadata']))  # 4
-44100
-wav
-4
+>>> result = load_audio_snippet('/path/to/song.wav')
+>>> print(result['file_format'])
+>>> print(result['sampling_rate'])
+>>> print(result['metadata'])
+"WAV"
+"44100"
+"['duration: 3.12s', 'bit_depth: 16', 'channels: 2', 'loudness: -12.3 dB']"
 ```
 
 ```python
->>> try:
-...     load_audio_snippet('missing.mp3')
->>> except FileNotFoundError as e:
-...     print(str(e))
-'File not found: missing.mp3'
+>>> result = load_audio_snippet('https://example.com/track.mp3')
+>>> print(len(result['audio_data']))
+"123456"
 ```

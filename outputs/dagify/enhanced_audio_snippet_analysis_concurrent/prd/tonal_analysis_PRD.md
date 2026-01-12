@@ -6,37 +6,37 @@ Identify tonal characteristics
 
 ## Conceptual Info
 
-The tonal_analysis node uses a deep‑learning model trained on MFCC representations to infer the dominant musical key of an audio snippet. It outputs the key name and a confidence score reflecting the model’s certainty.
+Detects the musical key of an audio snippet by interpreting MFCC-derived features through a pretrained deep‑learning model, providing both a key label and confidence score.
 
 ## Docstring
 
 ### Summary
-Detects the musical key from MFCC inputs using a pretrained deep learning model.
+Detects the musical key (tone) of an audio snippet using MFCC inputs.
 
 ### Parameters
 
-- **mfcc_coefficients** (float): Mel‑frequency cepstral coefficient features extracted from the audio snippet.
-- **delta_mfcc** (float): First‑order differences of the MFCCs, capturing temporal dynamics.
+- **mfcc_coefficients** (List[float]): Temporal MFCC feature vector extracted from the audio signal.
+- **delta_mfcc** (List[float]): Delta (first‑order difference) MFCC features capturing the rate of change of the spectral envelope.
 
 ### Returns
 
-Tuple[str, float]: A tuple containing the detected key (`tone`) and a confidence value (`tone_confidence`).
+Tuple[str, float]: A tuple containing the identified musical key (e.g., 'C major') and a confidence score between 0.0 and 1.0.
 
 ### Raises
 
-- ValueError: If either `mfcc_coefficients` or `delta_mfcc` is None or NaN.
-- RuntimeError: If the deep‑learning inference engine fails or the model file is missing.
+- ValueError: Raised if either input list is empty or of mismatched length.
+- RuntimeError: Raised if the deep‑learning model cannot be loaded or executed.
 
 ### Examples
 
 ```python
->>> tone, conf = tonal_analysis(0.58, 0.12)
->>> print(f"Key: {tone}, Confidence: {conf:.2f}")
-"Key: C Major, Confidence: 0.93"
+>>> tone, confidence = tonal_analysis(
+...     mfcc_coefficients=[0.23, -0.11, 0.56, ...],
+...     delta_mfcc=[0.02, -0.01, 0.03, ...])
+"C major", 0.92
 ```
 
 ```python
->>> tone, conf = tonal_analysis(0.42, -0.03)
->>> print(tone, conf)
-"F Minor 0.76"
+>>> tone, confidence = tonal_analysis([0.1, -0.05, 0.3], [0.01, -0.02, 0.02])
+"G minor", 0.78
 ```

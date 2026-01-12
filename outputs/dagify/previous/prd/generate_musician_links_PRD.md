@@ -6,51 +6,52 @@ Create artist navigation links by aggregating database search results and web‑
 
 ## Conceptual Info
 
-This node consolidates and normalises artist link information gathered from the music database and web scraping stages, producing a curated set of profile URLs and official website links for downstream HTML generation.
+The node synthesises music metadata from two upstream services—an external music database and a web‑scraping engine—into user‑friendly hyperlinks. The resulting URLs enable seamless navigation from the HTML report to external artist pages.
 
 ## Docstring
 
 ### Summary
-Generate deep links to musician profiles by merging and filtering results from the music database API and web scraping results.
+Builds artist profile URLs and official website links from database matches and web‑scraped data.
 
 ### Parameters
 
-- **song_matches** (List[str]): List of artist profile URLs returned by the music database API.
-- **relevance_scores** (List[float]): Relevance scores associated with each entry in `song_matches`.
-- **additional_matches** (List[str]): Artist profile URLs scraped from external web sources.
-- **web_scores** (List[float]): Relevance scores for each entry in `additional_matches`.
+- **song_matches** (List[str]): List of song titles returned by the music database API.
+- **relevance_scores** (List[float]): Relevance scores corresponding to each entry in song_matches.
+- **additional_matches** (List[str]): List of URLs or titles obtained through web scraping.
+- **web_scores** (List[float]): Relevance scores for each web‑scraped match.
 
 ### Returns
 
-Dict[str, List[str]]: A dictionary with two keys:
-- `musician_urls`: deduplicated list of all profile URLs.
-- `official_websites`: list of URLs identified as official band or artist websites.
+dict: Dictionary containing two lists:
+- musician_urls: List of artist profile links.
+- official_websites: List of official band or artist web presences.
 
 ### Raises
 
-- ValueError: Raised if any of the input lists are empty.
-- ValueError: Raised if the lengths of `song_matches` and `relevance_scores` differ, or if `additional_matches` and `web_scores` differ.
-- TypeError: Raised if any argument is not of the expected list type.
+- ValueError: Raised when input lists are of mismatched lengths or contain None values.
 
 ### Examples
 
 ```python
->>> song_matches = ["https://musicdb.com/artist/123", "https://musicdb.com/artist/456"],
->>> relevance_scores = [0.95, 0.80],
->>> additional_matches = ["https://artistpage.com/123", "https://artistpage.com/789"],
->>> web_scores = [0.90, 0.85],
->>> links = generate_musician_links(song_matches, relevance_scores, additional_matches, web_scores)
->>> print(links["musician_urls"])
->>> print(links["official_websites"])
-["https://musicdb.com/artist/123", "https://musicdb.com/artist/456", "https://artistpage.com/123", "https://artistpage.com/789"]
-["https://musicdb.com/artist/123", "https://artistpage.com/123"]
+>>> musician_urls, official_websites = generate_musician_links(
+...     song_matches=['Song A', 'Song B'],
+...     relevance_scores=[0.95, 0.88],
+...     additional_matches=['https://artist.com', 'https://band.org'],
+...     web_scores=[0.92, 0.85])
+>>> print('musician_urls:', musician_urls)
+>>> print('official_websites:', official_websites)
+musician_urls: ['https://musicdb.com/song_a', 'https://musicdb.com/song_b']
+official_websites: ['https://artist.com', 'https://band.org']
 ```
 
 ```python
->>> # Handling a mismatch in list lengths
+>>> # Handling inconsistent input lengths
 >>> try:
-...     generate_musician_links(["url1"], [0.9, 0.8], [], [])
+...     generate_musician_links(song_matches=['Song A'],
+...                              relevance_scores=[0.95, 0.88],
+...                              additional_matches=['https://artist.com'],
+...                              web_scores=[0.92])
 >>> except ValueError as e:
-...     print(e)
-"Relevance scores list length does not match song_matches list length."
+...     print('Error:', e)
+Error: Input list lengths do not match.
 ```

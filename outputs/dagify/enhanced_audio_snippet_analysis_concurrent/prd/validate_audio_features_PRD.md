@@ -1,69 +1,64 @@
 # validate_audio_features PRD
 
 ## Description
-Normalize and validate extracted features
+Normalizes and validates spectral, temporal, and deep‑learning features extracted from an audio snippet, ensuring numerical consistency and flagging anomalies before downstream processing.
 
 
 ## Conceptual Info
 
-Normalizes and validates audio features before downstream processing, ensuring consistent scales and logging any discrepancies.
+The node validates and normalizes audio feature vectors to provide a clean, consistent input set for spectrogram generation and downstream analytics.
 
 ## Docstring
 
 ### Summary
-Normalizes spectral and temporal audio features to a common scale, verifies consistency, and records validation errors.
+Validate and normalize audio features extracted from an audio snippet.
 
 ### Parameters
 
-- **spectral_centroid** (float): Spectral centroid value extracted from the audio signal.
-- **spectral_bandwidth** (float): Spectral bandwidth value extracted from the audio signal.
-- **rolloff_frequency** (float): Rolloff frequency value extracted from the audio signal.
-- **zero_crossing_rate** (float): Zero‑crossing rate of the audio waveform.
-- **energy** (float): Signal energy computed from squared amplitudes.
+- **spectral_centroid** (float): Frequency band center of gravity.
+- **spectral_bandwidth** (float): Spread of frequency energy.
+- **rolloff_frequency** (float): Frequency cutoff point.
+- **zero_crossing_rate** (float): Rate of sign changes in the audio waveform per second.
+- **energy** (float): Sum of squared sample amplitudes, representing signal power.
 - **entropy** (float): Shannon entropy of the amplitude histogram.
+- **cnn_features** (float): Convolutional network output summarizing learned spectral patterns.
+- **rnn_features** (float): Recurrent network output summarizing learned temporal dynamics.
 
 ### Returns
 
-Tuple[List[float], List[float], List[str]]: A tuple containing a list of normalized spectral features, a list of normalized temporal features, and a list of validation error messages.
+Dict[str, List[float] | List[str]]: Dictionary with keys 'normalized_spectral', 'normalized_temporal', and 'validation_errors'.
 
 ### Raises
 
-- ValueError: If any input is None or not a real number.
+- ValueError: Raised if any required feature is missing or NaN.
+- TypeError: Raised if input types are not float.
 
 ### Examples
 
 ```python
->>> spectral_centroid = 4000.0
->>> spectral_bandwidth = 500.0
->>> rolloff_frequency = 2000.0
->>> zero_crossing_rate = 30.0
->>> energy = 0.02
->>> entropy = 1.2
->>> norm_spectral, norm_temporal, errors = validate_audio_features(
-
-...     spectral_centroid,
-
-...     spectral_bandwidth,
-
-...     rolloff_frequency,
-
-...     zero_crossing_rate,
-
-...     energy,
-
-...     entropy
-
+>>> validate_audio_features(
+...     spectral_centroid=1200.0,
+...     spectral_bandwidth=300.0,
+...     rolloff_frequency=8000.0,
+...     zero_crossing_rate=0.05,
+...     energy=5000.0,
+...     entropy=2.3,
+...     cnn_features=0.85,
+...     rnn_features=0.65)
 >>> )
-"norm_spectral = [1.0, 0.0, 0.4286],\n" +
-"norm_temporal = [1.0, 0.0, 0.0399],\n" +
-"errors = []"
+{'normalized_spectral': [0.0, 0.2, 0.8], 'normalized_temporal': [0.05, 0.5, 0.7], 'validation_errors': []}
 ```
 
 ```python
->>> # Example that triggers a validation error
->>> try:
-...     validate_audio_features(None, 500, 2000, 30, 0.02, 1.2)
->>> except ValueError as e:
-...     print(e)
-"One or more inputs is not a valid float."
+>>> validate_audio_features(
+...     spectral_centroid=99999.0,  # unrealistic outlier
+...     spectral_bandwidth=300.0,
+...     rolloff_frequency=8000.0,
+...     zero_crossing_rate=0.05,
+...     energy=5000.0,
+...     entropy=2.3,
+...     cnn_features=0.85,
+...     rnn_features=0.65)
+>>> )
+{'normalized_spectral': [1.0, 0.2, 0.8], 'normalized_temporal': [0.05, 0.5, 0.7], 'validation_errors': ['spectral_centroid out of expected range, clipped to 1.0']}
 ```

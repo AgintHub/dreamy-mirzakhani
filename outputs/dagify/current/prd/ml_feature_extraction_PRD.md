@@ -1,47 +1,53 @@
 # ml_feature_extraction PRD
 
 ## Description
-Generate deep learning features using CNN and RNN architectures
+Generates high‑level audio representations by passing the raw audio through a convolutional network for spectral pattern extraction and a recurrent network for temporal dynamics summarization.
 
 
 ## Conceptual Info
 
-Extracts high‑level deep‑learning embeddings from raw audio by feeding the waveform through a CNN backbone followed by an RNN, producing compact scalar summaries of learned spectral and temporal characteristics.
+The node encapsulates a lightweight deep‑learning inference step that transforms raw audio into two fixed‑length embeddings—one from a convolutional pathway capturing frequency‑domain structure, and another from a recurrent pathway capturing sequence‑level dynamics.
 
 ## Docstring
 
 ### Summary
-Generate deep learning features from raw audio using a convolutional‑plus‑recurrent architecture.
+Generate deep learning features from raw audio data using CNN and RNN models.
 
 ### Parameters
 
-- **audio_data** (str): Raw audio bytes (e.g., WAV or MP3 payload) obtained from `load_audio_snippet`.
-- **sampling_rate** (int): Sampling rate of the audio signal in Hz.
-- **file_format** (str): Encoding format of the audio file (e.g., "wav", "mp3").
-- **metadata** (List[str]): Optional list of pre‑computed signal characteristics (e.g., spectral centroid, zero‑crossing rate).
+- **audio_data** (str): Base64‑encoded or hex string representation of the raw audio samples.
+- **sampling_rate** (int): Sampling frequency of the audio in Hz.
+- **file_format** (str): Encoding format of the audio (e.g., 'WAV', 'MP3', 'FLAC').
+- **metadata** (List[str]): List of signal characteristics such as duration, bit depth, channel count, and loudness level.
 
 ### Returns
 
-Dict[str, float]: A dictionary containing two scalar features:
-- `cnn_features`: A single float summarizing the convolutional network’s output.
-- `rnn_features`: A single float summarizing the recurrent network’s output.
+Dict[str, float]: A dictionary with keys 'cnn_features' and 'rnn_features', each mapping to a float embedding summarizing spectral and temporal information respectively.
 
 ### Raises
 
-- ValueError: Raised when `audio_data` is empty or None.
-- RuntimeError: Raised if the underlying deep‑learning inference fails (e.g., GPU out‑of‑memory, model file missing).
+- ValueError: Raised when `audio_data` is empty or cannot be decoded.
+- TypeError: Raised if input types do not match the expected signatures.
+- RuntimeError: Raised when the CNN or RNN inference fails due to model errors or corrupted inputs.
 
 ### Examples
 
 ```python
->>> result = ml_feature_extraction('\x00\x01\x02', 44100, 'wav', ['centroid: 2000', 'rolloff: 3000'])
-{'cnn_features': 0.123, 'rnn_features': 0.456}
+>>> audio_data = 'UklGRiQAAABXQVZFZm10IBAAAAABAAEAgLsAAAB3AAABAAgAAQ==',
+>>> sampling_rate = 44100,
+>>> file_format = 'WAV',
+>>> metadata = ['duration:3.5s', 'bit_depth:16', 'channels:2', 'loudness:-12dB']
+>>> features = ml_feature_extraction(audio_data, sampling_rate, file_format, metadata)
+>>> print(features['cnn_features'])
+>>> print(features['rnn_features'])
+0.8735
+0.4562
 ```
 
 ```python
 >>> try:
-...     ml_feature_extraction('', 44100, 'wav', [])
+...     ml_feature_extraction('', 44100, 'WAV', ['duration:3.5s'])
 >>> except ValueError as e:
-...     print(e)
-"audio_data must not be empty"
+...     print(str(e))
+"audio_data is empty or cannot be decoded"
 ```
