@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A minimal test workflow to validate fundamental testing functionality
-  through environment setup, individual test cases, and result compilation
+dag_type: typed
+description: Generated workflow from UI.
 name: basic_software_test_validation
 nodes:
   aggregate_test_results:
@@ -11,8 +10,20 @@ nodes:
     - run_regression_test
     - run_unit_test
     - run_integration_test
-    nodes_dependent_on:
-    - generate_test_summary
+    nodes_dependent_on: []
+    output_structure:
+    - description: Percentage of test cases that passed
+      key: test_pass_rate
+      type: float
+    - description: Percentage of test cases that failed
+      key: test_fail_rate
+      type: float
+    - description: Number of errors encountered during each test run
+      key: error_counts
+      type: List[int]
+    - description: Time taken to execute each test run
+      key: execution_times
+      type: List[float]
     prompt: Consolidate test results from regression, unit, and integration tests
       into standardized format (pass/fail percentages, error counts, execution times)
   generate_test_summary:
@@ -22,27 +33,56 @@ nodes:
     nodes_depended_on:
     - aggregate_test_results
     nodes_dependent_on: []
+    output_structure:
+    - description: Human-readable format of success metrics
+      key: success_metrics
+      type: str
+    - description: Detailed analysis of test failures
+      key: failure_analysis
+      type: str
+    - description: Notable anomalies detected in test results
+      key: anomaly_highlights
+      type: str
     prompt: Create human-readable test summary document including success metrics,
-      failure analysis, and anomaly highlights using aggregated test data
+      failure analysis, and anomaly highlights using aggregated test data.
   initialize_test_environment:
     agent: false
     description: Set up temporary testing sandbox environment
     name: initialize_test_environment
     nodes_depended_on: []
-    nodes_dependent_on:
-    - run_regression_test
-    - run_unit_test
-    - run_integration_test
+    nodes_dependent_on: []
+    output_structure:
+    - description: Status of the test environment initialization
+      key: test_environment_status
+      type: str
+    - description: List of paths to isolated log directories
+      key: log_directory_paths
+      type: List[str]
+    - description: List of configuration settings for the testing environment
+      key: configuration_settings
+      type: List[str]
     prompt: Initialize temporary testing environment with required configurations,
-      dependency installations, and isolate log directories for test execution
+      dependency installations, and isolate log directories for test execution.
   run_integration_test:
     agent: false
     description: Execute system component integration tests
     name: run_integration_test
     nodes_depended_on:
     - initialize_test_environment
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of test results from integration tests
+      key: integration_test_results
+      type: List[str]
+    - description: Whether the integration tests were successful
+      key: test_success_status
+      type: bool
+    - description: List of error counts from integration tests
+      key: error_counts
+      type: List[int]
+    - description: List of execution times from integration tests
+      key: execution_times
+      type: List[float]
     prompt: Run test scenarios that validate interactions between software modules,
       recording integration validation results
   run_regression_test:
@@ -51,8 +91,23 @@ nodes:
     name: run_regression_test
     nodes_depended_on:
     - initialize_test_environment
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Completion status of regression testing
+      key: test_completion_status
+      type: str
+    - description: Number of tests that failed
+      key: test_failure_count
+      type: int
+    - description: List of error counts for each test case
+      key: test_error_counts
+      type: List[int]
+    - description: Cumulative execution time of all tests
+      key: test_execution_time
+      type: float
+    - description: List of stack trace reports for failed test cases
+      key: stack_trace_reports
+      type: str
     prompt: Run full regression test suite against baseline reference implementations,
       logging success/failure states and stack traces for each test case
   run_unit_test:
@@ -61,7 +116,16 @@ nodes:
     name: run_unit_test
     nodes_depended_on:
     - initialize_test_environment
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Results of individual unit tests (pass/fail)
+      key: unit_test_results
+      type: List[str]
+    - description: Details of any exceptions encountered during unit testing
+      key: exception_details
+      type: List[str]
+    - description: Total execution time for all unit tests
+      key: execution_time
+      type: float
     prompt: Run individual module/unit test cases in isolation with mocking dependencies,
       capturing pass/fail status and exception details
