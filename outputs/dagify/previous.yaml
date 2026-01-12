@@ -1,100 +1,63 @@
 dag_type: plain_text
-description: A workflow that analyzes an audio input to detect sampled songs, identify
-  their original tracks, and retrieve artist and song metadata.
-name: music_sample_detection_and_attribution
+description: Build an app to identify sampled songs from a piece of audio and display
+  related music information.
+name: find_sampled_songs
 nodes:
-  compile_results:
+  detect_sampled_content:
     agent: false
-    description: Present detected samples with their original sources and metadata.
-    name: compile_results
+    description: Execute a machine learning model to detect potential samples and
+      return their corresponding timestamps.
+    name: detect_sampled_content
     nodes_depended_on:
-    - fetch_artist_info_1
-    - fetch_artist_info_2
-    - detect_samples
+    - upload_audio_file
     nodes_dependent_on: []
-    prompt: 'Generate a structured JSON output listing each detected sample with:
-      sample timestamp, original song details, and artist history. Format as a timeline
-      with metadata references.'
-  convert_to_wav:
+    prompt: Use machine learning techniques to identify segments of the audio that
+      might be sampled from other songs.
+  display_results:
     agent: false
-    description: Convert the audio file to a standardized WAV format for analysis.
-    name: convert_to_wav
+    description: Render the information collected in a user-friendly interface, showcasing
+      the sampled songs and related music items.
+    name: display_results
     nodes_depended_on:
-    - extract_audio_file
-    nodes_dependent_on:
-    - extract_audio_features
-    prompt: Convert the provided audio file to 44.1kHz stereo WAV format. Output the
-      path to the converted file.
-  detect_samples:
+    - find_related_music
+    nodes_dependent_on: []
+    prompt: Visualize the results of the analysis, including sampled songs, musicians'
+      pages, and related music.
+  fetch_musician_pages:
     agent: false
-    description: Identify sampled fragments in the audio using a reference database.
-    name: detect_samples
+    description: Call the API of a music service to fetch the pages for the identified
+      musicians.
+    name: fetch_musician_pages
     nodes_depended_on:
-    - extract_audio_features
-    nodes_dependent_on:
-    - resolve_original_song_1
-    - resolve_original_song_2
-    prompt: Compare audio features against pre-analyzed music fingerprint database.
-      Output timestamps and similarity scores for all potential samples.
-  extract_audio_features:
+    - search_for_sampled_songs
+    nodes_dependent_on: []
+    prompt: Retrieve relevant information about the musicians that created the sampled
+      songs.
+  find_related_music:
     agent: false
-    description: Generate low-level acoustic features for audio analysis.
-    name: extract_audio_features
+    description: Retrieve related music items from a music service API, such as albums
+      or artists by the same musician.
+    name: find_related_music
     nodes_depended_on:
-    - convert_to_wav
-    nodes_dependent_on:
-    - detect_samples
-    prompt: Extract MFCC, chromagram, and spectral centroid features from the WAV
-      file. Output a 1-minute window of feature data.
-  extract_audio_file:
+    - fetch_musician_pages
+    nodes_dependent_on: []
+    prompt: Search for other music related to the musicians, such as similar artists,
+      albums, or tracks.
+  search_for_sampled_songs:
     agent: false
-    description: Initialize audio file processing by extracting raw audio data.
-    name: extract_audio_file
+    description: Lookup the songs that the samples correspond to in a reliable music
+      database.
+    name: search_for_sampled_songs
+    nodes_depended_on:
+    - detect_sampled_content
+    nodes_dependent_on: []
+    prompt: Query a music database using the identified samples and corresponding
+      timestamps to find the original songs.
+  upload_audio_file:
+    agent: false
+    description: Upload an audio file or provide a direct link to an audio file for
+      analysis.
+    name: upload_audio_file
     nodes_depended_on: []
-    nodes_dependent_on:
-    - convert_to_wav
-    - extract_audio_features
-    prompt: Extract the raw audio file from the user input. Output only the audio
-      file path and format.
-  fetch_artist_info_1:
-    agent: false
-    description: Retrieve artistic metadata for the first resolved original track.
-    name: fetch_artist_info_1
-    nodes_depended_on:
-    - resolve_original_song_1
-    nodes_dependent_on:
-    - compile_results
-    prompt: For 'Midnight Train' by 'Soultrackers' (1994), provide biographical data
-      about the artist and historical context about the track.
-  fetch_artist_info_2:
-    agent: false
-    description: Retrieve artistic metadata for the second resolved original track.
-    name: fetch_artist_info_2
-    nodes_depended_on:
-    - resolve_original_song_2
-    nodes_dependent_on:
-    - compile_results
-    prompt: For 'City Lights' by 'The Rhythms' (1989), provide biographical data about
-      the artist and historical context about the track.
-  resolve_original_song_1:
-    agent: false
-    description: Identify the original source for the first detected sample.
-    name: resolve_original_song_1
-    nodes_depended_on:
-    - detect_samples
-    nodes_dependent_on:
-    - fetch_artist_info_1
-    prompt: Using the sample timestamp from 00:12:34-00:12:45 at 89% similarity, identify
-      the most likely original source track. Output song title, artist, and release
-      year.
-  resolve_original_song_2:
-    agent: false
-    description: Identify the original source for the second detected sample.
-    name: resolve_original_song_2
-    nodes_depended_on:
-    - detect_samples
-    nodes_dependent_on:
-    - fetch_artist_info_2
-    prompt: Using the sample timestamp from 00:14:15-00:14:27 at 73% similarity, identify
-      the most likely original source track. Output song title, artist, and release
-      year.
+    nodes_dependent_on: []
+    prompt: Upload a piece of audio from a song to analyze for sampled content.
