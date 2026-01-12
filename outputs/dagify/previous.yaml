@@ -1,72 +1,54 @@
 dag_type: plain_text
-description: A workflow that achieves the objective of testing a task or function.
-name: test_objective_workflow
+description: Execute the 'test' objective as a series of fundamental steps.
+name: test_workflow
 nodes:
-  define_test_criteria:
+  analyze_test_results:
     agent: false
-    description: Establish clear, specific, and measurable requirements for the test
-    name: define_test_criteria
+    description: Evaluate the outcome of the testing approach and identify areas for
+      improvement.
+    name: analyze_test_results
+    nodes_depended_on:
+    - execute_testing_strategy
+    nodes_dependent_on: []
+    prompt: Analyze the results of the testing strategy.
+  determine_test_outcome:
+    agent: false
+    description: Conclude the test by deciding whether it was successful or not.
+    name: determine_test_outcome
+    nodes_depended_on:
+    - analyze_test_results
+    nodes_dependent_on: []
+    prompt: Determine the outcome of the test based on the analysis.
+  evaluate_test_objective:
+    agent: false
+    description: Determine the next step based on the parsed objective.
+    name: evaluate_test_objective
+    nodes_depended_on:
+    - parse_test_objective
+    nodes_dependent_on: []
+    prompt: Evaluate the extracted objective against predefined criteria to determine
+      a course of action.
+  execute_testing_strategy:
+    agent: false
+    description: Perform the chosen testing approach to achieve the objective.
+    name: execute_testing_strategy
+    nodes_depended_on:
+    - select_test_strategy
+    nodes_dependent_on: []
+    prompt: Implement the selected testing strategy.
+  parse_test_objective:
+    agent: false
+    description: Parse the test objective and extract the main purpose.
+    name: parse_test_objective
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Define the specific criteria for testing this task or function. What success
-      conditions must be met?
-  document_results:
+    prompt: Take the input 'test' and identify its primary objective.
+  select_test_strategy:
     agent: false
-    description: Create a transparent and complete record of the test's outcomes
-    name: document_results
+    description: Select a testing approach that aligns with the determined course
+      of action.
+    name: select_test_strategy
     nodes_depended_on:
-    - verify_output
-    - validate_edge_cases
+    - evaluate_test_objective
     nodes_dependent_on: []
-    prompt: Document the test results, including observations, successes, and failures.
-      Describe any issues that arose during testing.
-  generate_test_data:
-    agent: false
-    description: Develop relevant test inputs that validate the task or function's
-      execution
-    name: generate_test_data
-    nodes_depended_on:
-    - setup_test_environment
-    nodes_dependent_on:
-    - identify_execution_path
-    prompt: Create data necessary to execute the task or function along the identified
-      execution path.
-  identify_execution_path:
-    agent: false
-    description: Pinpoint the key execution flow that should be tested
-    name: identify_execution_path
-    nodes_depended_on:
-    - setup_test_environment
-    nodes_dependent_on: []
-    prompt: Determine the primary execution path through the task or function to focus
-      the test.
-  setup_test_environment:
-    agent: false
-    description: Prepare the necessary context and input data to conduct a fair and
-      relevant test
-    name: setup_test_environment
-    nodes_depended_on:
-    - define_test_criteria
-    nodes_dependent_on: []
-    prompt: Set up the test environment and necessary input data. Identify potential
-      edge cases that could impact the test's correctness
-  validate_edge_cases:
-    agent: false
-    description: Validate the task or function's performance with uncommon or unusual
-      inputs
-    name: validate_edge_cases
-    nodes_depended_on:
-    - generate_test_data
-    nodes_dependent_on: []
-    prompt: Test edge cases to ensure the task or function operates correctly under
-      unexpected inputs or execution paths.
-  verify_output:
-    agent: false
-    description: Confirm that the task or function's outputs align with expectations
-    name: verify_output
-    nodes_depended_on:
-    - generate_test_data
-    - identify_execution_path
-    nodes_dependent_on: []
-    prompt: Verify that the task or function outputs meet the established test criteria
-      and execution path.
+    prompt: Choose a testing strategy based on the evaluated objective.
