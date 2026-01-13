@@ -1,648 +1,166 @@
 dag_type: plain_text
-description: A workflow executing 12 sequential layers in a feedforward neural network,
-  with 6 concurrently evaluated nodes per layer. Each node receives inputs from the
-  corresponding node in the previous layer and applies activation function computation.
-name: 12_layer_feedforward_network_dag
+description: Identifies and compiles key upward mobility metrics for the US by analyzing
+  economic, educational, housing, healthcare, and socioeconomic factors through parallel
+  research streams and validation steps.
+name: identify_upward_mobility_metrics
 nodes:
-  layer_10_node_1:
+  collect_mobility_case_studies:
     agent: false
-    description: Apply activation function to input from layer 9 node 1
-    name: layer_10_node_1
+    description: Gather real-world mobility examples and expert analyses
+    name: collect_mobility_case_studies
     nodes_depended_on:
-    - layer_9_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 10 node 1 using input from layer 9 node
-      1 and weights. Apply activation function to generate output.
-  layer_10_node_2:
+    - identify_economic_mobility_metrics
+    - identify_educational_mobility_metrics
+    - identify_housing_mobility_metrics
+    - identify_healthcare_mobility_metrics
+    - identify_employment_mobility_metrics
+    - identify_wealth_mobility_metrics
+    - identify_inequality_mobility_metrics
+    - identify_social_mobility_indices
+    nodes_dependent_on:
+    - rank_mobility_metrics
+    prompt: Compile three case studies demonstrating high/low US mobility outcomes.
+      Include academic research references, state-level experiments, and demographic-specific
+      mobility patterns. Summarize findings.
+  compile_mobility_metrics_report:
     agent: false
-    description: Apply activation function to input from layer 9 node 2
-    name: layer_10_node_2
+    description: Create final structured report with recommendations
+    name: compile_mobility_metrics_report
     nodes_depended_on:
-    - layer_9_node_2
+    - rank_mobility_metrics
     nodes_dependent_on: []
-    prompt: Compute node output for layer 10 node 2 using input from layer 9 node
-      2 and weights. Apply activation function to generate output.
-  layer_10_node_3:
+    prompt: 'Format all validated mobility metrics into a structured document. Include:
+      1) quantitative metrics with sources, 2) case study conclusions, 3) ranked recommendations
+      for policymakers, and 4) limitations of current metric frameworks.'
+  identify_economic_mobility_metrics:
     agent: false
-    description: Apply activation function to input from layer 9 node 3
-    name: layer_10_node_3
-    nodes_depended_on:
-    - layer_9_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 10 node 3 using input from layer 9 node
-      3 and weights. Apply activation function to generate output.
-  layer_10_node_4:
-    agent: false
-    description: Apply activation function to input from layer 9 node 4
-    name: layer_10_node_4
-    nodes_depended_on:
-    - layer_9_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 10 node 4 using input from layer 9 node
-      4 and weights. Apply activation function to generate output.
-  layer_10_node_5:
-    agent: false
-    description: Apply activation function to input from layer 9 node 5
-    name: layer_10_node_5
-    nodes_depended_on:
-    - layer_9_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 10 node 5 using input from layer 9 node
-      5 and weights. Apply activation function to generate output.
-  layer_10_node_6:
-    agent: false
-    description: Apply activation function to input from layer 9 node 6
-    name: layer_10_node_6
-    nodes_depended_on:
-    - layer_9_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 10 node 6 using input from layer 9 node
-      6 and weights. Apply activation function to generate output.
-  layer_11_node_1:
-    agent: false
-    description: Apply activation function to input from layer 10 node 1
-    name: layer_11_node_1
-    nodes_depended_on:
-    - layer_10_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 11 node 1 using input from layer 10 node
-      1 and weights. Apply activation function to generate output.
-  layer_11_node_2:
-    agent: false
-    description: Apply activation function to input from layer 10 node 2
-    name: layer_11_node_2
-    nodes_depended_on:
-    - layer_10_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 11 node 2 using input from layer 10 node
-      2 and weights. Apply activation function to generate output.
-  layer_11_node_3:
-    agent: false
-    description: Apply activation function to input from layer 10 node 3
-    name: layer_11_node_3
-    nodes_depended_on:
-    - layer_10_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 11 node 3 using input from layer 10 node
-      3 and weights. Apply activation function to generate output.
-  layer_11_node_4:
-    agent: false
-    description: Apply activation function to input from layer 10 node 4
-    name: layer_11_node_4
-    nodes_depended_on:
-    - layer_10_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 11 node 4 using input from layer 10 node
-      4 and weights. Apply activation function to generate output.
-  layer_11_node_5:
-    agent: false
-    description: Apply activation function to input from layer 10 node 5
-    name: layer_11_node_5
-    nodes_depended_on:
-    - layer_10_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 11 node 5 using input from layer 10 node
-      5 and weights. Apply activation function to generate output.
-  layer_11_node_6:
-    agent: false
-    description: Apply activation function to input from layer 10 node 6
-    name: layer_11_node_6
-    nodes_depended_on:
-    - layer_10_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 11 node 6 using input from layer 10 node
-      6 and weights. Apply activation function to generate output.
-  layer_12_node_1:
-    agent: false
-    description: Apply activation function to input from layer 11 node 1
-    name: layer_12_node_1
-    nodes_depended_on:
-    - layer_11_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 12 node 1 using input from layer 11 node
-      1 and weights. Apply activation function to generate output.
-  layer_12_node_2:
-    agent: false
-    description: Apply activation function to input from layer 11 node 2
-    name: layer_12_node_2
-    nodes_depended_on:
-    - layer_11_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 12 node 2 using input from layer 11 node
-      2 and weights. Apply activation function to generate output.
-  layer_12_node_3:
-    agent: false
-    description: Apply activation function to input from layer 11 node 3
-    name: layer_12_node_3
-    nodes_depended_on:
-    - layer_11_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 12 node 3 using input from layer 11 node
-      3 and weights. Apply activation function to generate output.
-  layer_12_node_4:
-    agent: false
-    description: Apply activation function to input from layer 11 node 4
-    name: layer_12_node_4
-    nodes_depended_on:
-    - layer_11_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 12 node 4 using input from layer 11 node
-      4 and weights. Apply activation function to generate output.
-  layer_12_node_5:
-    agent: false
-    description: Apply activation function to input from layer 11 node 5
-    name: layer_12_node_5
-    nodes_depended_on:
-    - layer_11_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 12 node 5 using input from layer 11 node
-      5 and weights. Apply activation function to generate output.
-  layer_12_node_6:
-    agent: false
-    description: Apply activation function to input from layer 11 node 6
-    name: layer_12_node_6
-    nodes_depended_on:
-    - layer_11_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 12 node 6 using input from layer 11 node
-      6 and weights. Apply activation function to generate output.
-  layer_1_node_1:
-    agent: false
-    description: Apply activation function to input of first node in layer 1
-    name: layer_1_node_1
+    description: List economic indicators used to measure long-term upward mobility
+      in the US
+    name: identify_economic_mobility_metrics
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 1 node 1 using input values and weights.
-      Apply activation function to generate output.
-  layer_1_node_2:
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: List five economic indicators used to measure upward mobility in the US,
+      including GDP per capita growth, income growth rates, consumption patterns,
+      employment-to-poverty ratios, and savings trends. Briefly explain each metric's
+      relevance to mobility.
+  identify_educational_mobility_metrics:
     agent: false
-    description: Apply activation function to input of second node in layer 1
-    name: layer_1_node_2
+    description: Generate metrics for measuring educational advancement as a mobility
+      factor
+    name: identify_educational_mobility_metrics
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 1 node 2 using input values and weights.
-      Apply activation function to generate output.
-  layer_1_node_3:
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: 'Identify four educational mobility metrics: high school graduation rates,
+      college enrollment ratios, STEM degree attainment, and scholarship accessibility.
+      Explain how each impacts intergenerational mobility.'
+  identify_employment_mobility_metrics:
     agent: false
-    description: Apply activation function to input of third node in layer 1
-    name: layer_1_node_3
+    description: Generate employment-based upward mobility indicators
+    name: identify_employment_mobility_metrics
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 1 node 3 using input values and weights.
-      Apply activation function to generate output.
-  layer_1_node_4:
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: 'List five employment mobility metrics: median wage growth, unionization
+      rates, gig economy participation, job training program accessibility, and occupational
+      mobility rates. Explain each metric''s relevance.'
+  identify_healthcare_mobility_metrics:
     agent: false
-    description: Apply activation function to input of fourth node in layer 1
-    name: layer_1_node_4
+    description: List healthcare access metrics for mobility evaluation
+    name: identify_healthcare_mobility_metrics
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 1 node 4 using input values and weights.
-      Apply activation function to generate output.
-  layer_1_node_5:
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: 'Create a list of two healthcare mobility metrics: insurance coverage
+      rates by income bracket and geographic healthcare access disparities. Briefly
+      link each to long-term mobility patterns.'
+  identify_housing_mobility_metrics:
     agent: false
-    description: Apply activation function to input of fifth node in layer 1
-    name: layer_1_node_5
+    description: Create list of housing-related metrics for mobility analysis
+    name: identify_housing_mobility_metrics
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 1 node 5 using input values and weights.
-      Apply activation function to generate output.
-  layer_1_node_6:
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: 'Generate three housing mobility indicators: homeownership rates, cost-burden
+      percentages, and mortgage approval disparities across demographic groups. Describe
+      each metric''s impact on economic mobility.'
+  identify_inequality_mobility_metrics:
     agent: false
-    description: Apply activation function to input of sixth node in layer 1
-    name: layer_1_node_6
+    description: Formulate inequality metrics that indicate mobility barriers
+    name: identify_inequality_mobility_metrics
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 1 node 6 using input values and weights.
-      Apply activation function to generate output.
-  layer_2_node_1:
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: 'List three inequality-based mobility metrics: Gini coefficient trends,
+      wealth distribution percentages across deciles, and income mobility ratios between
+      birth and adult earnings. Explain each metric''s significance.'
+  identify_policy_mobility_metrics:
     agent: false
-    description: Apply activation function to input from layer 1 node 1
-    name: layer_2_node_1
-    nodes_depended_on:
-    - layer_1_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 2 node 1 using input from layer 1 node 1
-      and weights. Apply activation function to generate output.
-  layer_2_node_2:
+    description: Generate government policy-linked mobility metrics
+    name: identify_policy_mobility_metrics
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: 'List four policy-linked mobility metrics: earned income tax credit participation
+      rates, childcare subsidy accessibility, housing voucher redemption rates, and
+      vocational training program outcomes. Explain their mobility impact.'
+  identify_social_mobility_indices:
     agent: false
-    description: Apply activation function to input from layer 1 node 2
-    name: layer_2_node_2
-    nodes_depended_on:
-    - layer_1_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 2 node 2 using input from layer 1 node 2
-      and weights. Apply activation function to generate output.
-  layer_2_node_3:
+    description: Identify existing composite mobility indices for US analysis
+    name: identify_social_mobility_indices
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: 'List three national mobility indices: Social Mobility Index (SMI), Economic
+      Opportunity Index (EOI), and Family Impact Rating Scale (FIRS). Describe the
+      components of each composite metric.'
+  identify_wealth_mobility_metrics:
     agent: false
-    description: Apply activation function to input from layer 1 node 3
-    name: layer_2_node_3
-    nodes_depended_on:
-    - layer_1_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 2 node 3 using input from layer 1 node 3
-      and weights. Apply activation function to generate output.
-  layer_2_node_4:
+    description: Create net worth and asset accumulation metrics for mobility analysis
+    name: identify_wealth_mobility_metrics
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    prompt: 'Generate three wealth mobility indicators: net worth growth by income
+      quintile, 401(k) participation rates across demographics, and intergenerational
+      wealth transfer patterns. Describe each metric''s mobility implications.'
+  rank_mobility_metrics:
     agent: false
-    description: Apply activation function to input from layer 1 node 4
-    name: layer_2_node_4
+    description: Prioritize metrics based on impact and data reliability
+    name: rank_mobility_metrics
     nodes_depended_on:
-    - layer_1_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 2 node 4 using input from layer 1 node 4
-      and weights. Apply activation function to generate output.
-  layer_2_node_5:
+    - validate_mobility_metrics_sources
+    - collect_mobility_case_studies
+    nodes_dependent_on:
+    - compile_mobility_metrics_report
+    prompt: Rank metrics by data accessibility, policy relevance, and analytical depth.
+      Focus on US-specific metrics, grouping them by economic, educational, and structural
+      categories. Include three most actionable recommendations.
+  validate_mobility_metrics_sources:
     agent: false
-    description: Apply activation function to input from layer 1 node 5
-    name: layer_2_node_5
+    description: Evaluate data quality for all mobility metrics
+    name: validate_mobility_metrics_sources
     nodes_depended_on:
-    - layer_1_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 2 node 5 using input from layer 1 node 5
-      and weights. Apply activation function to generate output.
-  layer_2_node_6:
-    agent: false
-    description: Apply activation function to input from layer 1 node 6
-    name: layer_2_node_6
-    nodes_depended_on:
-    - layer_1_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 2 node 6 using input from layer 1 node 6
-      and weights. Apply activation function to generate output.
-  layer_3_node_1:
-    agent: false
-    description: Apply activation function to input from layer 2 node 1
-    name: layer_3_node_1
-    nodes_depended_on:
-    - layer_2_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 3 node 1 using input from layer 2 node 1
-      and weights. Apply activation function to generate output.
-  layer_3_node_2:
-    agent: false
-    description: Apply activation function to input from layer 2 node 2
-    name: layer_3_node_2
-    nodes_depended_on:
-    - layer_2_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 3 node 2 using input from layer 2 node 2
-      and weights. Apply activation function to generate output.
-  layer_3_node_3:
-    agent: false
-    description: Apply activation function to input from layer 2 node 3
-    name: layer_3_node_3
-    nodes_depended_on:
-    - layer_2_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 3 node 3 using input from layer 2 node 3
-      and weights. Apply activation function to generate output.
-  layer_3_node_4:
-    agent: false
-    description: Apply activation function to input from layer 2 node 4
-    name: layer_3_node_4
-    nodes_depended_on:
-    - layer_2_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 3 node 4 using input from layer 2 node 4
-      and weights. Apply activation function to generate output.
-  layer_3_node_5:
-    agent: false
-    description: Apply activation function to input from layer 2 node 5
-    name: layer_3_node_5
-    nodes_depended_on:
-    - layer_2_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 3 node 5 using input from layer 2 node 5
-      and weights. Apply activation function to generate output.
-  layer_3_node_6:
-    agent: false
-    description: Apply activation function to input from layer 2 node 6
-    name: layer_3_node_6
-    nodes_depended_on:
-    - layer_2_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 3 node 6 using input from layer 2 node 6
-      and weights. Apply activation function to generate output.
-  layer_4_node_1:
-    agent: false
-    description: Apply activation function to input from layer 3 node 1
-    name: layer_4_node_1
-    nodes_depended_on:
-    - layer_3_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 4 node 1 using input from layer 3 node 1
-      and weights. Apply activation function to generate output.
-  layer_4_node_2:
-    agent: false
-    description: Apply activation function to input from layer 3 node 2
-    name: layer_4_node_2
-    nodes_depended_on:
-    - layer_3_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 4 node 2 using input from layer 3 node 2
-      and weights. Apply activation function to generate output.
-  layer_4_node_3:
-    agent: false
-    description: Apply activation function to input from layer 3 node 3
-    name: layer_4_node_3
-    nodes_depended_on:
-    - layer_3_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 4 node 3 using input from layer 3 node 3
-      and weights. Apply activation function to generate output.
-  layer_4_node_4:
-    agent: false
-    description: Apply activation function to input from layer 3 node 4
-    name: layer_4_node_4
-    nodes_depended_on:
-    - layer_3_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 4 node 4 using input from layer 3 node 4
-      and weights. Apply activation function to generate output.
-  layer_4_node_5:
-    agent: false
-    description: Apply activation function to input from layer 3 node 5
-    name: layer_4_node_5
-    nodes_depended_on:
-    - layer_3_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 4 node 5 using input from layer 3 node 5
-      and weights. Apply activation function to generate output.
-  layer_4_node_6:
-    agent: false
-    description: Apply activation function to input from layer 3 node 6
-    name: layer_4_node_6
-    nodes_depended_on:
-    - layer_3_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 4 node 6 using input from layer 3 node 6
-      and weights. Apply activation function to generate output.
-  layer_5_node_1:
-    agent: false
-    description: Apply activation function to input from layer 4 node 1
-    name: layer_5_node_1
-    nodes_depended_on:
-    - layer_4_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 5 node 1 using input from layer 4 node 1
-      and weights. Apply activation function to generate output.
-  layer_5_node_2:
-    agent: false
-    description: Apply activation function to input from layer 4 node 2
-    name: layer_5_node_2
-    nodes_depended_on:
-    - layer_4_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 5 node 2 using input from layer 4 node 2
-      and weights. Apply activation function to generate output.
-  layer_5_node_3:
-    agent: false
-    description: Apply activation function to input from layer 4 node 3
-    name: layer_5_node_3
-    nodes_depended_on:
-    - layer_4_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 5 node 3 using input from layer 4 node 3
-      and weights. Apply activation function to generate output.
-  layer_5_node_4:
-    agent: false
-    description: Apply activation function to input from layer 4 node 4
-    name: layer_5_node_4
-    nodes_depended_on:
-    - layer_4_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 5 node 4 using input from layer 4 node 4
-      and weights. Apply activation function to generate output.
-  layer_5_node_5:
-    agent: false
-    description: Apply activation function to input from layer 4 node 5
-    name: layer_5_node_5
-    nodes_depended_on:
-    - layer_4_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 5 node 5 using input from layer 4 node 5
-      and weights. Apply activation function to generate output.
-  layer_5_node_6:
-    agent: false
-    description: Apply activation function to input from layer 4 node 6
-    name: layer_5_node_6
-    nodes_depended_on:
-    - layer_4_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 5 node 6 using input from layer 4 node 6
-      and weights. Apply activation function to generate output.
-  layer_6_node_1:
-    agent: false
-    description: Apply activation function to input from layer 5 node 1
-    name: layer_6_node_1
-    nodes_depended_on:
-    - layer_5_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 6 node 1 using input from layer 5 node 1
-      and weights. Apply activation function to generate output.
-  layer_6_node_2:
-    agent: false
-    description: Apply activation function to input from layer 5 node 2
-    name: layer_6_node_2
-    nodes_depended_on:
-    - layer_5_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 6 node 2 using input from layer 5 node 2
-      and weights. Apply activation function to generate output.
-  layer_6_node_3:
-    agent: false
-    description: Apply activation function to input from layer 5 node 3
-    name: layer_6_node_3
-    nodes_depended_on:
-    - layer_5_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 6 node 3 using input from layer 5 node 3
-      and weights. Apply activation function to generate output.
-  layer_6_node_4:
-    agent: false
-    description: Apply activation function to input from layer 5 node 4
-    name: layer_6_node_4
-    nodes_depended_on:
-    - layer_5_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 6 node 4 using input from layer 5 node 4
-      and weights. Apply activation function to generate output.
-  layer_6_node_5:
-    agent: false
-    description: Apply activation function to input from layer 5 node 5
-    name: layer_6_node_5
-    nodes_depended_on:
-    - layer_5_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 6 node 5 using input from layer 5 node 5
-      and weights. Apply activation function to generate output.
-  layer_6_node_6:
-    agent: false
-    description: Apply activation function to input from layer 5 node 6
-    name: layer_6_node_6
-    nodes_depended_on:
-    - layer_5_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 6 node 6 using input from layer 5 node 6
-      and weights. Apply activation function to generate output.
-  layer_7_node_1:
-    agent: false
-    description: Apply activation function to input from layer 6 node 1
-    name: layer_7_node_1
-    nodes_depended_on:
-    - layer_6_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 7 node 1 using input from layer 6 node 1
-      and weights. Apply activation function to generate output.
-  layer_7_node_2:
-    agent: false
-    description: Apply activation function to input from layer 6 node 2
-    name: layer_7_node_2
-    nodes_depended_on:
-    - layer_6_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 7 node 2 using input from layer 6 node 2
-      and weights. Apply activation function to generate output.
-  layer_7_node_3:
-    agent: false
-    description: Apply activation function to input from layer 6 node 3
-    name: layer_7_node_3
-    nodes_depended_on:
-    - layer_6_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 7 node 3 using input from layer 6 node 3
-      and weights. Apply activation function to generate output.
-  layer_7_node_4:
-    agent: false
-    description: Apply activation function to input from layer 6 node 4
-    name: layer_7_node_4
-    nodes_depended_on:
-    - layer_6_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 7 node 4 using input from layer 6 node 4
-      and weights. Apply activation function to generate output.
-  layer_7_node_5:
-    agent: false
-    description: Apply activation function to input from layer 6 node 5
-    name: layer_7_node_5
-    nodes_depended_on:
-    - layer_6_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 7 node 5 using input from layer 6 node 5
-      and weights. Apply activation function to generate output.
-  layer_7_node_6:
-    agent: false
-    description: Apply activation function to input from layer 6 node 6
-    name: layer_7_node_6
-    nodes_depended_on:
-    - layer_6_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 7 node 6 using input from layer 6 node 6
-      and weights. Apply activation function to generate output.
-  layer_8_node_1:
-    agent: false
-    description: Apply activation function to input from layer 7 node 1
-    name: layer_8_node_1
-    nodes_depended_on:
-    - layer_7_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 8 node 1 using input from layer 7 node 1
-      and weights. Apply activation function to generate output.
-  layer_8_node_2:
-    agent: false
-    description: Apply activation function to input from layer 7 node 2
-    name: layer_8_node_2
-    nodes_depended_on:
-    - layer_7_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 8 node 2 using input from layer 7 node 2
-      and weights. Apply activation function to generate output.
-  layer_8_node_3:
-    agent: false
-    description: Apply activation function to input from layer 7 node 3
-    name: layer_8_node_3
-    nodes_depended_on:
-    - layer_7_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 8 node 3 using input from layer 7 node 3
-      and weights. Apply activation function to generate output.
-  layer_8_node_4:
-    agent: false
-    description: Apply activation function to input from layer 7 node 4
-    name: layer_8_node_4
-    nodes_depended_on:
-    - layer_7_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 8 node 4 using input from layer 7 node 4
-      and weights. Apply activation function to generate output.
-  layer_8_node_5:
-    agent: false
-    description: Apply activation function to input from layer 7 node 5
-    name: layer_8_node_5
-    nodes_depended_on:
-    - layer_7_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 8 node 5 using input from layer 7 node 5
-      and weights. Apply activation function to generate output.
-  layer_8_node_6:
-    agent: false
-    description: Apply activation function to input from layer 7 node 6
-    name: layer_8_node_6
-    nodes_depended_on:
-    - layer_7_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 8 node 6 using input from layer 7 node 6
-      and weights. Apply activation function to generate output.
-  layer_9_node_1:
-    agent: false
-    description: Apply activation function to input from layer 8 node 1
-    name: layer_9_node_1
-    nodes_depended_on:
-    - layer_8_node_1
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 9 node 1 using input from layer 8 node 1
-      and weights. Apply activation function to generate output.
-  layer_9_node_2:
-    agent: false
-    description: Apply activation function to input from layer 8 node 2
-    name: layer_9_node_2
-    nodes_depended_on:
-    - layer_8_node_2
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 9 node 2 using input from layer 8 node 2
-      and weights. Apply activation function to generate output.
-  layer_9_node_3:
-    agent: false
-    description: Apply activation function to input from layer 8 node 3
-    name: layer_9_node_3
-    nodes_depended_on:
-    - layer_8_node_3
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 9 node 3 using input from layer 8 node 3
-      and weights. Apply activation function to generate output.
-  layer_9_node_4:
-    agent: false
-    description: Apply activation function to input from layer 8 node 4
-    name: layer_9_node_4
-    nodes_depended_on:
-    - layer_8_node_4
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 9 node 4 using input from layer 8 node 4
-      and weights. Apply activation function to generate output.
-  layer_9_node_5:
-    agent: false
-    description: Apply activation function to input from layer 8 node 5
-    name: layer_9_node_5
-    nodes_depended_on:
-    - layer_8_node_5
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 9 node 5 using input from layer 8 node 5
-      and weights. Apply activation function to generate output.
-  layer_9_node_6:
-    agent: false
-    description: Apply activation function to input from layer 8 node 6
-    name: layer_9_node_6
-    nodes_depended_on:
-    - layer_8_node_6
-    nodes_dependent_on: []
-    prompt: Compute node output for layer 9 node 6 using input from layer 8 node 6
-      and weights. Apply activation function to generate output.
+    - identify_economic_mobility_metrics
+    - identify_educational_mobility_metrics
+    - identify_housing_mobility_metrics
+    - identify_healthcare_mobility_metrics
+    - identify_employment_mobility_metrics
+    - identify_wealth_mobility_metrics
+    - identify_inequality_mobility_metrics
+    - identify_social_mobility_indices
+    nodes_dependent_on:
+    - rank_mobility_metrics
+    prompt: Validate data quality for each listed mobility metric. For each, identify
+      source agency, publication frequency, methodological consistency, and data limitations.
+      Focus on US-specific datasets.
