@@ -1,7 +1,5 @@
-dag_type: plain_text
-description: Structured roadmap for establishing a hedge fund with parallelizable
-  operational, legal, investment, and compliance elements, optimized for concurrency
-  and atomic task execution.
+dag_type: typed
+description: Generated workflow from UI.
 name: hedge_fund_fundamental_blueprint
 nodes:
   choose_investment_strategy:
@@ -10,10 +8,19 @@ nodes:
     name: choose_investment_strategy
     nodes_depended_on:
     - clarify_fund_objectives
-    nodes_dependent_on:
-    - define_asset_universe
-    - set_performance_and_risk_targets
-    - define_technology_stack
+    nodes_dependent_on: []
+    output_structure:
+    - description: The chosen primary investment strategy category.
+      key: strategy_category
+      type: str
+    - description: A one-paragraph explanation aligning the strategy with the fund's
+        objectives.
+      key: rationale
+      type: str
+    - description: A concise description of the expected risk profile associated with
+        the chosen strategy.
+      key: risk_profile
+      type: str
     prompt: Identify one primary investment strategy category (e.g., long/short equity,
       event-driven, global macro) and provide a one-paragraph rationale aligning with
       the fund's objectives. Include expected risk profile.
@@ -23,10 +30,19 @@ nodes:
     name: choose_legal_entity_type
     nodes_depended_on:
     - select_jurisdiction
-    nodes_dependent_on:
-    - identify_regulatory_requirements
-    - list_service_providers
-    - outline_governance_structure
+    nodes_dependent_on: []
+    output_structure:
+    - description: The chosen legal entity type (e.g., LP, LLC, SICAV)
+      key: legal_entity_type
+      type: str
+    - description: List of three operational advantages of the chosen legal entity
+        type
+      key: operational_advantages
+      type: List[str]
+    - description: One compliance consideration specific to the chosen legal entity
+        type
+      key: compliance_consideration
+      type: str
     prompt: Specify the most suitable legal entity type (e.g., LP, LLC, SICAV) for
       the selected jurisdiction. Provide three operational advantages and one compliance
       consideration specific to this structure.
@@ -35,10 +51,12 @@ nodes:
     description: Define core business goals of the hedge fund
     name: clarify_fund_objectives
     nodes_depended_on: []
-    nodes_dependent_on:
-    - choose_investment_strategy
-    - select_jurisdiction
-    - define_investor_profile
+    nodes_dependent_on: []
+    output_structure:
+    - description: Bullet points summarizing investment purpose, competitive advantages,
+        target return profiles, and long-term vision (maximum 8 bullets)
+      key: objectives_bullets
+      type: List[str]
     prompt: State the primary business objectives for launching the hedge fund. List
       investment purpose, competitive advantages, target return profiles, and long-term
       vision in concise bullet points (max 8 bullets)
@@ -54,8 +72,35 @@ nodes:
     - estimate_setup_and_operating_costs
     - design_risk_management_framework
     - draft_operations_workflow
-    nodes_dependent_on:
-    - produce_final_fund_plan_summary
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of slide titles in the presentation
+      key: slide_titles
+      type: List[str]
+    - description: List of core messages for each slide
+      key: core_messages
+      type: List[str]
+    - description: Summary of the objectives slides
+      key: objectives_summary
+      type: str
+    - description: Overview of the strategy slides
+      key: strategy_overview
+      type: str
+    - description: Summary of the risk-return analysis slide
+      key: risk_return_analysis
+      type: str
+    - description: Description of the team slide
+      key: team_description
+      type: str
+    - description: Summary of the operations/compliance slides
+      key: operations_compliance_summary
+      type: str
+    - description: Summary of the financials slides
+      key: financials_summary
+      type: str
+    - description: List of Q&A topics
+      key: qa_topics
+      type: List[str]
     prompt: 'Develop 15-slide investor presentation outline with: 2 objectives slides,
       3 strategy slides, 1 risk-return analysis, 1 team slide, 4 operations/compliance
       slides, 2 financials slides, 1 Q&A slide. Include slide title and core message
@@ -66,9 +111,18 @@ nodes:
     name: define_asset_universe
     nodes_depended_on:
     - choose_investment_strategy
-    nodes_dependent_on:
-    - design_risk_management_framework
-    - compile_pitch_deck_outline
+    nodes_dependent_on: []
+    output_structure:
+    - description: Names of the 10 selected tradable instruments
+      key: instrument_names
+      type: List[str]
+    - description: Brief rationale for each of the 10 selected instruments
+      key: instrument_rationales
+      type: List[str]
+    - description: Total number of distinct asset classes represented among the 10
+        instruments
+      key: asset_class_count
+      type: int
     prompt: List specific tradable asset classes (equities, bonds, commodities, derivatives)
       and instruments (e.g., S&P 500 futures, emerging market debt) that will be actively
       traded. Limit to 10 items with brief rationale for each selection.
@@ -78,10 +132,23 @@ nodes:
     name: define_investor_profile
     nodes_depended_on:
     - clarify_fund_objectives
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - compile_pitch_deck_outline
-    - design_compliance_program
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of typical investor types (e.g., family offices, pensions)
+      key: typical_investor_types
+      type: List[str]
+    - description: Required minimum investment in USD
+      key: required_minimum_investment
+      type: int
+    - description: Description of liquidity expectations
+      key: liquidity_expectations
+      type: str
+    - description: List of risk tolerance levels (e.g., aggressive, conservative)
+      key: risk_tolerance_levels
+      type: List[str]
+    - description: Description of geographic focus
+      key: geographic_focus
+      type: str
     prompt: Define the ideal investor demographic by specifying typical investor types
       (e.g., family offices, pensions), required minimum investments (in USD), liquidity
       expectations, and risk tolerance levels (aggressive/conservative). Include geographic
@@ -92,9 +159,22 @@ nodes:
     name: define_technology_stack
     nodes_depended_on:
     - draft_operations_workflow
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - estimate_setup_and_operating_costs
+    nodes_dependent_on: []
+    output_structure:
+    - description: Ordered list of workflow stages (e.g., Idea Generation, Signal
+        Generation, Order Entry, Execution Management, Position Monitoring, Reconciliation,
+        Settlement).
+      key: workflow_stages
+      type: List[str]
+    - description: Corresponding technology solution for each stage (e.g., Data Analytics
+        Platform, Portfolio Management System, OMS, FIX Gateway, Risk Engine, Reconciliation
+        Tool).
+      key: technology_solutions
+      type: List[str]
+    - description: Boolean flag for each stage indicating whether the solution is
+        implemented in-house (true) or outsourced to a vendor (false).
+      key: vendor_in_house_flags
+      type: List[bool]
     prompt: 'List required operational technology components for each workflow stage
       (e.g., order management system for trade execution). Format as two-column table:
       Workflow Stage | Technology Solution.'
@@ -105,9 +185,27 @@ nodes:
     nodes_depended_on:
     - identify_regulatory_requirements
     - define_investor_profile
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - estimate_setup_and_operating_costs
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of investor accreditation standard items required for compliance
+      key: accreditation_items
+      type: List[str]
+    - description: Implementation dates for each accreditation item (YYYY-MM-DD format)
+      key: accreditation_dates
+      type: List[str]
+    - description: List of subscription verification procedures to be followed
+      key: subscription_items
+      type: List[str]
+    - description: Implementation dates for each subscription procedure (YYYY-MM-DD
+        format)
+      key: subscription_dates
+      type: List[str]
+    - description: List of anti-money laundering policy items to implement
+      key: aml_items
+      type: List[str]
+    - description: Implementation dates for each AML policy item (YYYY-MM-DD format)
+      key: aml_dates
+      type: List[str]
     prompt: 'Generate compliance checklists mapping three categories: investor accreditation
       standards, subscription verification procedures, anti-money laundering policies.
       Format as 3-tab spreadsheet with implementation dates.'
@@ -118,9 +216,20 @@ nodes:
     nodes_depended_on:
     - set_performance_and_risk_targets
     - define_asset_universe
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - estimate_setup_and_operating_costs
+    nodes_dependent_on: []
+    output_structure:
+    - description: Number of quantifiable risk controls specified
+      key: num_quant_controls
+      type: int
+    - description: Descriptions of each quantifiable risk control
+      key: quant_controls_desc
+      type: List[str]
+    - description: Number of qualitative risk practices specified
+      key: num_qual_practices
+      type: int
+    - description: Descriptions of each qualitative risk practice
+      key: qual_practices_desc
+      type: List[str]
     prompt: List 4-6 quantifiable risk controls (position limits, VaR, liquidity thresholds)
       and 3 qualitative risk practices (monitoring protocols, reporting cadence, etc.)
       aligned with the performance targets.
@@ -131,9 +240,22 @@ nodes:
     nodes_depended_on:
     - define_asset_universe
     - list_service_providers
-    nodes_dependent_on:
-    - define_technology_stack
-    - compile_pitch_deck_outline
+    nodes_dependent_on: []
+    output_structure:
+    - description: Ordered list of operational stages from idea generation to settlement
+      key: stages
+      type: List[str]
+    - description: Corresponding responsible party for each stage (e.g., "In-house",
+        "Prime Broker")
+      key: responsible_parties
+      type: List[str]
+    - description: Boolean flag per stage indicating whether a vendor is involved
+        (true = vendor, false = in-house)
+      key: vendor_involved
+      type: List[bool]
+    - description: Brief description of activities performed in each stage
+      key: stage_descriptions
+      type: List[str]
     prompt: 'Sketch trade lifecycle from idea generation to settlement including:
       portfolio signal generation, order entry, execution management, position monitoring,
       reconciliation. Assign responsible parties (in-house vs. vendor).'
@@ -145,9 +267,31 @@ nodes:
     - list_service_providers
     - define_technology_stack
     - outliner_governance_structure
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - produce_final_fund_plan_summary
+    nodes_dependent_on: []
+    output_structure:
+    - description: Names of the service providers or cost categories
+      key: service_provider_name
+      type: List[str]
+    - description: Monthly cost in USD for each service provider
+      key: monthly_cost
+      type: List[float]
+    - description: Annual total cost in USD for each service provider (Monthly Cost
+        x 12)
+      key: annual_total
+      type: List[float]
+    - description: Sum of all monthly costs across providers
+      key: total_monthly_budget
+      type: float
+    - description: Sum of all annual totals across providers
+      key: total_annual_budget
+      type: float
+    - description: Number of line items included in the cost matrix (typically 10-15)
+      key: line_item_count
+      type: int
+    - description: Short textual summary of the overall budget, highlighting major
+        cost drivers
+      key: budget_overview
+      type: str
     prompt: 'Create cost matrix with: Service Provider | Monthly Cost (USD) | Annual
       Total, including vendor fees, technology implementation, and operational overhead.
       Include 10-15 line items.'
@@ -157,9 +301,19 @@ nodes:
     name: identify_regulatory_requirements
     nodes_depended_on:
     - choose_legal_entity_type
-    nodes_dependent_on:
-    - design_compliance_program
-    - compile_pitch_deck_outline
+    nodes_dependent_on: []
+    output_structure:
+    - description: The specific regulatory filing or registration required
+      key: requirement
+      type: str
+    - description: The regulatory agency and citation or form number associated with
+        the requirement
+      key: agency_citation
+      type: str
+    - description: One or two brief notes describing how to implement or comply with
+        the requirement
+      key: implementation_notes
+      type: List[str]
     prompt: List all required regulatory filings and registrations for the chosen
       jurisdiction and entity type including agency citations (e.g., SEC Form ADV).
       Add 1-2 implementation notes for each requirement.
@@ -169,10 +323,16 @@ nodes:
     name: list_service_providers
     nodes_depended_on:
     - choose_legal_entity_type
-    nodes_dependent_on:
-    - draft_operations_workflow
-    - estimate_setup_and_operating_costs
-    - design_compliance_program
+    nodes_dependent_on: []
+    output_structure:
+    - description: 'List of mandatory external service provider names in the order:
+        prime broker, custodian, fund administrator, legal counsel, compliance consultant.'
+      key: provider_names
+      type: List[str]
+    - description: Core function description for each provider, matching the order
+        of provider_names.
+      key: provider_functions
+      type: List[str]
     prompt: 'Generate checklist of mandatory external service providers: prime broker,
       custodian, fund administrator, legal counsel, compliance consultant. Include
       1 line per provider with core function description.'
@@ -182,9 +342,23 @@ nodes:
     name: outliner_governance_structure
     nodes_depended_on:
     - choose_legal_entity_type
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - estimate_setup_and_operating_costs
+    nodes_dependent_on: []
+    output_structure:
+    - description: Names of the roles
+      key: role_names
+      type: List[str]
+    - description: First responsibility for each role
+      key: role_responsibility_1
+      type: List[str]
+    - description: Second responsibility for each role
+      key: role_responsibility_2
+      type: List[str]
+    - description: Third responsibility for each role
+      key: role_responsibility_3
+      type: List[str]
+    - description: Authority scope for each role
+      key: role_authority_scope
+      type: List[str]
     prompt: 'Create governance chart with at least five roles: GP, Investment Manager,
       Compliance Officer, etc. For each role, define three core responsibilities and
       decision-making authority scope.'
@@ -197,6 +371,31 @@ nodes:
     - estimate_setup_and_operating_costs
     - design_compliance_program
     nodes_dependent_on: []
+    output_structure:
+    - description: The executive summary text
+      key: summary
+      type: str
+    - description: Summary of the investment strategy
+      key: strategy
+      type: str
+    - description: Description of target returns
+      key: target_returns
+      type: str
+    - description: Overview of risk controls in place
+      key: risk_controls
+      type: str
+    - description: Description of the regulatory structure
+      key: regulatory_structure
+      type: str
+    - description: Summary of key personnel and their roles
+      key: personnel
+      type: str
+    - description: Overview of the technology stack
+      key: technology
+      type: str
+    - description: Description of the launch timeline
+      key: launch_timeline
+      type: str
     prompt: 'Synthesize prior work into 200-word executive summary covering: strategy,
       target returns, risk controls, regulatory structure, personnel, technology,
       and launch timeline. Format as bullet-point summary with bold section headers.'
@@ -206,9 +405,21 @@ nodes:
     name: select_jurisdiction
     nodes_depended_on:
     - clarify_fund_objectives
-    nodes_dependent_on:
-    - choose_legal_entity_type
-    - identify_regulatory_requirements
+    nodes_dependent_on: []
+    output_structure:
+    - description: The name of the selected fund domicile
+      key: chosen_jurisdiction
+      type: str
+    - description: A list of two key advantages of the chosen jurisdiction
+      key: advantages
+      type: List[str]
+    - description: A list of two key disadvantages of the chosen jurisdiction
+      key: disadvantages
+      type: List[str]
+    - description: Brief explanation linking the jurisdiction to the fund’s objectives
+        and strategy
+      key: justification
+      type: str
     prompt: Select the most favorable fund domicile (e.g., Cayman Islands, Delaware,
       Luxembourg) considering tax efficiency, regulatory simplicity, and investor
       appeal. Provide 2 advantages and 2 disadvantages specific to this jurisdiction.
@@ -218,10 +429,20 @@ nodes:
     name: set_performance_and_risk_targets
     nodes_depended_on:
     - choose_investment_strategy
-    nodes_dependent_on:
-    - design_risk_management_framework
-    - compile_pitch_deck_outline
-    - draft_fee_structure
+    nodes_dependent_on: []
+    output_structure:
+    - description: Names of the performance and risk metrics (e.g., Gross Return,
+        Volatility, Sharpe Ratio, Max Drawdown)
+      key: metric_names
+      type: List[str]
+    - description: Numerical target values corresponding to each metric (e.g., 0.15
+        for 15% gross return, 0.10 for 10% volatility)
+      key: target_values
+      type: List[float]
+    - description: Brief rationale for each target, explaining how it aligns with
+        strategy and risk appetite
+      key: rationale_texts
+      type: List[str]
     prompt: 'Define numerical annual targets for gross returns, volatility (standard
       deviation), Sharpe ratio, and maximum drawdown tolerance. Present as structured
       table with three columns: Metric | Target | Rationale.'
