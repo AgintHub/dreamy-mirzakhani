@@ -1,8 +1,19 @@
 dag_type: plain_text
-description: Enhanced test workflow with additional steps for prioritization, validation,
-  review, and reporting.
+description: Enhanced workflow with additional intermediate steps for more granular
+  test planning and analysis.
 name: extended_test_workflow
 nodes:
+  allocate_test_resources:
+    agent: false
+    description: Assign test resources based on scope and criteria.
+    name: allocate_test_resources
+    nodes_depended_on:
+    - identify_test_scope
+    - determine_test_criteria
+    nodes_dependent_on:
+    - develop_test_plan
+    prompt: Allocate personnel, tools, and infrastructure required to meet the test
+      scope and criteria.
   analyze_test_results:
     agent: false
     description: Derive insights from validated test data.
@@ -10,9 +21,19 @@ nodes:
     nodes_depended_on:
     - validate_test_results
     nodes_dependent_on:
-    - document_test_outcome
+    - summarize_key_findings
     prompt: Analyze the verified test data to identify patterns, anomalies, and implications
       related to the test objectives.
+  compile_raw_test_data:
+    agent: false
+    description: Organize raw data from test execution.
+    name: compile_raw_test_data
+    nodes_depended_on:
+    - execute_test
+    nodes_dependent_on:
+    - validate_test_results
+    prompt: Gather and structure all collected test data into standardized formats
+      for validation and analysis.
   define_test_objective:
     agent: false
     description: Define the primary goal of the test.
@@ -24,31 +45,31 @@ nodes:
       test is trying to achieve?
   determine_test_criteria:
     agent: false
-    description: Identify evaluation criteria for test success.
+    description: Derive specific evaluation criteria from success metrics.
     name: determine_test_criteria
     nodes_depended_on:
-    - prioritize_test_objectives
+    - formulate_success_metrics
     nodes_dependent_on:
-    - develop_test_plan
-    prompt: Based on the prioritized test objectives, define the specific metrics
-      and standards that will measure test success.
+    - identify_test_scope
+    - allocate_test_resources
+    prompt: Based on the formulated success metrics, define the precise evaluation
+      standards for the test.
   develop_test_plan:
     agent: false
     description: Create a detailed test execution plan.
     name: develop_test_plan
     nodes_depended_on:
-    - identify_test_scope
-    - determine_test_criteria
+    - allocate_test_resources
     nodes_dependent_on:
     - review_test_plan
-    prompt: Design a detailed plan outlining test procedures, resource allocation,
-      and data collection methods for the specified scope and criteria.
+    prompt: Design a detailed plan outlining test procedures, sequence, and execution
+      methods aligned with the scope and criteria.
   document_test_outcome:
     agent: false
     description: Record final test findings and decisions.
     name: document_test_outcome
     nodes_depended_on:
-    - analyze_test_results
+    - summarize_key_findings
     nodes_dependent_on:
     - share_test_report
     prompt: Formalize test results into a structured report containing key findings,
@@ -60,9 +81,19 @@ nodes:
     nodes_depended_on:
     - review_test_plan
     nodes_dependent_on:
-    - validate_test_results
+    - compile_raw_test_data
     prompt: Carry out the test procedures outlined in the approved plan. Collect all
       required data according to the defined criteria.
+  formulate_success_metrics:
+    agent: false
+    description: Convert prioritized objectives into specific success metrics.
+    name: formulate_success_metrics
+    nodes_depended_on:
+    - prioritize_test_objectives
+    nodes_dependent_on:
+    - determine_test_criteria
+    prompt: Based on the prioritized test objectives, define the concrete metrics
+      and standards that will measure test success.
   identify_test_scope:
     agent: false
     description: Determine the system components to test.
@@ -70,7 +101,7 @@ nodes:
     nodes_depended_on:
     - define_test_objective
     nodes_dependent_on:
-    - develop_test_plan
+    - allocate_test_resources
     prompt: Based on the test objective, specify the components, systems, or processes
       that will be included in the test.
   prioritize_test_objectives:
@@ -80,7 +111,7 @@ nodes:
     nodes_depended_on:
     - define_test_objective
     nodes_dependent_on:
-    - determine_test_criteria
+    - formulate_success_metrics
     prompt: Review the defined test objective and prioritize the components of the
       objective. Which elements are most critical to the test's success?
   review_test_plan:
@@ -102,12 +133,22 @@ nodes:
     nodes_dependent_on: []
     prompt: Prepare and distribute the test outcome report to relevant stakeholders
       using appropriate communication channels.
+  summarize_key_findings:
+    agent: false
+    description: Extract core conclusions from test analysis.
+    name: summarize_key_findings
+    nodes_depended_on:
+    - analyze_test_results
+    nodes_dependent_on:
+    - document_test_outcome
+    prompt: Condense analysis results into a clear summary of test outcomes, highlighting
+      critical findings and their significance.
   validate_test_results:
     agent: false
     description: Verify correctness of collected test data.
     name: validate_test_results
     nodes_depended_on:
-    - execute_test
+    - compile_raw_test_data
     nodes_dependent_on:
     - analyze_test_results
     prompt: Perform data quality checks on the collected results to ensure accuracy,
