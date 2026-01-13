@@ -1,76 +1,39 @@
 dag_type: plain_text
-description: A workflow for testing and validating a system or process.
+description: A workflow for testing a task
 name: test_workflow
 nodes:
-  analyze_test_results:
+  task_decomposition:
     agent: false
-    description: Analyze the results of the test.
-    name: analyze_test_results
+    description: Decompose the task into more manageable sub-tasks.
+    name: task_decomposition
     nodes_depended_on:
-    - execute_test
+    - task_description_extraction
     nodes_dependent_on: []
-    prompt: Examine the outcomes of the test, comparing actual results to expected
-      results, and identifying any discrepancies or areas for improvement.
-  assemble_test_environment:
+    prompt: Break down the task into smaller, more manageable sub-tasks. Prioritize
+      these sub-tasks based on importance and complexity.
+  task_description_extraction:
     agent: false
-    description: Assemble the environment needed for the test.
-    name: assemble_test_environment
-    nodes_depended_on:
-    - develop_test_plan
-    nodes_dependent_on:
-    - execute_test
-    prompt: Set up the necessary hardware, software, and networking components for
-      the test.
-  define_test_objective:
-    agent: false
-    description: Define the objective of the test.
-    name: define_test_objective
+    description: Extract the core task description.
+    name: task_description_extraction
     nodes_depended_on: []
-    nodes_dependent_on:
-    - develop_test_plan
-    - identify_test_cases
-    prompt: Clearly state the purpose and goals of the test. What is being tested
-      and what are the expected outcomes?
-  develop_test_data:
+    nodes_dependent_on: []
+    prompt: Extract the main objective of the task. Remove any extraneous information
+      and focus on the core task description.
+  task_planning:
     agent: false
-    description: Develop the data needed for the test.
-    name: develop_test_data
+    description: Create a plan of action for each sub-task.
+    name: task_planning
     nodes_depended_on:
-    - identify_test_cases
-    nodes_dependent_on:
-    - execute_test
-    prompt: Create or obtain the necessary data for the test, including input parameters
-      and expected results.
-  develop_test_plan:
+    - task_decomposition
+    nodes_dependent_on: []
+    prompt: Create a detailed plan of action for each sub-task. Determine the necessary
+      resources and allocate time for each task.
+  test_workflow_execution:
     agent: false
-    description: Develop a detailed plan for the test.
-    name: develop_test_plan
+    description: Test the workflow.
+    name: test_workflow_execution
     nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on:
-    - identify_test_cases
-    - assemble_test_environment
-    prompt: Create a step-by-step plan for the test, including timelines, resources,
-      and deliverables.
-  execute_test:
-    agent: false
-    description: Execute the test.
-    name: execute_test
-    nodes_depended_on:
-    - develop_test_data
-    - assemble_test_environment
-    nodes_dependent_on:
-    - analyze_test_results
-    prompt: Run the test according to the plan, using the developed test data and
-      environment.
-  identify_test_cases:
-    agent: false
-    description: Identify the specific test cases to be executed.
-    name: identify_test_cases
-    nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on:
-    - develop_test_data
-    - assemble_test_environment
-    prompt: Determine the specific scenarios or inputs to be tested, and the expected
-      results.
+    - task_planning
+    nodes_dependent_on: []
+    prompt: Execute each step of the test workflow. Verify that each step was completed
+      successfully and document any findings or issues.
