@@ -1,62 +1,68 @@
 dag_type: plain_text
-description: A workflow for testing various scenarios
+description: A workflow for testing the capabilities of a workflow system.
 name: test_workflow
 nodes:
-  check_test_data:
+  analyze_test_results:
     agent: false
-    description: Verify that the generated test data is valid
-    name: check_test_data
+    description: Analyze the test results.
+    name: analyze_test_results
     nodes_depended_on:
-    - get_test_data
-    nodes_dependent_on:
-    - get_test_data
-    prompt: Verify that the generated test data is valid
-  generate_test_report:
-    agent: false
-    description: Generate a test report summarizing the results of all tests
-    name: generate_test_report
-    nodes_depended_on:
-    - test_performance
+    - execute_test
     nodes_dependent_on: []
-    prompt: Generate a test report
-  get_test_data:
+    prompt: Analyze the results of the test. What conclusions can be drawn from the
+      data collected during the test?
+  define_test_objective:
     agent: false
-    description: Generate test data for this workflow
-    name: get_test_data
+    description: Define the objective of the test.
+    name: define_test_objective
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Generate test data for this workflow
-  test_api:
+    prompt: Define the primary goal of the test. What is the main objective that this
+      test is trying to achieve?
+  determine_test_criteria:
     agent: false
-    description: Perform various API tests (e.g., request-response, authentication,
-      rate limiting)
-    name: test_api
+    description: Determine the criteria for the test.
+    name: determine_test_criteria
     nodes_depended_on:
-    - test_database
+    - define_test_objective
     nodes_dependent_on: []
-    prompt: Perform various API tests
-  test_database:
+    prompt: Based on the test objective, determine the criteria that will be used
+      to evaluate the test results. What metrics or standards will be used to measure
+      success?
+  develop_test_plan:
     agent: false
-    description: Perform various database tests (e.g., CRUD operations, queries, indexing)
-    name: test_database
+    description: Develop a detailed test plan.
+    name: develop_test_plan
     nodes_depended_on:
-    - check_test_data
+    - identify_test_scope
+    - determine_test_criteria
     nodes_dependent_on: []
-    prompt: Perform various database tests
-  test_performance:
+    prompt: Create a detailed test plan that includes the scope, criteria, and procedures
+      for the test. What steps will be taken to execute the test and collect results?
+  document_test_outcome:
     agent: false
-    description: Perform various performance tests (e.g., load testing, stress testing)
-    name: test_performance
+    description: Document the test outcome.
+    name: document_test_outcome
     nodes_depended_on:
-    - test_security
+    - analyze_test_results
     nodes_dependent_on: []
-    prompt: Perform various performance tests
-  test_security:
+    prompt: Document the outcome of the test. What were the results of the test, and
+      what do they indicate about the system or process being tested?
+  execute_test:
     agent: false
-    description: Perform various security tests (e.g., penetration testing, vulnerability
-      scanning)
-    name: test_security
+    description: Execute the test.
+    name: execute_test
     nodes_depended_on:
-    - test_api
+    - develop_test_plan
     nodes_dependent_on: []
-    prompt: Perform various security tests
+    prompt: Execute the test according to the test plan. What actions will be taken
+      to carry out the test and collect results?
+  identify_test_scope:
+    agent: false
+    description: Identify the scope of the test.
+    name: identify_test_scope
+    nodes_depended_on:
+    - define_test_objective
+    nodes_dependent_on: []
+    prompt: Based on the test objective, identify the scope of the test. What components,
+      systems, or processes will be included in the test?
