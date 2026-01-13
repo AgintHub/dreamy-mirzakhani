@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A highly concurrent test execution workflow covering unit, integration,
-  system, and acceptance tests with result aggregation and documentation
+dag_type: typed
+description: Generated workflow from UI.
 name: test_workflow
 nodes:
   acceptance_test_suite:
@@ -10,8 +9,29 @@ nodes:
     nodes_depended_on:
     - create_test_environment
     - generate_test_data
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Identifiers or names of the acceptance test cases that were run.
+      key: executed_test_cases
+      type: List[str]
+    - description: List of test case identifiers that passed the acceptance criteria.
+      key: passed_test_cases
+      type: List[str]
+    - description: List of test case identifiers that failed the acceptance criteria.
+      key: failed_test_cases
+      type: List[str]
+    - description: Overall result indicating whether all acceptance criteria were
+        satisfied.
+      key: overall_pass
+      type: bool
+    - description: Proportion of passed test cases expressed as a value between 0
+        and 1.
+      key: pass_rate
+      type: float
+    - description: Brief textual summary of any defects or issues discovered during
+        acceptance testing.
+      key: defect_summary
+      type: str
     prompt: Execute tests ensuring system behavior aligns with business requirements
       and user acceptance criteria for functional and non-functional specifications.
   aggregate_test_results:
@@ -23,8 +43,38 @@ nodes:
     - integration_test_suite
     - system_test_suite
     - acceptance_test_suite
-    nodes_dependent_on:
-    - compile_test_documentation
+    nodes_dependent_on: []
+    output_structure:
+    - description: Total number of test cases executed across all suites
+      key: total_tests_executed
+      type: int
+    - description: Number of tests that passed
+      key: passed_tests_count
+      type: int
+    - description: Number of tests that failed
+      key: failed_tests_count
+      type: int
+    - description: Names or identifiers of tests that failed
+      key: failed_test_names
+      type: List[str]
+    - description: Brief description of the reason for each failure
+      key: failure_reasons
+      type: List[str]
+    - description: List of tests identified as false positives
+      key: false_positive_tests
+      type: List[str]
+    - description: Descriptions of identified performance bottlenecks
+      key: performance_bottlenecks
+      type: List[str]
+    - description: Average execution time of all tests in seconds
+      key: average_execution_time_seconds
+      type: float
+    - description: Pass rate expressed as a proportion (0.0 - 1.0)
+      key: overall_pass_rate
+      type: float
+    - description: Human‑readable summary of the aggregated test results
+      key: summary_report
+      type: str
     prompt: Merge test execution reports into structured results. Identify failure
       patterns, false positives, and performance bottlenecks with clear categorization.
   compile_test_documentation:
@@ -33,8 +83,26 @@ nodes:
     name: compile_test_documentation
     nodes_depended_on:
     - aggregate_test_results
-    nodes_dependent_on:
-    - generate_summary_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: File system path where the compiled test documentation is saved
+      key: documentation_file_path
+      type: str
+    - description: List of top‑level sections included in the documentation (e.g.,
+        Test Plan, Test Cases, Setup Procedures, Results, Conclusions)
+      key: document_sections
+      type: List[str]
+    - description: Number of individual test cases that are described in the documentation
+      key: total_test_cases_documented
+      type: int
+    - description: Indicates whether a concise execution summary (pass/fail counts,
+        defects, performance metrics) is included
+      key: has_execution_summary
+      type: bool
+    - description: True if the documentation meets the predefined reporting template
+        and quality criteria
+      key: compliance_indicator
+      type: bool
     prompt: Develop comprehensive documentation including test plans, case definitions,
       setup procedures, and result interpretations. Format using standardized reporting
       templates.
@@ -43,11 +111,23 @@ nodes:
     description: Set up the required testing environment and dependencies
     name: create_test_environment
     nodes_depended_on: []
-    nodes_dependent_on:
-    - unit_test_suite
-    - integration_test_suite
-    - system_test_suite
-    - acceptance_test_suite
+    nodes_dependent_on: []
+    output_structure:
+    - description: True if all components are healthy and ready for testing
+      key: environment_ready
+      type: bool
+    - description: List of package names that were installed during environment setup
+      key: installed_packages
+      type: List[str]
+    - description: List of testing framework names that were set up
+      key: frameworks_configured
+      type: List[str]
+    - description: 'Status strings for each service started (e.g., ''PostgreSQL: running'')'
+      key: services_status
+      type: List[str]
+    - description: Detailed messages from health checks for each component
+      key: health_check_messages
+      type: List[str]
     prompt: Configure the test environment by installing dependencies, setting up
       testing frameworks, and initializing required services. Validate environment
       readiness with health checks.
@@ -58,6 +138,36 @@ nodes:
     nodes_depended_on:
     - compile_test_documentation
     nodes_dependent_on: []
+    output_structure:
+    - description: Title of the summary report
+      key: report_title
+      type: str
+    - description: Percentage of tests that passed (0.0 – 1.0)
+      key: pass_rate
+      type: float
+    - description: Percentage of tests that failed (0.0 – 1.0)
+      key: fail_rate
+      type: float
+    - description: Number of defects per thousand lines of code or per test case
+      key: defect_density
+      type: float
+    - description: Key performance numbers such as average response time, throughput,
+        etc.
+      key: performance_metrics
+      type: List[float]
+    - description: Short description of the most important issues discovered during
+        testing
+      key: critical_findings
+      type: List[str]
+    - description: Suggested next steps or actions for stakeholders
+      key: recommendations
+      type: List[str]
+    - description: ISO‑8601 timestamp when the summary report was created
+      key: report_generated_timestamp
+      type: str
+    - description: Indicates whether the report was generated without errors
+      key: is_report_successful
+      type: bool
     prompt: Produce concise summary report highlighting key metrics (pass/fail rates,
       defect density, performance metrics), critical findings, and recommended next
       steps for stakeholders.
@@ -67,11 +177,26 @@ nodes:
     name: generate_test_data
     nodes_depended_on:
     - create_test_environment
-    nodes_dependent_on:
-    - unit_test_suite
-    - integration_test_suite
-    - system_test_suite
-    - acceptance_test_suite
+    nodes_dependent_on: []
+    output_structure:
+    - description: File system paths to the generated test data files
+      key: data_file_paths
+      type: List[str]
+    - description: Total number of test records generated across all files
+      key: total_records
+      type: int
+    - description: Indicates whether the generated dataset contains explicitly crafted
+        edge‑case records
+      key: includes_edge_cases
+      type: bool
+    - description: Brief description of the data schema (field names and types) used
+        for the generated test data
+      key: schema_description
+      type: str
+    - description: Number of intentionally invalid or malformed records included for
+        negative testing
+      key: invalid_record_count
+      type: int
     prompt: Generate comprehensive test data including edge cases, valid inputs, and
       invalid scenarios. Structure data for easy ingestion by test suites.
   integration_test_suite:
@@ -81,8 +206,26 @@ nodes:
     nodes_depended_on:
     - create_test_environment
     - generate_test_data
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Identifiers of integration test cases that were run
+      key: executed_test_cases
+      type: List[str]
+    - description: Identifiers of test cases that passed
+      key: passed_test_cases
+      type: List[str]
+    - description: Identifiers of test cases that failed
+      key: failed_test_cases
+      type: List[str]
+    - description: True if all executed test cases passed, otherwise false
+      key: overall_success
+      type: bool
+    - description: Total time taken to run the integration test suite in seconds
+      key: execution_time_seconds
+      type: float
+    - description: List of error messages or exception details for failed test cases
+      key: error_messages
+      type: List[str]
     prompt: Execute tests validating communication between components, API endpoints,
       and external systems. Prioritize interface validation and data consistency.
   system_test_suite:
@@ -92,8 +235,35 @@ nodes:
     nodes_depended_on:
     - create_test_environment
     - generate_test_data
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Total number of end‑to‑end test cases that were executed.
+      key: total_test_cases
+      type: int
+    - description: Number of test cases that completed successfully.
+      key: passed_test_cases
+      type: int
+    - description: Number of test cases that failed.
+      key: failed_test_cases
+      type: int
+    - description: Percentage of passed test cases (passed / total * 100).
+      key: pass_rate_percentage
+      type: float
+    - description: Indicates whether any critical failures (e.g., workflow breakage)
+        were observed.
+      key: critical_failure_detected
+      type: bool
+    - description: Average response time across all end‑to‑end scenarios, measured
+        in milliseconds.
+      key: average_response_time_ms
+      type: float
+    - description: List of response time measurements for each individual test case,
+        in milliseconds.
+      key: performance_metrics_ms
+      type: List[float]
+    - description: Collected error or exception messages from failed test cases.
+      key: error_messages
+      type: List[str]
     prompt: Run end-to-end tests simulating user journeys through the complete system.Validate
       workflow integrity and performance characteristics.
   unit_test_suite:
@@ -103,7 +273,29 @@ nodes:
     nodes_depended_on:
     - create_test_environment
     - generate_test_data
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Total number of unit tests executed
+      key: total_tests
+      type: int
+    - description: Number of tests that passed
+      key: passed_tests
+      type: int
+    - description: Number of tests that failed
+      key: failed_tests
+      type: int
+    - description: Code coverage percentage achieved by the unit test run
+      key: coverage_percent
+      type: float
+    - description: Names or identifiers of the tests that failed
+      key: failed_test_names
+      type: List[str]
+    - description: Error or exception messages associated with each failed test
+      key: error_messages
+      type: List[str]
+    - description: 'Overall success flag: true if all tests passed and coverage meets
+        required threshold'
+      key: is_successful
+      type: bool
     prompt: Run all unit tests to verify individual functions and methods. Focus on
       code coverage, boundary conditions, and error path coverage.

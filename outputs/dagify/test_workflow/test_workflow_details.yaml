@@ -1,4 +1,4 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: test_workflow
 nodes:
@@ -32,11 +32,68 @@ nodes:
         acceptance testing.
       key: defect_summary
       type: str
+    prd:
+      conceptual_info: Runs the Acceptance Test Suite after the test environment and
+        synthetic data are prepared. It executes business‑rule‑level test cases, evaluates
+        each against acceptance criteria, and produces a concise execution summary
+        for downstream aggregation.
+      docstring:
+        examples:
+        - lines:
+          - result = acceptance_test_suite(
+          - '    environment_ready=True,'
+          - '    test_data_paths=[''/tmp/data1.json'', ''/tmp/data2.json''],'
+          - '    test_cases_definition=['
+          - '        {''id'': ''A1'', ''description'': ''Verify login'', ''expected_result'':
+            ''success''},'
+          - '        {''id'': ''A2'', ''description'': ''Reject invalid email'', ''expected_result'':
+            ''error''}'
+          - '    ]'
+          - )
+          output: "{\n  'executed_test_cases': ['A1', 'A2'],\n  'passed_test_cases':\
+            \ ['A1'],\n  'failed_test_cases': ['A2'],\n  'overall_pass': False,\n\
+            \  'pass_rate': 0.5,\n  'defect_summary': 'A2 failed: system returned\
+            \ success for invalid email.'\n}"
+        - lines:
+          - acceptance_test_suite(True, ['/tmp/data.json'], [{'id':'B1','description':'Check
+            checkout','expected_result':'success'}])
+          output: '{''executed_test_cases'': [''B1''], ''passed_test_cases'': [''B1''],
+            ''failed_test_cases'': [], ''overall_pass'': True, ''pass_rate'': 1.0,
+            ''defect_summary'': ''''}'
+        parameters:
+        - description: Flag from `create_test_environment` indicating the test environment
+            is healthy and ready.
+          name: environment_ready
+          type: bool
+        - description: List of file system paths to the generated test data files
+            from `generate_test_data`.
+          name: test_data_paths
+          type: List[str]
+        - description: 'Structured definitions of acceptance test cases (e.g., {''id'':
+            ''TC01'', ''description'': ..., ''expected_result'': ...}).'
+          name: test_cases_definition
+          type: List[dict]
+        raises:
+        - description: If `environment_ready` is False, indicating the environment
+            cannot run tests.
+          type: RuntimeError
+        - description: If any path in `test_data_paths` does not exist or is unreadable.
+          type: FileNotFoundError
+        - description: If `test_cases_definition` is empty or malformed.
+          type: ValueError
+        returns:
+          description: A dictionary containing execution lists, pass/fail aggregates,
+            pass rate, and a defect summary matching the node's output_structure.
+          type: dict
+        summary: Execute acceptance tests and return detailed results summarizing
+          compliance with business rules and user acceptance criteria.
     prompt: Execute tests ensuring system behavior aligns with business requirements
       and user acceptance criteria for functional and non-functional specifications.
   aggregate_test_results:
     agent: false
-    description: Compile and analyze test outcomes
+    description: Compile and analyze test outcomes from all test suites, producing
+      a unified view of pass/fail metrics, failure diagnostics, false‑positive detection,
+      and performance insights.
     name: aggregate_test_results
     nodes_depended_on:
     - unit_test_suite
@@ -75,11 +132,97 @@ nodes:
     - description: Human‑readable summary of the aggregated test results
       key: summary_report
       type: str
+    prd:
+      conceptual_info: The node consolidates raw results from unit, integration, system,
+        and acceptance test suites into a single, analytics‑rich report. It quantifies
+        overall quality, surfaces recurring failures, filters out false positives,
+        and highlights performance hot‑spots to support decision‑making and downstream
+        documentation generation.
+      docstring:
+        examples:
+        - lines:
+          - unit_results = {
+          - '    ''total_tests'': 120,'
+          - '    ''passed_tests'': 115,'
+          - '    ''failed_tests'': 5,'
+          - '    ''failed_test_names'': [''utils.test_add'', ''db.test_connection''],'
+          - '    ''error_messages'': [''AssertionError'', ''TimeoutError''],'
+          - '    ''is_successful'': False'
+          - '}'
+          - integration_results = {
+          - '    ''executed_test_cases'': [''api.login'', ''api.logout''],'
+          - '    ''passed_test_cases'': [''api.login''],'
+          - '    ''failed_test_cases'': [''api.logout''],'
+          - '    ''overall_success'': False,'
+          - '    ''execution_time_seconds'': 42.7,'
+          - '    ''error_messages'': [''500 Internal Server Error'']'
+          - '}'
+          - system_results = {
+          - '    ''total_test_cases'': 30,'
+          - '    ''passed_test_cases'': 28,'
+          - '    ''failed_test_cases'': 2,'
+          - '    ''pass_rate_percentage'': 93.33,'
+          - '    ''critical_failure_detected'': False,'
+          - '    ''average_response_time_ms'': 210.5,'
+          - '    ''performance_metrics_ms'': [200, 215, 210],'
+          - '    ''error_messages'': [''UI element not found'']'
+          - '}'
+          - acceptance_results = {
+          - '    ''executed_test_cases'': [''login_flow'', ''checkout_flow''],'
+          - '    ''passed_test_cases'': [''login_flow''],'
+          - '    ''failed_test_cases'': [''checkout_flow''],'
+          - '    ''overall_pass'': False,'
+          - '    ''pass_rate'': 0.5,'
+          - '    ''defect_summary'': ''Checkout fails on discount code.'''
+          - '}'
+          - report = aggregate_test_results(
+          - '    unit_results, integration_results, system_results, acceptance_results'
+          - )
+          - print(report['summary_report'])
+          output: '"Total tests executed: 182\nPassed: 144 (79.12%)\nFailed: 38 (20.88%)\nFailures:
+            utils.test_add (AssertionError), db.test_connection (TimeoutError), api.logout
+            (500 Internal Server Error), UI element not found, checkout_flow (business
+            rule violation)\nFalse positives: []\nPerformance bottlenecks: average
+            response time 0.21 s (system tests)\nOverall pass rate: 0.7912"'
+        parameters:
+        - description: Output dictionary from `unit_test_suite` containing total_tests,
+            passed_tests, failed_tests, failed_test_names, error_messages, and is_successful.
+          name: unit_results
+          type: dict
+        - description: Output dictionary from `integration_test_suite` containing
+            executed_test_cases, passed_test_cases, failed_test_cases, overall_success,
+            execution_time_seconds, and error_messages.
+          name: integration_results
+          type: dict
+        - description: Output dictionary from `system_test_suite` containing total_test_cases,
+            passed_test_cases, failed_test_cases, pass_rate_percentage, critical_failure_detected,
+            average_response_time_ms, performance_metrics_ms, and error_messages.
+          name: system_results
+          type: dict
+        - description: Output dictionary from `acceptance_test_suite` containing executed_test_cases,
+            passed_test_cases, failed_test_cases, overall_pass, pass_rate, and defect_summary.
+          name: acceptance_results
+          type: dict
+        raises:
+        - description: If any input dictionary is missing required keys or contains
+            non‑numeric counts that prevent aggregation.
+          type: ValueError
+        - description: If the function cannot compute average execution time due to
+            zero total tests.
+          type: RuntimeError
+        returns:
+          description: Aggregated test report matching the node's output_structure;
+            keys are the field names listed above.
+          type: dict
+        summary: Aggregate results from all test suites, compute overall metrics,
+          and generate a diagnostic summary.
     prompt: Merge test execution reports into structured results. Identify failure
       patterns, false positives, and performance bottlenecks with clear categorization.
   compile_test_documentation:
     agent: false
-    description: Create formal test records
+    description: Create formal test records by transforming aggregated test results
+      into a structured documentation artifact that conforms to the organization’s
+      reporting template.
     name: compile_test_documentation
     nodes_depended_on:
     - aggregate_test_results
@@ -103,6 +246,57 @@ nodes:
         and quality criteria
       key: compliance_indicator
       type: bool
+    prd:
+      conceptual_info: This node consumes the aggregated test result summary and produces
+        a formal, template‑compliant documentation package that records the test plan,
+        individual test cases, setup steps, execution summary and conclusions, ready
+        for audit and stakeholder review.
+      docstring:
+        examples:
+        - lines:
+          - aggregated = {
+          - '    ''total_tests_executed'': 120,'
+          - '    ''passed_tests_count'': 110,'
+          - '    ''failed_tests_count'': 10,'
+          - '    ''failed_test_names'': [''test_login_invalid'', ''test_payment_timeout''],'
+          - '    ''failure_reasons'': [''Invalid credentials'', ''Response timeout''],'
+          - '    ''false_positive_tests'': [],'
+          - '    ''performance_bottlenecks'': [''login service latency''],'
+          - '    ''average_execution_time_seconds'': 1.8,'
+          - '    ''overall_pass_rate'': 0.9167,'
+          - '    ''summary_report'': ''All suites executed successfully with 8.3%
+            failure rate.'''
+          - '}'
+          - doc_info = compile_test_documentation(aggregated)
+          output: "{\n  'documentation_file_path': '/tmp/test_documentation_v1.pdf',\n\
+            \  'document_sections': ['Test Plan', 'Test Cases', 'Setup Procedures',\
+            \ 'Results', 'Conclusions'],\n  'total_test_cases_documented': 120,\n\
+            \  'has_execution_summary': True,\n  'compliance_indicator': True\n}"
+        - lines:
+          - '# Missing required key triggers a ValueError'
+          - 'compile_test_documentation({ ''passed_tests_count'': 5 })'
+          output: 'ValueError: aggregated_results missing required key ''total_tests_executed'''
+        parameters:
+        - description: Dictionary produced by `aggregate_test_results` containing
+            overall test metrics such as total_tests_executed, passed_tests_count,
+            failed_tests_count, failed_test_names, failure_reasons, false_positive_tests,
+            performance_bottlenecks, average_execution_time_seconds, overall_pass_rate,
+            and summary_report.
+          name: aggregated_results
+          type: dict
+        raises:
+        - description: If `aggregated_results` is missing required keys or contains
+            incompatible data types.
+          type: ValueError
+        - description: If the documentation file cannot be written to the target location.
+          type: IOError
+        returns:
+          description: Dictionary with keys `documentation_file_path`, `document_sections`,
+            `total_test_cases_documented`, `has_execution_summary`, and `compliance_indicator`
+            describing the generated documentation artifact.
+          type: dict
+        summary: Generate a standardized test documentation file from aggregated test
+          results.
     prompt: Develop comprehensive documentation including test plans, case definitions,
       setup procedures, and result interpretations. Format using standardized reporting
       templates.
@@ -128,6 +322,56 @@ nodes:
     - description: Detailed messages from health checks for each component
       key: health_check_messages
       type: List[str]
+    prd:
+      conceptual_info: Initialises a reproducible, fully‑functional testing environment
+        by installing required Python packages, configuring testing frameworks (e.g.,
+        pytest, behave), launching auxiliary services such as databases or message
+        brokers, and running health‑check diagnostics. The node returns a structured
+        status report that downstream test suites consume to guarantee a reliable
+        execution context.
+      docstring:
+        examples:
+        - lines:
+          - result = create_test_environment()
+          - print(result['environment_ready'])
+          - print(result['installed_packages'])
+          - print(result['frameworks_configured'])
+          - print(result['services_status'])
+          - print(result['health_check_messages'])
+          output: 'True
+
+            [''pytest'', ''requests'', ''psycopg2'']
+
+            [''pytest'']
+
+            [''PostgreSQL: running'', ''Redis: running'']
+
+            [''PostgreSQL reachable'', ''Redis reachable'']'
+        - lines:
+          - '# Simulate a failure in a service start'
+          - 'def mock_start_service(name):'
+          - '    if name == ''PostgreSQL'':'
+          - '        raise RuntimeError(''Port already in use'')'
+          - '    return f"{name}: running"'
+          - '# The function would raise RuntimeError'
+          - create_test_environment()
+          output: 'RuntimeError: Port already in use'
+        parameters: []
+        raises:
+        - description: If any required package fails to install or a service cannot
+            be started.
+          type: RuntimeError
+        - description: If health‑check validation fails, indicating the environment
+            is not ready.
+          type: ValueError
+        returns:
+          description: Dictionary containing keys `environment_ready` (bool), `installed_packages`
+            (List[str]), `frameworks_configured` (List[str]), `services_status` (List[str]),
+            and `health_check_messages` (List[str]) that summarise the environment
+            setup outcome.
+          type: dict
+        summary: Creates and validates a complete test environment, installing packages,
+          configuring frameworks, starting services, and performing health checks.
     prompt: Configure the test environment by installing dependencies, setting up
       testing frameworks, and initializing required services. Validate environment
       readiness with health checks.
@@ -154,20 +398,82 @@ nodes:
     - description: Key performance numbers such as average response time, throughput,
         etc.
       key: performance_metrics
-      type: List[float]
+      type: float
     - description: Short description of the most important issues discovered during
         testing
       key: critical_findings
-      type: List[str]
+      type: str
     - description: Suggested next steps or actions for stakeholders
       key: recommendations
-      type: List[str]
+      type: str
     - description: ISO‑8601 timestamp when the summary report was created
       key: report_generated_timestamp
       type: str
     - description: Indicates whether the report was generated without errors
       key: is_report_successful
       type: bool
+    prd:
+      conceptual_info: Generate a concise test cycle summary report that consolidates
+        key metrics and findings from the compiled test documentation.
+      docstring:
+        examples:
+        - lines:
+          - report = generate_summary_report(
+          - '    documentation_file_path=''/tmp/test_doc.html'','
+          - '    document_sections=[''Test Plan'', ''Results'', ''Conclusion''],'
+          - '    total_test_cases_documented=120,'
+          - '    has_execution_summary=True,'
+          - '    compliance_indicator=True'
+          - )
+          - print(report['report_title'])
+          output: Test Cycle Summary – January 2026
+        - lines:
+          - report = generate_summary_report(
+          - '    documentation_file_path=''/tmp/test_doc.html'','
+          - '    document_sections=[''Test Plan'', ''Results''],'
+          - '    total_test_cases_documented=120,'
+          - '    has_execution_summary=False,'
+          - '    compliance_indicator=True'
+          - )
+          output: 'ValueError: Execution summary missing in the provided documentation.'
+        parameters:
+        - description: File system path to the compiled test documentation generated
+            by 'compile_test_documentation'.
+          name: documentation_file_path
+          type: str
+        - description: Top‑level section titles contained in the documentation (e.g.,
+            'Test Plan', 'Results').
+          name: document_sections
+          type: List[str]
+        - description: Number of individual test cases described in the documentation.
+          name: total_test_cases_documented
+          type: int
+        - description: Indicates whether the documentation includes a concise execution
+            summary with key metrics.
+          name: has_execution_summary
+          type: bool
+        - description: True if the documentation meets the predefined reporting template
+            and quality criteria.
+          name: compliance_indicator
+          type: bool
+        raises:
+        - description: Raised if 'documentation_file_path' does not point to an existing
+            file.
+          type: FileNotFoundError
+        - description: Raised when the documentation lacks an execution summary or
+            required metrics cannot be extracted.
+          type: ValueError
+        - description: Raised if parsing the documentation fails for an unexpected
+            reason.
+          type: RuntimeError
+        returns:
+          description: Dictionary containing the generated summary report with the
+            fields specified in the node's output structure.
+          type: dict
+        summary: Generates a concise summary report for a test cycle, extracting metrics
+          such as pass/fail rates, defect density, and performance numbers from the
+          compiled test documentation. The report is produced in a structured dictionary
+          suitable for downstream consumption or serialization.
     prompt: Produce concise summary report highlighting key metrics (pass/fail rates,
       defect density, performance metrics), critical findings, and recommended next
       steps for stakeholders.
@@ -197,6 +503,39 @@ nodes:
         negative testing
       key: invalid_record_count
       type: int
+    prd:
+      conceptual_info: Generates a set of synthetic data files that cover normal,
+        edge‑case, and erroneous inputs. The data is produced after the testing environment
+        is validated, enabling downstream test suites (unit, integration, system,
+        acceptance) to consume a ready‑to‑use dataset.
+      docstring:
+        examples:
+        - lines:
+          - result = generate_test_data()
+          - print(result['includes_edge_cases'])
+          - print(result['invalid_record_count'])
+          output: 'True
+
+            5'
+        - lines:
+          - result = generate_test_data()
+          - print(result['data_file_paths'])
+          output: '["/tmp/test_data/users.json", "/tmp/test_data/orders.json"]'
+        parameters: []
+        raises:
+        - description: If the test environment is not ready (e.g., missing dependencies
+            or failed health checks).
+          type: RuntimeError
+        - description: If file creation fails due to permission errors or insufficient
+            disk space.
+          type: IOError
+        returns:
+          description: A dictionary containing paths to generated files, total record
+            count, flags for edge‑cases, schema description, and count of invalid
+            records.
+          type: dict
+        summary: Generate synthetic test data covering valid, edge‑case, and invalid
+          records for use by all test suites.
     prompt: Generate comprehensive test data including edge cases, valid inputs, and
       invalid scenarios. Structure data for easy ingestion by test suites.
   integration_test_suite:
@@ -226,6 +565,52 @@ nodes:
     - description: List of error messages or exception details for failed test cases
       key: error_messages
       type: List[str]
+    prd:
+      conceptual_info: Runs the integration test suite after the test environment
+        and synthetic data have been prepared. It exercises inter‑component communication,
+        external API contracts, and data‑flow consistency, then aggregates detailed
+        pass/fail information for downstream reporting.
+      docstring:
+        examples:
+        - lines:
+          - report = integration_test_suite(
+          - '    environment_ready=True,'
+          - '    data_file_paths=[''/tmp/test_data_1.json'', ''/tmp/test_data_2.json'']'
+          - )
+          output: "{\n  'executed_test_cases': ['TC_INT_001', 'TC_INT_002'],\n  'passed_test_cases':\
+            \ ['TC_INT_001'],\n  'failed_test_cases': ['TC_INT_002'],\n  'overall_success':\
+            \ False,\n  'execution_time_seconds': 12.34,\n  'error_messages': ['TC_INT_002:\
+            \ Unexpected 500 response from /api/orders']\n}"
+        - lines:
+          - '# When the environment is not ready, an exception is raised'
+          - integration_test_suite(environment_ready=False, data_file_paths=[])
+          output: 'RuntimeError: Test environment is not ready. Abort integration
+            testing.'
+        parameters:
+        - description: Result from `create_test_environment`; must be True for the
+            suite to run.
+          name: environment_ready
+          type: bool
+        - description: List of file paths produced by `generate_test_data` that contain
+            the test payloads.
+          name: data_file_paths
+          type: List[str]
+        raises:
+        - description: If `environment_ready` is False, indicating the test environment
+            failed health checks.
+          type: RuntimeError
+        - description: If any path in `data_file_paths` does not exist or is unreadable.
+          type: FileNotFoundError
+        - description: Any unexpected error occurring during test execution (e.g.,
+            network time‑outs, unhandled exceptions in the component under test).
+          type: Exception
+        returns:
+          description: Dictionary matching the node's output_structure with keys `executed_test_cases`,
+            `passed_test_cases`, `failed_test_cases`, `overall_success`, `execution_time_seconds`,
+            and `error_messages`.
+          type: dict
+        summary: Execute the integration test suite using the prepared environment
+          and test data, returning a detailed execution report.
     prompt: Execute tests validating communication between components, API endpoints,
       and external systems. Prioritize interface validation and data consistency.
   system_test_suite:
@@ -264,6 +649,95 @@ nodes:
     - description: Collected error or exception messages from failed test cases.
       key: error_messages
       type: List[str]
+    prd:
+      conceptual_info: The system_test_suite node orchestrates comprehensive end‑to‑end
+        tests that simulate real user interactions across the entire application stack,
+        validating functional correctness, workflow continuity, and performance characteristics
+        under realistic conditions.
+      docstring:
+        examples:
+        - lines:
+          - results = run_system_test_suite(
+          - '    environment_ready=True,'
+          - '    installed_packages=[''pytest'', ''requests''],'
+          - '    frameworks_configured=[''pytest''],'
+          - '    services_status=[''PostgreSQL: running'', ''Redis: running''],'
+          - '    health_check_messages=[''All services healthy''],'
+          - '    data_file_paths=[''/tmp/data1.json'', ''/tmp/data2.json''],'
+          - '    total_records=2000,'
+          - '    includes_edge_cases=True,'
+          - '    schema_description=''id:int, name:str, age:int'','
+          - '    invalid_record_count=10'
+          - )
+          output: "{\n  \"total_test_cases\": 5,\n  \"passed_test_cases\": 5,\n  \"\
+            failed_test_cases\": 0,\n  \"pass_rate_percentage\": 100.0,\n  \"critical_failure_detected\"\
+            : false,\n  \"average_response_time_ms\": 195.4,\n  \"performance_metrics_ms\"\
+            : [190.0, 200.0, 210.0, 205.0, 190.0],\n  \"error_messages\": []\n}"
+        - lines:
+          - run_system_test_suite(
+          - '    environment_ready=False,'
+          - '    installed_packages=[''pytest''],'
+          - '    frameworks_configured=[''pytest''],'
+          - '    services_status=[''PostgreSQL: running''],'
+          - '    health_check_messages=[''All services healthy''],'
+          - '    data_file_paths=[''/tmp/data.json''],'
+          - '    total_records=1000,'
+          - '    includes_edge_cases=True,'
+          - '    schema_description=''id:int, name:str, age:int'','
+          - '    invalid_record_count=5'
+          - )
+          output: 'ValueError: Test environment is not ready. Cannot execute system
+            tests.'
+        parameters:
+        - description: Flag indicating whether the test environment (services, packages,
+            frameworks) is fully operational.
+          name: environment_ready
+          type: bool
+        - description: Names of packages installed during environment setup.
+          name: installed_packages
+          type: List[str]
+        - description: Names of testing frameworks (e.g., pytest, unittest) configured
+            for the suite.
+          name: frameworks_configured
+          type: List[str]
+        - description: Human‑readable status strings for each service that was started.
+          name: services_status
+          type: List[str]
+        - description: Detailed health‑check output for each component of the test
+            environment.
+          name: health_check_messages
+          type: List[str]
+        - description: File system paths to the synthetic test data files generated
+            by generate_test_data.
+          name: data_file_paths
+          type: List[str]
+        - description: Total number of records across all data files.
+          name: total_records
+          type: int
+        - description: Whether the dataset contains explicitly crafted edge‑case records.
+          name: includes_edge_cases
+          type: bool
+        - description: Brief description of the data schema (field names and types).
+          name: schema_description
+          type: str
+        - description: Number of intentionally invalid or malformed records for negative
+            testing.
+          name: invalid_record_count
+          type: int
+        raises:
+        - description: Raised when the test environment is not ready or required data
+            files are missing.
+          type: ValueError
+        - description: Raised if an unexpected error occurs while executing tests.
+          type: RuntimeError
+        returns:
+          description: 'A dictionary containing the end‑to‑end test metrics: total_test_cases,
+            passed_test_cases, failed_test_cases, pass_rate_percentage, critical_failure_detected,
+            average_response_time_ms, performance_metrics_ms, and error_messages.'
+          type: dict
+        summary: Execute end‑to‑end tests that simulate user journeys through the
+          entire system, reporting pass/fail counts, critical failures, and performance
+          metrics.
     prompt: Run end-to-end tests simulating user journeys through the complete system.Validate
       workflow integrity and performance characteristics.
   unit_test_suite:
@@ -297,5 +771,50 @@ nodes:
         required threshold'
       key: is_successful
       type: bool
+    prd:
+      conceptual_info: Runs the complete unit‑test suite for the core codebase, aggregates
+        results, measures coverage, and determines overall success based on pass count
+        and a configurable coverage threshold.
+      docstring:
+        examples:
+        - lines:
+          - result = unit_test_suite(
+          - '    env_ready=True,'
+          - '    test_data_paths=[''/tmp/data1.json'', ''/tmp/data2.json''],'
+          - '    coverage_threshold=85.0'
+          - )
+          output: "{\n  'total_tests': 120,\n  'passed_tests': 118,\n  'failed_tests':\
+            \ 2,\n  'coverage_percent': 87.3,\n  'failed_test_names': ['test_calc_edge',\
+            \ 'test_invalid_input'],\n  'error_messages': ['AssertionError in test_calc_edge',\
+            \ 'ValueError in test_invalid_input'],\n  'is_successful': True\n}"
+        - lines:
+          - unit_test_suite(False, [], 80.0)
+          output: 'RuntimeError: Test environment is not ready.'
+        parameters:
+        - description: Flag indicating that the test environment is ready (output
+            of `create_test_environment`).
+          name: env_ready
+          type: bool
+        - description: File system paths to synthetic test data files produced by
+            `generate_test_data`.
+          name: test_data_paths
+          type: List[str]
+        - description: Minimum acceptable code coverage percentage (e.g., 80.0).
+          name: coverage_threshold
+          type: float
+        raises:
+        - description: If the test environment is not ready (`env_ready` is False).
+          type: RuntimeError
+        - description: If any path in `test_data_paths` does not exist.
+          type: FileNotFoundError
+        - description: If `coverage_threshold` is not between 0 and 100.
+          type: ValueError
+        returns:
+          description: Dictionary containing keys `total_tests`, `passed_tests`, `failed_tests`,
+            `coverage_percent`, `failed_test_names`, `error_messages`, and `is_successful`
+            as defined in the node's output structure.
+          type: dict
+        summary: Execute all unit tests, compute coverage, and return a structured
+          result summary.
     prompt: Run all unit tests to verify individual functions and methods. Focus on
       code coverage, boundary conditions, and error path coverage.
