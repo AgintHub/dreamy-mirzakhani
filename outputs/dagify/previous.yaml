@@ -1,129 +1,287 @@
 dag_type: plain_text
-description: A workflow to help a software engineer strategically negotiate their
-  employment offer, including research, preparation, counteroffer scenarios, and execution.
-name: negotiate_job_offer
+description: Creates a 12‑chapter autobiographical novel. Each chapter is split into
+  3 parts, and each part is written as a single paragraph. The workflow maximizes
+  concurrency by generating all chapter outlines, part outlines, and paragraphs in
+  parallel where possible, and then assembles the complete manuscript.
+name: autobiographical_novel_creation
 nodes:
-  determine_minimum_acceptable_terms:
+  assemble_novel:
     agent: false
-    description: Establish the engineer's minimum salary, equity, and benefit thresholds
-    name: determine_minimum_acceptable_terms
+    description: Assembles the full novel from all paragraph nodes.
+    name: assemble_novel
     nodes_depended_on:
-    - research_industry_salary_benchmarks
-    - evaluate_existing_offer_components
-    nodes_dependent_on:
-    - prepare_counteroffer_scenarios
-    prompt: Calculate minimum acceptable compensation metrics (salary, equity value,
-      total cash bonus) based on industry benchmarks and the engineer's personal requirements.
-      State percentages of improvement over current offer.
-  draft_initial_negotiation_letter:
-    agent: false
-    description: Create a formal negotiation communication
-    name: draft_initial_negotiation_letter
-    nodes_depended_on:
-    - prepare_counteroffer_scenarios
-    - list_non_monetary_priorities
-    nodes_dependent_on:
-    - simulate_negotiation_discussion
-    prompt: Draft a professional email that 1) expresses appreciation for the offer,
-      2) provides data-backed requests for improvement in 3 key areas, and 3) leaves
-      room for further discussion. Maintain a collaborative tone.
-  evaluate_existing_offer_components:
-    agent: false
-    description: Quantify salary, equity, and benefits in the current offer
-    name: evaluate_existing_offer_components
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - identify_negotiation_leverage_points
-    prompt: Extract and document the numeric values, tenure schedules, and conditions
-      of the offered salary, stock options, signing bonus, and other benefits. Format
-      as an organized table.
-  evaluate_offer_benefits:
-    agent: false
-    description: Assess the value of non-salary benefits in the offer
-    name: evaluate_offer_benefits
-    nodes_depended_on:
-    - identify_role_specific_benefits
-    nodes_dependent_on:
-    - identify_negotiation_leverage_points
-    prompt: Compare the offered non-salary benefits against industry norms, converting
-      each to estimated annual value. Highlight substantial gaps or excesses compared
-      to typical packages.
-  identify_negotiation_leverage_points:
-    agent: false
-    description: Determine specific aspects to negotiate
-    name: identify_negotiation_leverage_points
-    nodes_depended_on:
-    - research_industry_salary_benchmarks
-    - evaluate_offer_benefits
-    - evaluate_existing_offer_components
-    nodes_dependent_on:
-    - prepare_counteroffer_scenarios
-    prompt: List 3-5 specific negotiable parameters where the offer could be improved,
-      referencing the benchmarks and assessment reports. For each point, state the
-      desired adjustment and supporting rationale.
-  identify_role_specific_benefits:
-    agent: false
-    description: List non-salary compensation elements relevant to the role
-    name: identify_role_specific_benefits
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - evaluate_offer_benefits
-    prompt: Identify 5-8 non-salary benefits typical for software engineering roles
-      (health, PTO, learning stipends, remote work policies, equity, etc.), including
-      approximate market values for each component.
-  list_non_monetary_priorities:
-    agent: false
-    description: Identify non-financial factors important to the engineer
-    name: list_non_monetary_priorities
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - prepare_counteroffer_scenarios
-    prompt: List 3-5 non-monetary work conditions vital to the engineer (flexible
-      hours, remote work options, career development paths, project autonomy), including
-      their relative priorities.
-  prepare_counteroffer_scenarios:
-    agent: false
-    description: Develop tiered negotiation strategies
-    name: prepare_counteroffer_scenarios
-    nodes_depended_on:
-    - determine_minimum_acceptable_terms
-    - identify_negotiation_leverage_points
-    - list_non_monetary_priorities
-    nodes_dependent_on:
-    - simulate_negotiation_discussion
-    prompt: 'Design three comprehensive counteroffer scenarios: 1) aspirational (stretch
-      goals), 2) realistic improvements, 3) minimum acceptable terms. For each scenario
-      include salary, equity, and non-monetary elements with negotiation tactics.'
-  research_industry_salary_benchmarks:
-    agent: false
-    description: Analyze current salary ranges for similar software engineering roles
-    name: research_industry_salary_benchmarks
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - identify_negotiation_leverage_points
-    prompt: Gather and analyze salary data from 3-5 authoritative sources (pay scales,
-      job platforms, industry reports) for software engineering roles with equivalent
-      experience and responsibilities as the offered position. Return a structured
-      report.
-  revise_negotiation_letter:
-    agent: false
-    description: Adjust the formal negotiation communication
-    name: revise_negotiation_letter
-    nodes_depended_on:
-    - simulate_negotiation_discussion
+    - paragraph_1_1
+    - paragraph_1_2
+    - paragraph_1_3
     nodes_dependent_on: []
-    prompt: Modify the initial negotiation letter incorporating feedback from the
-      role-play exercise. Strengthen position on non-negotiable terms and adjust concessions
-      based on simulated responses.
-  simulate_negotiation_discussion:
+    prompt: Combine all 36 paragraphs in chapter order, insert a blank line between
+      parts and a double blank line between chapters. Prepend the title generated
+      earlier. Output the complete manuscript.
+  create_novel_title:
     agent: false
-    description: Practice the negotiation response scenarios
-    name: simulate_negotiation_discussion
+    description: Produces the novel's title.
+    name: create_novel_title
     nodes_depended_on:
-    - prepare_counteroffer_scenarios
-    - draft_initial_negotiation_letter
+    - define_novel_theme
     nodes_dependent_on:
-    - revise_negotiation_letter
-    prompt: Conduct a role-play with a peer where they act as the employer rejecting
-      or partially accepting each counteroffer scenario. Document responses to potential
-      pushback and adjust positioning accordingly.
+    - draft_overall_outline
+    prompt: Generate a compelling title for the autobiographical novel that reflects
+      the defined theme.
+  define_novel_theme:
+    agent: false
+    description: Establishes the overarching theme that will guide all chapters.
+    name: define_novel_theme
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - create_novel_title
+    prompt: Identify the central theme and emotional arc of the autobiographical novel
+      in 2–3 sentences.
+  draft_overall_outline:
+    agent: false
+    description: Creates a top‑level list of the 12 chapters.
+    name: draft_overall_outline
+    nodes_depended_on:
+    - create_novel_title
+    nodes_dependent_on:
+    - outline_chapter_1
+    - outline_chapter_2
+    - outline_chapter_3
+    - outline_chapter_4
+    - outline_chapter_5
+    - outline_chapter_6
+    - outline_chapter_7
+    - outline_chapter_8
+    - outline_chapter_9
+    - outline_chapter_10
+    - outline_chapter_11
+    - outline_chapter_12
+    prompt: Provide a high‑level outline listing the 12 chapters of the novel. For
+      each chapter give a one‑sentence summary of its focus.
+  outline_chapter_1:
+    agent: false
+    description: Generates the outline for Chapter 1.
+    name: outline_chapter_1
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_1_1_outline
+    - part_1_2_outline
+    - part_1_3_outline
+    prompt: Write a detailed outline for Chapter 1 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_10:
+    agent: false
+    description: Generates the outline for Chapter 10.
+    name: outline_chapter_10
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_10_1_outline
+    - part_10_2_outline
+    - part_10_3_outline
+    prompt: Write a detailed outline for Chapter 10 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_11:
+    agent: false
+    description: Generates the outline for Chapter 11.
+    name: outline_chapter_11
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_11_1_outline
+    - part_11_2_outline
+    - part_11_3_outline
+    prompt: Write a detailed outline for Chapter 11 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_12:
+    agent: false
+    description: Generates the outline for Chapter 12.
+    name: outline_chapter_12
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_12_1_outline
+    - part_12_2_outline
+    - part_12_3_outline
+    prompt: Write a detailed outline for Chapter 12 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_2:
+    agent: false
+    description: Generates the outline for Chapter 2.
+    name: outline_chapter_2
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_2_1_outline
+    - part_2_2_outline
+    - part_2_3_outline
+    prompt: Write a detailed outline for Chapter 2 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_3:
+    agent: false
+    description: Generates the outline for Chapter 3.
+    name: outline_chapter_3
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_3_1_outline
+    - part_3_2_outline
+    - part_3_3_outline
+    prompt: Write a detailed outline for Chapter 3 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_4:
+    agent: false
+    description: Generates the outline for Chapter 4.
+    name: outline_chapter_4
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_4_1_outline
+    - part_4_2_outline
+    - part_4_3_outline
+    prompt: Write a detailed outline for Chapter 4 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_5:
+    agent: false
+    description: Generates the outline for Chapter 5.
+    name: outline_chapter_5
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_5_1_outline
+    - part_5_2_outline
+    - part_5_3_outline
+    prompt: Write a detailed outline for Chapter 5 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_6:
+    agent: false
+    description: Generates the outline for Chapter 6.
+    name: outline_chapter_6
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_6_1_outline
+    - part_6_2_outline
+    - part_6_3_outline
+    prompt: Write a detailed outline for Chapter 6 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_7:
+    agent: false
+    description: Generates the outline for Chapter 7.
+    name: outline_chapter_7
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_7_1_outline
+    - part_7_2_outline
+    - part_7_3_outline
+    prompt: Write a detailed outline for Chapter 7 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_8:
+    agent: false
+    description: Generates the outline for Chapter 8.
+    name: outline_chapter_8
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_8_1_outline
+    - part_8_2_outline
+    - part_8_3_outline
+    prompt: Write a detailed outline for Chapter 8 (≈150 words). Include three main
+      parts and a brief description of each part.
+  outline_chapter_9:
+    agent: false
+    description: Generates the outline for Chapter 9.
+    name: outline_chapter_9
+    nodes_depended_on:
+    - draft_overall_outline
+    nodes_dependent_on:
+    - part_9_1_outline
+    - part_9_2_outline
+    - part_9_3_outline
+    prompt: Write a detailed outline for Chapter 9 (≈150 words). Include three main
+      parts and a brief description of each part.
+  paragraph_1_1:
+    agent: false
+    description: Paragraph for Chapter 1, Part 1.
+    name: paragraph_1_1
+    nodes_depended_on:
+    - part_1_1_outline
+    nodes_dependent_on: []
+    prompt: Write a single paragraph (120‑150 words) that realizes Part 1 of Chapter 1
+      based solely on its outline.
+  paragraph_1_2:
+    agent: false
+    description: Paragraph for Chapter 1, Part 2.
+    name: paragraph_1_2
+    nodes_depended_on:
+    - part_1_2_outline
+    nodes_dependent_on: []
+    prompt: Write a single paragraph (120‑150 words) that realizes Part 2 of Chapter 1
+      based solely on its outline.
+  paragraph_1_3:
+    agent: false
+    description: Paragraph for Chapter 1, Part 3.
+    name: paragraph_1_3
+    nodes_depended_on:
+    - part_1_3_outline
+    nodes_dependent_on: []
+    prompt: Write a single paragraph (120‑150 words) that realizes Part 3 of Chapter 1
+      based solely on its outline.
+  part_1_1_outline:
+    agent: false
+    description: Outline for Chapter 1, Part 1.
+    name: part_1_1_outline
+    nodes_depended_on:
+    - outline_chapter_1
+    nodes_dependent_on:
+    - paragraph_1_1
+    prompt: From Chapter 1 outline, draft the outline for Part 1 (≈80 words). Include
+      key events, emotions, and purpose of this part.
+  part_1_2_outline:
+    agent: false
+    description: Outline for Chapter 1, Part 2.
+    name: part_1_2_outline
+    nodes_depended_on:
+    - outline_chapter_1
+    nodes_dependent_on:
+    - paragraph_1_2
+    prompt: From Chapter 1 outline, draft the outline for Part 2 (≈80 words). Include
+      key events, emotions, and purpose of this part.
+  part_1_3_outline:
+    agent: false
+    description: Outline for Chapter 1, Part 3.
+    name: part_1_3_outline
+    nodes_depended_on:
+    - outline_chapter_1
+    nodes_dependent_on:
+    - paragraph_1_3
+    prompt: From Chapter 1 outline, draft the outline for Part 3 (≈80 words). Include
+      key events, emotions, and purpose of this part.
+  part_2_1_outline:
+    agent: false
+    description: Outline for Chapter 2, Part 1.
+    name: part_2_1_outline
+    nodes_depended_on:
+    - outline_chapter_2
+    nodes_dependent_on:
+    - paragraph_2_1
+    prompt: From Chapter 2 outline, draft the outline for Part 1 (≈80 words).
+  part_2_2_outline:
+    agent: false
+    description: Outline for Chapter 2, Part 2.
+    name: part_2_2_outline
+    nodes_depended_on:
+    - outline_chapter_2
+    nodes_dependent_on:
+    - paragraph_2_2
+    prompt: From Chapter 2 outline, draft the outline for Part 2 (≈80 words).
+  part_2_3_outline:
+    agent: false
+    description: Outline for Chapter 2, Part 3.
+    name: part_2_3_outline
+    nodes_depended_on:
+    - outline_chapter_2
+    nodes_dependent_on:
+    - paragraph_2_3
+    prompt: From Chapter 2 outline, draft the outline for Part 3 (≈80 words).
