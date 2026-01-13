@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A fundamental testing workflow for creating and executing a test plan
-  from objectives definition through final reporting
+dag_type: typed
+description: Generated workflow from UI.
 name: basic_testing_workflow
 nodes:
   create_test_plan_outline:
@@ -10,9 +9,24 @@ nodes:
     nodes_depended_on:
     - define_test_objectives
     - identify_test_scope
-    nodes_dependent_on:
-    - design_test_cases
-    - setup_test_environment
+    nodes_dependent_on: []
+    output_structure:
+    - description: Concise summary of the primary testing objectives and success criteria
+      key: objectives_summary
+      type: str
+    - description: List of features, systems, and processes to be tested, including
+        exclusions
+      key: scope_summary
+      type: str
+    - description: Overview of required human, technical, and financial resources
+      key: resources_summary
+      type: str
+    - description: High‑level timeline with key milestones and deadlines
+      key: scheduling_summary
+      type: str
+    - description: Key performance indicators and metrics to measure testing effectiveness
+      key: success_metrics_summary
+      type: str
     prompt: Create a test plan outline covering objectives, scope, resources, scheduling,
       and key success metrics. Format as a 5-section executive summary.
   define_test_objectives:
@@ -20,8 +34,20 @@ nodes:
     description: Specify the primary testing goals
     name: define_test_objectives
     nodes_depended_on: []
-    nodes_dependent_on:
-    - create_test_plan_outline
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of primary testing goals
+      key: primary_goals
+      type: List[str]
+    - description: List of success criteria for the testing process
+      key: success_criteria
+      type: List[str]
+    - description: List of aspects that need validation
+      key: validation_aspects
+      type: List[str]
+    - description: List of expected outcomes that will confirm testing success
+      key: testing_outcomes
+      type: List[str]
     prompt: Outline the primary goals and success criteria for the testing process.
       Focus on what aspects need validation and what outcomes will confirm testing
       success.
@@ -32,8 +58,20 @@ nodes:
     nodes_depended_on:
     - create_test_plan_outline
     - identify_test_scope
-    nodes_dependent_on:
-    - execute_test_scenarios
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of 10 prioritized test case descriptions
+      key: test_case_descriptions
+      type: List[str]
+    - description: List of inputs for each test case
+      key: test_case_inputs
+      type: List[str]
+    - description: List of expected results for each test case
+      key: expected_results
+      type: List[str]
+    - description: List of priorities for each test case
+      key: test_case_priorities
+      type: List[int]
     prompt: Generate 10 prioritized test case descriptions aligned with the defined
       testing scope. Include inputs and expected results for each.
   execute_test_scenarios:
@@ -43,8 +81,26 @@ nodes:
     nodes_depended_on:
     - design_test_cases
     - setup_test_environment
-    nodes_dependent_on:
-    - log_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of boolean values indicating whether each test case was executed
+        successfully
+      key: test_case_execution_status
+      type: List[bool]
+    - description: List of test case outcomes, including pass/fail status and any
+        error messages
+      key: test_case_outcomes
+      type: List[str]
+    - description: Status of the test environment after execution, including any issues
+        or anomalies encountered
+      key: test_environment_status
+      type: str
+    - description: Number of test cases that passed
+      key: number_of_passed_test_cases
+      type: int
+    - description: Number of test cases that failed
+      key: number_of_failed_test_cases
+      type: int
     prompt: Execute the 10 test cases in the prepared environment. Record outcomes
       against each test case's expected results.
   generate_test_report:
@@ -54,6 +110,22 @@ nodes:
     nodes_depended_on:
     - log_test_results
     nodes_dependent_on: []
+    output_structure:
+    - description: The percentage of test cases that passed
+      key: pass_rate
+      type: float
+    - description: The number of defects per unit of code or functionality
+      key: defect_density
+      type: float
+    - description: A list of critical issues found during testing
+      key: critical_issues
+      type: List[str]
+    - description: A list of recommendations for next steps based on the testing results
+      key: recommendations
+      type: List[str]
+    - description: A brief summary of the testing results
+      key: test_summary
+      type: str
     prompt: 'Produce a testing summary report containing metrics: pass rate, defect
       density, critical issues, and recommendations for next steps.'
   identify_test_scope:
@@ -61,10 +133,20 @@ nodes:
     description: Determine the components to be tested
     name: identify_test_scope
     nodes_depended_on: []
-    nodes_dependent_on:
-    - create_test_plan_outline
-    - design_test_cases
-    - select_test_tools
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of feature, system, or process names that will be included
+        in the testing effort
+      key: tested_features
+      type: List[str]
+    - description: List of feature, system, or process names that are explicitly excluded
+        from the current testing scope
+      key: excluded_features
+      type: List[str]
+    - description: Total number of distinct items identified in the testing scope,
+        including both tested and excluded features
+      key: total_features
+      type: int
     prompt: List the specific features, systems, or processes that require testing.
       Include both what will and will not be tested.
   log_test_results:
@@ -73,8 +155,23 @@ nodes:
     name: log_test_results
     nodes_depended_on:
     - execute_test_scenarios
-    nodes_dependent_on:
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the test case
+      key: test_case_id
+      type: str
+    - description: True if the test case passed, False if it failed
+      key: status_passed
+      type: bool
+    - description: Observed outcome of the test case
+      key: actual_result
+      type: str
+    - description: Description of any defects identified during the test
+      key: defects_found
+      type: str
+    - description: ISO 8601 datetime stamp of when the test result was recorded
+      key: timestamp
+      type: str
     prompt: 'Record test results in standard format: status (pass/fail), actual results,
       defects found, and timestamp information.'
   select_test_tools:
@@ -83,8 +180,15 @@ nodes:
     name: select_test_tools
     nodes_depended_on:
     - identify_test_scope
-    nodes_dependent_on:
-    - setup_test_environment
+    nodes_dependent_on: []
+    output_structure:
+    - description: Names of the testing tools selected
+      key: tools
+      type: List[str]
+    - description: One-phrase justification for each selected tool, corresponding
+        by index to the tools list
+      key: justifications
+      type: List[str]
     prompt: List 3-5 testing tools required to achieve the defined testing objectives.
       Justify each selection with one phrase per tool.
   setup_test_environment:
@@ -94,7 +198,23 @@ nodes:
     nodes_depended_on:
     - create_test_plan_outline
     - select_test_tools
-    nodes_dependent_on:
-    - execute_test_scenarios
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of hardware components and specifications required for the
+        test environment
+      key: hardware_specs
+      type: List[str]
+    - description: List of software versions and configuration details needed for
+        the test environment
+      key: software_specs
+      type: List[str]
+    - description: List of external dependencies (libraries, services, APIs) required
+        for the test environment
+      key: dependencies
+      type: List[str]
+    - description: List of access rights or credentials needed to set up and use the
+        test environment
+      key: access_requirements
+      type: List[str]
     prompt: 'Document the environment configuration needed: hardware, software specs,
       dependencies, and access requirements.'

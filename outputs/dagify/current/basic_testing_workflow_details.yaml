@@ -1,10 +1,11 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: basic_testing_workflow
 nodes:
   create_test_plan_outline:
     agent: false
-    description: Structure the testing approach framework
+    description: Structure the testing approach framework by synthesizing objectives,
+      scope, resources, scheduling, and success metrics into a concise executive summary.
     name: create_test_plan_outline
     nodes_depended_on:
     - define_test_objectives
@@ -27,6 +28,112 @@ nodes:
     - description: Key performance indicators and metrics to measure testing effectiveness
       key: success_metrics_summary
       type: str
+    prd:
+      conceptual_info: The node aggregates structured input from test objectives and
+        scope definitions to produce a concise, five‑section executive summary that
+        outlines the overall testing strategy.
+      docstring:
+        examples:
+        - lines:
+          - 'create_test_plan_outline(
+
+            '
+          - '    primary_goals=["Validate functional correctness"],
+
+            '
+          - '    success_criteria=["All critical features pass"],
+
+            '
+          - '    validation_aspects=["UI", "API"],
+
+            '
+          - '    testing_outcomes=["Zero critical bugs"],
+
+            '
+          - '    tested_features=["Login", "Dashboard"],
+
+            '
+          - '    excluded_features=["Reporting"],
+
+            '
+          - '    total_features=3
+
+            '
+          - )
+          output: "{\n  \"objectives_summary\": \"Validate functional correctness\
+            \ with zero critical bugs across UI and API.\",\n  \"scope_summary\":\
+            \ \"Tested: Login, Dashboard. Excluded: Reporting.\",\n  \"resources_summary\"\
+            : \"2 QA engineers, 1 test environment, $5,000 budget.\",\n  \"scheduling_summary\"\
+            : \"Week 1: Planning, Week 2-3: Execution, Week 4: Reporting.\",\n  \"\
+            success_metrics_summary\": \"Pass rate >= 95%, defect density < 0.5 per\
+            \ 1,000 lines.\"\n}"
+        - lines:
+          - 'create_test_plan_outline(
+
+            '
+          - '    primary_goals=["Ensure performance meets SLA"],
+
+            '
+          - '    success_criteria=["Response time < 200ms"],
+
+            '
+          - '    validation_aspects=["Performance", "Security"],
+
+            '
+          - '    testing_outcomes=["No latency spikes"],
+
+            '
+          - '    tested_features=["Search", "Checkout"],
+
+            '
+          - '    excluded_features=["Email notifications"],
+
+            '
+          - '    total_features=3
+
+            '
+          - )
+          output: "{\n  \"objectives_summary\": \"Ensure performance meets SLA with\
+            \ no latency spikes across Search and Checkout.\",\n  \"scope_summary\"\
+            : \"Tested: Search, Checkout. Excluded: Email notifications.\",\n  \"\
+            resources_summary\": \"3 performance engineers, load testing tool, $10,000\
+            \ budget.\",\n  \"scheduling_summary\": \"Week 1: Setup, Week 2-3: Load\
+            \ tests, Week 4: Analysis.\",\n  \"success_metrics_summary\": \"Avg response\
+            \ time < 200ms, max 5% variance.\"\n}"
+        parameters:
+        - description: List of primary testing goals obtained from define_test_objectives.
+          name: primary_goals
+          type: List[str]
+        - description: Success criteria for the testing process, also from define_test_objectives.
+          name: success_criteria
+          type: List[str]
+        - description: Aspects that need validation, sourced from define_test_objectives.
+          name: validation_aspects
+          type: List[str]
+        - description: Expected outcomes that confirm testing success, from define_test_objectives.
+          name: testing_outcomes
+          type: List[str]
+        - description: Features, systems, or processes to be tested, from identify_test_scope.
+          name: tested_features
+          type: List[str]
+        - description: Features explicitly excluded from the current testing scope,
+            from identify_test_scope.
+          name: excluded_features
+          type: List[str]
+        - description: Total number of distinct items identified in the testing scope.
+          name: total_features
+          type: int
+        raises:
+        - description: If any required input list is empty or missing.
+          type: ValueError
+        - description: If inputs do not match the expected types.
+          type: TypeError
+        returns:
+          description: 'Dictionary containing five string fields: objectives_summary,
+            scope_summary, resources_summary, scheduling_summary, success_metrics_summary.'
+          type: dict
+        summary: Generates a 5‑section executive summary for a test plan, combining
+          objectives, scope, resources, scheduling, and success metrics.
     prompt: Create a test plan outline covering objectives, scope, resources, scheduling,
       and key success metrics. Format as a 5-section executive summary.
   define_test_objectives:
@@ -48,6 +155,49 @@ nodes:
     - description: List of expected outcomes that will confirm testing success
       key: testing_outcomes
       type: List[str]
+    prd:
+      conceptual_info: Defines the core objectives and measurable outcomes for the
+        testing effort, serving as the foundation for planning, execution, and reporting.
+      docstring:
+        examples:
+        - lines:
+          - define_test_objectives('Ensure the system meets performance, security,
+            and usability targets.')
+          output: "{\n  \"primary_goals\": [\n    \"Validate performance under peak\
+            \ load\",\n    \"Confirm data security compliance\",\n    \"Verify user\
+            \ interface usability\"\n  ],\n  \"success_criteria\": [\n    \"Average\
+            \ response time < 200 ms\",\n    \"Zero critical security findings\",\n\
+            \    \"User satisfaction score ≥ 8/10\"\n  ],\n  \"validation_aspects\"\
+            : [\n    \"Load handling\",\n    \"Data integrity\",\n    \"Access control\"\
+            ,\n    \"Accessibility\"\n  ],\n  \"testing_outcomes\": [\n    \"All performance\
+            \ tests pass\",\n    \"No critical defects reported\",\n    \"Positive\
+            \ usability feedback\"\n  ]\n}"
+        - lines:
+          - define_test_objectives('Test the integration of the payment gateway with
+            the order processing system.')
+          output: "{\n  \"primary_goals\": [\n    \"Ensure transaction integrity\"\
+            ,\n    \"Verify correct order status updates\"\n  ],\n  \"success_criteria\"\
+            : [\n    \"All transactions succeed without data loss\",\n    \"Order\
+            \ status reflects payment outcome accurately\"\n  ],\n  \"validation_aspects\"\
+            : [\n    \"Data consistency\",\n    \"API reliability\",\n    \"Error\
+            \ handling\"\n  ],\n  \"testing_outcomes\": [\n    \"All integration tests\
+            \ pass\",\n    \"No data mismatches detected\"\n  ]\n}"
+        parameters:
+        - description: A concise natural‑language request outlining what the testing
+            process should achieve.
+          name: prompt
+          type: str
+        raises:
+        - description: If `prompt` is empty or not a string.
+          type: ValueError
+        returns:
+          description: 'A dictionary containing four keys: `primary_goals`, `success_criteria`,
+            `validation_aspects`, and `testing_outcomes`, each mapped to a list of
+            strings.'
+          type: dict
+        summary: Generate a structured set of testing objectives, success criteria,
+          validation aspects, and expected outcomes based on a textual description
+          of testing goals.
     prompt: Outline the primary goals and success criteria for the testing process.
       Focus on what aspects need validation and what outcomes will confirm testing
       success.
@@ -72,6 +222,54 @@ nodes:
     - description: List of priorities for each test case
       key: test_case_priorities
       type: List[int]
+    prd:
+      conceptual_info: This node generates concrete, prioritized test scenarios that
+        align with the testing scope defined by parent nodes. It transforms high‑level
+        objectives and feature lists into actionable test cases, each with explicit
+        inputs, expected outcomes, and a priority ranking.
+      docstring:
+        examples:
+        - lines:
+          - "outputs = design_test_cases(\n    objectives_summary=\"Verify authentication\
+            \ flow\",\n    scope_summary=\"Login, Logout, Password Reset – exclude\
+            \ social logins\",\n    tested_features=[\"Login\", \"Logout\", \"Password\
+            \ Reset\"]\n)"
+          - print(outputs["test_case_priorities"])
+          output: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]'
+        - lines:
+          - "outputs = design_test_cases(\n    objectives_summary=\"\",\n    scope_summary=\"\
+            Login, Logout\",\n    tested_features=[\"Login\", \"Logout\"]\n)"
+          - print(outputs["test_case_descriptions"][0])
+          output: '"Test case 1: Valid login with correct credentials"'
+        parameters:
+        - description: Concise summary of the primary testing objectives and success
+            criteria.
+          name: objectives_summary
+          type: str
+        - description: List of features, systems, and processes to be tested, including
+            exclusions.
+          name: scope_summary
+          type: str
+        - description: Explicit features that will be included in the test effort.
+          name: tested_features
+          type: List[str]
+        raises:
+        - description: Raised if any of the required input arguments are missing or
+            empty.
+          type: ValueError
+        returns:
+          description: 'A dictionary containing four keys:
+
+            - test_case_descriptions: List[str]
+
+            - test_case_inputs: List[str]
+
+            - expected_results: List[str]
+
+            - test_case_priorities: List[int]'
+          type: Dict[str, Any]
+        summary: Generate detailed and prioritized test cases based on the testing
+          scope.
     prompt: Generate 10 prioritized test case descriptions aligned with the defined
       testing scope. Include inputs and expected results for each.
   execute_test_scenarios:
@@ -101,6 +299,33 @@ nodes:
     - description: Number of test cases that failed
       key: number_of_failed_test_cases
       type: int
+    prd:
+      conceptual_info: Execute test cases in a controlled environment and record the
+        outcomes.
+      docstring:
+        examples:
+        - lines:
+          - test_cases = ['test_case_1', 'test_case_2', 'test_case_3']
+          - test_environment = 'test_environment_config'
+          - result = execute_test_scenarios(test_cases, test_environment)
+          output: '{''test_case_execution_status'': [True, False, True], ''test_case_outcomes'':
+            [''pass'', ''fail'', ''pass''], ''test_environment_status'': ''stable'',
+            ''number_of_passed_test_cases'': 2, ''number_of_failed_test_cases'': 1}'
+        parameters:
+        - description: List of test case descriptions
+          name: test_cases
+          type: List[str]
+        - description: Test environment configuration
+          name: test_environment
+          type: str
+        raises:
+        - description: If test case execution fails
+          type: Exception
+        returns:
+          description: Dictionary containing test case execution status, outcomes,
+            test environment status, and number of passed and failed test cases
+          type: dict
+        summary: Execute test cases and record outcomes.
     prompt: Execute the 10 test cases in the prepared environment. Record outcomes
       against each test case's expected results.
   generate_test_report:
@@ -126,6 +351,38 @@ nodes:
     - description: A brief summary of the testing results
       key: test_summary
       type: str
+    prd:
+      conceptual_info: This node compiles testing effectiveness analysis by processing
+        test results from the log_test_results node.
+      docstring:
+        examples:
+        - lines:
+          - 'test_results = [{''test_case_id'': ''1'', ''status_passed'': True, ''actual_result'':
+            ''pass'', ''defects_found'': '''', ''timestamp'': ''2022-01-01T00:00:00''}]'
+          - generate_test_report(test_results)
+          output: '{''pass_rate'': 1.0, ''defect_density'': 0.0, ''critical_issues'':
+            [], ''recommendations'': [], ''test_summary'': ''All test cases passed.''}'
+        - lines:
+          - 'test_results = [{''test_case_id'': ''1'', ''status_passed'': False, ''actual_result'':
+            ''fail'', ''defects_found'': ''defect1'', ''timestamp'': ''2022-01-01T00:00:00''}]'
+          - generate_test_report(test_results)
+          output: '{''pass_rate'': 0.0, ''defect_density'': 1.0, ''critical_issues'':
+            [''defect1''], ''recommendations'': [''Investigate and fix defect1''],
+            ''test_summary'': ''One test case failed with defect1.''}'
+        parameters:
+        - description: List of test results from the log_test_results node, where
+            each result is a dictionary containing 'test_case_id', 'status_passed',
+            'actual_result', 'defects_found', and 'timestamp'.
+          name: test_results
+          type: List[Dict[str, str]]
+        raises:
+        - description: If the input test results are empty or invalid.
+          type: ValueError
+        returns:
+          description: A dictionary containing 'pass_rate', 'defect_density', 'critical_issues',
+            'recommendations', and 'test_summary'.
+          type: Dict[str, Union[float, List[str], str]]
+        summary: Generate a testing summary report based on the test results.
     prompt: 'Produce a testing summary report containing metrics: pass rate, defect
       density, critical issues, and recommendations for next steps.'
   identify_test_scope:
@@ -147,6 +404,30 @@ nodes:
         including both tested and excluded features
       key: total_features
       type: int
+    prd:
+      conceptual_info: This node generates a clear inventory of what the testing effort
+        will cover, ensuring all stakeholders agree on the scope before resources
+        are allocated.
+      docstring:
+        examples:
+        - lines:
+          - scope = identify_test_scope()
+          output: "{\n  \"tested_features\": [\"Login Module\", \"Payment Gateway\"\
+            , \"Reporting Dashboard\"],\n  \"excluded_features\": [\"User Profile\
+            \ Settings\"],\n  \"total_features\": 4\n}"
+        - lines:
+          - scope = identify_test_scope()
+          - print(scope["tested_features"])
+          output: '["Login Module", "Payment Gateway", "Reporting Dashboard"]'
+        parameters: []
+        raises:
+        - description: Raised if the input prompt is empty or malformed.
+          type: ValueError
+        returns:
+          description: A dictionary with keys `tested_features`, `excluded_features`,
+            and `total_features` describing the testing scope.
+          type: dict
+        summary: Identify the components to be tested and those explicitly excluded.
     prompt: List the specific features, systems, or processes that require testing.
       Include both what will and will not be tested.
   log_test_results:
@@ -172,6 +453,64 @@ nodes:
     - description: ISO 8601 datetime stamp of when the test result was recorded
       key: timestamp
       type: str
+    prd:
+      conceptual_info: Collects and normalizes test case execution data into a standardized
+        record for downstream analysis.
+      docstring:
+        examples:
+        - lines:
+          - log_test_results(
+          - '    test_case_id=''TC_001'','
+          - '    execution_status=True,'
+          - '    actual_result=''Function returned expected output'','
+          - '    defects_found='''','
+          - '    timestamp=''2026-01-13T14:22:05Z'''
+          - )
+          output: '{''test_case_id'': ''TC_001'', ''status_passed'': True, ''actual_result'':
+            ''Function returned expected output'', ''defects_found'': '''', ''timestamp'':
+            ''2026-01-13T14:22:05Z''}'
+        - lines:
+          - log_test_results(
+          - '    test_case_id=''TC_005'','
+          - '    execution_status=False,'
+          - '    actual_result=''NullPointerException at line 42'','
+          - '    defects_found=''NPE in module X'','
+          - '    timestamp=''2026-01-13T14:23:10Z'''
+          - )
+          output: '{''test_case_id'': ''TC_005'', ''status_passed'': False, ''actual_result'':
+            ''NullPointerException at line 42'', ''defects_found'': ''NPE in module
+            X'', ''timestamp'': ''2026-01-13T14:23:10Z''}'
+        parameters:
+        - description: A unique identifier for the test case, typically matching the
+            ID used in the test plan.
+          name: test_case_id
+          type: str
+        - description: Boolean indicating whether the test case executed successfully
+            and met its expected result.
+          name: execution_status
+          type: bool
+        - description: The raw result returned by the test environment, such as output
+            text, error message, or status code.
+          name: actual_result
+          type: str
+        - description: Free‑form text describing any anomalies or bugs discovered
+            during execution.
+          name: defects_found
+          type: str
+        - description: ISO 8601 datetime string marking when the result was recorded,
+            e.g., '2026-01-13T14:22:05Z'.
+          name: timestamp
+          type: str
+        raises:
+        - description: If any required parameter is missing or empty.
+          type: ValueError
+        - description: If a parameter does not match its expected type.
+          type: TypeError
+        returns:
+          description: A dictionary containing the five output fields with the specified
+            types.
+          type: Dict[str, Any]
+        summary: Records the outcome of a single test case in a structured format.
     prompt: 'Record test results in standard format: status (pass/fail), actual results,
       defects found, and timestamp information.'
   select_test_tools:
@@ -189,6 +528,43 @@ nodes:
         by index to the tools list
       key: justifications
       type: List[str]
+    prd:
+      conceptual_info: Selects the most appropriate testing tools based on the scope
+        identified by the parent node, ensuring coverage of functional, performance,
+        and security requirements.
+      docstring:
+        examples:
+        - lines:
+          - selected = select_test_tools(tested_features=["Login", "API"], excluded_features=["Documentation"])
+          output: "{\n  \"tools\": [\"Selenium\", \"Postman\", \"OWASP ZAP\"],\n \
+            \ \"justifications\": [\"Automated UI testing\", \"API contract testing\"\
+            , \"Dynamic security scanning\"]\n}"
+        - lines:
+          - selected = select_test_tools(tested_features=["Payment Gateway"], excluded_features=["Legacy
+            System"])
+          output: "{\n  \"tools\": [\"JMeter\", \"Burp Suite\"],\n  \"justifications\"\
+            : [\"Performance/load testing\", \"Penetration testing\"]\n}"
+        parameters:
+        - description: Names of features, systems, or processes that will be tested,
+            as provided by the output of `identify_test_scope`.
+          name: tested_features
+          type: List[str]
+        - description: Names of features, systems, or processes that are explicitly
+            excluded from testing, as provided by the output of `identify_test_scope`.
+          name: excluded_features
+          type: List[str]
+        raises:
+        - description: If either `tested_features` or `excluded_features` is empty
+            or not a list.
+          type: ValueError
+        - description: If no suitable tools can be identified for the provided scope.
+          type: RuntimeError
+        returns:
+          description: 'A dictionary with two keys: `tools`, a list of tool names,
+            and `justifications`, a list of one‑phrase explanations corresponding
+            to each tool.'
+          type: Dict[str, List[str]]
+        summary: Selects testing tools and provides concise justifications.
     prompt: List 3-5 testing tools required to achieve the defined testing objectives.
       Justify each selection with one phrase per tool.
   setup_test_environment:
@@ -216,5 +592,105 @@ nodes:
         test environment
       key: access_requirements
       type: List[str]
+    prd:
+      conceptual_info: This node aggregates the configuration details necessary to
+        provision a stable and reproducible test environment, drawing from the overall
+        test plan and the selected tooling stack.
+      docstring:
+        examples:
+        - lines:
+          - 'setup_test_environment(
+
+            '
+          - '    objectives_summary="Ensure functional and performance stability",
+
+            '
+          - '    scope_summary="API endpoints, database schema, UI components",
+
+            '
+          - '    resources_summary="2 QA engineers, 1 DevOps engineer, 1 GPU server",
+
+            '
+          - '    scheduling_summary="Week 1: setup, Week 2: run tests",
+
+            '
+          - '    success_metrics_summary="90% pass rate, defect density < 0.5 per
+            KLOC",
+
+            '
+          - '    tools=["Selenium", "JUnit", "Docker"],
+
+            '
+          - '    justifications=["Browser automation", "Unit testing", "Consistent
+            environments"]
+
+            '
+          - )
+          output: '{\n    ''hardware_specs'': ["GPU Server: NVIDIA RTX 3090, 128GB
+            RAM, 1TB SSD"],\n    ''software_specs'': ["Docker 20.10", "Selenium 4.0",
+            "JUnit 5.8"],\n    ''dependencies'': ["Python 3.9", "MySQL 8.0", "Redis
+            6.2"],\n    ''access_requirements'': ["AWS EC2 admin credentials", "Docker
+            Hub read/write access"]\n}'
+        - lines:
+          - 'setup_test_environment(
+
+            '
+          - '    objectives_summary="Validate data integrity",
+
+            '
+          - '    scope_summary="Data pipelines, ETL jobs",
+
+            '
+          - '    resources_summary="1 Data Engineer, 1 QA Engineer",
+
+            '
+          - '    scheduling_summary="Week 1: environment prep, Week 2: test execution",
+
+            '
+          - '    success_metrics_summary="No critical data loss, 100% data accuracy",
+
+            '
+          - '    tools=["Airflow", "PyTest"],
+
+            '
+          - '    justifications=["Workflow orchestration", "Test framework"]\n'
+          - )
+          output: '{\n    ''hardware_specs'': ["CPU: Intel Xeon 12C, 256GB RAM, 4TB
+            SSD"],\n    ''software_specs'': ["Apache Airflow 2.3", "PyTest 6.2"],\n    ''dependencies'':
+            ["PostgreSQL 13", "Kafka 2.8"],\n    ''access_requirements'': ["Airflow
+            webserver admin", "Kafka cluster access"]\n}'
+        parameters:
+        - description: Concise summary of the primary testing objectives and success
+            criteria.
+          name: objectives_summary
+          type: str
+        - description: List of features, systems, and processes to be tested, including
+            exclusions.
+          name: scope_summary
+          type: str
+        - description: Overview of required human, technical, and financial resources.
+          name: resources_summary
+          type: str
+        - description: High‑level timeline with key milestones and deadlines.
+          name: scheduling_summary
+          type: str
+        - description: Key performance indicators and metrics to measure testing effectiveness.
+          name: success_metrics_summary
+          type: str
+        - description: Names of the testing tools selected.
+          name: tools
+          type: List[str]
+        - description: One‑phrase justification for each selected tool, in order.
+          name: justifications
+          type: List[str]
+        raises:
+        - description: Raised if any required parameter is missing or empty.
+          type: ValueError
+        returns:
+          description: 'A dictionary containing four lists: hardware_specs, software_specs,
+            dependencies, and access_requirements.'
+          type: Dict[str, List[str]]
+        summary: Sets up a testing infrastructure based on the test plan and chosen
+          tools.
     prompt: 'Document the environment configuration needed: hardware, software specs,
       dependencies, and access requirements.'
