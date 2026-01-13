@@ -1,5 +1,6 @@
 dag_type: plain_text
-description: Generated workflow from UI.
+description: Workflow with reversed execution order and reversed data flow directions
+  for test planning and execution.
 name: reversed_extended_test_workflow
 nodes:
   allocate_infrastructure:
@@ -186,5 +187,5 @@ nodes:
     - analyze_test_results
     nodes_dependent_on:
     - structure_raw_test_data
-    prompt: mroffreP atad ytilauq skcehc on eht detceloc stluser ot erussa ycarucca,
+    prompt: mroffreP atad ytilauq skcehc no eht detceloc stluser ot erussa ycarucca,
       ssetelpmoc, dna ytnetsistnoc htiw tset airetric.
