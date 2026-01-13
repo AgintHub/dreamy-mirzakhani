@@ -1,7 +1,5 @@
-dag_type: plain_text
-description: Construct a quantitative trading strategy from market research through
-  backtesting and validation, ensuring high concurrency in data preparation, strategy
-  development, and performance optimization.
+dag_type: typed
+description: Generated workflow from UI.
 name: build_quant_strategy
 nodes:
   analyze_backtest_results:
@@ -12,6 +10,34 @@ nodes:
     - execute_in_sample_backtest
     - set_performance_benchmarks
     nodes_dependent_on: []
+    output_structure:
+    - description: Name or description of the largest performance driver
+      key: performance_driver_1
+      type: str
+    - description: Name or description of the second largest performance driver
+      key: performance_driver_2
+      type: str
+    - description: Name or description of the third largest performance driver
+      key: performance_driver_3
+      type: str
+    - description: Description of the first major constraint violation
+      key: constraint_violation_1
+      type: str
+    - description: Description of the second major constraint violation
+      key: constraint_violation_2
+      type: str
+    - description: Description of the third major constraint violation
+      key: constraint_violation_3
+      type: str
+    - description: First suggested parameter adjustment
+      key: parameter_adjustment_1
+      type: str
+    - description: Second suggested parameter adjustment
+      key: parameter_adjustment_2
+      type: str
+    - description: Third suggested parameter adjustment
+      key: parameter_adjustment_3
+      type: str
     prompt: Compare backtest results to performance metrics. Identify 3 biggest performance
       drivers and 3 major constraint violations. Suggest parameter adjustments in
       bullet list.
@@ -22,6 +48,22 @@ nodes:
     nodes_depended_on:
     - set_performance_benchmarks
     nodes_dependent_on: []
+    output_structure:
+    - description: The maximum allowed portfolio volatility
+      key: portfolio_volatility_limit
+      type: float
+    - description: The maximum allowed sector concentration
+      key: sector_concentration_limit
+      type: float
+    - description: The maximum allowed drawdown trigger
+      key: drawdown_trigger_limit
+      type: float
+    - description: The maximum allowed position correlation
+      key: position_correlation_limit
+      type: float
+    - description: List of risk limit rules with their thresholds
+      key: risk_limit_rules
+      type: List[str]
     prompt: 'Specify 4 risk limit rules with thresholds: portfolio volatility, sector
       concentration, drawdown trigger, position correlation. Format as key-value pairs
       with numerical limits.'
@@ -32,6 +74,22 @@ nodes:
     nodes_depended_on:
     - set_performance_benchmarks
     nodes_dependent_on: []
+    output_structure:
+    - description: Risk percentage per trade
+      key: risk_per_trade
+      type: float
+    - description: Volatility scaling multiple
+      key: volatility_scaling_multiple
+      type: float
+    - description: Maximum position size
+      key: maximum_position_size
+      type: float
+    - description: Account equity reference value
+      key: account_equity_reference
+      type: float
+    - description: Position sizing algorithm description
+      key: position_sizing_algorithm
+      type: str
     prompt: 'Design position sizing algorithm with 3 rules: risk per trade (%), volatility
       scaling (multiple), maximum position size. Include account equity references
       in equations.'
@@ -42,6 +100,19 @@ nodes:
     nodes_depended_on:
     - define_strategy_objective
     nodes_dependent_on: []
+    output_structure:
+    - description: 'Chosen methodology type: ''rule-based'', ''machine-learning'',
+        or ''hybrid'''
+      key: methodology
+      type: str
+    - description: Short bullet points explaining why the chosen methodology is suitable
+        for the strategy objective
+      key: justifications
+      type: List[str]
+    - description: Specific technical reasons (e.g., data availability, model interpretability,
+        computational cost) supporting the methodology choice
+      key: technical_reasons
+      type: List[str]
     prompt: Identify whether strategy will be rule-based (trend-following, mean-reversion),
       machine learning-based (XGBoost, LSTM), or hybrid. Justify with 2-3 technical
       reasons based on strategy objective.
@@ -56,6 +127,26 @@ nodes:
     - build_risk_rules
     - validate_out_of_sample
     nodes_dependent_on: []
+    output_structure:
+    - description: Path or identifier of the generated PDF strategy manual
+      key: manual_file
+      type: str
+    - description: Path or identifier of the flowchart image included in the manual
+      key: flowchart_file
+      type: str
+    - description: Path or identifier of the parameter reference table image or embedded
+        table
+      key: parameter_table_file
+      type: str
+    - description: Path or identifier of the risk limitation summary document or section
+      key: risk_summary_file
+      type: str
+    - description: Path or identifier of the regulatory compliance checklist section
+      key: compliance_checklist_file
+      type: str
+    - description: Version identifier of the generated documentation (e.g., 'v1.0')
+      key: version
+      type: str
     prompt: 'Produce strategy manual with: flowchart of decision logic, parameter
       reference table, risk limitation summary, and regulatory compliance checklist
       (MiFID II, Section 404). Format as PDF with versioning.'
@@ -65,6 +156,24 @@ nodes:
     name: define_strategy_objective
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: A concise one‑sentence statement of the strategy's objective
+      key: strategy_sentence
+      type: str
+    - description: Target Compound Annual Growth Rate (CAGR) expressed as a decimal
+        (e.g., 0.15 for 15%)
+      key: cagr_target
+      type: float
+    - description: Maximum acceptable annual volatility expressed as a decimal (e.g.,
+        0.20 for 20%)
+      key: annual_vol_target
+      type: float
+    - description: Maximum drawdown limit expressed as a decimal (e.g., 0.25 for 25%)
+      key: max_drawdown
+      type: float
+    - description: Target Sharpe ratio to be achieved
+      key: sharpe_goal
+      type: float
     prompt: Define the quant strategy's objective in one sentence (e.g. 'Capture momentum
       in small-cap stocks with <3% daily volatility'). Include performance and risk
       benchmarks.
@@ -77,6 +186,24 @@ nodes:
     - implement_slippage_model
     - set_backtest_parameters
     nodes_dependent_on: []
+    output_structure:
+    - description: Name of the built Docker image for the automated backtesting pipeline
+      key: docker_image_name
+      type: str
+    - description: Whether the CI/CD deployment YAML file was successfully generated
+      key: ci_cd_yaml_generated
+      type: bool
+    - description: Path or content reference to the most recent backtest run log file
+      key: backtest_run_log
+      type: str
+    - description: Indicates if the latest parameter optimization cycle completed
+        without errors
+      key: parameter_optimization_status
+      type: bool
+    - description: File path to the generated compliance-ready report for the latest
+        run
+      key: compliance_report_path
+      type: str
     prompt: 'Create Docker container with automated testing pipeline: watches for
       new data, runs backtests, updates parameter optimization, and generates compliance-ready
       reports. Include CI/CD deployment YAML.'
@@ -88,6 +215,20 @@ nodes:
     - choose_strategy_approach
     - preprocess_data
     nodes_dependent_on: []
+    output_structure:
+    - description: List of quantitative entry conditions as pseudo-code equations
+      key: entry_conditions
+      type: List[str]
+    - description: List of specific parameter values for the entry conditions
+      key: parameter_values
+      type: List[float]
+    - description: List of brief descriptions for each entry condition
+      key: condition_descriptions
+      type: List[str]
+    - description: Whether the entry conditions are valid and can be used for initiating
+        positions
+      key: is_valid
+      type: bool
     prompt: Design 3-5 quantitative entry conditions (e.g. 50-period EMA crossover,
       volatility breakout above 2σ). Express as pseudo-code equations with specific
       parameter values.
@@ -99,6 +240,19 @@ nodes:
     - choose_strategy_approach
     - preprocess_data
     nodes_dependent_on: []
+    output_structure:
+    - description: List of quantitative exit conditions as pseudo-code
+      key: exit_conditions
+      type: List[str]
+    - description: List of parameter values for the exit conditions
+      key: parameter_values
+      type: List[float]
+    - description: List of exit order types (limit/market)
+      key: exit_order_types
+      type: List[str]
+    - description: Whether the exit rules are valid
+      key: is_valid
+      type: bool
     prompt: Design 3-5 quantitative exit conditions (e.g. stop-loss at 2% ATR). Express
       as pseudo-code with parameter values and exit order types (limit/market).
   execute_in_sample_backtest:
@@ -113,6 +267,31 @@ nodes:
     - build_risk_rules
     - set_backtest_parameters
     nodes_dependent_on: []
+    output_structure:
+    - description: Sequential dates of the equity curve in YYYY-MM-DD format
+      key: equity_curve_dates
+      type: List[str]
+    - description: Equity value for each date in the equity curve
+      key: equity_curve_values
+      type: List[float]
+    - description: Cumulative drawdown percentage at each date in the equity curve
+      key: drawdown_series
+      type: List[float]
+    - description: Unique identifiers for each executed trade
+      key: trade_ids
+      type: List[str]
+    - description: Profit or loss for each trade
+      key: trade_pnl
+      type: List[float]
+    - description: Annualized Sharpe ratio of the backtest
+      key: sharpe_ratio
+      type: float
+    - description: Maximum drawdown percentage observed during the backtest
+      key: max_drawdown
+      type: float
+    - description: Total return percentage over the backtest period
+      key: total_return
+      type: float
     prompt: Run backtest using in-sample period from configuration. Output equity
       curve (daily), drawdown series, PnL table with trade details. Use Sharpe ratio,
       max drawdown, total return metrics.
@@ -124,6 +303,23 @@ nodes:
     - compile_strategy_documentation
     - validate_out_of_sample
     nodes_dependent_on: []
+    output_structure:
+    - description: List of titles for each of the 12 slides in presentation order
+      key: slide_titles
+      type: List[str]
+    - description: Brief text content or bullet points for each slide corresponding
+        to slide_titles
+      key: slide_contents
+      type: List[str]
+    - description: File path or URL to the equity curve visualization image
+      key: equity_curve_image_path
+      type: str
+    - description: File path or URL to the risk heatmap visualization image
+      key: risk_heatmap_image_path
+      type: str
+    - description: Version identifier for the generated presentation
+      key: presentation_version
+      type: str
     prompt: 'Design 12-slide presentation with: strategy summary, performance overview,
       risk analysis, implementation roadmap, capital requirements. Include visualizations
       of equity curves and risk heatmaps.'
@@ -134,6 +330,16 @@ nodes:
     nodes_depended_on:
     - preprocess_data
     nodes_dependent_on: []
+    output_structure:
+    - description: Estimated average bid‑ask spread as a percentage of price
+      key: bid_ask_spread_percent
+      type: float
+    - description: Coefficient representing price impact per unit of trade size
+      key: price_impact_coefficient
+      type: float
+    - description: Decay factor for slippage over time during execution
+      key: time_slippage_decay_factor
+      type: float
     prompt: 'Define slippage model with 3 parameters: bid-ask spread %, price impact
       coefficient, time slippage decay factor. Base on dataset liquidity statistics.'
   optimize_parameters:
@@ -143,6 +349,23 @@ nodes:
     nodes_depended_on:
     - analyze_backtest_results
     nodes_dependent_on: []
+    output_structure:
+    - description: String representations of the top 3 parameter combinations, formatted
+        as key=value pairs separated by commas
+      key: top3_parameters
+      type: List[str]
+    - description: Sharpe ratio values corresponding to each of the top 3 parameter
+        sets
+      key: top3_sharpe
+      type: List[float]
+    - description: Maximum drawdown percentages corresponding to each of the top 3
+        parameter sets
+      key: top3_drawdown
+      type: List[float]
+    - description: Total return percentages corresponding to each of the top 3 parameter
+        sets
+      key: top3_return
+      type: List[float]
     prompt: Perform 5-dimensional parameter sweep on entry/exit rules. Use Bayesian
       optimization to find best combination while maintaining risk controls. Output
       top 3 parameter sets with metrics.
@@ -153,6 +376,27 @@ nodes:
     nodes_depended_on:
     - select_data_sources
     nodes_dependent_on: []
+    output_structure:
+    - description: Dimensions of the 4D numpy array (e.g., [n_assets, n_features,
+        n_time_steps, n_channels])
+      key: array_shape
+      type: List[int]
+    - description: Number of distinct assets included in the dataset
+      key: num_assets
+      type: int
+    - description: Total number of time steps after alignment
+      key: num_time_steps
+      type: int
+    - description: Indicates whether price values have been normalized
+      key: price_normalized
+      type: bool
+    - description: Indicates whether volatility metrics have been computed
+      key: volatility_calculated
+      type: bool
+    - description: True if the dataset passes all integrity checks (no missing values,
+        consistent timestamps)
+      key: data_integrity
+      type: bool
     prompt: 'Create feature-engineered dataset from raw data including: price normalization,
       volatility calculations, and time-aligned OHLCV. Format as 4D numpy array with
       metadata dictionary.'
@@ -162,6 +406,20 @@ nodes:
     name: select_data_sources
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: Names of the selected market data sources
+      key: source_names
+      type: List[str]
+    - description: Time ranges for each source in ISO format (e.g., "2020-01-01 to
+        2023-12-31")
+      key: time_ranges
+      type: List[str]
+    - description: Data frequencies for each source (e.g., "tick", "1d", "1h")
+      key: frequencies
+      type: List[str]
+    - description: Classification of each source (e.g., "tick", "OHLCV", "fundamental")
+      key: source_types
+      type: List[str]
     prompt: List 3-5 market data sources required for this strategy (e.g. Bloomberg
       tick data, Yahoo Finance OHLCV, Alpha Vantage fundamental data). Specify time
       range and frequencies needed.
@@ -172,6 +430,28 @@ nodes:
     nodes_depended_on:
     - preprocess_data
     nodes_dependent_on: []
+    output_structure:
+    - description: Start date of the in-sample period (YYYY-MM-DD)
+      key: in_sample_start
+      type: str
+    - description: End date of the in-sample period (YYYY-MM-DD)
+      key: in_sample_end
+      type: str
+    - description: Start date of the out-of-sample period (YYYY-MM-DD)
+      key: out_sample_start
+      type: str
+    - description: End date of the out-of-sample period (YYYY-MM-DD)
+      key: out_sample_end
+      type: str
+    - description: Minimum number of Monte Carlo simulations to run
+      key: montecarlo_min
+      type: int
+    - description: Maximum number of Monte Carlo simulations to run
+      key: montecarlo_max
+      type: int
+    - description: List of window sizes (in days) for walk-forward analysis
+      key: walkforward_window_days
+      type: List[int]
     prompt: 'Define three test configurations: in-sample (date range), out-of-sample
       (date range), Monte Carlo (parameter range). Include walk-forward analysis schedule.'
   set_performance_benchmarks:
@@ -181,6 +461,22 @@ nodes:
     nodes_depended_on:
     - define_strategy_objective
     nodes_dependent_on: []
+    output_structure:
+    - description: Target compound annual growth rate in decimal form (e.g., 0.15
+        for 15%)
+      key: cagr_target
+      type: float
+    - description: Maximum acceptable annual volatility in decimal form (e.g., 0.20
+        for 20%)
+      key: annual_volatility_constraint
+      type: float
+    - description: Maximum allowable drawdown expressed as a decimal (e.g., 0.25 for
+        25%)
+      key: drawdown_limit
+      type: float
+    - description: Target Sharpe ratio to be achieved by the strategy
+      key: sharpe_ratio_goal
+      type: float
     prompt: Specify CAGR target (number), annual volatility constraint (number), drawdown
       limit (%), and Sharpe ratio goal. Format as dictionary with numerical values
       only.
@@ -192,6 +488,30 @@ nodes:
     - optimize_parameters
     - set_backtest_parameters
     nodes_dependent_on: []
+    output_structure:
+    - description: Identifier of the parameter set used for the out-of-sample test
+      key: selected_param_set
+      type: str
+    - description: Sharpe ratio calculated on the in-sample period
+      key: in_sample_sharpe
+      type: float
+    - description: Sharpe ratio calculated on the out-of-sample period
+      key: out_of_sample_sharpe
+      type: float
+    - description: Maximum drawdown percentage on the in-sample period
+      key: in_sample_max_drawdown
+      type: float
+    - description: Maximum drawdown percentage on the out-of-sample period
+      key: out_of_sample_max_drawdown
+      type: float
+    - description: Boolean results for each of the three statistical overfitting tests
+        (true if passed)
+      key: overfitting_tests_passed
+      type: List[bool]
+    - description: Names of the statistical tests performed (e.g., t-test, Diebold-Mariano,
+        etc.)
+      key: overfitting_test_names
+      type: List[str]
     prompt: Run selected parameter set against out-of-sample period. Compare drawdown
       characteristics and Sharpe ratio to in-sample. Detect overfitting through 3
       statistical tests (e.g. t-test, Diebold-Mariano).
