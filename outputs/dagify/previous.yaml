@@ -1,83 +1,115 @@
 dag_type: plain_text
-description: A workflow that sets up a test environment, creates test cases, executes
-  them concurrently, and generates a final report.
-name: run_test_suite
+description: A workflow to execute comprehensive testing for a system under test,
+  including defining requirements, generating test cases, executing, validating results,
+  logging issues, and generating a summary report.
+name: test_execution_dag
 nodes:
-  collect_test_results:
+  define_test_requirements:
     agent: false
-    description: Compile raw test execution data into a unified format.
-    name: collect_test_results
-    nodes_depended_on:
-    - execute_tests_parallel
-    nodes_dependent_on:
-    - create_summary_report
-    prompt: Aggregate the results from all test executions into a structured JSON
-      object containing test name, status, duration, and error details if any.
-  create_summary_report:
-    agent: false
-    description: Produce the final test report for stakeholders.
-    name: create_summary_report
-    nodes_depended_on:
-    - collect_test_results
-    nodes_dependent_on: []
-    prompt: Generate a human‑readable report (Markdown) summarizing the total number
-      of tests, passed, failed, and skipped. Include a table with each test and its
-      outcome.
-  define_test_cases:
-    agent: false
-    description: Specify test coverage and expected behavior.
-    name: define_test_cases
+    description: Outline the necessary test requirements ensuring they are comprehensive
+      and cover all critical functionalities.
+    name: define_test_requirements
     nodes_depended_on: []
     nodes_dependent_on:
-    - generate_test_scripts
-    prompt: List all test case identifiers and the functionality they cover. Provide
-      a short description for each case.
-  execute_tests_parallel:
+    - generate_test_cases_module_a
+    - generate_test_cases_module_b
+    prompt: Outline comprehensive test requirements for the system under test, including
+      functional, non-functional, and edge scenario requirements. Use bullet points
+      for clarity.
+  execute_test_cases_module_a:
     agent: false
-    description: Execute the test suite in parallel to reduce runtime.
-    name: execute_tests_parallel
+    description: Run all test cases for Module A and record execution outcomes.
+    name: execute_test_cases_module_a
     nodes_depended_on:
-    - generate_test_scripts
+    - generate_test_cases_module_a
     nodes_dependent_on:
-    - collect_test_results
-    prompt: Run all generated test scripts concurrently using the test runner's parallel
-      execution option. Capture standard output, exit codes, and any error logs.
-  generate_test_scripts:
+    - validate_results_module_a
+    prompt: 'Execute all Module A test cases using automated tools. Capture actual
+      results and differences from expected outcomes in a 3-column table: Test Case
+      ID, Expected, Actual.'
+  execute_test_cases_module_b:
     agent: false
-    description: Create executable test scripts from the test case list.
-    name: generate_test_scripts
+    description: Run all test cases for Module B and record execution outcomes.
+    name: execute_test_cases_module_b
     nodes_depended_on:
-    - define_test_cases
-    nodes_dependent_on: []
-    prompt: For each test case, produce a script in the chosen test framework (e.g.,
-      Jest, PyTest) that exercises the target functionality and asserts expected outcomes.
-  initialize_test_environment:
-    agent: false
-    description: Establish isolated services needed for the tests.
-    name: initialize_test_environment
-    nodes_depended_on: []
+    - generate_test_cases_module_b
     nodes_dependent_on:
-    - prepare_test_data
-    - setup_test_dependencies
-    prompt: Create a temporary test environment by launching required services (e.g.,
-      database, message broker) in Docker containers. Ensure all containers are reachable
-      on localhost and expose necessary ports.
-  prepare_test_data:
+    - validate_results_module_b
+    prompt: 'Execute all Module B test cases using automated tools. Capture actual
+      results and differences from expected outcomes in a 3-column table: Test Case
+      ID, Expected, Actual.'
+  generate_summary_report:
     agent: false
-    description: Load deterministic test data into the database.
-    name: prepare_test_data
+    description: Compile test metrics and documentation into a final summary report.
+    name: generate_summary_report
     nodes_depended_on:
-    - initialize_test_environment
+    - log_issues_module_a
+    - log_issues_module_b
     nodes_dependent_on: []
-    prompt: Generate seed data for the database, including users, products, and orders,
-      and load it into the test database. Output a summary of records inserted.
-  setup_test_dependencies:
+    prompt: 'Produce a 3-page summary report showing: total test cases executed, pass/fail
+      rates by module, critical bugs identified, and actionable recommendations for
+      resolution. Use bullet points and summary tables.'
+  generate_test_cases_module_a:
     agent: false
-    description: Install runtime dependencies for test execution.
-    name: setup_test_dependencies
+    description: Produce test cases for Module A based on defined requirements.
+    name: generate_test_cases_module_a
     nodes_depended_on:
-    - initialize_test_environment
-    nodes_dependent_on: []
-    prompt: Install any required runtime dependencies (e.g., npm packages, Python
-      libraries) inside the test environment. Verify installation by running a version
-      check.
+    - define_test_requirements
+    nodes_dependent_on:
+    - execute_test_cases_module_a
+    prompt: Generate test cases for Module A that cover all listed requirements. Format
+      as [Test Case ID, Precondition, Input, Expected Outcome] in a clear table.
+  generate_test_cases_module_b:
+    agent: false
+    description: Produce test cases for Module B based on defined requirements.
+    name: generate_test_cases_module_b
+    nodes_depended_on:
+    - define_test_requirements
+    nodes_dependent_on:
+    - execute_test_cases_module_b
+    prompt: Generate test cases for Module B that cover all listed requirements. Format
+      as [Test Case ID, Precondition, Input, Expected Outcome] in a clear table.
+  log_issues_module_a:
+    agent: false
+    description: Record and categorize any failed test cases from Module A.
+    name: log_issues_module_a
+    nodes_depended_on:
+    - validate_results_module_a
+    nodes_dependent_on:
+    - generate_summary_report
+    prompt: 'Create detailed bug reports for failing Module A test cases, including:
+      Test Case ID, Description, Actual Result, Steps to Reproduce, Priority, Assignee.'
+  log_issues_module_b:
+    agent: false
+    description: Record and categorize any failed test cases from Module B.
+    name: log_issues_module_b
+    nodes_depended_on:
+    - validate_results_module_b
+    nodes_dependent_on:
+    - generate_summary_report
+    prompt: 'Create detailed bug reports for failing Module B test cases, including:
+      Test Case ID, Description, Actual Result, Steps to Reproduce, Priority, Assignee.'
+  validate_results_module_a:
+    agent: false
+    description: Compare observed test results against expected outcomes for Module
+      A.
+    name: validate_results_module_a
+    nodes_depended_on:
+    - execute_test_cases_module_a
+    nodes_dependent_on:
+    - log_issues_module_a
+    prompt: Analyze Module A test execution results - compare actual outcomes with
+      expected values. Mark each test as 'Pass' or 'Fail' next to its corresponding
+      Test Case ID.
+  validate_results_module_b:
+    agent: false
+    description: Compare observed test results against expected outcomes for Module
+      B.
+    name: validate_results_module_b
+    nodes_depended_on:
+    - execute_test_cases_module_b
+    nodes_dependent_on:
+    - log_issues_module_b
+    prompt: Analyze Module B test execution results - compare actual outcomes with
+      expected values. Mark each test as 'Pass' or 'Fail' next to its corresponding
+      Test Case ID.
