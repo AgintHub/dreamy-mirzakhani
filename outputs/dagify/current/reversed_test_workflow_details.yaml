@@ -1,7 +1,7 @@
 dag_type: plain_text
-description: A more granular and concurrent version of the test workflow, with larger
-  tasks split into smaller atomic steps to enable parallel execution.
-name: extended_test_workflow_concurrent_split
+description: Reversed workflow where each node's data flow and execution order are
+  inverted from the original test workflow.
+name: reversed_test_workflow
 nodes:
   allocate_infrastructure:
     agent: false
@@ -46,7 +46,9 @@ nodes:
     description: Define the primary goal of the test.
     name: define_test_objective
     nodes_depended_on: []
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - prioritize_test_objectives
+    - identify_test_scope
     prompt: Define the primary goal of the test. What is the main objective that this
       test is trying to achieve?
   determine_test_criteria:

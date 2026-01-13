@@ -1,7 +1,8 @@
 dag_type: plain_text
-description: A more granular and concurrent version of the test workflow, with larger
-  tasks split into smaller atomic steps to enable parallel execution.
-name: extended_test_workflow_concurrent_split
+description: Reversed version of the original test workflow, where the data flow and
+  execution order are inverted while preserving all nodes and dependencies in reverse
+  causality.
+name: reversed_test_workflow_concurrent_split
 nodes:
   allocate_infrastructure:
     agent: false
