@@ -1,154 +1,85 @@
 dag_type: plain_text
-description: A highly concurrent workflow for comprehensive test planning, execution,
-  and validation, with maximal parallelization of independent test components
-name: test_execution_workflow
+description: A workflow to design, execute, and report on software testing.
+name: software_test_workflow
 nodes:
-  create_test_scenarios:
+  analyze_test_results:
     agent: false
-    description: Define performance and load testing scenarios
-    name: create_test_scenarios
+    description: Assess test outcomes against criteria.
+    name: analyze_test_results
     nodes_depended_on:
-    - identify_test_cases
-    nodes_dependent_on:
-    - execute_performance_tests
-    prompt: Formulate stress, load, and endurance testing scenarios with metric thresholds.
-      Include resource monitoring specifications.
-  define_test_requirements:
-    agent: false
-    description: Specify technical and data requirements for testing
-    name: define_test_requirements
-    nodes_depended_on:
-    - plan_test_scope
-    nodes_dependent_on:
-    - prepare_test_data
-    - setup_test_environment
-    prompt: Document all technical requirements including hardware, software, data
-      volumes, and interface specifications. Format as key-value pairs.
-  develop_functional_test_cases:
-    agent: false
-    description: Implement detailed functional test specifications
-    name: develop_functional_test_cases
-    nodes_depended_on:
-    - identify_test_cases
-    nodes_dependent_on:
-    - execute_functional_tests
-    prompt: Create executable specifications for functional test cases including preconditions,
-      input values, and expected outputs. Format as Gherkin-style scenarios.
-  execute_functional_tests:
-    agent: false
-    description: Run and validate functional test cases
-    name: execute_functional_tests
-    nodes_depended_on:
-    - setup_test_environment
-    - develop_functional_test_cases
-    - write_test_automation_scripts
+    - capture_test_results
+    - identify_test_criteria
     nodes_dependent_on:
     - generate_test_report
-    prompt: Execute automated test suites and verify results against expected outcomes.
-      Log all failures with detailed context.
-  execute_performance_tests:
+    prompt: Compare actual results to the defined criteria and determine which test
+      cases passed or failed.
+  capture_test_results:
     agent: false
-    description: Conduct load and stress testing
-    name: execute_performance_tests
+    description: Collect test execution data.
+    name: capture_test_results
     nodes_depended_on:
-    - setup_test_environment
-    - create_test_scenarios
+    - execute_test_cases
     nodes_dependent_on:
-    - generate_test_report
-    prompt: Run performance test scenarios while monitoring system metrics. Record
-      response times, error rates, and resource utilization.
-  execute_security_tests:
+    - analyze_test_results
+    prompt: Log the actual results, including success/failure status, error messages,
+      and performance metrics.
+  define_test_objectives:
     agent: false
-    description: Perform security vulnerability assessments
-    name: execute_security_tests
-    nodes_depended_on:
-    - setup_test_environment
-    - create_test_scenarios
-    nodes_dependent_on:
-    - generate_test_report
-    prompt: Run penetration tests and vulnerability scans according to OWASP standards.
-      Document all security findings.
-  finalize_test_summary:
-    agent: false
-    description: Produce final test documentation
-    name: finalize_test_summary
-    nodes_depended_on:
-    - validate_test_results
-    nodes_dependent_on: []
-    prompt: Create final test summary report with key findings, recommendations, and
-      closure documentation.
-  generate_test_report:
-    agent: false
-    description: Compile test results into consumable format
-    name: generate_test_report
-    nodes_depended_on:
-    - execute_functional_tests
-    - execute_performance_tests
-    - execute_security_tests
-    nodes_dependent_on:
-    - validate_test_results
-    prompt: Create structured summary of test outcomes with pass/fail metrics, defect
-      lists, and performance baselines.
-  identify_test_cases:
-    agent: false
-    description: Enumerate specific test scenarios and cases
-    name: identify_test_cases
-    nodes_depended_on:
-    - plan_test_scope
-    nodes_dependent_on:
-    - develop_functional_test_cases
-    - create_test_scenarios
-    prompt: List distinct test cases addressing functional, edge, and failure conditions.
-      Format as test case titles only.
-  plan_test_scope:
-    agent: false
-    description: Define the scope and boundaries of the testing activity
-    name: plan_test_scope
+    description: Identify what the test will evaluate.
+    name: define_test_objectives
     nodes_depended_on: []
     nodes_dependent_on:
-    - identify_test_cases
-    - define_test_requirements
-    prompt: Articulate the testing scope including target systems, components, and
-      boundary conditions in bullet format. Focus only on high-level scope definition.
-  prepare_test_data:
+    - write_test_cases
+    - set_up_test_environment
+    prompt: Outline the specific functionalities or components to be tested and the
+      overall purpose of the test.
+  execute_test_cases:
     agent: false
-    description: Generate and verify required test datasets
-    name: prepare_test_data
+    description: Perform the tests.
+    name: execute_test_cases
     nodes_depended_on:
-    - define_test_requirements
-    - identify_test_cases
+    - write_test_cases
+    - set_up_test_environment
     nodes_dependent_on:
-    - execute_functional_tests
-    - execute_performance_tests
-    prompt: Create synthetic test data matching requirements for each test case. Verify
-      data integrity and coverage using checksum validation.
-  setup_test_environment:
+    - capture_test_results
+    prompt: Run each test case in the prepared environment and record the actual outcomes.
+  generate_test_report:
     agent: false
-    description: Configure required testing infrastructure
-    name: setup_test_environment
+    description: Produce the final test report.
+    name: generate_test_report
     nodes_depended_on:
-    - define_test_requirements
-    nodes_dependent_on:
-    - execute_functional_tests
-    - execute_performance_tests
-    prompt: Deploy and validate isolated testing environments with specified configurations.
-      Include build verification tests in response.
-  validate_test_results:
-    agent: false
-    description: Review and confirm test effectiveness
-    name: validate_test_results
-    nodes_depended_on:
-    - generate_test_report
+    - analyze_test_results
     nodes_dependent_on: []
-    prompt: Evaluate test coverage completeness, result consistency, and alignment
-      with requirements. Document validation conclusions.
-  write_test_automation_scripts:
+    prompt: Create a concise report summarizing the test objectives, methodology,
+      results, conclusions, and any recommended actions.
+  identify_test_criteria:
     agent: false
-    description: Create automated test execution code
-    name: write_test_automation_scripts
-    nodes_depended_on:
-    - develop_functional_test_cases
+    description: Define the criteria that determine test success.
+    name: identify_test_criteria
+    nodes_depended_on: []
     nodes_dependent_on:
-    - execute_functional_tests
-    prompt: Generate code scripts for automated test execution using standard testing
-      frameworks. Include error handling and result logging.
+    - write_test_cases
+    - analyze_test_results
+    prompt: Specify the pass/fail conditions, performance thresholds, and any regulatory
+      or compliance requirements for the test.
+  set_up_test_environment:
+    agent: false
+    description: Configure the environment for testing.
+    name: set_up_test_environment
+    nodes_depended_on:
+    - define_test_objectives
+    nodes_dependent_on:
+    - execute_test_cases
+    prompt: Prepare the necessary hardware, software, data, and configurations required
+      to run the test cases.
+  write_test_cases:
+    agent: false
+    description: Generate detailed test cases.
+    name: write_test_cases
+    nodes_depended_on:
+    - define_test_objectives
+    - identify_test_criteria
+    nodes_dependent_on:
+    - execute_test_cases
+    prompt: Create a list of test cases, each with a description, preconditions, steps,
+      expected results, and associated criteria.
