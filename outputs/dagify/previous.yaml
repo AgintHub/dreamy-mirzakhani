@@ -1,73 +1,148 @@
 dag_type: plain_text
-description: Executes three independent events concurrently, then combines them pairwise
-  and finally all together.
-name: event_combination_workflow
+description: Each original event node is split into two concurrent sub‑nodes, and
+  the outputs of both sub‑nodes feed into the subsequent split nodes, preserving the
+  original logical flow while maximizing concurrency.
+name: event_combination_split_concurrent_workflow
 nodes:
-  event_a:
+  event_a_1:
     agent: false
-    description: Execute event A.
-    name: event_a
+    description: Execute event A – part 1.
+    name: event_a_1
     nodes_depended_on: []
-    nodes_dependent_on:
-    - event_ab
-    - event_ac
-    prompt: Execute event A. Provide the result of A.
-  event_ab:
-    agent: false
-    description: Combine events A and B.
-    name: event_ab
-    nodes_depended_on:
-    - event_a
-    - event_b
-    nodes_dependent_on:
-    - event_abc
-    prompt: Combine the results of event A and event B to produce event AB.
-  event_abc:
-    agent: false
-    description: Combine events AB, AC, and BC.
-    name: event_abc
-    nodes_depended_on:
-    - event_ab
-    - event_ac
-    - event_bc
     nodes_dependent_on: []
-    prompt: Combine the results of event AB, event AC, and event BC to produce event
-      ABC.
-  event_ac:
+    prompt: Execute event A and provide the result for part 1.
+  event_a_2:
     agent: false
-    description: Combine events A and C.
-    name: event_ac
-    nodes_depended_on:
-    - event_a
-    - event_c
-    nodes_dependent_on:
-    - event_abc
-    prompt: Combine the results of event A and event C to produce event AC.
-  event_b:
-    agent: false
-    description: Execute event B.
-    name: event_b
+    description: Execute event A – part 2.
+    name: event_a_2
     nodes_depended_on: []
-    nodes_dependent_on:
-    - event_ab
-    - event_bc
-    prompt: Execute event B. Provide the result of B.
-  event_bc:
+    nodes_dependent_on: []
+    prompt: Execute event A and provide the result for part 2.
+  event_ab_1:
     agent: false
-    description: Combine events B and C.
-    name: event_bc
+    description: Combine results of event A and event B – part 1.
+    name: event_ab_1
     nodes_depended_on:
-    - event_b
-    - event_c
-    nodes_dependent_on:
-    - event_abc
-    prompt: Combine the results of event B and event C to produce event BC.
-  event_c:
+    - event_a_1
+    - event_a_2
+    - event_b_1
+    - event_b_2
+    nodes_dependent_on: []
+    prompt: Combine the results of event A (both parts) and event B (both parts) to
+      produce event AB part 1.
+  event_ab_2:
     agent: false
-    description: Execute event C.
-    name: event_c
+    description: Combine results of event A and event B – part 2.
+    name: event_ab_2
+    nodes_depended_on:
+    - event_a_1
+    - event_a_2
+    - event_b_1
+    - event_b_2
+    nodes_dependent_on: []
+    prompt: Combine the results of event A (both parts) and event B (both parts) to
+      produce event AB part 2.
+  event_abc_1:
+    agent: false
+    description: Combine results of event AB, AC, and BC – part 1.
+    name: event_abc_1
+    nodes_depended_on:
+    - event_ab_1
+    - event_ab_2
+    - event_ac_1
+    - event_ac_2
+    - event_bc_1
+    - event_bc_2
+    nodes_dependent_on: []
+    prompt: Combine the results of event AB, event AC, and event BC (all split parts)
+      to produce event ABC part 1.
+  event_abc_2:
+    agent: false
+    description: Combine results of event AB, AC, and BC – part 2.
+    name: event_abc_2
+    nodes_depended_on:
+    - event_ab_1
+    - event_ab_2
+    - event_ac_1
+    - event_ac_2
+    - event_bc_1
+    - event_bc_2
+    nodes_dependent_on: []
+    prompt: Combine the results of event AB, event AC, and event BC (all split parts)
+      to produce event ABC part 2.
+  event_ac_1:
+    agent: false
+    description: Combine results of event A and event C – part 1.
+    name: event_ac_1
+    nodes_depended_on:
+    - event_a_1
+    - event_a_2
+    - event_c_1
+    - event_c_2
+    nodes_dependent_on: []
+    prompt: Combine the results of event A (both parts) and event C (both parts) to
+      produce event AC part 1.
+  event_ac_2:
+    agent: false
+    description: Combine results of event A and event C – part 2.
+    name: event_ac_2
+    nodes_depended_on:
+    - event_a_1
+    - event_a_2
+    - event_c_1
+    - event_c_2
+    nodes_dependent_on: []
+    prompt: Combine the results of event A (both parts) and event C (both parts) to
+      produce event AC part 2.
+  event_b_1:
+    agent: false
+    description: Execute event B – part 1.
+    name: event_b_1
     nodes_depended_on: []
-    nodes_dependent_on:
-    - event_ac
-    - event_bc
-    prompt: Execute event C. Provide the result of C.
+    nodes_dependent_on: []
+    prompt: Execute event B and provide the result for part 1.
+  event_b_2:
+    agent: false
+    description: Execute event B – part 2.
+    name: event_b_2
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Execute event B and provide the result for part 2.
+  event_bc_1:
+    agent: false
+    description: Combine results of event B and event C – part 1.
+    name: event_bc_1
+    nodes_depended_on:
+    - event_b_1
+    - event_b_2
+    - event_c_1
+    - event_c_2
+    nodes_dependent_on: []
+    prompt: Combine the results of event B (both parts) and event C (both parts) to
+      produce event BC part 1.
+  event_bc_2:
+    agent: false
+    description: Combine results of event B and event C – part 2.
+    name: event_bc_2
+    nodes_depended_on:
+    - event_b_1
+    - event_b_2
+    - event_c_1
+    - event_c_2
+    nodes_dependent_on: []
+    prompt: Combine the results of event B (both parts) and event C (both parts) to
+      produce event BC part 2.
+  event_c_1:
+    agent: false
+    description: Execute event C – part 1.
+    name: event_c_1
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Execute event C and provide the result for part 1.
+  event_c_2:
+    agent: false
+    description: Execute event C – part 2.
+    name: event_c_2
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Execute event C and provide the result for part 2.
