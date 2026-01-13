@@ -1,236 +1,293 @@
 dag_type: plain_text
-description: A workflow that constructs a hedge fund plan from objectives to final
-  executive summary.
-name: build_hedge_fund
+description: A workflow for creating a chapter book about the theory of relativity
+  written in comedic style, from planning through final assembly
+name: comedic_relativity_book_creation
 nodes:
-  choose_investment_strategy:
+  assemble_book_chapters:
     agent: false
-    description: Select the high-level investment strategy.
-    name: choose_investment_strategy
+    description: Combine all chapters and components into complete book
+    name: assemble_book_chapters
     nodes_depended_on:
-    - clarify_fund_objectives
+    - write_chapter_1_special_relativity_intro
+    - write_chapter_2_time_dilation_comedy
+    - write_chapter_3_length_contraction_laughs
+    - write_chapter_4_spacetime_adventures
+    - write_chapter_5_mass_energy_equation_extravaganza
+    - write_chapter_6_gravitational_waves_hilarity
+    - write_chapter_7_black_holes_comedy_chaos
+    - write_chapter_8_cosmic_speed_limit_jokes
+    - write_chapter_9_relativity_paradoxes_puns
+    - write_chapter_10_future_relativity_humor
+    - create_book_introduction
+    - write_book_conclusion
     nodes_dependent_on:
-    - define_asset_universe
-    - set_performance_and_risk_targets
-    - compile_pitch_deck_outline
-    prompt: Select one primary hedge fund strategy category (e.g., long/short equity,
-      global macro, event-driven). Provide a one-sentence rationale.
-  choose_legal_entity_type:
+    - review_final_book_for_humor_and_flow
+    prompt: 'Assemble the complete book in order: introduction, chapters 1-10, conclusion.
+      Ensure smooth transitions between chapters and consistent formatting throughout.
+      Check that all running jokes and character voices remain consistent.'
+  create_book_introduction:
     agent: false
-    description: Determine the legal structure for the fund.
-    name: choose_legal_entity_type
+    description: Write an engaging, funny introduction to the book
+    name: create_book_introduction
     nodes_depended_on:
-    - select_jurisdiction
+    - establish_comedic_tone_and_style
+    - create_narrative_frame_and_characters
     nodes_dependent_on:
-    - list_service_providers
-    - outline_governance_structure
-    - identify_regulatory_requirements
-    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
-      for the chosen jurisdiction. Provide a one-sentence explanation.
-  clarify_fund_objectives:
+    - assemble_book_chapters
+    prompt: Write a humorous book introduction that promises to make relativity funny
+      and understandable. Establish the comedic premise, introduce main characters
+      or narrative frame, and set reader expectations for laughs and learning.
+  create_humor_techniques_toolkit:
     agent: false
-    description: Define the hedge fund's primary business objectives.
-    name: clarify_fund_objectives
+    description: Compile specific comedic devices to use throughout the book
+    name: create_humor_techniques_toolkit
+    nodes_depended_on:
+    - establish_comedic_tone_and_style
+    nodes_dependent_on:
+    - identify_key_relativity_examples
+    - plan_individual_chapters
+    prompt: 'Based on the defined comedic tone, list specific humor techniques: analogies,
+      personification of physics concepts, exaggerations, breaking the fourth wall,
+      running gags, and puns related to relativity.'
+  create_narrative_frame_and_characters:
+    agent: false
+    description: Develop the storytelling framework and recurring characters
+    name: create_narrative_frame_and_characters
     nodes_depended_on: []
     nodes_dependent_on:
-    - select_jurisdiction
-    - choose_investment_strategy
-    - define_investor_profile
-    - design_risk_management_framework
-    - compile_pitch_deck_outline
-    prompt: List the core objectives of the hedge fund in bullet form, covering investment
-      purpose, competitive edge, long-term vision, etc. Max 8 bullets.
-  compile_pitch_deck_outline:
+    - develop_running_jokes_and_themes
+    - plan_individual_chapters
+    prompt: 'Create narrative elements for the relativity book: main characters (could
+      be scientists, space travelers, animated particles), setting, and overall story
+      frame that ties chapters together comedically.'
+  define_book_structure:
     agent: false
-    description: Outline the investor presentation.
-    name: compile_pitch_deck_outline
-    nodes_depended_on:
-    - clarify_fund_objectives
-    - define_investor_profile
-    - choose_investment_strategy
-    - set_performance_and_risk_targets
-    - draft_fee_structure
-    - design_risk_management_framework
+    description: Establish the chapter count and overall book organization
+    name: define_book_structure
+    nodes_depended_on: []
     nodes_dependent_on:
-    - develop_timeline_and_milestones
-    prompt: Create a 10-slide outline (slide titles only) for an investor pitch deck
-      incorporating objectives, strategy, team, edge, risk controls, fees, expected
-      returns.
-  create_hiring_plan:
+    - plan_individual_chapters
+    prompt: Define the chapter structure for a comedic book about relativity. Specify
+      the number of chapters and their main topics. Keep it focused on making complex
+      physics accessible through humor.
+  develop_running_jokes_and_themes:
     agent: false
-    description: Plan initial staffing.
-    name: create_hiring_plan
+    description: Establish recurring humorous elements throughout the book
+    name: develop_running_jokes_and_themes
     nodes_depended_on:
-    - draft_operations_workflow
+    - create_narrative_frame_and_characters
+    - establish_comedic_tone_and_style
     nodes_dependent_on:
-    - develop_timeline_and_milestones
-    prompt: List essential full-time positions for launch (max 8), with one-line responsibility
-      each. Align roles with operations workflow gaps.
-  define_asset_universe:
+    - plan_individual_chapters
+    prompt: 'Design running jokes and recurring themes: grumpy photons, confused astronauts,
+      Einstein''s imaginary friends, physics playground bullying, time-traveling comedians,
+      etc. Ensure they can evolve across chapters.'
+  establish_comedic_tone_and_style:
     agent: false
-    description: Identify tradable assets for the strategy.
-    name: define_asset_universe
-    nodes_depended_on:
-    - choose_investment_strategy
+    description: Set the comedic voice, humor type, and writing style for the book
+    name: establish_comedic_tone_and_style
+    nodes_depended_on: []
     nodes_dependent_on:
-    - draft_operations_workflow
-    prompt: List the specific asset classes and instruments that the chosen strategy
-      will trade. Keep list ≤10 items.
-  define_investor_profile:
+    - create_humor_techniques_toolkit
+    - identify_key_relativity_examples
+    - plan_individual_chapters
+    prompt: Define the comedic tone for explaining relativity. Specify humor type
+      (satire, slapstick, wordplay), voice (narrator perspective), and style guidelines.
+      Ensure it balances entertainment with educational value.
+  finalize_comedic_relativity_book:
     agent: false
-    description: Describe the target investor segment.
-    name: define_investor_profile
+    description: Create the final version of the comedic relativity book
+    name: finalize_comedic_relativity_book
     nodes_depended_on:
-    - clarify_fund_objectives
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    prompt: 'Specify the ideal target investor profile: typical ticket size, risk
-      tolerance, liquidity preference, geographic focus.'
-  define_technology_stack:
-    agent: false
-    description: Specify technology requirements.
-    name: define_technology_stack
-    nodes_depended_on:
-    - draft_operations_workflow
-    nodes_dependent_on:
-    - develop_timeline_and_milestones
-    prompt: 'Identify required software and infrastructure for each operation step
-      (OMS, EMS, risk system). Present as 2-column table: Ops Step | Tech Component.'
-  design_compliance_program:
-    agent: false
-    description: Create the compliance program.
-    name: design_compliance_program
-    nodes_depended_on:
-    - identify_regulatory_requirements
-    - design_risk_management_framework
-    nodes_dependent_on:
-    - produce_final_fund_plan_summary
-    prompt: 'Generate a compliance checklist mapping each regulatory requirement to
-      an internal policy. Table with columns: Requirement | Policy Reference.'
-  design_risk_management_framework:
-    agent: false
-    description: Outline risk management policies.
-    name: design_risk_management_framework
-    nodes_depended_on:
-    - set_performance_and_risk_targets
-    nodes_dependent_on:
-    - design_compliance_program
-    - draft_operations_workflow
-    - compile_pitch_deck_outline
-    prompt: 'List core risk controls aligned with target metrics: position limits,
-      VaR limits, stop-loss rules, liquidity thresholds. Provide 4–6 bullet points.'
-  develop_timeline_and_milestones:
-    agent: false
-    description: Set launch schedule.
-    name: develop_timeline_and_milestones
-    nodes_depended_on:
-    - draft_operations_workflow
-    - define_technology_stack
-    - create_hiring_plan
-    - compile_pitch_deck_outline
-    nodes_dependent_on:
-    - produce_final_fund_plan_summary
-    prompt: Prepare a launch timeline with monthly milestones over the next 12 months.
-      Include regulatory filing, service provider onboarding, capital raise, tech
-      deployment, and go-live.
-  draft_fee_structure:
-    agent: false
-    description: Design the fee schedule.
-    name: draft_fee_structure
-    nodes_depended_on:
-    - set_performance_and_risk_targets
-    - estimate_setup_and_operating_costs
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    prompt: Propose management and performance fee percentages with incentive hurdle
-      if relevant. Summarize in ≤3 sentences.
-  draft_operations_workflow:
-    agent: false
-    description: Map core operational steps.
-    name: draft_operations_workflow
-    nodes_depended_on:
-    - define_asset_universe
-    - list_service_providers
-    - design_risk_management_framework
-    nodes_dependent_on:
-    - define_technology_stack
-    - create_hiring_plan
-    - develop_timeline_and_milestones
-    prompt: 'Sketch daily trade lifecycle: idea generation → order entry → execution
-      → confirmation → settlement → reconciliation. List each step with primary responsible
-      party.'
-  estimate_setup_and_operating_costs:
-    agent: false
-    description: Estimate annual cost of service providers and overhead.
-    name: estimate_setup_and_operating_costs
-    nodes_depended_on:
-    - list_service_providers
-    nodes_dependent_on:
-    - draft_fee_structure
-    prompt: 'Provide a simple annual cost estimate in USD for each listed service
-      provider plus overhead. Two columns: Cost Item | Estimated USD.'
-  identify_regulatory_requirements:
-    agent: false
-    description: Identify required regulatory filings.
-    name: identify_regulatory_requirements
-    nodes_depended_on:
-    - choose_legal_entity_type
-    nodes_dependent_on:
-    - design_compliance_program
-    prompt: List the primary registrations or filings required for the selected entity
-      and jurisdiction (e.g., SEC Form ADV). Provide governing body names.
-  list_service_providers:
-    agent: false
-    description: Enumerate required third‑party providers.
-    name: list_service_providers
-    nodes_depended_on:
-    - choose_legal_entity_type
-    nodes_dependent_on:
-    - estimate_setup_and_operating_costs
-    - draft_operations_workflow
-    prompt: 'Generate a checklist of mandatory external service providers: prime broker,
-      fund administrator, auditor, legal counsel, compliance consultant, custodian.
-      No descriptions.'
-  outline_governance_structure:
-    agent: false
-    description: Define governance roles and responsibilities.
-    name: outline_governance_structure
-    nodes_depended_on:
-    - choose_legal_entity_type
+    - review_final_book_for_humor_and_flow
     nodes_dependent_on: []
-    prompt: 'Draft a simple governance chart: roles of GP, investment manager, board.
-      Limit to 5 roles with one-line duties each.'
-  produce_final_fund_plan_summary:
+    prompt: Apply final polishing to the book based on review. Ensure all humor lands,
+      explanations are clear yet funny, and the book achieves its goal of making relativity
+      entertaining and accessible. Add any final touches to punchlines and transitions.
+  identify_key_relativity_examples:
     agent: false
-    description: Create the final fund launch summary.
-    name: produce_final_fund_plan_summary
+    description: Select funny, memorable examples to illustrate relativity concepts
+    name: identify_key_relativity_examples
     nodes_depended_on:
-    - design_compliance_program
-    - compile_pitch_deck_outline
-    - develop_timeline_and_milestones
-    nodes_dependent_on: []
-    prompt: Synthesize prior outputs into a concise executive summary (≤400 words)
-      covering strategy, structure, risk, ops, fees, timeline.
-  select_jurisdiction:
-    agent: false
-    description: Choose the fund's domicile location.
-    name: select_jurisdiction
-    nodes_depended_on:
-    - clarify_fund_objectives
+    - establish_comedic_tone_and_style
+    - research_relativity_concepts_overview
+    - create_humor_techniques_toolkit
     nodes_dependent_on:
-    - choose_legal_entity_type
-    - identify_regulatory_requirements
-    prompt: Given the fund objectives, select an optimal jurisdiction and list 2 pros
-      and 2 cons.
-  set_performance_and_risk_targets:
+    - plan_individual_chapters
+    prompt: 'Create comedic examples for each relativity concept: twin paradox scenario,
+      shrinking objects at light speed, dancing clocks, spaghetti entering black holes,
+      etc. Make them vivid and humorous.'
+  plan_individual_chapters:
     agent: false
-    description: Quantify return and risk objectives.
-    name: set_performance_and_risk_targets
+    description: Create detailed outlines for each chapter
+    name: plan_individual_chapters
     nodes_depended_on:
-    - choose_investment_strategy
+    - define_book_structure
+    - establish_comedic_tone_and_style
+    - research_relativity_concepts_overview
+    - create_narrative_frame_and_characters
+    - create_humor_techniques_toolkit
+    - identify_key_relativity_examples
+    - develop_running_jokes_and_themes
     nodes_dependent_on:
-    - draft_fee_structure
-    - design_risk_management_framework
-    - compile_pitch_deck_outline
-    prompt: Define numerical annual targets for gross return, volatility, Sharpe ratio,
-      maximum drawdown consistent with the chosen strategy. Present as a 4-row table.
+    - write_chapter_1_special_relativity_intro
+    - write_chapter_2_time_dilation_comedy
+    - write_chapter_3_length_contraction_laughs
+    - write_chapter_4_spacetime_adventures
+    - write_chapter_5_mass_energy_equation_extravaganza
+    - write_chapter_6_gravitational_waves_hilarity
+    - write_chapter_7_black_holes_comedy_chaos
+    - write_chapter_8_cosmic_speed_limit_jokes
+    - write_chapter_9_relativity_paradoxes_puns
+    - write_chapter_10_future_relativity_humor
+    prompt: 'Create a detailed outline for each chapter including: main relativity
+      concept, comedic approach, characters involved, running jokes to include, specific
+      examples, and chapter-ending punchline.'
+  research_relativity_concepts_overview:
+    agent: false
+    description: Gather core relativity principles suitable for comedic explanation
+    name: research_relativity_concepts_overview
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - identify_key_relativity_examples
+    - plan_individual_chapters
+    prompt: 'List the fundamental relativity concepts that should be covered: special
+      relativity, time dilation, length contraction, E=mc², spacetime, general relativity,
+      gravitational effects. Keep explanations simple and ready for comedic treatment.'
+  review_final_book_for_humor_and_flow:
+    agent: false
+    description: Final review focusing on comedic impact and narrative flow
+    name: review_final_book_for_humor_and_flow
+    nodes_depended_on:
+    - assemble_book_chapters
+    nodes_dependent_on:
+    - finalize_comedic_relativity_book
+    prompt: 'Review the complete book for comedic effectiveness: Are jokes landing?
+      Is the humor consistent? Are complex concepts explained clearly? Do chapters
+      flow well? Suggest improvements to punchlines, pacing, and clarity while maintaining
+      the funny tone.'
+  write_book_conclusion:
+    agent: false
+    description: Create a funny conclusion that wraps up the book
+    name: write_book_conclusion
+    nodes_depended_on:
+    - write_chapter_10_future_relativity_humor
+    - establish_comedic_tone_and_style
+    - develop_running_jokes_and_themes
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: Write a hilarious conclusion that summarizes key relativity concepts comedically,
+      resolves running jokes, has characters say goodbye, and leaves readers laughing
+      about physics. Include a final punchline about relativity.
+  write_chapter_10_future_relativity_humor:
+    agent: false
+    description: Write the final chapter on relativity's future implications with
+      comedy
+    name: write_chapter_10_future_relativity_humor
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 10 on relativity''s future with comedy: time tourism, warp
+      drive jokes, quantumgravity disagreements, predicting the next Einstein. End
+      with a grand finale joke tying the book together.'
+  write_chapter_1_special_relativity_intro:
+    agent: false
+    description: Write the first chapter introducing special relativity with comedy
+    name: write_chapter_1_special_relativity_intro
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: Write Chapter 1 introducing special relativity. Use the planned comedic
+      examples, characters, and tone. Include running jokes and end with a punchline
+      that leads to the next chapter. Keep it entertaining while explaining basic
+      concepts.
+  write_chapter_2_time_dilation_comedy:
+    agent: false
+    description: Write chapter 2 about time dilation with humorous scenarios
+    name: write_chapter_2_time_dilation_comedy
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 2 on time dilation with comedic scenarios: twins aging
+      differently, clocks slowing down, procrastinator''s perfect physics excuse.
+      Use established tone and characters. End with transition to next topic.'
+  write_chapter_3_length_contraction_laughs:
+    agent: false
+    description: Write chapter 3 explaining length contraction through humor
+    name: write_chapter_3_length_contraction_laughs
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 3 covering length contraction with funny examples: shrinking
+      cars, squashed spaceships, dieting at light speed. Maintain comedic voice and
+      character consistency. End with leading joke to next chapter.'
+  write_chapter_4_spacetime_adventures:
+    agent: false
+    description: Write chapter 4 about spacetime concepts with comedic storytelling
+    name: write_chapter_4_spacetime_adventures
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 4 explaining spacetime through comedy: fabric of universe
+      as trampoline, 4D dance parties, GPS satellites losing their way. Use established
+      humor techniques and character voices.'
+  write_chapter_5_mass_energy_equation_extravaganza:
+    agent: false
+    description: Write chapter 5 covering E=mc² with entertaining explanations
+    name: write_chapter_5_mass_energy_equation_extravaganza
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 5 on E=mc² with mass-energy humor: particle parties, energy
+      diets, converting couch potatoes to pure energy. Maintain the book''s comedic
+      style and include running gags.'
+  write_chapter_6_gravitational_waves_hilarity:
+    agent: false
+    description: Write chapter 6 about gravitational waves with comedic analogies
+    name: write_chapter_6_gravitational_waves_hilarity
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 6 explaining gravitational waves through comedy: universe''s
+      rubber sheet, cosmic belly dancing, black hole break dancing. Continue the established
+      narrative and humor patterns.'
+  write_chapter_7_black_holes_comedy_chaos:
+    agent: false
+    description: Write chapter 7 covering black holes with humorous scenarios
+    name: write_chapter_7_black_holes_comedy_chaos
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 7 on black holes with comedy: cosmic janitors, spaghetti
+      restaurants, event horizon bouncers. Use established character voices and humor
+      techniques while explaining the science.'
+  write_chapter_8_cosmic_speed_limit_jokes:
+    agent: false
+    description: Write chapter 8 about the speed of light with comedic enforcement
+    name: write_chapter_8_cosmic_speed_limit_jokes
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 8 covering light speed limit with humor: cosmic speed traps,
+      photon traffic cops, trying to outrun your own headlights. Maintain the book''s
+      consistent comedic voice and themes.'
+  write_chapter_9_relativity_paradoxes_puns:
+    agent: false
+    description: Write chapter 9 addressing relativity paradoxes through comedy
+    name: write_chapter_9_relativity_paradoxes_puns
+    nodes_depended_on:
+    - plan_individual_chapters
+    nodes_dependent_on:
+    - assemble_book_chapters
+    prompt: 'Write Chapter 9 solving relativity paradoxes with comedy: grandfather
+      paradox as family therapy, causality violations creating plot holes, Schrodinger''s
+      cat meets relativity. Use established humor patterns.'

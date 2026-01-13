@@ -1,54 +1,109 @@
 dag_type: plain_text
-description: Execute the 'test' objective as a series of fundamental steps.
+description: A highly concurrent test execution workflow covering unit, integration,
+  system, and acceptance tests with result aggregation and documentation
 name: test_workflow
 nodes:
-  analyze_test_results:
+  acceptance_test_suite:
     agent: false
-    description: Evaluate the outcome of the testing approach and identify areas for
-      improvement.
-    name: analyze_test_results
+    description: Verify business rule compliance
+    name: acceptance_test_suite
     nodes_depended_on:
-    - execute_testing_strategy
-    nodes_dependent_on: []
-    prompt: Analyze the results of the testing strategy.
-  determine_test_outcome:
+    - create_test_environment
+    - generate_test_data
+    nodes_dependent_on:
+    - aggregate_test_results
+    prompt: Execute tests ensuring system behavior aligns with business requirements
+      and user acceptance criteria for functional and non-functional specifications.
+  aggregate_test_results:
     agent: false
-    description: Conclude the test by deciding whether it was successful or not.
-    name: determine_test_outcome
+    description: Compile and analyze test outcomes
+    name: aggregate_test_results
     nodes_depended_on:
-    - analyze_test_results
-    nodes_dependent_on: []
-    prompt: Determine the outcome of the test based on the analysis.
-  evaluate_test_objective:
+    - unit_test_suite
+    - integration_test_suite
+    - system_test_suite
+    - acceptance_test_suite
+    nodes_dependent_on:
+    - compile_test_documentation
+    prompt: Merge test execution reports into structured results. Identify failure
+      patterns, false positives, and performance bottlenecks with clear categorization.
+  compile_test_documentation:
     agent: false
-    description: Determine the next step based on the parsed objective.
-    name: evaluate_test_objective
+    description: Create formal test records
+    name: compile_test_documentation
     nodes_depended_on:
-    - parse_test_objective
-    nodes_dependent_on: []
-    prompt: Evaluate the extracted objective against predefined criteria to determine
-      a course of action.
-  execute_testing_strategy:
+    - aggregate_test_results
+    nodes_dependent_on:
+    - generate_summary_report
+    prompt: Develop comprehensive documentation including test plans, case definitions,
+      setup procedures, and result interpretations. Format using standardized reporting
+      templates.
+  create_test_environment:
     agent: false
-    description: Perform the chosen testing approach to achieve the objective.
-    name: execute_testing_strategy
-    nodes_depended_on:
-    - select_test_strategy
-    nodes_dependent_on: []
-    prompt: Implement the selected testing strategy.
-  parse_test_objective:
-    agent: false
-    description: Parse the test objective and extract the main purpose.
-    name: parse_test_objective
+    description: Set up the required testing environment and dependencies
+    name: create_test_environment
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Take the input 'test' and identify its primary objective.
-  select_test_strategy:
+    nodes_dependent_on:
+    - unit_test_suite
+    - integration_test_suite
+    - system_test_suite
+    - acceptance_test_suite
+    prompt: Configure the test environment by installing dependencies, setting up
+      testing frameworks, and initializing required services. Validate environment
+      readiness with health checks.
+  generate_summary_report:
     agent: false
-    description: Select a testing approach that aligns with the determined course
-      of action.
-    name: select_test_strategy
+    description: Create test cycle summary artifact
+    name: generate_summary_report
     nodes_depended_on:
-    - evaluate_test_objective
+    - compile_test_documentation
     nodes_dependent_on: []
-    prompt: Choose a testing strategy based on the evaluated objective.
+    prompt: Produce concise summary report highlighting key metrics (pass/fail rates,
+      defect density, performance metrics), critical findings, and recommended next
+      steps for stakeholders.
+  generate_test_data:
+    agent: false
+    description: Create synthetic test data for all required test scenarios
+    name: generate_test_data
+    nodes_depended_on:
+    - create_test_environment
+    nodes_dependent_on:
+    - unit_test_suite
+    - integration_test_suite
+    - system_test_suite
+    - acceptance_test_suite
+    prompt: Generate comprehensive test data including edge cases, valid inputs, and
+      invalid scenarios. Structure data for easy ingestion by test suites.
+  integration_test_suite:
+    agent: false
+    description: Verify interactions between components
+    name: integration_test_suite
+    nodes_depended_on:
+    - create_test_environment
+    - generate_test_data
+    nodes_dependent_on:
+    - aggregate_test_results
+    prompt: Execute tests validating communication between components, API endpoints,
+      and external systems. Prioritize interface validation and data consistency.
+  system_test_suite:
+    agent: false
+    description: Validate end-to-end system behavior
+    name: system_test_suite
+    nodes_depended_on:
+    - create_test_environment
+    - generate_test_data
+    nodes_dependent_on:
+    - aggregate_test_results
+    prompt: Run end-to-end tests simulating user journeys through the complete system.Validate
+      workflow integrity and performance characteristics.
+  unit_test_suite:
+    agent: false
+    description: Execute unit tests for core components
+    name: unit_test_suite
+    nodes_depended_on:
+    - create_test_environment
+    - generate_test_data
+    nodes_dependent_on:
+    - aggregate_test_results
+    prompt: Run all unit tests to verify individual functions and methods. Focus on
+      code coverage, boundary conditions, and error path coverage.
