@@ -1,115 +1,43 @@
 dag_type: plain_text
-description: A workflow to execute comprehensive testing for a system under test,
-  including defining requirements, generating test cases, executing, validating results,
-  logging issues, and generating a summary report.
-name: test_execution_dag
+description: A minimal workflow that creates a simple test case, executes it, validates
+  the outcome, and summarizes the result.
+name: basic_test_workflow
 nodes:
-  define_test_requirements:
+  create_test_case:
     agent: false
-    description: Outline the necessary test requirements ensuring they are comprehensive
-      and cover all critical functionalities.
-    name: define_test_requirements
+    description: Generate a concrete test case description and expected output.
+    name: create_test_case
     nodes_depended_on: []
     nodes_dependent_on:
-    - generate_test_cases_module_a
-    - generate_test_cases_module_b
-    prompt: Outline comprehensive test requirements for the system under test, including
-      functional, non-functional, and edge scenario requirements. Use bullet points
-      for clarity.
-  execute_test_cases_module_a:
+    - run_test_case
+    prompt: Produce a brief test case for a generic function. Include a short input
+      description and the exact expected output.
+  run_test_case:
     agent: false
-    description: Run all test cases for Module A and record execution outcomes.
-    name: execute_test_cases_module_a
+    description: Execute the test case using the provided input.
+    name: run_test_case
     nodes_depended_on:
-    - generate_test_cases_module_a
+    - create_test_case
     nodes_dependent_on:
-    - validate_results_module_a
-    prompt: 'Execute all Module A test cases using automated tools. Capture actual
-      results and differences from expected outcomes in a 3-column table: Test Case
-      ID, Expected, Actual.'
-  execute_test_cases_module_b:
+    - validate_test_result
+    prompt: Based on the input from the previous step, simulate running the function
+      and output the actual result.
+  summarize_test_outcome:
     agent: false
-    description: Run all test cases for Module B and record execution outcomes.
-    name: execute_test_cases_module_b
+    description: Provide a concise summary of the test execution and its result.
+    name: summarize_test_outcome
     nodes_depended_on:
-    - generate_test_cases_module_b
-    nodes_dependent_on:
-    - validate_results_module_b
-    prompt: 'Execute all Module B test cases using automated tools. Capture actual
-      results and differences from expected outcomes in a 3-column table: Test Case
-      ID, Expected, Actual.'
-  generate_summary_report:
-    agent: false
-    description: Compile test metrics and documentation into a final summary report.
-    name: generate_summary_report
-    nodes_depended_on:
-    - log_issues_module_a
-    - log_issues_module_b
+    - validate_test_result
     nodes_dependent_on: []
-    prompt: 'Produce a 3-page summary report showing: total test cases executed, pass/fail
-      rates by module, critical bugs identified, and actionable recommendations for
-      resolution. Use bullet points and summary tables.'
-  generate_test_cases_module_a:
+    prompt: Summarize the entire test workflow, including the test case, execution
+      details, and final pass/fail status, in no more than three sentences.
+  validate_test_result:
     agent: false
-    description: Produce test cases for Module A based on defined requirements.
-    name: generate_test_cases_module_a
+    description: Compare the actual result with the expected output and indicate pass/fail.
+    name: validate_test_result
     nodes_depended_on:
-    - define_test_requirements
+    - run_test_case
     nodes_dependent_on:
-    - execute_test_cases_module_a
-    prompt: Generate test cases for Module A that cover all listed requirements. Format
-      as [Test Case ID, Precondition, Input, Expected Outcome] in a clear table.
-  generate_test_cases_module_b:
-    agent: false
-    description: Produce test cases for Module B based on defined requirements.
-    name: generate_test_cases_module_b
-    nodes_depended_on:
-    - define_test_requirements
-    nodes_dependent_on:
-    - execute_test_cases_module_b
-    prompt: Generate test cases for Module B that cover all listed requirements. Format
-      as [Test Case ID, Precondition, Input, Expected Outcome] in a clear table.
-  log_issues_module_a:
-    agent: false
-    description: Record and categorize any failed test cases from Module A.
-    name: log_issues_module_a
-    nodes_depended_on:
-    - validate_results_module_a
-    nodes_dependent_on:
-    - generate_summary_report
-    prompt: 'Create detailed bug reports for failing Module A test cases, including:
-      Test Case ID, Description, Actual Result, Steps to Reproduce, Priority, Assignee.'
-  log_issues_module_b:
-    agent: false
-    description: Record and categorize any failed test cases from Module B.
-    name: log_issues_module_b
-    nodes_depended_on:
-    - validate_results_module_b
-    nodes_dependent_on:
-    - generate_summary_report
-    prompt: 'Create detailed bug reports for failing Module B test cases, including:
-      Test Case ID, Description, Actual Result, Steps to Reproduce, Priority, Assignee.'
-  validate_results_module_a:
-    agent: false
-    description: Compare observed test results against expected outcomes for Module
-      A.
-    name: validate_results_module_a
-    nodes_depended_on:
-    - execute_test_cases_module_a
-    nodes_dependent_on:
-    - log_issues_module_a
-    prompt: Analyze Module A test execution results - compare actual outcomes with
-      expected values. Mark each test as 'Pass' or 'Fail' next to its corresponding
-      Test Case ID.
-  validate_results_module_b:
-    agent: false
-    description: Compare observed test results against expected outcomes for Module
-      B.
-    name: validate_results_module_b
-    nodes_depended_on:
-    - execute_test_cases_module_b
-    nodes_dependent_on:
-    - log_issues_module_b
-    prompt: Analyze Module B test execution results - compare actual outcomes with
-      expected values. Mark each test as 'Pass' or 'Fail' next to its corresponding
-      Test Case ID.
+    - summarize_test_outcome
+    prompt: Compare the actual result from the prior step with the expected output
+      and state whether the test passed or failed.
