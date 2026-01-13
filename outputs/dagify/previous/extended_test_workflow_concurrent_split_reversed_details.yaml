@@ -1,13 +1,13 @@
 dag_type: plain_text
-description: Reversed execution workflow where data flows from later stages back to
-  earlier ones, maintaining connectivity and reversing dependency direction.
-name: reversed_test_workflow_concurrent_split
+description: Generated workflow from UI with reversed data flow and ordering.
+name: extended_test_workflow_concurrent_split_reversed
 nodes:
   allocate_infrastructure:
     agent: false
     description: Provision infrastructure needed for the test.
     name: allocate_infrastructure
-    nodes_depended_on: []
+    nodes_depended_on:
+    - develop_test_plan
     nodes_dependent_on:
     - identify_test_scope
     - determine_test_criteria
@@ -17,7 +17,8 @@ nodes:
     agent: false
     description: Assign appropriate personnel for the test.
     name: allocate_personnel
-    nodes_depended_on: []
+    nodes_depended_on:
+    - develop_test_plan
     nodes_dependent_on:
     - identify_test_scope
     - determine_test_criteria
@@ -26,7 +27,8 @@ nodes:
     agent: false
     description: Select and provision testing tools.
     name: allocate_tools
-    nodes_depended_on: []
+    nodes_depended_on:
+    - develop_test_plan
     nodes_dependent_on:
     - identify_test_scope
     - determine_test_criteria
@@ -36,7 +38,8 @@ nodes:
     agent: false
     description: Derive insights from the validated test data.
     name: analyze_test_results
-    nodes_depended_on: []
+    nodes_depended_on:
+    - summarize_key_findings
     nodes_dependent_on:
     - validate_test_results
     prompt: Analyze the verified test data to identify patterns, anomalies, and implications
@@ -45,9 +48,9 @@ nodes:
     agent: false
     description: Define the primary goal of the test.
     name: define_test_objective
-    nodes_depended_on: []
-    nodes_dependent_on:
+    nodes_depended_on:
     - identify_test_scope
+    nodes_dependent_on:
     - prioritize_test_objectives
     prompt: Define the primary goal of the test. What is the main objective that this
       test is trying to achieve?
@@ -55,18 +58,20 @@ nodes:
     agent: false
     description: Derive specific evaluation criteria from success metrics.
     name: determine_test_criteria
-    nodes_depended_on: []
-    nodes_dependent_on:
+    nodes_depended_on:
     - allocate_infrastructure
     - allocate_personnel
     - allocate_tools
+    nodes_dependent_on:
+    - formulate_success_metrics
     prompt: Based on the formulated success metrics, define the precise evaluation
       standards for the test.
   develop_test_plan:
     agent: false
     description: Create a detailed test execution plan.
     name: develop_test_plan
-    nodes_depended_on: []
+    nodes_depended_on:
+    - review_test_plan
     nodes_dependent_on:
     - allocate_infrastructure
     - allocate_personnel
@@ -77,7 +82,8 @@ nodes:
     agent: false
     description: Record final test findings and recommendations.
     name: document_test_outcome
-    nodes_depended_on: []
+    nodes_depended_on:
+    - share_test_report
     nodes_dependent_on:
     - summarize_key_findings
     prompt: Formalize test results into a structured report containing key findings,
@@ -86,7 +92,8 @@ nodes:
     agent: false
     description: Carry out the test according to the approved plan.
     name: execute_test
-    nodes_depended_on: []
+    nodes_depended_on:
+    - gather_raw_test_data
     nodes_dependent_on:
     - review_test_plan
     prompt: Carry out the test procedures outlined in the approved plan. Collect all
@@ -95,16 +102,17 @@ nodes:
     agent: false
     description: Create concrete success metrics from prioritized objectives.
     name: formulate_success_metrics
-    nodes_depended_on: []
-    nodes_dependent_on:
+    nodes_depended_on:
     - prioritize_test_objectives
+    nodes_dependent_on: []
     prompt: Based on the prioritized test objectives, define the concrete metrics
       and standards that will measure test success.
   gather_raw_test_data:
     agent: false
     description: Collect raw data generated during test execution.
     name: gather_raw_test_data
-    nodes_depended_on: []
+    nodes_depended_on:
+    - structure_raw_test_data
     nodes_dependent_on:
     - execute_test
     prompt: Gather all raw data produced by the test execution.
@@ -112,7 +120,10 @@ nodes:
     agent: false
     description: Determine which system components will be included in the test.
     name: identify_test_scope
-    nodes_depended_on: []
+    nodes_depended_on:
+    - allocate_infrastructure
+    - allocate_personnel
+    - allocate_tools
     nodes_dependent_on:
     - define_test_objective
     prompt: Based on the test objective, specify the components, systems, or processes
@@ -121,16 +132,18 @@ nodes:
     agent: false
     description: Rank parts of the test objective by importance.
     name: prioritize_test_objectives
-    nodes_depended_on: []
-    nodes_dependent_on:
+    nodes_depended_on:
     - define_test_objective
+    nodes_dependent_on:
+    - formulate_success_metrics
     prompt: Review the defined test objective and prioritize the components of the
       objective. Which elements are most critical to the test's success?
   review_test_plan:
     agent: false
     description: Validate and finalize the test plan.
     name: review_test_plan
-    nodes_depended_on: []
+    nodes_depended_on:
+    - execute_test
     nodes_dependent_on:
     - develop_test_plan
     prompt: Review the developed test plan for completeness, feasibility, and alignment
@@ -148,7 +161,8 @@ nodes:
     agent: false
     description: Organize raw data into a standardized format.
     name: structure_raw_test_data
-    nodes_depended_on: []
+    nodes_depended_on:
+    - validate_test_results
     nodes_dependent_on:
     - gather_raw_test_data
     prompt: Structure the collected raw test data into standardized formats for validation
@@ -157,7 +171,8 @@ nodes:
     agent: false
     description: Extract core conclusions from the analysis.
     name: summarize_key_findings
-    nodes_depended_on: []
+    nodes_depended_on:
+    - document_test_outcome
     nodes_dependent_on:
     - analyze_test_results
     prompt: Condense analysis results into a clear summary of test outcomes, highlighting
@@ -166,7 +181,8 @@ nodes:
     agent: false
     description: Verify correctness and completeness of the structured data.
     name: validate_test_results
-    nodes_depended_on: []
+    nodes_depended_on:
+    - analyze_test_results
     nodes_dependent_on:
     - structure_raw_test_data
     prompt: Perform data quality checks on the collected results to ensure accuracy,
