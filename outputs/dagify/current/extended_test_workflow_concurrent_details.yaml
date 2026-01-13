@@ -1,6 +1,6 @@
 dag_type: plain_text
-description: A reorganized version of the original test workflow that maximizes concurrency
-  while preserving all steps and their logical order.
+description: A concurrent test workflow that parallelizes independent tasks while
+  preserving all required dependencies.
 name: extended_test_workflow_concurrent
 nodes:
   allocate_test_resources:

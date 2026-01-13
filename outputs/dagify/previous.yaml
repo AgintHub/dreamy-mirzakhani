@@ -1,7 +1,7 @@
 dag_type: plain_text
-description: Enhanced workflow with additional intermediate steps for more granular
-  test planning and analysis.
-name: extended_test_workflow
+description: A reorganized version of the original test workflow that maximizes concurrency
+  while preserving all steps and their logical order.
+name: extended_test_workflow_concurrent
 nodes:
   allocate_test_resources:
     agent: false
@@ -10,8 +10,7 @@ nodes:
     nodes_depended_on:
     - identify_test_scope
     - determine_test_criteria
-    nodes_dependent_on:
-    - develop_test_plan
+    nodes_dependent_on: []
     prompt: Allocate personnel, tools, and infrastructure required to meet the test
       scope and criteria.
   analyze_test_results:
@@ -20,8 +19,7 @@ nodes:
     name: analyze_test_results
     nodes_depended_on:
     - validate_test_results
-    nodes_dependent_on:
-    - summarize_key_findings
+    nodes_dependent_on: []
     prompt: Analyze the verified test data to identify patterns, anomalies, and implications
       related to the test objectives.
   compile_raw_test_data:
@@ -30,8 +28,7 @@ nodes:
     name: compile_raw_test_data
     nodes_depended_on:
     - execute_test
-    nodes_dependent_on:
-    - validate_test_results
+    nodes_dependent_on: []
     prompt: Gather and structure all collected test data into standardized formats
       for validation and analysis.
   define_test_objective:
@@ -39,8 +36,7 @@ nodes:
     description: Define the primary goal of the test.
     name: define_test_objective
     nodes_depended_on: []
-    nodes_dependent_on:
-    - prioritize_test_objectives
+    nodes_dependent_on: []
     prompt: Define the primary goal of the test. What is the main objective that this
       test is trying to achieve?
   determine_test_criteria:
@@ -49,9 +45,7 @@ nodes:
     name: determine_test_criteria
     nodes_depended_on:
     - formulate_success_metrics
-    nodes_dependent_on:
-    - identify_test_scope
-    - allocate_test_resources
+    nodes_dependent_on: []
     prompt: Based on the formulated success metrics, define the precise evaluation
       standards for the test.
   develop_test_plan:
@@ -60,8 +54,7 @@ nodes:
     name: develop_test_plan
     nodes_depended_on:
     - allocate_test_resources
-    nodes_dependent_on:
-    - review_test_plan
+    nodes_dependent_on: []
     prompt: Design a detailed plan outlining test procedures, sequence, and execution
       methods aligned with the scope and criteria.
   document_test_outcome:
@@ -70,8 +63,7 @@ nodes:
     name: document_test_outcome
     nodes_depended_on:
     - summarize_key_findings
-    nodes_dependent_on:
-    - share_test_report
+    nodes_dependent_on: []
     prompt: Formalize test results into a structured report containing key findings,
       conclusions, and recommendations.
   execute_test:
@@ -80,8 +72,7 @@ nodes:
     name: execute_test
     nodes_depended_on:
     - review_test_plan
-    nodes_dependent_on:
-    - compile_raw_test_data
+    nodes_dependent_on: []
     prompt: Carry out the test procedures outlined in the approved plan. Collect all
       required data according to the defined criteria.
   formulate_success_metrics:
@@ -90,8 +81,7 @@ nodes:
     name: formulate_success_metrics
     nodes_depended_on:
     - prioritize_test_objectives
-    nodes_dependent_on:
-    - determine_test_criteria
+    nodes_dependent_on: []
     prompt: Based on the prioritized test objectives, define the concrete metrics
       and standards that will measure test success.
   identify_test_scope:
@@ -100,8 +90,7 @@ nodes:
     name: identify_test_scope
     nodes_depended_on:
     - define_test_objective
-    nodes_dependent_on:
-    - allocate_test_resources
+    nodes_dependent_on: []
     prompt: Based on the test objective, specify the components, systems, or processes
       that will be included in the test.
   prioritize_test_objectives:
@@ -110,8 +99,7 @@ nodes:
     name: prioritize_test_objectives
     nodes_depended_on:
     - define_test_objective
-    nodes_dependent_on:
-    - formulate_success_metrics
+    nodes_dependent_on: []
     prompt: Review the defined test objective and prioritize the components of the
       objective. Which elements are most critical to the test's success?
   review_test_plan:
@@ -120,8 +108,7 @@ nodes:
     name: review_test_plan
     nodes_depended_on:
     - develop_test_plan
-    nodes_dependent_on:
-    - execute_test
+    nodes_dependent_on: []
     prompt: Review the developed test plan for completeness, feasibility, and alignment
       with objectives. Are all requirements addressed?
   share_test_report:
@@ -139,8 +126,7 @@ nodes:
     name: summarize_key_findings
     nodes_depended_on:
     - analyze_test_results
-    nodes_dependent_on:
-    - document_test_outcome
+    nodes_dependent_on: []
     prompt: Condense analysis results into a clear summary of test outcomes, highlighting
       critical findings and their significance.
   validate_test_results:
@@ -149,7 +135,6 @@ nodes:
     name: validate_test_results
     nodes_depended_on:
     - compile_raw_test_data
-    nodes_dependent_on:
-    - analyze_test_results
+    nodes_dependent_on: []
     prompt: Perform data quality checks on the collected results to ensure accuracy,
       completeness, and consistency with test criteria.
