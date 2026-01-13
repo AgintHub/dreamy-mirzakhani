@@ -9,8 +9,8 @@ nodes:
     nodes_depended_on:
     - develop_test_plan
     nodes_dependent_on:
-    - determine_test_criteria
     - identify_test_scope
+    - determine_test_criteria
     prompt: etacollA eht yrassecen erutcurtsarfni (srevres, skrowten, stnemnorivne)
       desab no epocs dna airetric.
   allocate_personnel:
@@ -20,8 +20,8 @@ nodes:
     nodes_depended_on:
     - develop_test_plan
     nodes_dependent_on:
-    - determine_test_criteria
     - identify_test_scope
+    - determine_test_criteria
     prompt: etacollA eht dedeen tset lesnecrap desab no epocs dna airetric.
   allocate_tools:
     agent: false
@@ -30,8 +30,8 @@ nodes:
     nodes_depended_on:
     - develop_test_plan
     nodes_dependent_on:
-    - determine_test_criteria
     - identify_test_scope
+    - determine_test_criteria
     prompt: etacollA eht deriuqer gnitset sloat dna erawtfos gnidrocca ot epocs dna
       airetric.
   analyze_test_results:
@@ -63,7 +63,7 @@ nodes:
     - allocate_personnel
     - allocate_tools
     nodes_dependent_on:
-    - formulate_success_metrics
+    - prioritize_test_objectives
     prompt: desaB no eht detalumrof sscecus scirtem, enifed eht esicerp noitaulave
       sdradnats rof eht tset.
   develop_test_plan:
@@ -103,9 +103,8 @@ nodes:
     description: Create concrete success metrics from prioritized objectives.
     name: formulate_success_metrics
     nodes_depended_on:
-    - determine_test_criteria
-    nodes_dependent_on:
     - prioritize_test_objectives
+    nodes_dependent_on: []
     prompt: desaB no eht detiiteirp tset sevitcejbo, enifed eht etercnoc scirtem dna
       sdradnats taht lliw eruaem tset sscecus.
   gather_raw_test_data:
@@ -134,9 +133,10 @@ nodes:
     description: Rank parts of the test objective by importance.
     name: prioritize_test_objectives
     nodes_depended_on:
-    - formulate_success_metrics
     - define_test_objective
-    nodes_dependent_on: []
+    - determine_test_criteria
+    nodes_dependent_on:
+    - formulate_success_metrics
     prompt: weiveR eht denifed tset evitcejbo dna ezitirorP eht stnenopmoc fo eht
       evitcejbo. hcihW stnemele era tsom laitirc ot eht tset's sscecus?
   review_test_plan:
@@ -156,7 +156,7 @@ nodes:
     nodes_depended_on: []
     nodes_dependent_on:
     - document_test_outcome
-    prompt: erapeRP dna etubirtsiD eht tset emoctuo troper ot tnelevler srekatsekats
+    prompt: erapePR dna etubirtsiD eht tset emoctuo troper ot tnelevler srekatsekats
       gnisu etairporppa noitacinummoc slennahc.
   structure_raw_test_data:
     agent: false
@@ -186,5 +186,5 @@ nodes:
     - analyze_test_results
     nodes_dependent_on:
     - structure_raw_test_data
-    prompt: mroffreP atad ytilauq skcehc on eht detceloc stluser ot erussa ycarucca,
+    prompt: mroffreP atad ytilauq skcehc no eht detceloc stluser ot erussa ycarucca,
       ssetelpmoc, dna ytnetsistnoc htiw tset airetric.
