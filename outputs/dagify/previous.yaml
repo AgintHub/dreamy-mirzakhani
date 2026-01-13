@@ -1,67 +1,83 @@
 dag_type: plain_text
-description: A workflow for testing the Elemental Thoughts framework by creating a
-  sequence of fundamental steps.
-name: test_workflow
+description: A workflow that sets up a test environment, creates test cases, executes
+  them concurrently, and generates a final report.
+name: run_test_suite
 nodes:
-  analyze_test_results:
+  collect_test_results:
     agent: false
-    description: Analyze the test results and draw conclusions.
-    name: analyze_test_results
+    description: Compile raw test execution data into a unified format.
+    name: collect_test_results
     nodes_depended_on:
-    - execute_test_scripts
-    nodes_dependent_on: []
-    prompt: Examine the test results, identify trends and patterns, and draw meaningful
-      conclusions. Ensure the analysis is thorough and well-supported by data.
-  define_test_objective:
+    - execute_tests_parallel
+    nodes_dependent_on:
+    - create_summary_report
+    prompt: Aggregate the results from all test executions into a structured JSON
+      object containing test name, status, duration, and error details if any.
+  create_summary_report:
     agent: false
-    description: Define the objective of the test.
-    name: define_test_objective
-    nodes_depended_on: []
+    description: Produce the final test report for stakeholders.
+    name: create_summary_report
+    nodes_depended_on:
+    - collect_test_results
     nodes_dependent_on: []
-    prompt: Clearly state the primary goal of the test. Focus on a singular, well-defined
+    prompt: Generate a human‑readable report (Markdown) summarizing the total number
+      of tests, passed, failed, and skipped. Include a table with each test and its
       outcome.
-  design_test_cases:
+  define_test_cases:
     agent: false
-    description: Create test cases based on the requirements.
-    name: design_test_cases
-    nodes_depended_on:
-    - identify_test_requirements
-    nodes_dependent_on: []
-    prompt: Develop a set of test cases that cover various scenarios and edge cases.
-      Each test case should have a clear objective and expected outcome.
-  develop_test_scripts:
+    description: Specify test coverage and expected behavior.
+    name: define_test_cases
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - generate_test_scripts
+    prompt: List all test case identifiers and the functionality they cover. Provide
+      a short description for each case.
+  execute_tests_parallel:
     agent: false
-    description: Create scripts for automating the test cases.
-    name: develop_test_scripts
+    description: Execute the test suite in parallel to reduce runtime.
+    name: execute_tests_parallel
     nodes_depended_on:
-    - design_test_cases
-    nodes_dependent_on: []
-    prompt: Write scripts that can execute the test cases, including setup, execution,
-      and validation. Ensure the scripts are modular and reusable.
-  execute_test_scripts:
+    - generate_test_scripts
+    nodes_dependent_on:
+    - collect_test_results
+    prompt: Run all generated test scripts concurrently using the test runner's parallel
+      execution option. Capture standard output, exit codes, and any error logs.
+  generate_test_scripts:
     agent: false
-    description: Run the test scripts and collect results.
-    name: execute_test_scripts
+    description: Create executable test scripts from the test case list.
+    name: generate_test_scripts
     nodes_depended_on:
-    - develop_test_scripts
+    - define_test_cases
     nodes_dependent_on: []
-    prompt: Execute the test scripts, gather results, and document any failures or
-      issues. Focus on collecting relevant data for analysis.
-  identify_test_requirements:
+    prompt: For each test case, produce a script in the chosen test framework (e.g.,
+      Jest, PyTest) that exercises the target functionality and asserts expected outcomes.
+  initialize_test_environment:
     agent: false
-    description: Identify the requirements for the test.
-    name: identify_test_requirements
-    nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on: []
-    prompt: List the necessary resources, inputs, and conditions for the test. Ensure
-      each requirement is concise and actionable.
-  refine_test_workflow:
+    description: Establish isolated services needed for the tests.
+    name: initialize_test_environment
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - prepare_test_data
+    - setup_test_dependencies
+    prompt: Create a temporary test environment by launching required services (e.g.,
+      database, message broker) in Docker containers. Ensure all containers are reachable
+      on localhost and expose necessary ports.
+  prepare_test_data:
     agent: false
-    description: Refine the test workflow based on lessons learned.
-    name: refine_test_workflow
+    description: Load deterministic test data into the database.
+    name: prepare_test_data
     nodes_depended_on:
-    - analyze_test_results
+    - initialize_test_environment
     nodes_dependent_on: []
-    prompt: Review the test workflow, identify areas for improvement, and implement
-      changes to optimize the process. Focus on increasing efficiency and effectiveness.
+    prompt: Generate seed data for the database, including users, products, and orders,
+      and load it into the test database. Output a summary of records inserted.
+  setup_test_dependencies:
+    agent: false
+    description: Install runtime dependencies for test execution.
+    name: setup_test_dependencies
+    nodes_depended_on:
+    - initialize_test_environment
+    nodes_dependent_on: []
+    prompt: Install any required runtime dependencies (e.g., npm packages, Python
+      libraries) inside the test environment. Verify installation by running a version
+      check.
