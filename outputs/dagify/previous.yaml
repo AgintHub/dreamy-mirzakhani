@@ -1,75 +1,62 @@
 dag_type: plain_text
-description: A workflow for testing the capabilities of a Directed Acyclic Graph (DAG)
-  execution plan.
+description: A workflow for testing various scenarios
 name: test_workflow
 nodes:
-  analyze_test_results:
+  check_test_data:
     agent: false
-    description: Examine and interpret the results of the test.
-    name: analyze_test_results
+    description: Verify that the generated test data is valid
+    name: check_test_data
     nodes_depended_on:
-    - execute_test_protocol
-    nodes_dependent_on: []
-    prompt: Analyze the collected data, drawing conclusions and identifying trends
-      or patterns that emerge from the test results.
-  define_test_objective:
+    - get_test_data
+    nodes_dependent_on:
+    - get_test_data
+    prompt: Verify that the generated test data is valid
+  generate_test_report:
     agent: false
-    description: Determine the objective of the test.
-    name: define_test_objective
+    description: Generate a test report summarizing the results of all tests
+    name: generate_test_report
     nodes_depended_on:
-    - initialize_test_environment
+    - test_performance
     nodes_dependent_on: []
-    prompt: Clearly define what the test aims to accomplish and what metrics will
-      be used to measure success.
-  design_test_protocol:
+    prompt: Generate a test report
+  get_test_data:
     agent: false
-    description: Create a detailed protocol for the test.
-    name: design_test_protocol
-    nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on: []
-    prompt: Develop a step-by-step guide outlining the procedures and methodologies
-      to be used during the test.
-  document_test_outcomes:
-    agent: false
-    description: Record and summarize the findings of the test.
-    name: document_test_outcomes
-    nodes_depended_on:
-    - analyze_test_results
-    nodes_dependent_on: []
-    prompt: Compile a comprehensive report detailing the test outcomes, including
-      any successes, failures, or areas for improvement.
-  execute_test_protocol:
-    agent: false
-    description: Run the test according to the designed protocol.
-    name: execute_test_protocol
-    nodes_depended_on:
-    - gather_test_data
-    nodes_dependent_on: []
-    prompt: Execute the test protocol, following the outlined procedures and methodologies,
-      and collect the resulting data.
-  gather_test_data:
-    agent: false
-    description: Collect and prepare the necessary data for the test.
-    name: gather_test_data
-    nodes_depended_on:
-    - design_test_protocol
-    nodes_dependent_on: []
-    prompt: Gather and preprocess the data required for the test, ensuring it is in
-      the correct format and meets the necessary criteria.
-  initialize_test_environment:
-    agent: false
-    description: Set up the environment for testing.
-    name: initialize_test_environment
+    description: Generate test data for this workflow
+    name: get_test_data
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Prepare the test environment by setting up the necessary tools and configurations.
-  review_and_refine_test_protocol:
+    prompt: Generate test data for this workflow
+  test_api:
     agent: false
-    description: Evaluate and refine the test protocol based on the results.
-    name: review_and_refine_test_protocol
+    description: Perform various API tests (e.g., request-response, authentication,
+      rate limiting)
+    name: test_api
     nodes_depended_on:
-    - document_test_outcomes
+    - test_database
     nodes_dependent_on: []
-    prompt: Assess the effectiveness of the test protocol and make adjustments as
-      necessary to improve future tests.
+    prompt: Perform various API tests
+  test_database:
+    agent: false
+    description: Perform various database tests (e.g., CRUD operations, queries, indexing)
+    name: test_database
+    nodes_depended_on:
+    - check_test_data
+    nodes_dependent_on: []
+    prompt: Perform various database tests
+  test_performance:
+    agent: false
+    description: Perform various performance tests (e.g., load testing, stress testing)
+    name: test_performance
+    nodes_depended_on:
+    - test_security
+    nodes_dependent_on: []
+    prompt: Perform various performance tests
+  test_security:
+    agent: false
+    description: Perform various security tests (e.g., penetration testing, vulnerability
+      scanning)
+    name: test_security
+    nodes_depended_on:
+    - test_api
+    nodes_dependent_on: []
+    prompt: Perform various security tests
