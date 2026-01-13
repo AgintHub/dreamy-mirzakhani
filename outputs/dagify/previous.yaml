@@ -1,4 +1,4 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: hedge_fund_fundamental_blueprint
 nodes:
@@ -21,6 +21,61 @@ nodes:
         the chosen strategy.
       key: risk_profile
       type: str
+    prd:
+      conceptual_info: This node determines the flagship investment strategy for the
+        hedge fund, ensuring alignment with the fund’s stated objectives, competitive
+        positioning, and target return profile.
+      docstring:
+        examples:
+        - lines:
+          - strategy = choose_investment_strategy(objectives_bullets=[
+          - '    "Generate 15% annual gross return through diversified equity strategies.",'
+          - '    "Maintain low correlation with global macro factors.",'
+          - '    "Leverage proprietary quantitative models.",'
+          - '    "Target a volatility of 8-10%.",'
+          - '    "Seek alpha in both bull and bear markets.",'
+          - '    "Operate within a liquid asset universe.",'
+          - '    "Aim for a Sharpe ratio above 1.5.",'
+          - '    "Focus on long-term capital preservation."] )'
+          - print(strategy['strategy_category'])
+          - print(strategy['rationale'])
+          - print(strategy['risk_profile'])
+          output: '"Event‑Driven Equity"\n"The fund will focus on exploiting corporate
+            event catalysts such as M&A, restructurings, and spin‑offs, leveraging
+            its quantitative edge to generate asymmetric returns in both bullish and
+            bearish market regimes. This aligns with the objective of producing 15%
+            gross annual returns while maintaining low correlation to macro trends.\n"The
+            strategy offers medium to high volatility with potential for sharp downside
+            during illiquid event periods, but mitigated by strict position limits
+            and liquidity buffers. Expected volatility: 8‑10% with drawdown controls
+            at 25%."'
+        - lines:
+          - strategy = choose_investment_strategy(objectives_bullets=[
+          - '    "Provide long‑term growth for institutional pension funds.",'
+          - '    "Capitalize on global macro opportunities.",'
+          - '    "Maintain a conservative risk appetite."] )'
+          - print(strategy['strategy_category'])
+          output: '"Global Macro"'
+        parameters:
+        - description: Bullet points summarizing the fund’s investment purpose, competitive
+            advantages, target return profiles, and long-term vision (maximum 8 bullets).
+            These are the outputs of the parent node `clarify_fund_objectives`.
+          name: objectives_bullets
+          type: List[str]
+        raises:
+        - description: Raised if `objectives_bullets` is empty or does not contain
+            any actionable points.
+          type: ValueError
+        - description: Raised if no suitable strategy category can be inferred from
+            the provided objectives.
+          type: RuntimeError
+        returns:
+          description: A dictionary with keys `strategy_category`, `rationale`, and
+            `risk_profile`, each mapping to a string describing the chosen strategy,
+            its alignment with objectives, and the anticipated risk characteristics.
+          type: Dict[str, str]
+        summary: Selects the primary investment strategy category and generates a
+          rationale and risk profile based on the fund's objectives.
     prompt: Identify one primary investment strategy category (e.g., long/short equity,
       event-driven, global macro) and provide a one-paragraph rationale aligning with
       the fund's objectives. Include expected risk profile.
@@ -43,6 +98,35 @@ nodes:
         type
       key: compliance_consideration
       type: str
+    prd:
+      conceptual_info: This node determines the most suitable legal entity type for
+        a hedge fund based on the selected jurisdiction.
+      docstring:
+        examples:
+        - lines:
+          - choose_legal_entity_type('Cayman Islands')
+          - '# Output: {''legal_entity_type'': ''LP'', ''operational_advantages'':
+            [''Tax efficiency'', ''Flexibility in ownership structure'', ''Limited
+            liability protection''], ''compliance_consideration'': ''Registration
+            with the Cayman Islands Monetary Authority''}'
+          output: '{''legal_entity_type'': ''LP'', ''operational_advantages'': [''Tax
+            efficiency'', ''Flexibility in ownership structure'', ''Limited liability
+            protection''], ''compliance_consideration'': ''Registration with the Cayman
+            Islands Monetary Authority''}'
+        parameters:
+        - description: The selected jurisdiction (e.g., Cayman Islands, Delaware,
+            Luxembourg)
+          name: jurisdiction
+          type: str
+        raises:
+        - description: If the selected jurisdiction is not supported.
+          type: ValueError
+        returns:
+          description: A dictionary containing the chosen legal entity type, operational
+            advantages, and compliance consideration.
+          type: dict
+        summary: Choose a legal entity type based on the selected jurisdiction and
+          provide operational advantages and compliance considerations.
     prompt: Specify the most suitable legal entity type (e.g., LP, LLC, SICAV) for
       the selected jurisdiction. Provide three operational advantages and one compliance
       consideration specific to this structure.
@@ -57,6 +141,54 @@ nodes:
         target return profiles, and long-term vision (maximum 8 bullets)
       key: objectives_bullets
       type: List[str]
+    prd:
+      conceptual_info: The node gathers and formats the foundational strategic directives
+        that guide all subsequent planning stages of the hedge fund.
+      docstring:
+        examples:
+        - lines:
+          - output = clarify_fund_objectives("State the primary business objectives
+            for launching the hedge fund. List investment purpose, competitive advantages,
+            target return profiles, and long‑term vision in concise bullet points
+            (max 8 bullets)")
+          output: '{''objectives_bullets'': [''Deliver alpha through long/short equity
+            strategies targeting 20% annual gross returns.'', ''Leverage proprietary
+            quantitative models for edge in volatility forecasting.'', ''Maintain
+            a diversified portfolio across U.S. and EU markets to mitigate geopolitical
+            risk.'', ''Offer transparent fee structures to attract family offices.'',
+            ''Invest in ESG‑compliant assets to align with investor values.'', ''Build
+            a scalable technology platform to support high‑frequency data analytics.'',
+            ''Scale to $500M AUM within five years by tapping institutional capital.'',
+            ''Commit to a 10‑year growth roadmap with quarterly performance reviews.'']}'
+        - lines:
+          - output = clarify_fund_objectives("Provide concise objectives for a hedge
+            fund focused on event‑driven opportunities.")
+          output: '{''objectives_bullets'': [''Capture mispricing from corporate events
+            with a 15% gross return target.'', ''Utilize a concentrated portfolio
+            of 10‑20 positions for high conviction.'', ''Maintain liquidity through
+            short‑term debt and cash reserves.'', ''Employ a risk‑parity framework
+            to cap volatility at 12%.'', ''Offer fee‑structured performance incentives
+            to align manager and investor interests.'', ''Leverage a network of deal
+            partners for early access to events.'', ''Expand to $250M AUM over three
+            years.'', ''Commit to ESG compliance and regular third‑party audits.'']}'
+        parameters:
+        - description: Raw textual instruction supplied by the user or orchestrator.
+            The function consumes this prompt verbatim to produce the bullet list.
+          name: prompt_text
+          type: str
+        raises:
+        - description: If `prompt_text` is empty or not a string.
+          type: ValueError
+        - description: If the generated list exceeds eight bullets or contains non‑string
+            elements.
+          type: RuntimeError
+        returns:
+          description: Dictionary with a single key `objectives_bullets` mapping to
+            a list of strings, each string being a bullet point.
+          type: Dict[str, List[str]]
+        summary: Generate a concise list of up to eight bullet points that articulate
+          the hedge fund’s investment purpose, competitive advantages, target return
+          expectations, and long‑term vision.
     prompt: State the primary business objectives for launching the hedge fund. List
       investment purpose, competitive advantages, target return profiles, and long-term
       vision in concise bullet points (max 8 bullets)
@@ -101,13 +233,74 @@ nodes:
     - description: List of Q&A topics
       key: qa_topics
       type: List[str]
+    prd:
+      conceptual_info: Create a structured outline for an investor presentation, incorporating
+        key elements such as objectives, strategy, risk management, and operations.
+      docstring:
+        examples:
+        - lines:
+          - compile_pitch_deck_outline({
+          - '  ''objectives'': [''Investment purpose'', ''Competitive advantages''],'
+          - '  ''strategy'': ''Long/Short Equity'','
+          - '  ''investor_profile'': {''typical_investor_types'': [''Family Offices''],
+            ''required_minimum_investment'': 1000000},'
+          - '  ''performance_targets'': [0.15, 0.10, 1.5, 0.20],'
+          - '  ''operating_costs'': [10000.0, 5000.0, 20000.0],'
+          - '  ''risk_management'': [''Position Limits'', ''VaR'', ''Liquidity Thresholds''],'
+          - '  ''operations_workflow'': [''Idea Generation'', ''Portfolio Signal Generation'',
+            ''Order Entry'']'
+          - '})'
+          output: '{''slide_titles'': [''Introduction'', ''Investment Strategy''],
+            ''core_messages'': [''Overview of investment approach'', ''Details of
+            strategy implementation''], ...}'
+        parameters:
+        - description: List of bullet points summarizing investment purpose, competitive
+            advantages, target return profiles, and long-term vision.
+          name: objectives
+          type: List[str]
+        - description: Chosen primary investment strategy category.
+          name: strategy
+          type: str
+        - description: Dictionary containing typical investor types, required minimum
+            investments, liquidity expectations, risk tolerance levels, and geographic
+            focus.
+          name: investor_profile
+          type: Dict[str, str]
+        - description: Numerical target values for performance metrics such as gross
+            return, volatility, Sharpe ratio, and maximum drawdown tolerance.
+          name: performance_targets
+          type: List[float]
+        - description: List of monthly costs in USD for each service provider, including
+            vendor fees, technology implementation, and operational overhead.
+          name: operating_costs
+          type: List[float]
+        - description: List of quantifiable risk controls and qualitative risk practices
+            aligned with performance targets.
+          name: risk_management
+          type: List[str]
+        - description: Ordered list of operational stages from idea generation to
+            settlement, including responsible parties and vendor involvement.
+          name: operations_workflow
+          type: List[str]
+        raises:
+        - description: If any of the input parameters are invalid or missing required
+            information.
+          type: ValueError
+        returns:
+          description: A dictionary containing the compiled pitch deck outline, including
+            slide titles, core messages, summaries of key sections, and Q&A topics.
+          type: Dict[str, str or List[str]]
+        summary: Compile a comprehensive outline for a 15-slide investor pitch deck,
+          integrating insights from fund objectives, investment strategy, risk management,
+          and operational compliance.
     prompt: 'Develop 15-slide investor presentation outline with: 2 objectives slides,
       3 strategy slides, 1 risk-return analysis, 1 team slide, 4 operations/compliance
       slides, 2 financials slides, 1 Q&A slide. Include slide title and core message
       for each.'
   define_asset_universe:
     agent: false
-    description: Specify eligible investment instruments
+    description: Specify eligible investment instruments for the hedge fund, ensuring
+      alignment with the chosen investment strategy and compliance requirements.
     name: define_asset_universe
     nodes_depended_on:
     - choose_investment_strategy
@@ -123,6 +316,96 @@ nodes:
         instruments
       key: asset_class_count
       type: int
+    prd:
+      conceptual_info: This node defines the concrete set of tradable instruments
+        that the hedge fund will target. The selection must reflect the strategy chosen
+        in the parent node, cover a balanced mix of asset classes, and satisfy regulatory
+        and liquidity constraints.
+      docstring:
+        examples:
+        - lines:
+          - '# Example 1: Long/Short Equity strategy with moderate risk'
+          - 'result = define_asset_universe(
+
+            '
+          - '    strategy_category=''Long/Short Equity'',
+
+            '
+          - '    strategy_rationale=''Capitalize on market inefficiencies while providing
+            downside protection.'',
+
+            '
+          - '    risk_profile=''Moderate volatility with limited leverage.''
+
+            '
+          - )
+          output: "{\n  'instrument_names': [\n    'S&P 500 Equity Index',\n    'Nasdaq\
+            \ 100 Equity Index',\n    'US Treasury 10‑Year Bond',\n    'US Treasury\
+            \ 30‑Year Bond',\n    'Gold Futures',\n    'Oil Futures',\n    'EUR/USD\
+            \ Spot',\n    'US 10‑Year Treasury Futures',\n    'Emerging Market Corporate\
+            \ Bond Index',\n    'Credit Default Swap on S&P 500'\n  ],\n  'instrument_rationales':\
+            \ [\n    'Large‑cap equity exposure for core long bets.',\n    'High‑growth\
+            \ tech exposure to balance risk.',\n    'Cash‑like instrument for portfolio\
+            \ liquidity.',\n    'Long‑term yield curve play for duration control.',\n\
+            \    'Inflation hedge and commodity diversification.',\n    'Oil price\
+            \ volatility capture.',\n    'Currency overlay for hedge and speculation.',\n\
+            \    'Leverage and duration adjustment via futures.',\n    'Diversification\
+            \ into high‑yield debt markets.',\n    'Credit risk exposure and spread\
+            \ trading.'\n  ],\n  'asset_class_count': 5\n}"
+        - lines:
+          - '# Example 2: Global Macro strategy with high risk tolerance'
+          - 'result = define_asset_universe(
+
+            '
+          - '    strategy_category=''Global Macro'',
+
+            '
+          - '    strategy_rationale=''Exploit macroeconomic trends across asset classes
+            worldwide.'',
+
+            '
+          - "    risk_profile='High volatility, aggressive leverage allowed.'\n  \
+            \              )"
+          output: "{\n  'instrument_names': [\n    'S&P 500 Futures',\n    'Euro Stoxx\
+            \ 50 Futures',\n    'US Treasury 10‑Year Futures',\n    'US Treasury 30‑Year\
+            \ Futures',\n    'Gold Spot',\n    'Crude Oil Spot',\n    'EUR/USD Forward',\n\
+            \    'Emerging Market Debt Futures',\n    'Credit Default Swap Index on\
+            \ Emerging Markets',\n    'Volatility Index (VIX) Futures'\n  ],\n  'instrument_rationales':\
+            \ [\n    'Leverage on major equity markets.',\n    'Exposure to European\
+            \ equity trends.',\n    'Yield curve trade for duration control.',\n \
+            \   'Long‑term interest rate play.',\n    'Inflation hedge.',\n    'Energy\
+            \ market speculation.',\n    'Currency overlay for macro bets.',\n   \
+            \ 'Emerging market debt trend exploitation.',\n    'Credit spread trading\
+            \ across emerging markets.',\n    'Volatility capture and risk management.'\n\
+            \  ],\n  'asset_class_count': 5\n}"
+        parameters:
+        - description: Primary investment strategy category determined by the parent
+            node (e.g., 'Long/Short Equity', 'Global Macro', 'Event‑Driven'). This
+            informs the asset selection.
+          name: strategy_category
+          type: str
+        - description: One‑paragraph justification of the chosen strategy, used for
+            contextual filtering of instruments.
+          name: strategy_rationale
+          type: str
+        - description: Concise description of the expected risk profile (e.g., 'High
+            volatility, leverage‑enabled'). Helps prioritize high‑yield or high‑liquidity
+            assets.
+          name: risk_profile
+          type: str
+        raises:
+        - description: If any of the input parameters are missing or empty.
+          type: ValueError
+        - description: If the algorithm fails to assemble 10 distinct instruments
+            after exhaustive search.
+          type: RuntimeError
+        returns:
+          description: Dictionary with keys `instrument_names` (List[str]), `instrument_rationales`
+            (List[str]), and `asset_class_count` (int) as defined in the node’s output
+            structure.
+          type: dict
+        summary: Generate a list of 10 tradable financial instruments along with short
+          rationales and compute the distinct asset class count.
     prompt: List specific tradable asset classes (equities, bonds, commodities, derivatives)
       and instruments (e.g., S&P 500 futures, emerging market debt) that will be actively
       traded. Limit to 10 items with brief rationale for each selection.
@@ -149,6 +432,38 @@ nodes:
     - description: Description of geographic focus
       key: geographic_focus
       type: str
+    prd:
+      conceptual_info: Characterize target capital sources by defining ideal investor
+        demographics
+      docstring:
+        examples:
+        - lines:
+          - define_investor_profile(fund_objectives='Maximize returns while minimizing
+            risk')
+          - 'print(output[''typical_investor_types''])  # Output: [''family offices'',
+            ''pensions'']'
+          - 'print(output[''required_minimum_investment''])  # Output: 1000000'
+          - 'print(output[''liquidity_expectations''])  # Output: ''Quarterly redemptions'''
+          - 'print(output[''risk_tolerance_levels''])  # Output: [''aggressive'',
+            ''conservative'']'
+          - 'print(output[''geographic_focus''])  # Output: ''North America'''
+          output: '{''typical_investor_types'': [''family offices'', ''pensions''],
+            ''required_minimum_investment'': 1000000, ''liquidity_expectations'':
+            ''Quarterly redemptions'', ''risk_tolerance_levels'': [''aggressive'',
+            ''conservative''], ''geographic_focus'': ''North America''}'
+        parameters:
+        - description: Primary business objectives for launching the hedge fund
+          name: fund_objectives
+          type: str
+        raises:
+        - description: If required minimum investment is not a positive integer
+          type: ValueError
+        returns:
+          description: A dictionary containing typical investor types, required minimum
+            investment, liquidity expectations, risk tolerance levels, and geographic
+            focus
+          type: dict
+        summary: Define the ideal investor demographic for a hedge fund
     prompt: Define the ideal investor demographic by specifying typical investor types
       (e.g., family offices, pensions), required minimum investments (in USD), liquidity
       expectations, and risk tolerance levels (aggressive/conservative). Include geographic
@@ -175,12 +490,81 @@ nodes:
         implemented in-house (true) or outsourced to a vendor (false).
       key: vendor_in_house_flags
       type: List[bool]
+    prd:
+      conceptual_info: The `define_technology_stack` node translates the operational
+        workflow defined in `draft_operations_workflow` into a concrete technology
+        roadmap. It aligns each lifecycle stage with a suitable platform or service
+        and flags whether the capability will be built internally or sourced from
+        a third‑party vendor. The output feeds cost estimation and vendor selection
+        nodes downstream.
+      docstring:
+        examples:
+        - lines:
+          - workflow_stages = ["Idea Generation", "Signal Generation", "Order Entry",
+            "Execution Management", "Position Monitoring", "Reconciliation", "Settlement"],
+          - stage_descriptions = [
+          - '    "Generate investment ideas via research and data analysis.",'
+          - '    "Generate buy/sell signals from quantitative models.",'
+          - '    "Create order records in the OMS.",'
+          - '    "Route orders to market via FIX gateway.",'
+          - '    "Track open positions and P&L.",'
+          - '    "Automated P&L and trade reconciliation.",'
+          - '    "Confirm settlements with custodians and counterparties."]'
+          - result = define_technology_stack(workflow_stages, stage_descriptions)
+          - print(result)
+          output: "{\n  \"workflow_stages\": [\"Idea Generation\", \"Signal Generation\"\
+            , \"Order Entry\", \"Execution Management\", \"Position Monitoring\",\
+            \ \"Reconciliation\", \"Settlement\"],\n  \"technology_solutions\": [\"\
+            Data Analytics Platform\", \"Quant Model Engine\", \"Order Management\
+            \ System\", \"FIX Gateway\", \"Risk Engine\", \"Reconciliation Tool\"\
+            , \"Settlement Service\"],\n  \"vendor_in_house_flags\": [true, true,\
+            \ false, false, true, false, false]\n}"
+        - lines:
+          - '# Using a shortened workflow
+
+            workflow_stages = ["Signal Generation", "Order Entry", "Execution Management"],'
+          - stage_descriptions = [
+          - '    "Generate buy/sell signals.",'
+          - '    "Create orders.",'
+          - '    "Route to market."]'
+          - print(define_technology_stack(workflow_stages, stage_descriptions))
+          output: "{\n  \"workflow_stages\": [\"Signal Generation\", \"Order Entry\"\
+            , \"Execution Management\"],\n  \"technology_solutions\": [\"Quant Model\
+            \ Engine\", \"Order Management System\", \"FIX Gateway\"],\n  \"vendor_in_house_flags\"\
+            : [true, false, false]\n}"
+        parameters:
+        - description: Ordered list of workflow stages as produced by `draft_operations_workflow`.
+          name: workflow_stages
+          type: List[str]
+        - description: Brief description of activities performed in each stage (used
+            for contextual mapping).
+          name: stage_descriptions
+          type: List[str]
+        raises:
+        - description: If the length of `workflow_stages` and `stage_descriptions`
+            do not match.
+          type: ValueError
+        - description: If a known workflow stage is not present in the internal mapping.
+          type: KeyError
+        returns:
+          description: 'A dictionary containing three keys:
+
+            - `workflow_stages` (List[str])
+
+            - `technology_solutions` (List[str])
+
+            - `vendor_in_house_flags` (List[bool])'
+          type: Dict[str, List[Any]]
+        summary: Generate a technology stack mapping for the hedge fund’s operational
+          workflow.
     prompt: 'List required operational technology components for each workflow stage
       (e.g., order management system for trade execution). Format as two-column table:
       Workflow Stage | Technology Solution.'
   design_compliance_program:
     agent: false
-    description: Create regulatory control framework
+    description: Creates a regulatory control framework by mapping required compliance
+      items across three key domains—investor accreditation, subscription verification,
+      and anti-money laundering—alongside their planned implementation dates.
     name: design_compliance_program
     nodes_depended_on:
     - identify_regulatory_requirements
@@ -206,6 +590,62 @@ nodes:
     - description: Implementation dates for each AML policy item (YYYY-MM-DD format)
       key: aml_dates
       type: List[str]
+    prd:
+      conceptual_info: The node synthesizes regulatory requirements identified earlier
+        and investor profile constraints into a structured compliance program. It
+        outputs three parallel lists of checklist items and their corresponding launch
+        dates, ready for inclusion in a spreadsheet or project tracking tool.
+      docstring:
+        examples:
+        - lines:
+          - '# Example 1: Basic compliance program generation'
+          - reg_req = [
+          - '  {''requirement'': ''SEC Form ADV'', ''agency_citation'': ''SEC'', ''implementation_notes'':
+            [''File annually'', ''Update bi‑annually'']},'
+          - '  {''requirement'': ''FINRA Membership'', ''agency_citation'': ''FINRA'',
+            ''implementation_notes'': [''Apply within 30 days'']}'
+          - ']'
+          - inv_prof = {
+          - '  ''typical_investor_types'': [''Family Office'', ''Pension Fund''],'
+          - '  ''required_minimum_investment'': 5000000,'
+          - '  ''liquidity_expectations'': ''Monthly'','
+          - '  ''risk_tolerance_levels'': [''Aggressive''],'
+          - "  'geographic_focus': 'US'\"\n                \"}"
+          - result = design_compliance_program(reg_req, inv_prof)
+          - print(result['accreditation_items'])
+          output: '[''SEC Form ADV'', ''FINRA Membership'']'
+        - lines:
+          - '# Example 2: Validation error when inputs missing'
+          - 'try:'
+          - '  design_compliance_program([], inv_prof)'
+          - 'except ValueError as e:'
+          - '  print(str(e))'
+          output: Input regulatory_requirements list is empty.
+        parameters:
+        - description: Output from identify_regulatory_requirements. Each dict contains
+            keys 'requirement', 'agency_citation', and 'implementation_notes'. These
+            provide the regulatory basis for accreditation, subscription, and AML
+            items.
+          name: regulatory_requirements
+          type: List[Dict[str, Any]]
+        - description: Output from define_investor_profile. Contains fields such as
+            'typical_investor_types', 'required_minimum_investment', 'liquidity_expectations',
+            'risk_tolerance_levels', and 'geographic_focus'. These inform the specificity
+            of accreditation and subscription items.
+          name: investor_profile
+          type: Dict[str, Any]
+        raises:
+        - description: If either input list is empty or missing required keys.
+          type: ValueError
+        - description: If inputs are not of the expected types.
+          type: TypeError
+        returns:
+          description: A dictionary with six keys—accreditation_items, accreditation_dates,
+            subscription_items, subscription_dates, aml_items, aml_dates—each mapping
+            to a list of strings.
+          type: Dict[str, List[str]]
+        summary: Generate compliance checklists for investor accreditation, subscription
+          verification, and AML policies, each paired with an implementation date.
     prompt: 'Generate compliance checklists mapping three categories: investor accreditation
       standards, subscription verification procedures, anti-money laundering policies.
       Format as 3-tab spreadsheet with implementation dates.'
@@ -230,12 +670,123 @@ nodes:
     - description: Descriptions of each qualitative risk practice
       key: qual_practices_desc
       type: List[str]
+    prd:
+      conceptual_info: This node translates performance targets and asset universe
+        constraints into a concrete set of risk controls. It enumerates both numerical
+        limits (e.g., position caps, VaR thresholds) and process-oriented safeguards
+        (e.g., daily monitoring, weekly reporting). The output is structured for downstream
+        use in pitch decks and operational workflows.
+      docstring:
+        examples:
+        - lines:
+          - 'design_risk_management_framework(
+
+            '
+          - '    metric_names=[''Gross Return'', ''Volatility'', ''Sharpe Ratio'',
+            ''Max Drawdown''],
+
+            '
+          - '    target_values=[0.15, 0.10, 2.0, 0.20],
+
+            '
+          - '    rationale_texts=[''Targeting 15% return'', ''Control volatility to
+            10%'', ''Sharpe > 2'', ''Drawdown < 20%''],
+
+            '
+          - '    instrument_names=[''SPX Futures'', ''Emerging Debt'', ''Gold Futures'',
+            ''USD Bonds'', ''EU Equity ETF'', ''Oil Futures'', ''US Treasury'', ''China
+            Shares'', ''Eurodollar Futures'', ''US Equity ETF''],
+
+            '
+          - '    instrument_rationales=[''Liquidity'', ''Diversification'', ''Inflation
+            hedge'', ''Safe haven'', ''European exposure'', ''Energy cycle'', ''Credit
+            quality'', ''Growth potential'', ''Interest rate sensitivity'', ''Broad
+            market exposure''],
+
+            '
+          - '    asset_class_count=4
+
+            '
+          - )
+          output: "{\n  \"num_quant_controls\": 5,\n  \"quant_controls_desc\": [\n\
+            \    \"Position limit: max 10% of portfolio per instrument\",\n    \"\
+            Daily VaR: 2% of NAV at 99% confidence\",\n    \"Liquidity threshold:\
+            \ min 20% of position must be marketable within 2 hours\",\n    \"Concentration\
+            \ limit: no single asset class > 25% of total NAV\",\n    \"Leverage cap:\
+            \ maximum 3x equity exposure\"\n  ],\n  \"num_qual_practices\": 3,\n \
+            \ \"qual_practices_desc\": [\n    \"Daily risk dashboard emailed to Portfolio\
+            \ Manager and Head of Risk\",\n    \"Weekly risk review meeting with investment\
+            \ team and compliance\",\n    \"Monthly audit of risk controls against\
+            \ performance targets\"\n  ]\n}"
+        - lines:
+          - 'design_risk_management_framework(
+
+            '
+          - '    metric_names=[''Gross Return'', ''Volatility''],
+
+            '
+          - '    target_values=[0.12, 0.08],
+
+            '
+          - '    rationale_texts=[''12% return'', ''8% vol''],
+
+            '
+          - '    instrument_names=[''AAPL'', ''SPX Futures'', ''US Treasury'', ''Gold''],
+
+            '
+          - '    instrument_rationales=[''Growth'', ''Index'', ''Safe haven'', ''Inflation
+            hedge''],
+
+            '
+          - '    asset_class_count=3
+
+            '
+          - )
+          output: "{\n  \"num_quant_controls\": 4,\n  \"quant_controls_desc\": [\n\
+            \    \"Max position per security: 5% of NAV\",\n    \"Daily VaR: 1.5%\
+            \ of NAV\",\n    \"Liquidity: 15% of position must be liquid within 1\
+            \ hour\",\n    \"Leverage: capped at 2x equity\"\n  ],\n  \"num_qual_practices\"\
+            : 3,\n  \"qual_practices_desc\": [\n    \"Daily risk metric report\",\n\
+            \    \"Bi‑weekly risk review\",\n    \"Quarterly independent risk audit\"\
+            \n  ]\n}"
+        parameters:
+        - description: Names of performance and risk metrics from set_performance_and_risk_targets.
+          name: metric_names
+          type: List[str]
+        - description: Numeric target values corresponding to each metric.
+          name: target_values
+          type: List[float]
+        - description: Brief rationale for each target.
+          name: rationale_texts
+          type: List[str]
+        - description: List of the 10 selected tradable instruments from define_asset_universe.
+          name: instrument_names
+          type: List[str]
+        - description: Rationales for each instrument.
+          name: instrument_rationales
+          type: List[str]
+        - description: Number of distinct asset classes represented among the 10 instruments.
+          name: asset_class_count
+          type: int
+        raises:
+        - description: If any required input list is empty or misaligned in length.
+          type: ValueError
+        - description: If input types do not match the expected PrimitiveTypes.
+          type: TypeError
+        returns:
+          description: 'Dictionary matching the node''s output structure: {num_quant_controls,
+            quant_controls_desc, num_qual_practices, qual_practices_desc}.'
+          type: dict
+        summary: Generate a risk mitigation framework that aligns with performance
+          targets and the chosen asset universe.
     prompt: List 4-6 quantifiable risk controls (position limits, VaR, liquidity thresholds)
       and 3 qualitative risk practices (monitoring protocols, reporting cadence, etc.)
       aligned with the performance targets.
   draft_operations_workflow:
     agent: false
-    description: Map daily operational procedures
+    description: Creates a structured outline of the daily operational workflow for
+      a hedge fund, mapping each stage of the trade lifecycle to responsible parties
+      and indicating whether a vendor is involved.
     name: draft_operations_workflow
     nodes_depended_on:
     - define_asset_universe
@@ -256,12 +807,64 @@ nodes:
     - description: Brief description of activities performed in each stage
       key: stage_descriptions
       type: List[str]
+    prd:
+      conceptual_info: The node captures the day‑to‑day operational flow of a hedge
+        fund, from idea inception through settlement, assigning each leg of the process
+        to either in‑house teams or external vendors.
+      docstring:
+        examples:
+        - lines:
+          - '# Mock inputs'
+          - asset_universe = {
+          - '    ''instrument_names'': [''S&P 500 Futures'', ''Emerging Market Debt'',
+            ''Crude Oil Futures''],'
+          - '    ''instrument_rationales'': [''Liquidity'', ''Yield potential'', ''Diversification''],'
+          - '    ''asset_class_count'': 3'
+          - '}'
+          - service_providers = {
+          - '    ''provider_names'': [''Prime Broker'', ''Custodian'', ''Fund Administrator'',
+            ''Legal Counsel'', ''Compliance Consultant''],'
+          - '    ''provider_functions'': [''Order routing'', ''Safekeeping'', ''NAV
+            calculations'', ''Contract review'', ''AML monitoring'']'
+          - '}'
+          - output = draft_operations_workflow(asset_universe, service_providers)
+          - print(output['stages'])
+          output: '[''Idea Generation'', ''Signal Generation'', ''Order Entry'', ''Execution
+            Management'', ''Position Monitoring'', ''Reconciliation'', ''Settlement'']'
+        - lines:
+          - print(output['vendor_involved'])
+          output: '[False, False, False, True, False, True, True]'
+        parameters:
+        - description: Output of the `define_asset_universe` node containing `instrument_names`,
+            `instrument_rationales`, and `asset_class_count`. Used to contextualize
+            which assets will be traded.
+          name: asset_universe
+          type: dict
+        - description: Output of the `list_service_providers` node containing `provider_names`
+            and `provider_functions`. Provides the names of key third‑party vendors.
+          name: service_providers
+          type: dict
+        raises:
+        - description: Raised if either input dict is missing required keys.
+          type: ValueError
+        returns:
+          description: Dictionary with keys `stages`, `responsible_parties`, `vendor_involved`,
+            and `stage_descriptions`, each holding a list of strings or booleans.
+          type: dict
+        summary: Builds a step‑by‑step operational workflow for trade execution, mapping
+          responsibilities and vendor involvement.
     prompt: 'Sketch trade lifecycle from idea generation to settlement including:
       portfolio signal generation, order entry, execution management, position monitoring,
       reconciliation. Assign responsible parties (in-house vs. vendor).'
   estimate_setup_and_operating_costs:
     agent: false
-    description: Quantify financial requirements
+    description: Quantify financial requirements for launching a hedge fund by assembling
+      a detailed cost matrix that aggregates vendor fees, technology implementation
+      costs, and operational overhead. The node consumes structured outputs from three
+      parent nodes—service provider list, technology stack details, and governance
+      roles—to ensure that all relevant cost categories are captured. It outputs a
+      list of line items with monthly and annual figures, cumulative budgets, and
+      a concise textual overview highlighting key cost drivers.
     name: estimate_setup_and_operating_costs
     nodes_depended_on:
     - list_service_providers
@@ -276,7 +879,7 @@ nodes:
       key: monthly_cost
       type: List[float]
     - description: Annual total cost in USD for each service provider (Monthly Cost
-        x 12)
+        × 12)
       key: annual_total
       type: List[float]
     - description: Sum of all monthly costs across providers
@@ -285,35 +888,159 @@ nodes:
     - description: Sum of all annual totals across providers
       key: total_annual_budget
       type: float
-    - description: Number of line items included in the cost matrix (typically 10-15)
+    - description: Number of line items included in the cost matrix (typically 10‑15)
       key: line_item_count
       type: int
     - description: Short textual summary of the overall budget, highlighting major
         cost drivers
       key: budget_overview
       type: str
+    prd:
+      conceptual_info: This node calculates a comprehensive budget for the hedge fund
+        launch by integrating vendor fees, technology costs, and governance overhead
+        into a single, easy‑to‑interpret cost matrix.
+      docstring:
+        examples:
+        - lines:
+          - provider_names = ["Prime Broker", "Custodian", "Fund Admin", "Legal Counsel",
+            "Compliance Consultant"],
+          - provider_functions = ["Trade execution and clearing", "Asset safekeeping",
+            "NAV calculation and reporting", "Legal advice", "AML & KYC oversight"],
+          - workflow_stages = ["Idea Generation", "Signal Generation", "Order Entry",
+            "Execution Management", "Position Monitoring", "Reconciliation", "Settlement"],
+          - technology_solutions = ["Data Analytics", "Portfolio Mgmt", "OMS", "FIX
+            Gateway", "Risk Engine", "Reconciliation Tool", "Settlement System"],
+          - vendor_in_house_flags = [True, True, False, False, True, False, False],
+          - role_names = ["GP", "Investment Manager", "Compliance Officer", "Chief
+            Risk Officer", "Chief Operating Officer"],
+          - role_responsibility_1 = ["Set investment mandate", "Develop strategies",
+            "Ensure regulatory compliance", "Define risk limits", "Oversee operations"],
+          - role_responsibility_2 = ["Allocate capital", "Monitor performance", "Review
+            AML policies", "Approve risk models", "Manage budgets"],
+          - role_responsibility_3 = ["Stakeholder communication", "Approve trades",
+            "Report violations", "Maintain risk register", "Coordinate vendors"],
+          - role_authority_scope = ["Full authority", "Decision authority on trades",
+            "Legal & compliance decisions", "Risk approval", "Operational decisions"],
+          - budget = estimate_setup_and_operating_costs(provider_names, provider_functions,
+            workflow_stages, technology_solutions, vendor_in_house_flags, role_names,
+            role_responsibility_1, role_responsibility_2, role_responsibility_3, role_authority_scope)
+          output: '{\n  "service_provider_name": ["Prime Broker", "Custodian", "Fund
+            Admin", "Legal Counsel", "Compliance Consultant", "Data Analytics", "Portfolio
+            Mgmt", "OMS", "FIX Gateway", "Risk Engine", "Reconciliation Tool", "Settlement
+            System"],\n  "monthly_cost": [12000.0, 8000.0, 5000.0, 3000.0, 2500.0,
+            4000.0, 3500.0, 6000.0, 2000.0, 4500.0, 3000.0, 2500.0],\n  "annual_total":
+            [144000.0, 96000.0, 60000.0, 36000.0, 30000.0, 48000.0, 42000.0, 72000.0,
+            24000.0, 54000.0, 36000.0, 30000.0],\n  "total_monthly_budget": 52000.0,\n  "total_annual_budget":
+            624000.0,\n  "line_item_count": 12,\n  "budget_overview": "The annual
+            budget totals $624k, driven primarily by prime broker ($144k), custodial
+            services ($96k), and technology implementations such as OMS ($72k)."\n}'
+        parameters:
+        - description: 'List of mandatory external service provider names in the order:
+            prime broker, custodian, fund administrator, legal counsel, compliance
+            consultant.'
+          name: provider_names
+          type: List[str]
+        - description: Core function description for each provider, matching the order
+            of provider_names.
+          name: provider_functions
+          type: List[str]
+        - description: Ordered list of operational stages (e.g., Idea Generation,
+            Signal Generation, Order Entry, Execution Management, Position Monitoring,
+            Reconciliation, Settlement).
+          name: workflow_stages
+          type: List[str]
+        - description: Corresponding technology solution for each workflow stage.
+          name: technology_solutions
+          type: List[str]
+        - description: Boolean flag for each stage indicating whether the solution
+            is implemented in‑house (True) or outsourced to a vendor (False).
+          name: vendor_in_house_flags
+          type: List[bool]
+        - description: Names of internal governance roles.
+          name: role_names
+          type: List[str]
+        - description: First responsibility for each role.
+          name: role_responsibility_1
+          type: List[str]
+        - description: Second responsibility for each role.
+          name: role_responsibility_2
+          type: List[str]
+        - description: Third responsibility for each role.
+          name: role_responsibility_3
+          type: List[str]
+        - description: Authority scope for each role.
+          name: role_authority_scope
+          type: List[str]
+        raises:
+        - description: Raised if any of the input lists have mismatched lengths.
+          type: ValueError
+        - description: Raised if inputs are not of the expected types.
+          type: TypeError
+        returns:
+          description: A dictionary containing the cost matrix, totals, line item
+            count, and budget overview.
+          type: Dict[str, Union[List[str], List[float], float, int]]
+        summary: Generate a cost matrix that aggregates monthly and annual expenditures
+          for all service providers, technology implementations, and governance roles.
     prompt: 'Create cost matrix with: Service Provider | Monthly Cost (USD) | Annual
       Total, including vendor fees, technology implementation, and operational overhead.
       Include 10-15 line items.'
   identify_regulatory_requirements:
     agent: false
-    description: Map compliance obligations
+    description: Maps the regulatory obligations that a newly formed hedge fund must
+      satisfy based on its legal entity type and domicile.
     name: identify_regulatory_requirements
     nodes_depended_on:
     - choose_legal_entity_type
     nodes_dependent_on: []
     output_structure:
-    - description: The specific regulatory filing or registration required
+    - description: The specific regulatory filing or registration required.
       key: requirement
       type: str
     - description: The regulatory agency and citation or form number associated with
-        the requirement
+        the requirement.
       key: agency_citation
       type: str
     - description: One or two brief notes describing how to implement or comply with
-        the requirement
+        the requirement.
       key: implementation_notes
       type: List[str]
+    prd:
+      conceptual_info: This node gathers the list of mandatory regulatory filings,
+        registrations, and other compliance checkpoints that a hedge fund must complete
+        in its chosen jurisdiction and entity form. It transforms the legal‑entity
+        output from its parent node into a structured compliance checklist ready for
+        downstream use in the compliance program design.
+      docstring:
+        examples:
+        - lines:
+          - legal_entity_info = {
+          - '    ''legal_entity_type'': ''LLC'','
+          - '    ''jurisdiction'': ''Delaware'''
+          - '}'
+          output: "[\n  {\n    \"requirement\": \"Register with SEC as an investment\
+            \ adviser\",\n    \"agency_citation\": \"SEC, Form ADV\",\n    \"implementation_notes\"\
+            : [\n      \"File Form ADV Part 2A and 2B with the SEC\",\n      \"Maintain\
+            \ annual updates and filing deadlines\""
+        parameters:
+        - description: Dictionary containing the legal entity type and jurisdiction
+            as returned by the parent node `choose_legal_entity_type`.
+          name: legal_entity_info
+          type: dict
+        raises:
+        - description: If `legal_entity_info` does not contain expected keys such
+            as `legal_entity_type` or `jurisdiction`.
+          type: KeyError
+        - description: If the legal entity type or jurisdiction is unsupported or
+            unknown.
+          type: ValueError
+        returns:
+          description: A list of dictionaries, each containing a `requirement`, `agency_citation`,
+            and `implementation_notes` field.
+          type: List[dict]
+        summary: Generate a list of all regulatory filings, registrations, and associated
+          implementation notes required for the hedge fund’s chosen legal entity and
+          jurisdiction.
     prompt: List all required regulatory filings and registrations for the chosen
       jurisdiction and entity type including agency citations (e.g., SEC Form ADV).
       Add 1-2 implementation notes for each requirement.
@@ -333,6 +1060,46 @@ nodes:
         of provider_names.
       key: provider_functions
       type: List[str]
+    prd:
+      conceptual_info: The node generates a concise, ordered checklist of essential
+        third‑party service providers required to launch a hedge fund, based on the
+        selected legal entity type. Each provider is accompanied by a single‑sentence
+        core function that captures its primary role in the fund’s operational ecosystem.
+      docstring:
+        examples:
+        - lines:
+          - output = list_service_providers('LP')
+          - print(output['provider_names'])
+          - print(output['provider_functions'])
+          output: '["Prime Broker", "Custodian", "Fund Administrator", "Legal Counsel",
+            "Compliance Consultant"]\n["Facilitates trade execution and margin management.",
+            "Safeguards assets and provides custody services.", "Handles NAV calculation,
+            investor reporting, and fund accounting.", "Provides legal structuring
+            and regulatory compliance advice.", "Assesses and implements AML and other
+            compliance policies."]'
+        - lines:
+          - output = list_service_providers('SICAV')
+          - print(output['provider_functions'][2])
+          output: '"Handles NAV calculation, investor reporting, and fund accounting."'
+        parameters:
+        - description: The chosen legal entity type (e.g., LP, LLC, SICAV) obtained
+            from the `choose_legal_entity_type` node.
+          name: legal_entity_type
+          type: str
+        raises:
+        - description: Raised if `legal_entity_type` is empty or not one of the supported
+            entity types.
+          type: ValueError
+        - description: Raised if the internal mapping for the given entity type does
+            not contain entries for all required providers.
+          type: KeyError
+        returns:
+          description: 'A dictionary with two keys: `provider_names` (List[str]) and
+            `provider_functions` (List[str]). Both lists are aligned so that index
+            *i* in `provider_names` corresponds to index *i* in `provider_functions`.'
+          type: dict
+        summary: Generate an ordered list of mandatory external service providers
+          and their core functions.
     prompt: 'Generate checklist of mandatory external service providers: prime broker,
       custodian, fund administrator, legal counsel, compliance consultant. Include
       1 line per provider with core function description.'
@@ -359,6 +1126,52 @@ nodes:
     - description: Authority scope for each role
       key: role_authority_scope
       type: List[str]
+    prd:
+      conceptual_info: Generates a structured governance chart that specifies key
+        internal roles, their core duties, and the decision‑making authority each
+        holds within the hedge fund.
+      docstring:
+        examples:
+        - lines:
+          - outliner_governance_structure('LP')
+          output: "{\n  'role_names': ['GP', 'Investment Manager', 'Compliance Officer',\
+            \ 'Chief Operating Officer', 'Investor Relations Officer'],\n  'role_responsibility_1':\
+            \ ['Oversee overall fund strategy', 'Develop trade ideas', 'Ensure regulatory\
+            \ compliance', 'Manage day‑to‑day operations', 'Maintain investor communications'],\n\
+            \  'role_responsibility_2': ['Allocate capital', 'Approve trade execution',\
+            \ 'Monitor AML/KYC', 'Coordinate vendor relationships', 'Distribute performance\
+            \ reports'],\n  'role_responsibility_3': ['Set performance targets', 'Conduct\
+            \ risk reviews', 'Draft compliance policies', 'Report to board', 'Handle\
+            \ investor inquiries'],\n  'role_authority_scope': ['Strategic decisions',\
+            \ 'Trade approval up to $10M', 'Compliance approvals', 'Operational budgets',\
+            \ 'Investor disclosures']\n}"
+        - lines:
+          - outliner_governance_structure('LLC')
+          output: "{\n  'role_names': ['GP', 'Investment Manager', 'Compliance Officer',\
+            \ 'Chief Financial Officer', 'Investor Relations Officer'],\n  'role_responsibility_1':\
+            \ ['Set investment mandate', 'Identify market opportunities', 'Maintain\
+            \ regulatory filings', 'Oversee financial reporting', 'Engage investors'],\n\
+            \  'role_responsibility_2': ['Allocate capital within limits', 'Approve\
+            \ execution plans', 'Implement AML controls', 'Manage budgets', 'Provide\
+            \ performance updates'],\n  'role_responsibility_3': ['Define risk appetite',\
+            \ 'Conduct compliance audits', 'Prepare annual reports', 'Ensure tax compliance',\
+            \ 'Coordinate investor meetings'],\n  'role_authority_scope': ['Strategic\
+            \ direction', 'Trade approvals up to $8M', 'Compliance approvals', 'Financial\
+            \ oversight', 'Investor disclosure']\n}"
+        parameters:
+        - description: The legal entity type chosen for the fund (e.g., LP, LLC, SICAV).
+          name: legal_entity_type
+          type: str
+        raises:
+        - description: If `legal_entity_type` is an empty string or not among the
+            supported entity types.
+          type: ValueError
+        returns:
+          description: 'Dictionary containing five lists: role_names, role_responsibility_1,
+            role_responsibility_2, role_responsibility_3, and role_authority_scope.'
+          type: dict
+        summary: Creates a governance framework for a hedge fund based on the selected
+          legal entity type.
     prompt: 'Create governance chart with at least five roles: GP, Investment Manager,
       Compliance Officer, etc. For each role, define three core responsibilities and
       decision-making authority scope.'
@@ -396,6 +1209,43 @@ nodes:
     - description: Description of the launch timeline
       key: launch_timeline
       type: str
+    prd:
+      conceptual_info: Synthesizes information from prior nodes to generate a comprehensive
+        executive summary for the hedge fund launch plan.
+      docstring:
+        examples:
+        - lines:
+          - 'pitch_deck_outline = {''strategy_overview'': ''Long/short equity'', ''risk_return_analysis'':
+            ''Target 15% annual return''}'
+          - 'costs_estimation = {''total_annual_budget'': 1000000.0, ''budget_overview'':
+            ''Detailed breakdown of costs''}'
+          - 'compliance_program = {''accreditation_items'': [''Item 1'', ''Item 2''],
+            ''aml_items'': [''AML Item 1'']}'
+          - produce_final_fund_plan_summary(pitch_deck_outline, costs_estimation,
+            compliance_program)
+          output: '{''summary'': ''* Strategy: Long/short equity\n* Target Returns:
+            15% annual return\n* Risk Controls: Detailed risk management framework\n*
+            Regulatory Structure: Registered with regulatory bodies\n* Personnel:
+            Experienced team in place\n* Technology: State-of-the-art trading platform\n*
+            Launch Timeline: Q1 2025''}'
+        parameters:
+        - description: Output from compile_pitch_deck_outline node
+          name: pitch_deck_outline
+          type: dict
+        - description: Output from estimate_setup_and_operating_costs node
+          name: costs_estimation
+          type: dict
+        - description: Output from design_compliance_program node
+          name: compliance_program
+          type: dict
+        raises:
+        - description: If any of the input nodes are missing required fields
+          type: ValueError
+        returns:
+          description: Dictionary containing the executive summary and its components
+          type: dict
+        summary: Produces a 200-word executive summary covering strategy, target returns,
+          risk controls, regulatory structure, personnel, technology, and launch timeline.
     prompt: 'Synthesize prior work into 200-word executive summary covering: strategy,
       target returns, risk controls, regulatory structure, personnel, technology,
       and launch timeline. Format as bullet-point summary with bold section headers.'
@@ -420,29 +1270,129 @@ nodes:
         and strategy
       key: justification
       type: str
+    prd:
+      conceptual_info: The node evaluates potential fund domiciles and selects the
+        one that best aligns with the hedge fund's strategic objectives, balancing
+        tax, regulatory, and investor considerations.
+      docstring:
+        examples:
+        - lines:
+          - '# Assume objectives_bullets derived from clarify_fund_objectives'
+          - objectives_bullets = [
+          - '    "High alpha generation via event-driven strategies",'
+          - '    "Target annual gross return of 20%",'
+          - '    "Limited regulatory reporting to speed decision-making",'
+          - '    "Appeal to family offices and pension funds",'
+          - ']'
+          - result = select_jurisdiction(objectives_bullets)
+          - print(result['chosen_jurisdiction'])
+          output: '"Cayman Islands"'
+        - lines:
+          - print(result['advantages'])
+          - print(result['disadvantages'])
+          - print(result['justification'])
+          output: '"[''Zero corporate tax'', ''Flexible regulatory regime'']"
+
+            "[''Perceived political risk'', ''Limited local investor base'']"
+
+            "''The Cayman Islands provide a tax-neutral environment and minimal reporting
+            requirements, aligning with the fund’s aggressive return target and speed
+            of execution, while acknowledging the geopolitical and market liquidity
+            concerns.'''
+        parameters:
+        - description: Bullet points summarizing the fund's primary business objectives,
+            as produced by the clarify_fund_objectives node.
+          name: objectives_bullets
+          type: List[str]
+        raises:
+        - description: If `objectives_bullets` is empty or not a list of strings.
+          type: ValueError
+        returns:
+          description: A dictionary containing the chosen jurisdiction, its advantages
+            and disadvantages, and a justification string.
+          type: dict
+        summary: Selects an optimal regulatory domicile for a hedge fund based on
+          tax efficiency, regulatory simplicity, and investor appeal.
     prompt: Select the most favorable fund domicile (e.g., Cayman Islands, Delaware,
       Luxembourg) considering tax efficiency, regulatory simplicity, and investor
       appeal. Provide 2 advantages and 2 disadvantages specific to this jurisdiction.
   set_performance_and_risk_targets:
     agent: false
-    description: Establish quantitative performance metrics
+    description: Establish quantitative performance metrics for the hedge fund.
     name: set_performance_and_risk_targets
     nodes_depended_on:
     - choose_investment_strategy
     nodes_dependent_on: []
     output_structure:
     - description: Names of the performance and risk metrics (e.g., Gross Return,
-        Volatility, Sharpe Ratio, Max Drawdown)
+        Volatility, Sharpe Ratio, Max Drawdown).
       key: metric_names
       type: List[str]
     - description: Numerical target values corresponding to each metric (e.g., 0.15
-        for 15% gross return, 0.10 for 10% volatility)
+        for 15% gross return, 0.10 for 10% volatility).
       key: target_values
       type: List[float]
     - description: Brief rationale for each target, explaining how it aligns with
-        strategy and risk appetite
+        strategy and risk appetite.
       key: rationale_texts
       type: List[str]
+    prd:
+      conceptual_info: This node translates the chosen investment strategy into concrete,
+        quantitative performance and risk objectives that guide portfolio construction
+        and risk management.
+      docstring:
+        examples:
+        - lines:
+          - strategy_category = 'Long/Short Equity'
+          - strategy_rationale = 'Targeting alpha from long positions while hedging
+            with short bets.'
+          - risk_profile = 'Moderate volatility, high return potential'
+          - targets = set_performance_and_risk_targets(strategy_category, strategy_rationale,
+            risk_profile)
+          - print(targets['metric_names'])
+          - print(targets['target_values'])
+          - print(targets['rationale_texts'])
+          output: '"[''Gross Return'', ''Volatility'', ''Sharpe Ratio'', ''Max Drawdown'']"
+
+            "[0.15, 0.10, 1.5, 0.20]"
+
+            "[''A 15% return aligns with long/short alpha goals.'', ''10% volatility
+            matches moderate risk appetite.'', ''Sharpe of 1.5 indicates efficient
+            risk‑adjusted returns.'', ''20% drawdown tolerance protects capital during
+            market stress.'']'
+        - lines:
+          - strategy_category = 'Event-Driven'
+          - strategy_rationale = 'Profit from merger arbitrage and distressed events.'
+          - risk_profile = 'High volatility, low correlation to markets'
+          - targets = set_performance_and_risk_targets(strategy_category, strategy_rationale,
+            risk_profile)
+          - print(targets['target_values'])
+          output: '[0.18, 0.15, 1.2, 0.25]'
+        parameters:
+        - description: Primary investment strategy category selected by the parent
+            node (e.g., 'Long/Short Equity', 'Event-Driven', 'Global Macro').
+          name: strategy_category
+          type: str
+        - description: Textual justification for the strategy, used to inform target
+            setting.
+          name: strategy_rationale
+          type: str
+        - description: Brief description of the expected risk profile (e.g., 'Moderate
+            volatility, high return potential').
+          name: risk_profile
+          type: str
+        raises:
+        - description: Raised if any of the input parameters are empty or not a string.
+          type: ValueError
+        - description: Raised if the strategy_category is not recognized in the internal
+            mapping of target templates.
+          type: KeyError
+        returns:
+          description: 'A dictionary with three keys: ''metric_names'' (List[str]),
+            ''target_values'' (List[float]), and ''rationale_texts'' (List[str]).'
+          type: dict
+        summary: Compute annual performance and risk targets based on the selected
+          investment strategy.
     prompt: 'Define numerical annual targets for gross returns, volatility (standard
       deviation), Sharpe ratio, and maximum drawdown tolerance. Present as structured
       table with three columns: Metric | Target | Rationale.'

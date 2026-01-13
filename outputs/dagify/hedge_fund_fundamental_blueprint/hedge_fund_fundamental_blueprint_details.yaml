@@ -1,10 +1,62 @@
-dag_type: spec
+dag_type: stub
 description: Generated workflow from UI.
 name: hedge_fund_fundamental_blueprint
 nodes:
   choose_investment_strategy:
     agent: false
+    code_node_type: stub
     description: Select primary investment approach
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ClarifyFundObjectivesOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for clarify_fund_objectives node outputs.\"\"\"\n    objectives_bullets: List[str]\
+      \ = (\n        Field(..., description=\"Bullet points summarizing investment\
+      \ purpose, competitive advantages, target return profiles, and long-term vision\
+      \ (maximum 8 bullets)\")\n    )\n\n\nclass ChooseInvestmentStrategyOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for choose_investment_strategy node outputs.\"\"\"\
+      \n    strategy_category: str = (\n        Field(..., description=\"The chosen\
+      \ primary investment strategy category.\")\n    )\n    rationale: str = (\n\
+      \        Field(..., description=\"A one-paragraph explanation aligning the strategy\
+      \ with the fund's objectives.\")\n    )\n    risk_profile: str = (\n       \
+      \ Field(..., description=\"A concise description of the expected risk profile\
+      \ associated with the chosen strategy.\")\n    )\n\n\ndef choose_investment_strategy(clarify_fund_objectives_input:\
+      \ ClarifyFundObjectivesOutput, **kwargs) -> ChooseInvestmentStrategyOutput:\n\
+      \    \"\"\"\n    Selects the primary investment strategy category and generates\
+      \ a rationale\n    and risk profile based on the fund's objectives.\n\n    Parameters\n\
+      \    ----------\n    objectives_bullets : List[str]\n        Bullet points summarizing\
+      \ the fund’s investment purpose, competitive\n        advantages, target return\
+      \ profiles, and long-term vision (maximum 8\n        bullets). These are the\
+      \ outputs of the parent node\n        `clarify_fund_objectives`.\n\n    Returns\n\
+      \    -------\n    Dict[str, str]\n        A dictionary with keys `strategy_category`,\
+      \ `rationale`, and\n        `risk_profile`, each mapping to a string describing\
+      \ the chosen\n        strategy, its alignment with objectives, and the anticipated\
+      \ risk\n        characteristics.\n\n    Raises\n    ------\n    ValueError\n\
+      \        Raised if `objectives_bullets` is empty or does not contain any\n \
+      \       actionable points.\n    RuntimeError\n        Raised if no suitable\
+      \ strategy category can be inferred from the\n        provided objectives.\n\
+      \n    Examples\n    --------\n    >>> strategy = choose_investment_strategy(objectives_bullets=[\n\
+      \    ...     \"Generate 15% annual gross return through diversified equity\n\
+      \    strategies.\",\n    ...     \"Maintain low correlation with global macro\
+      \ factors.\",\n    ...     \"Leverage proprietary quantitative models.\",\n\
+      \    ...     \"Target a volatility of 8-10%.\",\n    ...     \"Seek alpha in\
+      \ both bull and bear markets.\",\n    ...     \"Operate within a liquid asset\
+      \ universe.\",\n    ...     \"Aim for a Sharpe ratio above 1.5.\",\n    ...\
+      \     \"Focus on long-term capital preservation.\"] )\n    >>> print(strategy['strategy_category'])\n\
+      \    >>> print(strategy['rationale'])\n    >>> print(strategy['risk_profile'])\n\
+      \    \"Event‑Driven Equity\"\\n\"The fund will focus on exploiting corporate\
+      \ event\n    catalysts such as M&A, restructurings, and spin‑offs, leveraging\
+      \ its\n    quantitative edge to generate asymmetric returns in both bullish\
+      \ and bearish\n    market regimes. This aligns with the objective of producing\
+      \ 15% gross annual\n    returns while maintaining low correlation to macro trends.\\\
+      n\"The strategy\n    offers medium to high volatility with potential for sharp\
+      \ downside during\n    illiquid event periods, but mitigated by strict position\
+      \ limits and\n    liquidity buffers. Expected volatility: 8‑10% with drawdown\
+      \ controls at\n    25%.\"\n\n    >>> strategy = choose_investment_strategy(objectives_bullets=[\n\
+      \    ...     \"Provide long‑term growth for institutional pension funds.\",\n\
+      \    ...     \"Capitalize on global macro opportunities.\",\n    ...     \"\
+      Maintain a conservative risk appetite.\"] )\n    >>> print(strategy['strategy_category'])\n\
+      \    \"Global Macro\"\n\n    \"\"\"\n    return ChooseInvestmentStrategyOutput(\n\
+      \        strategy_category=\"\",\n        rationale=\"\",\n        risk_profile=\"\
+      \",\n    )"
     name: choose_investment_strategy
     nodes_depended_on:
     - clarify_fund_objectives
@@ -79,9 +131,46 @@ nodes:
     prompt: Identify one primary investment strategy category (e.g., long/short equity,
       event-driven, global macro) and provide a one-paragraph rationale aligning with
       the fund's objectives. Include expected risk profile.
+    shims: []
   choose_legal_entity_type:
     agent: false
+    code_node_type: stub
     description: Determine appropriate legal structure
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass SelectJurisdictionOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ select_jurisdiction node outputs.\"\"\"\n    chosen_jurisdiction: str = (\n\
+      \        Field(..., description=\"The name of the selected fund domicile\")\n\
+      \    )\n    advantages: List[str] = (\n        Field(..., description=\"A list\
+      \ of two key advantages of the chosen jurisdiction\")\n    )\n    disadvantages:\
+      \ List[str] = (\n        Field(..., description=\"A list of two key disadvantages\
+      \ of the chosen jurisdiction\")\n    )\n    justification: str = (\n       \
+      \ Field(..., description=\"Brief explanation linking the jurisdiction to the\
+      \ fund\\u2019s objectives and strategy\")\n    )\n\n\nclass ChooseLegalEntityTypeOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for choose_legal_entity_type node outputs.\"\"\"\n\
+      \    legal_entity_type: str = (\n        Field(..., description=\"The chosen\
+      \ legal entity type (e.g., LP, LLC, SICAV)\")\n    )\n    operational_advantages:\
+      \ List[str] = (\n        Field(..., description=\"List of three operational\
+      \ advantages of the chosen legal entity type\")\n    )\n    compliance_consideration:\
+      \ str = (\n        Field(..., description=\"One compliance consideration specific\
+      \ to the chosen legal entity type\")\n    )\n\n\ndef choose_legal_entity_type(select_jurisdiction_input:\
+      \ SelectJurisdictionOutput, **kwargs) -> ChooseLegalEntityTypeOutput:\n    \"\
+      \"\"\n    Choose a legal entity type based on the selected jurisdiction and\
+      \ provide\n    operational advantages and compliance considerations.\n\n   \
+      \ Parameters\n    ----------\n    jurisdiction : str\n        The selected jurisdiction\
+      \ (e.g., Cayman Islands, Delaware,\n        Luxembourg)\n\n    Returns\n   \
+      \ -------\n    dict\n        A dictionary containing the chosen legal entity\
+      \ type, operational\n        advantages, and compliance consideration.\n\n \
+      \   Raises\n    ------\n    ValueError\n        If the selected jurisdiction\
+      \ is not supported.\n\n    Examples\n    --------\n    >>> choose_legal_entity_type('Cayman\
+      \ Islands')\n    >>> # Output: {'legal_entity_type': 'LP', 'operational_advantages':\
+      \ ['Tax\n    efficiency', 'Flexibility in ownership structure', 'Limited liability\n\
+      \    protection'], 'compliance_consideration': 'Registration with the Cayman\n\
+      \    Islands Monetary Authority'}\n    {'legal_entity_type': 'LP', 'operational_advantages':\
+      \ ['Tax efficiency',\n    'Flexibility in ownership structure', 'Limited liability\
+      \ protection'],\n    'compliance_consideration': 'Registration with the Cayman\
+      \ Islands Monetary\n    Authority'}\n\n    \"\"\"\n    return ChooseLegalEntityTypeOutput(\n\
+      \        legal_entity_type=\"\",\n        operational_advantages=[],\n     \
+      \   compliance_consideration=\"\",\n    )"
     name: choose_legal_entity_type
     nodes_depended_on:
     - select_jurisdiction
@@ -130,9 +219,52 @@ nodes:
     prompt: Specify the most suitable legal entity type (e.g., LP, LLC, SICAV) for
       the selected jurisdiction. Provide three operational advantages and one compliance
       consideration specific to this structure.
+    shims: []
   clarify_fund_objectives:
     agent: false
+    code_node_type: stub
     description: Define core business goals of the hedge fund
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ClarifyFundObjectivesOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for clarify_fund_objectives node outputs.\"\"\"\n    objectives_bullets: List[str]\
+      \ = (\n        Field(..., description=\"Bullet points summarizing investment\
+      \ purpose, competitive advantages, target return profiles, and long-term vision\
+      \ (maximum 8 bullets)\")\n    )\n\n\ndef clarify_fund_objectives(general_input:\
+      \ str, **kwargs) -> ClarifyFundObjectivesOutput:\n    \"\"\"\n    Generate a\
+      \ concise list of up to eight bullet points that articulate the\n    hedge fund’s\
+      \ investment purpose, competitive advantages, target return\n    expectations,\
+      \ and long‑term vision.\n\n    Parameters\n    ----------\n    prompt_text :\
+      \ str\n        Raw textual instruction supplied by the user or orchestrator.\
+      \ The\n        function consumes this prompt verbatim to produce the bullet\
+      \ list.\n\n    Returns\n    -------\n    Dict[str, List[str]]\n        Dictionary\
+      \ with a single key `objectives_bullets` mapping to a list\n        of strings,\
+      \ each string being a bullet point.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If `prompt_text` is empty or not a string.\n    RuntimeError\n    \
+      \    If the generated list exceeds eight bullets or contains non‑string\n  \
+      \      elements.\n\n    Examples\n    --------\n    >>> output = clarify_fund_objectives(\"\
+      State the primary business objectives\n    for launching the hedge fund. List\
+      \ investment purpose, competitive\n    advantages, target return profiles, and\
+      \ long‑term vision in concise bullet\n    points (max 8 bullets)\")\n    {'objectives_bullets':\
+      \ ['Deliver alpha through long/short equity strategies\n    targeting 20% annual\
+      \ gross returns.', 'Leverage proprietary quantitative\n    models for edge in\
+      \ volatility forecasting.', 'Maintain a diversified\n    portfolio across U.S.\
+      \ and EU markets to mitigate geopolitical risk.', 'Offer\n    transparent fee\
+      \ structures to attract family offices.', 'Invest in\n    ESG‑compliant assets\
+      \ to align with investor values.', 'Build a scalable\n    technology platform\
+      \ to support high‑frequency data analytics.', 'Scale to\n    $500M AUM within\
+      \ five years by tapping institutional capital.', 'Commit to a\n    10‑year growth\
+      \ roadmap with quarterly performance reviews.']}\n\n    >>> output = clarify_fund_objectives(\"\
+      Provide concise objectives for a hedge\n    fund focused on event‑driven opportunities.\"\
+      )\n    {'objectives_bullets': ['Capture mispricing from corporate events with\
+      \ a 15%\n    gross return target.', 'Utilize a concentrated portfolio of 10‑20\
+      \ positions\n    for high conviction.', 'Maintain liquidity through short‑term\
+      \ debt and cash\n    reserves.', 'Employ a risk‑parity framework to cap volatility\
+      \ at 12%.',\n    'Offer fee‑structured performance incentives to align manager\
+      \ and investor\n    interests.', 'Leverage a network of deal partners for early\
+      \ access to\n    events.', 'Expand to $250M AUM over three years.', 'Commit\
+      \ to ESG compliance\n    and regular third‑party audits.']}\n\n    \"\"\"\n\
+      \    return ClarifyFundObjectivesOutput(\n        objectives_bullets=[],\n \
+      \   )"
     name: clarify_fund_objectives
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -192,9 +324,133 @@ nodes:
     prompt: State the primary business objectives for launching the hedge fund. List
       investment purpose, competitive advantages, target return profiles, and long-term
       vision in concise bullet points (max 8 bullets)
+    shims: []
   compile_pitch_deck_outline:
     agent: false
+    code_node_type: stub
     description: Create investor presentation structure
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ClarifyFundObjectivesOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for clarify_fund_objectives node outputs.\"\"\"\n    objectives_bullets: List[str]\
+      \ = (\n        Field(..., description=\"Bullet points summarizing investment\
+      \ purpose, competitive advantages, target return profiles, and long-term vision\
+      \ (maximum 8 bullets)\")\n    )\n\n\nclass ChooseInvestmentStrategyOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for choose_investment_strategy node outputs.\"\"\"\
+      \n    strategy_category: str = (\n        Field(..., description=\"The chosen\
+      \ primary investment strategy category.\")\n    )\n    rationale: str = (\n\
+      \        Field(..., description=\"A one-paragraph explanation aligning the strategy\
+      \ with the fund's objectives.\")\n    )\n    risk_profile: str = (\n       \
+      \ Field(..., description=\"A concise description of the expected risk profile\
+      \ associated with the chosen strategy.\")\n    )\n\n\nclass DefineInvestorProfileOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for define_investor_profile node outputs.\"\"\"\n\
+      \    typical_investor_types: List[str] = (\n        Field(..., description=\"\
+      List of typical investor types (e.g., family offices, pensions)\")\n    )\n\
+      \    required_minimum_investment: int = (\n        Field(..., description=\"\
+      Required minimum investment in USD\")\n    )\n    liquidity_expectations: str\
+      \ = (\n        Field(..., description=\"Description of liquidity expectations\"\
+      )\n    )\n    risk_tolerance_levels: List[str] = (\n        Field(..., description=\"\
+      List of risk tolerance levels (e.g., aggressive, conservative)\")\n    )\n \
+      \   geographic_focus: str = (\n        Field(..., description=\"Description\
+      \ of geographic focus\")\n    )\n\n\nclass SetPerformanceAndRiskTargetsOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for set_performance_and_risk_targets node outputs.\"\
+      \"\"\n    metric_names: List[str] = (\n        Field(..., description=\"Names\
+      \ of the performance and risk metrics (e.g., Gross Return, Volatility, Sharpe\
+      \ Ratio, Max Drawdown).\")\n    )\n    target_values: List[float] = (\n    \
+      \    Field(..., description=\"Numerical target values corresponding to each\
+      \ metric (e.g., 0.15 for 15% gross return, 0.10 for 10% volatility).\")\n  \
+      \  )\n    rationale_texts: List[str] = (\n        Field(..., description=\"\
+      Brief rationale for each target, explaining how it aligns with strategy and\
+      \ risk appetite.\")\n    )\n\n\nclass EstimateSetupAndOperatingCostsOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for estimate_setup_and_operating_costs node outputs.\"\
+      \"\"\n    service_provider_name: List[str] = (\n        Field(..., description=\"\
+      Names of the service providers or cost categories\")\n    )\n    monthly_cost:\
+      \ List[float] = (\n        Field(..., description=\"Monthly cost in USD for\
+      \ each service provider\")\n    )\n    annual_total: List[float] = (\n     \
+      \   Field(..., description=\"Annual total cost in USD for each service provider\
+      \ (Monthly Cost \\u00d7 12)\")\n    )\n    total_monthly_budget: float = (\n\
+      \        Field(..., description=\"Sum of all monthly costs across providers\"\
+      )\n    )\n    total_annual_budget: float = (\n        Field(..., description=\"\
+      Sum of all annual totals across providers\")\n    )\n    line_item_count: int\
+      \ = (\n        Field(..., description=\"Number of line items included in the\
+      \ cost matrix (typically 10\\u201115)\")\n    )\n    budget_overview: str =\
+      \ (\n        Field(..., description=\"Short textual summary of the overall budget,\
+      \ highlighting major cost drivers\")\n    )\n\n\nclass DesignRiskManagementFrameworkOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for design_risk_management_framework node outputs.\"\
+      \"\"\n    num_quant_controls: int = (\n        Field(..., description=\"Number\
+      \ of quantifiable risk controls specified\")\n    )\n    quant_controls_desc:\
+      \ List[str] = (\n        Field(..., description=\"Descriptions of each quantifiable\
+      \ risk control\")\n    )\n    num_qual_practices: int = (\n        Field(...,\
+      \ description=\"Number of qualitative risk practices specified\")\n    )\n \
+      \   qual_practices_desc: List[str] = (\n        Field(..., description=\"Descriptions\
+      \ of each qualitative risk practice\")\n    )\n\n\nclass DraftOperationsWorkflowOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for draft_operations_workflow node outputs.\"\"\"\n\
+      \    stages: List[str] = (\n        Field(..., description=\"Ordered list of\
+      \ operational stages from idea generation to settlement\")\n    )\n    responsible_parties:\
+      \ List[str] = (\n        Field(..., description=\"Corresponding responsible\
+      \ party for each stage (e.g., \\\"In-house\\\", \\\"Prime Broker\\\")\")\n \
+      \   )\n    vendor_involved: List[bool] = (\n        Field(..., description=\"\
+      Boolean flag per stage indicating whether a vendor is involved (true = vendor,\
+      \ false = in-house)\")\n    )\n    stage_descriptions: List[str] = (\n     \
+      \   Field(..., description=\"Brief description of activities performed in each\
+      \ stage\")\n    )\n\n\nclass CompilePitchDeckOutlineOutput(BaseModel):\n   \
+      \ \"\"\"Pydantic model for compile_pitch_deck_outline node outputs.\"\"\"\n\
+      \    slide_titles: List[str] = (\n        Field(..., description=\"List of slide\
+      \ titles in the presentation\")\n    )\n    core_messages: List[str] = (\n \
+      \       Field(..., description=\"List of core messages for each slide\")\n \
+      \   )\n    objectives_summary: str = (\n        Field(..., description=\"Summary\
+      \ of the objectives slides\")\n    )\n    strategy_overview: str = (\n     \
+      \   Field(..., description=\"Overview of the strategy slides\")\n    )\n   \
+      \ risk_return_analysis: str = (\n        Field(..., description=\"Summary of\
+      \ the risk-return analysis slide\")\n    )\n    team_description: str = (\n\
+      \        Field(..., description=\"Description of the team slide\")\n    )\n\
+      \    operations_compliance_summary: str = (\n        Field(..., description=\"\
+      Summary of the operations/compliance slides\")\n    )\n    financials_summary:\
+      \ str = (\n        Field(..., description=\"Summary of the financials slides\"\
+      )\n    )\n    qa_topics: List[str] = Field(..., description=\"List of Q&A topics\"\
+      )\n\n\ndef compile_pitch_deck_outline(clarify_fund_objectives_input: ClarifyFundObjectivesOutput,\
+      \ choose_investment_strategy_input: ChooseInvestmentStrategyOutput, define_investor_profile_input:\
+      \ DefineInvestorProfileOutput, set_performance_and_risk_targets_input: SetPerformanceAndRiskTargetsOutput,\
+      \ estimate_setup_and_operating_costs_input: EstimateSetupAndOperatingCostsOutput,\
+      \ design_risk_management_framework_input: DesignRiskManagementFrameworkOutput,\
+      \ draft_operations_workflow_input: DraftOperationsWorkflowOutput, **kwargs)\
+      \ -> CompilePitchDeckOutlineOutput:\n    \"\"\"\n    Compile a comprehensive\
+      \ outline for a 15-slide investor pitch deck,\n    integrating insights from\
+      \ fund objectives, investment strategy, risk\n    management, and operational\
+      \ compliance.\n\n    Parameters\n    ----------\n    objectives : List[str]\n\
+      \        List of bullet points summarizing investment purpose, competitive\n\
+      \        advantages, target return profiles, and long-term vision.\n    strategy\
+      \ : str\n        Chosen primary investment strategy category.\n    investor_profile\
+      \ : Dict[str, str]\n        Dictionary containing typical investor types, required\
+      \ minimum\n        investments, liquidity expectations, risk tolerance levels,\
+      \ and\n        geographic focus.\n    performance_targets : List[float]\n  \
+      \      Numerical target values for performance metrics such as gross\n     \
+      \   return, volatility, Sharpe ratio, and maximum drawdown tolerance.\n    operating_costs\
+      \ : List[float]\n        List of monthly costs in USD for each service provider,\
+      \ including\n        vendor fees, technology implementation, and operational\
+      \ overhead.\n    risk_management : List[str]\n        List of quantifiable risk\
+      \ controls and qualitative risk practices\n        aligned with performance\
+      \ targets.\n    operations_workflow : List[str]\n        Ordered list of operational\
+      \ stages from idea generation to\n        settlement, including responsible\
+      \ parties and vendor involvement.\n\n    Returns\n    -------\n    Dict[str,\
+      \ str or List[str]]\n        A dictionary containing the compiled pitch deck\
+      \ outline, including\n        slide titles, core messages, summaries of key\
+      \ sections, and Q&A\n        topics.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If any of the input parameters are invalid or missing required\n  \
+      \      information.\n\n    Examples\n    --------\n    >>> compile_pitch_deck_outline({\n\
+      \    ...   'objectives': ['Investment purpose', 'Competitive advantages'],\n\
+      \    ...   'strategy': 'Long/Short Equity',\n    ...   'investor_profile': {'typical_investor_types':\
+      \ ['Family Offices'],\n    'required_minimum_investment': 1000000},\n    ...\
+      \   'performance_targets': [0.15, 0.10, 1.5, 0.20],\n    ...   'operating_costs':\
+      \ [10000.0, 5000.0, 20000.0],\n    ...   'risk_management': ['Position Limits',\
+      \ 'VaR', 'Liquidity Thresholds'],\n    ...   'operations_workflow': ['Idea Generation',\
+      \ 'Portfolio Signal\n    Generation', 'Order Entry']\n    >>> })\n    {'slide_titles':\
+      \ ['Introduction', 'Investment Strategy'], 'core_messages':\n    ['Overview\
+      \ of investment approach', 'Details of strategy implementation'],\n    ...}\n\
+      \n    \"\"\"\n    return CompilePitchDeckOutlineOutput(\n        slide_titles=[],\n\
+      \        core_messages=[],\n        objectives_summary=\"\",\n        strategy_overview=\"\
+      \",\n        risk_return_analysis=\"\",\n        team_description=\"\",\n  \
+      \      operations_compliance_summary=\"\",\n        financials_summary=\"\"\
+      ,\n        qa_topics=[],\n    )"
     name: compile_pitch_deck_outline
     nodes_depended_on:
     - clarify_fund_objectives
@@ -297,10 +553,80 @@ nodes:
       3 strategy slides, 1 risk-return analysis, 1 team slide, 4 operations/compliance
       slides, 2 financials slides, 1 Q&A slide. Include slide title and core message
       for each.'
+    shims: []
   define_asset_universe:
     agent: false
+    code_node_type: stub
     description: Specify eligible investment instruments for the hedge fund, ensuring
       alignment with the chosen investment strategy and compliance requirements.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ChooseInvestmentStrategyOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for choose_investment_strategy node outputs.\"\"\"\n    strategy_category:\
+      \ str = (\n        Field(..., description=\"The chosen primary investment strategy\
+      \ category.\")\n    )\n    rationale: str = (\n        Field(..., description=\"\
+      A one-paragraph explanation aligning the strategy with the fund's objectives.\"\
+      )\n    )\n    risk_profile: str = (\n        Field(..., description=\"A concise\
+      \ description of the expected risk profile associated with the chosen strategy.\"\
+      )\n    )\n\n\nclass DefineAssetUniverseOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for define_asset_universe node outputs.\"\"\"\n    instrument_names:\
+      \ List[str] = (\n        Field(..., description=\"Names of the 10 selected tradable\
+      \ instruments\")\n    )\n    instrument_rationales: List[str] = (\n        Field(...,\
+      \ description=\"Brief rationale for each of the 10 selected instruments\")\n\
+      \    )\n    asset_class_count: int = (\n        Field(..., description=\"Total\
+      \ number of distinct asset classes represented among the 10 instruments\")\n\
+      \    )\n\n\ndef define_asset_universe(choose_investment_strategy_input: ChooseInvestmentStrategyOutput,\
+      \ **kwargs) -> DefineAssetUniverseOutput:\n    \"\"\"\n    Generate a list of\
+      \ 10 tradable financial instruments along with short\n    rationales and compute\
+      \ the distinct asset class count.\n\n    Parameters\n    ----------\n    strategy_category\
+      \ : str\n        Primary investment strategy category determined by the parent\
+      \ node\n        (e.g., 'Long/Short Equity', 'Global Macro', 'Event‑Driven').\
+      \ This\n        informs the asset selection.\n    strategy_rationale : str\n\
+      \        One‑paragraph justification of the chosen strategy, used for\n    \
+      \    contextual filtering of instruments.\n    risk_profile : str\n        Concise\
+      \ description of the expected risk profile (e.g., 'High\n        volatility,\
+      \ leverage‑enabled'). Helps prioritize high‑yield or\n        high‑liquidity\
+      \ assets.\n\n    Returns\n    -------\n    dict\n        Dictionary with keys\
+      \ `instrument_names` (List[str]),\n        `instrument_rationales` (List[str]),\
+      \ and `asset_class_count` (int)\n        as defined in the node’s output structure.\n\
+      \n    Raises\n    ------\n    ValueError\n        If any of the input parameters\
+      \ are missing or empty.\n    RuntimeError\n        If the algorithm fails to\
+      \ assemble 10 distinct instruments after\n        exhaustive search.\n\n   \
+      \ Examples\n    --------\n    >>> # Example 1: Long/Short Equity strategy with\
+      \ moderate risk\n    >>> result = define_asset_universe(\n\n    ...     strategy_category='Long/Short\
+      \ Equity',\n\n    ...     strategy_rationale='Capitalize on market inefficiencies\
+      \ while\n    providing downside protection.',\n    ...     risk_profile='Moderate\
+      \ volatility with limited leverage.'\n\n    >>> )\n    {\n      'instrument_names':\
+      \ [\n        'S&P 500 Equity Index',\n        'Nasdaq 100 Equity Index',\n \
+      \       'US Treasury 10‑Year Bond',\n        'US Treasury 30‑Year Bond',\n \
+      \       'Gold Futures',\n        'Oil Futures',\n        'EUR/USD Spot',\n \
+      \       'US 10‑Year Treasury Futures',\n        'Emerging Market Corporate Bond\
+      \ Index',\n        'Credit Default Swap on S&P 500'\n      ],\n      'instrument_rationales':\
+      \ [\n        'Large‑cap equity exposure for core long bets.',\n        'High‑growth\
+      \ tech exposure to balance risk.',\n        'Cash‑like instrument for portfolio\
+      \ liquidity.',\n        'Long‑term yield curve play for duration control.',\n\
+      \        'Inflation hedge and commodity diversification.',\n        'Oil price\
+      \ volatility capture.',\n        'Currency overlay for hedge and speculation.',\n\
+      \        'Leverage and duration adjustment via futures.',\n        'Diversification\
+      \ into high‑yield debt markets.',\n        'Credit risk exposure and spread\
+      \ trading.'\n      ],\n      'asset_class_count': 5\n    }\n\n    >>> # Example\
+      \ 2: Global Macro strategy with high risk tolerance\n    >>> result = define_asset_universe(\n\
+      \n    ...     strategy_category='Global Macro',\n\n    ...     strategy_rationale='Exploit\
+      \ macroeconomic trends across asset\n    classes worldwide.',\n    ...     risk_profile='High\
+      \ volatility, aggressive leverage allowed.'\n    )\n    {\n      'instrument_names':\
+      \ [\n        'S&P 500 Futures',\n        'Euro Stoxx 50 Futures',\n        'US\
+      \ Treasury 10‑Year Futures',\n        'US Treasury 30‑Year Futures',\n     \
+      \   'Gold Spot',\n        'Crude Oil Spot',\n        'EUR/USD Forward',\n  \
+      \      'Emerging Market Debt Futures',\n        'Credit Default Swap Index on\
+      \ Emerging Markets',\n        'Volatility Index (VIX) Futures'\n      ],\n \
+      \     'instrument_rationales': [\n        'Leverage on major equity markets.',\n\
+      \        'Exposure to European equity trends.',\n        'Yield curve trade\
+      \ for duration control.',\n        'Long‑term interest rate play.',\n      \
+      \  'Inflation hedge.',\n        'Energy market speculation.',\n        'Currency\
+      \ overlay for macro bets.',\n        'Emerging market debt trend exploitation.',\n\
+      \        'Credit spread trading across emerging markets.',\n        'Volatility\
+      \ capture and risk management.'\n      ],\n      'asset_class_count': 5\n  \
+      \  }\n\n    \"\"\"\n    return DefineAssetUniverseOutput(\n        instrument_names=[],\n\
+      \        instrument_rationales=[],\n        asset_class_count=0,\n    )"
     name: define_asset_universe
     nodes_depended_on:
     - choose_investment_strategy
@@ -409,9 +735,48 @@ nodes:
     prompt: List specific tradable asset classes (equities, bonds, commodities, derivatives)
       and instruments (e.g., S&P 500 futures, emerging market debt) that will be actively
       traded. Limit to 10 items with brief rationale for each selection.
+    shims: []
   define_investor_profile:
     agent: false
+    code_node_type: stub
     description: Characterize target capital sources
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ClarifyFundObjectivesOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for clarify_fund_objectives node outputs.\"\"\"\n    objectives_bullets: List[str]\
+      \ = (\n        Field(..., description=\"Bullet points summarizing investment\
+      \ purpose, competitive advantages, target return profiles, and long-term vision\
+      \ (maximum 8 bullets)\")\n    )\n\n\nclass DefineInvestorProfileOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for define_investor_profile node outputs.\"\"\"\n\
+      \    typical_investor_types: List[str] = (\n        Field(..., description=\"\
+      List of typical investor types (e.g., family offices, pensions)\")\n    )\n\
+      \    required_minimum_investment: int = (\n        Field(..., description=\"\
+      Required minimum investment in USD\")\n    )\n    liquidity_expectations: str\
+      \ = (\n        Field(..., description=\"Description of liquidity expectations\"\
+      )\n    )\n    risk_tolerance_levels: List[str] = (\n        Field(..., description=\"\
+      List of risk tolerance levels (e.g., aggressive, conservative)\")\n    )\n \
+      \   geographic_focus: str = (\n        Field(..., description=\"Description\
+      \ of geographic focus\")\n    )\n\n\ndef define_investor_profile(clarify_fund_objectives_input:\
+      \ ClarifyFundObjectivesOutput, **kwargs) -> DefineInvestorProfileOutput:\n \
+      \   \"\"\"\n    Define the ideal investor demographic for a hedge fund\n\n \
+      \   Parameters\n    ----------\n    fund_objectives : str\n        Primary business\
+      \ objectives for launching the hedge fund\n\n    Returns\n    -------\n    dict\n\
+      \        A dictionary containing typical investor types, required minimum\n\
+      \        investment, liquidity expectations, risk tolerance levels, and\n  \
+      \      geographic focus\n\n    Raises\n    ------\n    ValueError\n        If\
+      \ required minimum investment is not a positive integer\n\n    Examples\n  \
+      \  --------\n    >>> define_investor_profile(fund_objectives='Maximize returns\
+      \ while\n    minimizing risk')\n    >>> print(output['typical_investor_types'])\
+      \  # Output: ['family offices',\n    'pensions']\n    >>> print(output['required_minimum_investment'])\
+      \  # Output: 1000000\n    >>> print(output['liquidity_expectations'])  # Output:\
+      \ 'Quarterly\n    redemptions'\n    >>> print(output['risk_tolerance_levels'])\
+      \  # Output: ['aggressive',\n    'conservative']\n    >>> print(output['geographic_focus'])\
+      \  # Output: 'North America'\n    {'typical_investor_types': ['family offices',\
+      \ 'pensions'],\n    'required_minimum_investment': 1000000, 'liquidity_expectations':\
+      \ 'Quarterly\n    redemptions', 'risk_tolerance_levels': ['aggressive', 'conservative'],\n\
+      \    'geographic_focus': 'North America'}\n\n    \"\"\"\n    return DefineInvestorProfileOutput(\n\
+      \        typical_investor_types=[],\n        required_minimum_investment=0,\n\
+      \        liquidity_expectations=\"\",\n        risk_tolerance_levels=[],\n \
+      \       geographic_focus=\"\",\n    )"
     name: define_investor_profile
     nodes_depended_on:
     - clarify_fund_objectives
@@ -468,9 +833,71 @@ nodes:
       (e.g., family offices, pensions), required minimum investments (in USD), liquidity
       expectations, and risk tolerance levels (aggressive/conservative). Include geographic
       focus.
+    shims: []
   define_technology_stack:
     agent: false
+    code_node_type: stub
     description: Specify system infrastructure requirements
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass DraftOperationsWorkflowOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for draft_operations_workflow node outputs.\"\"\"\n    stages: List[str] =\
+      \ (\n        Field(..., description=\"Ordered list of operational stages from\
+      \ idea generation to settlement\")\n    )\n    responsible_parties: List[str]\
+      \ = (\n        Field(..., description=\"Corresponding responsible party for\
+      \ each stage (e.g., \\\"In-house\\\", \\\"Prime Broker\\\")\")\n    )\n    vendor_involved:\
+      \ List[bool] = (\n        Field(..., description=\"Boolean flag per stage indicating\
+      \ whether a vendor is involved (true = vendor, false = in-house)\")\n    )\n\
+      \    stage_descriptions: List[str] = (\n        Field(..., description=\"Brief\
+      \ description of activities performed in each stage\")\n    )\n\n\nclass DefineTechnologyStackOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for define_technology_stack node outputs.\"\"\"\n\
+      \    workflow_stages: List[str] = (\n        Field(..., description=\"Ordered\
+      \ list of workflow stages (e.g., Idea Generation, Signal Generation, Order Entry,\
+      \ Execution Management, Position Monitoring, Reconciliation, Settlement).\"\
+      )\n    )\n    technology_solutions: List[str] = (\n        Field(..., description=\"\
+      Corresponding technology solution for each stage (e.g., Data Analytics Platform,\
+      \ Portfolio Management System, OMS, FIX Gateway, Risk Engine, Reconciliation\
+      \ Tool).\")\n    )\n    vendor_in_house_flags: List[bool] = (\n        Field(...,\
+      \ description=\"Boolean flag for each stage indicating whether the solution\
+      \ is implemented in-house (true) or outsourced to a vendor (false).\")\n   \
+      \ )\n\n\ndef define_technology_stack(draft_operations_workflow_input: DraftOperationsWorkflowOutput,\
+      \ **kwargs) -> DefineTechnologyStackOutput:\n    \"\"\"\n    Generate a technology\
+      \ stack mapping for the hedge fund’s operational\n    workflow.\n\n    Parameters\n\
+      \    ----------\n    workflow_stages : List[str]\n        Ordered list of workflow\
+      \ stages as produced by\n        `draft_operations_workflow`.\n    stage_descriptions\
+      \ : List[str]\n        Brief description of activities performed in each stage\
+      \ (used for\n        contextual mapping).\n\n    Returns\n    -------\n    Dict[str,\
+      \ List[Any]]\n        A dictionary containing three keys: - `workflow_stages`\
+      \ (List[str])\n        - `technology_solutions` (List[str]) - `vendor_in_house_flags`\n\
+      \        (List[bool])\n\n    Raises\n    ------\n    ValueError\n        If\
+      \ the length of `workflow_stages` and `stage_descriptions` do not\n        match.\n\
+      \    KeyError\n        If a known workflow stage is not present in the internal\
+      \ mapping.\n\n    Examples\n    --------\n    >>> workflow_stages = [\"Idea\
+      \ Generation\", \"Signal Generation\", \"Order\n    Entry\", \"Execution Management\"\
+      , \"Position Monitoring\", \"Reconciliation\",\n    \"Settlement\"],\n    >>>\
+      \ stage_descriptions = [\n    ...     \"Generate investment ideas via research\
+      \ and data analysis.\",\n    ...     \"Generate buy/sell signals from quantitative\
+      \ models.\",\n    ...     \"Create order records in the OMS.\",\n    ...   \
+      \  \"Route orders to market via FIX gateway.\",\n    ...     \"Track open positions\
+      \ and P&L.\",\n    ...     \"Automated P&L and trade reconciliation.\",\n  \
+      \  ...     \"Confirm settlements with custodians and counterparties.\"]\n  \
+      \  >>> result = define_technology_stack(workflow_stages, stage_descriptions)\n\
+      \    >>> print(result)\n    {\n      \"workflow_stages\": [\"Idea Generation\"\
+      , \"Signal Generation\", \"Order Entry\",\n    \"Execution Management\", \"\
+      Position Monitoring\", \"Reconciliation\",\n    \"Settlement\"],\n      \"technology_solutions\"\
+      : [\"Data Analytics Platform\", \"Quant Model Engine\",\n    \"Order Management\
+      \ System\", \"FIX Gateway\", \"Risk Engine\", \"Reconciliation\n    Tool\",\
+      \ \"Settlement Service\"],\n      \"vendor_in_house_flags\": [true, true, false,\
+      \ false, true, false, false]\n    }\n\n    >>> # Using a shortened workflow\
+      \ workflow_stages = [\"Signal Generation\",\n    \"Order Entry\", \"Execution\
+      \ Management\"],\n    >>> stage_descriptions = [\n    ...     \"Generate buy/sell\
+      \ signals.\",\n    ...     \"Create orders.\",\n    ...     \"Route to market.\"\
+      ]\n    >>> print(define_technology_stack(workflow_stages, stage_descriptions))\n\
+      \    {\n      \"workflow_stages\": [\"Signal Generation\", \"Order Entry\",\
+      \ \"Execution\n    Management\"],\n      \"technology_solutions\": [\"Quant\
+      \ Model Engine\", \"Order Management System\",\n    \"FIX Gateway\"],\n    \
+      \  \"vendor_in_house_flags\": [true, false, false]\n    }\n\n    \"\"\"\n  \
+      \  return DefineTechnologyStackOutput(\n        workflow_stages=[],\n      \
+      \  technology_solutions=[],\n        vendor_in_house_flags=[],\n    )"
     name: define_technology_stack
     nodes_depended_on:
     - draft_operations_workflow
@@ -560,11 +987,78 @@ nodes:
     prompt: 'List required operational technology components for each workflow stage
       (e.g., order management system for trade execution). Format as two-column table:
       Workflow Stage | Technology Solution.'
+    shims: []
   design_compliance_program:
     agent: false
+    code_node_type: stub
     description: Creates a regulatory control framework by mapping required compliance
       items across three key domains—investor accreditation, subscription verification,
       and anti-money laundering—alongside their planned implementation dates.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass IdentifyRegulatoryRequirementsOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for identify_regulatory_requirements node outputs.\"\"\"\n    requirement:\
+      \ str = (\n        Field(..., description=\"The specific regulatory filing or\
+      \ registration required.\")\n    )\n    agency_citation: str = (\n        Field(...,\
+      \ description=\"The regulatory agency and citation or form number associated\
+      \ with the requirement.\")\n    )\n    implementation_notes: List[str] = (\n\
+      \        Field(..., description=\"One or two brief notes describing how to implement\
+      \ or comply with the requirement.\")\n    )\n\n\nclass DefineInvestorProfileOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for define_investor_profile node outputs.\"\"\"\n\
+      \    typical_investor_types: List[str] = (\n        Field(..., description=\"\
+      List of typical investor types (e.g., family offices, pensions)\")\n    )\n\
+      \    required_minimum_investment: int = (\n        Field(..., description=\"\
+      Required minimum investment in USD\")\n    )\n    liquidity_expectations: str\
+      \ = (\n        Field(..., description=\"Description of liquidity expectations\"\
+      )\n    )\n    risk_tolerance_levels: List[str] = (\n        Field(..., description=\"\
+      List of risk tolerance levels (e.g., aggressive, conservative)\")\n    )\n \
+      \   geographic_focus: str = (\n        Field(..., description=\"Description\
+      \ of geographic focus\")\n    )\n\n\nclass DesignComplianceProgramOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for design_compliance_program node outputs.\"\"\"\n\
+      \    accreditation_items: List[str] = (\n        Field(..., description=\"List\
+      \ of investor accreditation standard items required for compliance\")\n    )\n\
+      \    accreditation_dates: List[str] = (\n        Field(..., description=\"Implementation\
+      \ dates for each accreditation item (YYYY-MM-DD format)\")\n    )\n    subscription_items:\
+      \ List[str] = (\n        Field(..., description=\"List of subscription verification\
+      \ procedures to be followed\")\n    )\n    subscription_dates: List[str] = (\n\
+      \        Field(..., description=\"Implementation dates for each subscription\
+      \ procedure (YYYY-MM-DD format)\")\n    )\n    aml_items: List[str] = (\n  \
+      \      Field(..., description=\"List of anti-money laundering policy items to\
+      \ implement\")\n    )\n    aml_dates: List[str] = (\n        Field(..., description=\"\
+      Implementation dates for each AML policy item (YYYY-MM-DD format)\")\n    )\n\
+      \n\ndef design_compliance_program(identify_regulatory_requirements_input: IdentifyRegulatoryRequirementsOutput,\
+      \ define_investor_profile_input: DefineInvestorProfileOutput, **kwargs) -> DesignComplianceProgramOutput:\n\
+      \    \"\"\"\n    Generate compliance checklists for investor accreditation,\
+      \ subscription\n    verification, and AML policies, each paired with an implementation\
+      \ date.\n\n    Parameters\n    ----------\n    regulatory_requirements : List[Dict[str,\
+      \ Any]]\n        Output from identify_regulatory_requirements. Each dict contains\n\
+      \        keys 'requirement', 'agency_citation', and 'implementation_notes'.\n\
+      \        These provide the regulatory basis for accreditation, subscription,\n\
+      \        and AML items.\n    investor_profile : Dict[str, Any]\n        Output\
+      \ from define_investor_profile. Contains fields such as\n        'typical_investor_types',\
+      \ 'required_minimum_investment',\n        'liquidity_expectations', 'risk_tolerance_levels',\
+      \ and\n        'geographic_focus'. These inform the specificity of accreditation\n\
+      \        and subscription items.\n\n    Returns\n    -------\n    Dict[str,\
+      \ List[str]]\n        A dictionary with six keys—accreditation_items, accreditation_dates,\n\
+      \        subscription_items, subscription_dates, aml_items, aml_dates—each\n\
+      \        mapping to a list of strings.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If either input list is empty or missing required keys.\n    TypeError\n\
+      \        If inputs are not of the expected types.\n\n    Examples\n    --------\n\
+      \    >>> # Example 1: Basic compliance program generation\n    >>> reg_req =\
+      \ [\n    ...   {'requirement': 'SEC Form ADV', 'agency_citation': 'SEC',\n \
+      \   'implementation_notes': ['File annually', 'Update bi‑annually']},\n    ...\
+      \   {'requirement': 'FINRA Membership', 'agency_citation': 'FINRA',\n    'implementation_notes':\
+      \ ['Apply within 30 days']}\n    >>> ]\n    >>> inv_prof = {\n    ...   'typical_investor_types':\
+      \ ['Family Office', 'Pension Fund'],\n    ...   'required_minimum_investment':\
+      \ 5000000,\n    ...   'liquidity_expectations': 'Monthly',\n    ...   'risk_tolerance_levels':\
+      \ ['Aggressive'],\n    ...   'geographic_focus': 'US'\"\n                \"\
+      }\n    >>> result = design_compliance_program(reg_req, inv_prof)\n    >>> print(result['accreditation_items'])\n\
+      \    ['SEC Form ADV', 'FINRA Membership']\n\n    >>> # Example 2: Validation\
+      \ error when inputs missing\n    >>> try:\n    ...   design_compliance_program([],\
+      \ inv_prof)\n    >>> except ValueError as e:\n    ...   print(str(e))\n    Input\
+      \ regulatory_requirements list is empty.\n\n    \"\"\"\n    return DesignComplianceProgramOutput(\n\
+      \        accreditation_items=[],\n        accreditation_dates=[],\n        subscription_items=[],\n\
+      \        subscription_dates=[],\n        aml_items=[],\n        aml_dates=[],\n\
+      \    )"
     name: design_compliance_program
     nodes_depended_on:
     - identify_regulatory_requirements
@@ -649,9 +1143,87 @@ nodes:
     prompt: 'Generate compliance checklists mapping three categories: investor accreditation
       standards, subscription verification procedures, anti-money laundering policies.
       Format as 3-tab spreadsheet with implementation dates.'
+    shims: []
   design_risk_management_framework:
     agent: false
+    code_node_type: stub
     description: Create risk mitigation architecture
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass SetPerformanceAndRiskTargetsOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for set_performance_and_risk_targets node outputs.\"\"\"\n    metric_names:\
+      \ List[str] = (\n        Field(..., description=\"Names of the performance and\
+      \ risk metrics (e.g., Gross Return, Volatility, Sharpe Ratio, Max Drawdown).\"\
+      )\n    )\n    target_values: List[float] = (\n        Field(..., description=\"\
+      Numerical target values corresponding to each metric (e.g., 0.15 for 15% gross\
+      \ return, 0.10 for 10% volatility).\")\n    )\n    rationale_texts: List[str]\
+      \ = (\n        Field(..., description=\"Brief rationale for each target, explaining\
+      \ how it aligns with strategy and risk appetite.\")\n    )\n\n\nclass DefineAssetUniverseOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for define_asset_universe node outputs.\"\"\"\n  \
+      \  instrument_names: List[str] = (\n        Field(..., description=\"Names of\
+      \ the 10 selected tradable instruments\")\n    )\n    instrument_rationales:\
+      \ List[str] = (\n        Field(..., description=\"Brief rationale for each of\
+      \ the 10 selected instruments\")\n    )\n    asset_class_count: int = (\n  \
+      \      Field(..., description=\"Total number of distinct asset classes represented\
+      \ among the 10 instruments\")\n    )\n\n\nclass DesignRiskManagementFrameworkOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for design_risk_management_framework node outputs.\"\
+      \"\"\n    num_quant_controls: int = (\n        Field(..., description=\"Number\
+      \ of quantifiable risk controls specified\")\n    )\n    quant_controls_desc:\
+      \ List[str] = (\n        Field(..., description=\"Descriptions of each quantifiable\
+      \ risk control\")\n    )\n    num_qual_practices: int = (\n        Field(...,\
+      \ description=\"Number of qualitative risk practices specified\")\n    )\n \
+      \   qual_practices_desc: List[str] = (\n        Field(..., description=\"Descriptions\
+      \ of each qualitative risk practice\")\n    )\n\n\ndef design_risk_management_framework(set_performance_and_risk_targets_input:\
+      \ SetPerformanceAndRiskTargetsOutput, define_asset_universe_input: DefineAssetUniverseOutput,\
+      \ **kwargs) -> DesignRiskManagementFrameworkOutput:\n    \"\"\"\n    Generate\
+      \ a risk mitigation framework that aligns with performance targets\n    and\
+      \ the chosen asset universe.\n\n    Parameters\n    ----------\n    metric_names\
+      \ : List[str]\n        Names of performance and risk metrics from\n        set_performance_and_risk_targets.\n\
+      \    target_values : List[float]\n        Numeric target values corresponding\
+      \ to each metric.\n    rationale_texts : List[str]\n        Brief rationale\
+      \ for each target.\n    instrument_names : List[str]\n        List of the 10\
+      \ selected tradable instruments from\n        define_asset_universe.\n    instrument_rationales\
+      \ : List[str]\n        Rationales for each instrument.\n    asset_class_count\
+      \ : int\n        Number of distinct asset classes represented among the 10\n\
+      \        instruments.\n\n    Returns\n    -------\n    dict\n        Dictionary\
+      \ matching the node's output structure:\n        {num_quant_controls, quant_controls_desc,\
+      \ num_qual_practices,\n        qual_practices_desc}.\n\n    Raises\n    ------\n\
+      \    ValueError\n        If any required input list is empty or misaligned in\
+      \ length.\n    TypeError\n        If input types do not match the expected PrimitiveTypes.\n\
+      \n    Examples\n    --------\n    >>> design_risk_management_framework(\n\n\
+      \    ...     metric_names=['Gross Return', 'Volatility', 'Sharpe Ratio', 'Max\n\
+      \    Drawdown'],\n    ...     target_values=[0.15, 0.10, 2.0, 0.20],\n\n   \
+      \ ...     rationale_texts=['Targeting 15% return', 'Control volatility to\n\
+      \    10%', 'Sharpe > 2', 'Drawdown < 20%'],\n    ...     instrument_names=['SPX\
+      \ Futures', 'Emerging Debt', 'Gold Futures',\n    'USD Bonds', 'EU Equity ETF',\
+      \ 'Oil Futures', 'US Treasury', 'China Shares',\n    'Eurodollar Futures', 'US\
+      \ Equity ETF'],\n    ...     instrument_rationales=['Liquidity', 'Diversification',\
+      \ 'Inflation\n    hedge', 'Safe haven', 'European exposure', 'Energy cycle',\
+      \ 'Credit quality',\n    'Growth potential', 'Interest rate sensitivity', 'Broad\
+      \ market exposure'],\n    ...     asset_class_count=4\n\n    >>> )\n    {\n\
+      \      \"num_quant_controls\": 5,\n      \"quant_controls_desc\": [\n      \
+      \  \"Position limit: max 10% of portfolio per instrument\",\n        \"Daily\
+      \ VaR: 2% of NAV at 99% confidence\",\n        \"Liquidity threshold: min 20%\
+      \ of position must be marketable within 2\n    hours\",\n        \"Concentration\
+      \ limit: no single asset class > 25% of total NAV\",\n        \"Leverage cap:\
+      \ maximum 3x equity exposure\"\n      ],\n      \"num_qual_practices\": 3,\n\
+      \      \"qual_practices_desc\": [\n        \"Daily risk dashboard emailed to\
+      \ Portfolio Manager and Head of Risk\",\n        \"Weekly risk review meeting\
+      \ with investment team and compliance\",\n        \"Monthly audit of risk controls\
+      \ against performance targets\"\n      ]\n    }\n\n    >>> design_risk_management_framework(\n\
+      \n    ...     metric_names=['Gross Return', 'Volatility'],\n\n    ...     target_values=[0.12,\
+      \ 0.08],\n\n    ...     rationale_texts=['12% return', '8% vol'],\n\n    ...\
+      \     instrument_names=['AAPL', 'SPX Futures', 'US Treasury', 'Gold'],\n\n \
+      \   ...     instrument_rationales=['Growth', 'Index', 'Safe haven', 'Inflation\n\
+      \    hedge'],\n    ...     asset_class_count=3\n\n    >>> )\n    {\n      \"\
+      num_quant_controls\": 4,\n      \"quant_controls_desc\": [\n        \"Max position\
+      \ per security: 5% of NAV\",\n        \"Daily VaR: 1.5% of NAV\",\n        \"\
+      Liquidity: 15% of position must be liquid within 1 hour\",\n        \"Leverage:\
+      \ capped at 2x equity\"\n      ],\n      \"num_qual_practices\": 3,\n      \"\
+      qual_practices_desc\": [\n        \"Daily risk metric report\",\n        \"\
+      Bi‑weekly risk review\",\n        \"Quarterly independent risk audit\"\n   \
+      \   ]\n    }\n\n    \"\"\"\n    return DesignRiskManagementFrameworkOutput(\n\
+      \        num_quant_controls=0,\n        quant_controls_desc=[],\n        num_qual_practices=0,\n\
+      \        qual_practices_desc=[],\n    )"
     name: design_risk_management_framework
     nodes_depended_on:
     - set_performance_and_risk_targets
@@ -782,11 +1354,65 @@ nodes:
     prompt: List 4-6 quantifiable risk controls (position limits, VaR, liquidity thresholds)
       and 3 qualitative risk practices (monitoring protocols, reporting cadence, etc.)
       aligned with the performance targets.
+    shims: []
   draft_operations_workflow:
     agent: false
+    code_node_type: stub
     description: Creates a structured outline of the daily operational workflow for
       a hedge fund, mapping each stage of the trade lifecycle to responsible parties
       and indicating whether a vendor is involved.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass DefineAssetUniverseOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ define_asset_universe node outputs.\"\"\"\n    instrument_names: List[str]\
+      \ = (\n        Field(..., description=\"Names of the 10 selected tradable instruments\"\
+      )\n    )\n    instrument_rationales: List[str] = (\n        Field(..., description=\"\
+      Brief rationale for each of the 10 selected instruments\")\n    )\n    asset_class_count:\
+      \ int = (\n        Field(..., description=\"Total number of distinct asset classes\
+      \ represented among the 10 instruments\")\n    )\n\n\nclass ListServiceProvidersOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for list_service_providers node outputs.\"\"\"\n \
+      \   provider_names: List[str] = (\n        Field(..., description=\"List of\
+      \ mandatory external service provider names in the order: prime broker, custodian,\
+      \ fund administrator, legal counsel, compliance consultant.\")\n    )\n    provider_functions:\
+      \ List[str] = (\n        Field(..., description=\"Core function description\
+      \ for each provider, matching the order of provider_names.\")\n    )\n\n\nclass\
+      \ DraftOperationsWorkflowOutput(BaseModel):\n    \"\"\"Pydantic model for draft_operations_workflow\
+      \ node outputs.\"\"\"\n    stages: List[str] = (\n        Field(..., description=\"\
+      Ordered list of operational stages from idea generation to settlement\")\n \
+      \   )\n    responsible_parties: List[str] = (\n        Field(..., description=\"\
+      Corresponding responsible party for each stage (e.g., \\\"In-house\\\", \\\"\
+      Prime Broker\\\")\")\n    )\n    vendor_involved: List[bool] = (\n        Field(...,\
+      \ description=\"Boolean flag per stage indicating whether a vendor is involved\
+      \ (true = vendor, false = in-house)\")\n    )\n    stage_descriptions: List[str]\
+      \ = (\n        Field(..., description=\"Brief description of activities performed\
+      \ in each stage\")\n    )\n\n\ndef draft_operations_workflow(define_asset_universe_input:\
+      \ DefineAssetUniverseOutput, list_service_providers_input: ListServiceProvidersOutput,\
+      \ **kwargs) -> DraftOperationsWorkflowOutput:\n    \"\"\"\n    Builds a step‑by‑step\
+      \ operational workflow for trade execution, mapping\n    responsibilities and\
+      \ vendor involvement.\n\n    Parameters\n    ----------\n    asset_universe\
+      \ : dict\n        Output of the `define_asset_universe` node containing\n  \
+      \      `instrument_names`, `instrument_rationales`, and\n        `asset_class_count`.\
+      \ Used to contextualize which assets will be\n        traded.\n    service_providers\
+      \ : dict\n        Output of the `list_service_providers` node containing\n \
+      \       `provider_names` and `provider_functions`. Provides the names of key\n\
+      \        third‑party vendors.\n\n    Returns\n    -------\n    dict\n      \
+      \  Dictionary with keys `stages`, `responsible_parties`,\n        `vendor_involved`,\
+      \ and `stage_descriptions`, each holding a list of\n        strings or booleans.\n\
+      \n    Raises\n    ------\n    ValueError\n        Raised if either input dict\
+      \ is missing required keys.\n\n    Examples\n    --------\n    >>> # Mock inputs\n\
+      \    >>> asset_universe = {\n    ...     'instrument_names': ['S&P 500 Futures',\
+      \ 'Emerging Market Debt',\n    'Crude Oil Futures'],\n    ...     'instrument_rationales':\
+      \ ['Liquidity', 'Yield potential',\n    'Diversification'],\n    ...     'asset_class_count':\
+      \ 3\n    >>> }\n    >>> service_providers = {\n    ...     'provider_names':\
+      \ ['Prime Broker', 'Custodian', 'Fund\n    Administrator', 'Legal Counsel',\
+      \ 'Compliance Consultant'],\n    ...     'provider_functions': ['Order routing',\
+      \ 'Safekeeping', 'NAV\n    calculations', 'Contract review', 'AML monitoring']\n\
+      \    >>> }\n    >>> output = draft_operations_workflow(asset_universe, service_providers)\n\
+      \    >>> print(output['stages'])\n    ['Idea Generation', 'Signal Generation',\
+      \ 'Order Entry', 'Execution\n    Management', 'Position Monitoring', 'Reconciliation',\
+      \ 'Settlement']\n\n    >>> print(output['vendor_involved'])\n    [False, False,\
+      \ False, True, False, True, True]\n\n    \"\"\"\n    return DraftOperationsWorkflowOutput(\n\
+      \        stages=[],\n        responsible_parties=[],\n        vendor_involved=[],\n\
+      \        stage_descriptions=[],\n    )"
     name: draft_operations_workflow
     nodes_depended_on:
     - define_asset_universe
@@ -856,8 +1482,10 @@ nodes:
     prompt: 'Sketch trade lifecycle from idea generation to settlement including:
       portfolio signal generation, order entry, execution management, position monitoring,
       reconciliation. Assign responsible parties (in-house vs. vendor).'
+    shims: []
   estimate_setup_and_operating_costs:
     agent: false
+    code_node_type: stub
     description: Quantify financial requirements for launching a hedge fund by assembling
       a detailed cost matrix that aggregates vendor fees, technology implementation
       costs, and operational overhead. The node consumes structured outputs from three
@@ -865,6 +1493,111 @@ nodes:
       roles—to ensure that all relevant cost categories are captured. It outputs a
       list of line items with monthly and annual figures, cumulative budgets, and
       a concise textual overview highlighting key cost drivers.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ListServiceProvidersOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ list_service_providers node outputs.\"\"\"\n    provider_names: List[str]\
+      \ = (\n        Field(..., description=\"List of mandatory external service provider\
+      \ names in the order: prime broker, custodian, fund administrator, legal counsel,\
+      \ compliance consultant.\")\n    )\n    provider_functions: List[str] = (\n\
+      \        Field(..., description=\"Core function description for each provider,\
+      \ matching the order of provider_names.\")\n    )\n\n\nclass DefineTechnologyStackOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for define_technology_stack node outputs.\"\"\"\n\
+      \    workflow_stages: List[str] = (\n        Field(..., description=\"Ordered\
+      \ list of workflow stages (e.g., Idea Generation, Signal Generation, Order Entry,\
+      \ Execution Management, Position Monitoring, Reconciliation, Settlement).\"\
+      )\n    )\n    technology_solutions: List[str] = (\n        Field(..., description=\"\
+      Corresponding technology solution for each stage (e.g., Data Analytics Platform,\
+      \ Portfolio Management System, OMS, FIX Gateway, Risk Engine, Reconciliation\
+      \ Tool).\")\n    )\n    vendor_in_house_flags: List[bool] = (\n        Field(...,\
+      \ description=\"Boolean flag for each stage indicating whether the solution\
+      \ is implemented in-house (true) or outsourced to a vendor (false).\")\n   \
+      \ )\n\n\nclass OutlinerGovernanceStructureOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for outliner_governance_structure node outputs.\"\"\"\n    role_names:\
+      \ List[str] = Field(..., description=\"Names of the roles\")\n    role_responsibility_1:\
+      \ List[str] = (\n        Field(..., description=\"First responsibility for each\
+      \ role\")\n    )\n    role_responsibility_2: List[str] = (\n        Field(...,\
+      \ description=\"Second responsibility for each role\")\n    )\n    role_responsibility_3:\
+      \ List[str] = (\n        Field(..., description=\"Third responsibility for each\
+      \ role\")\n    )\n    role_authority_scope: List[str] = (\n        Field(...,\
+      \ description=\"Authority scope for each role\")\n    )\n\n\nclass EstimateSetupAndOperatingCostsOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for estimate_setup_and_operating_costs node outputs.\"\
+      \"\"\n    service_provider_name: List[str] = (\n        Field(..., description=\"\
+      Names of the service providers or cost categories\")\n    )\n    monthly_cost:\
+      \ List[float] = (\n        Field(..., description=\"Monthly cost in USD for\
+      \ each service provider\")\n    )\n    annual_total: List[float] = (\n     \
+      \   Field(..., description=\"Annual total cost in USD for each service provider\
+      \ (Monthly Cost \\u00d7 12)\")\n    )\n    total_monthly_budget: float = (\n\
+      \        Field(..., description=\"Sum of all monthly costs across providers\"\
+      )\n    )\n    total_annual_budget: float = (\n        Field(..., description=\"\
+      Sum of all annual totals across providers\")\n    )\n    line_item_count: int\
+      \ = (\n        Field(..., description=\"Number of line items included in the\
+      \ cost matrix (typically 10\\u201115)\")\n    )\n    budget_overview: str =\
+      \ (\n        Field(..., description=\"Short textual summary of the overall budget,\
+      \ highlighting major cost drivers\")\n    )\n\n\ndef estimate_setup_and_operating_costs(list_service_providers_input:\
+      \ ListServiceProvidersOutput, define_technology_stack_input: DefineTechnologyStackOutput,\
+      \ outliner_governance_structure_input: OutlinerGovernanceStructureOutput, **kwargs)\
+      \ -> EstimateSetupAndOperatingCostsOutput:\n    \"\"\"\n    Generate a cost\
+      \ matrix that aggregates monthly and annual expenditures for\n    all service\
+      \ providers, technology implementations, and governance roles.\n\n    Parameters\n\
+      \    ----------\n    provider_names : List[str]\n        List of mandatory external\
+      \ service provider names in the order:\n        prime broker, custodian, fund\
+      \ administrator, legal counsel,\n        compliance consultant.\n    provider_functions\
+      \ : List[str]\n        Core function description for each provider, matching\
+      \ the order of\n        provider_names.\n    workflow_stages : List[str]\n \
+      \       Ordered list of operational stages (e.g., Idea Generation, Signal\n\
+      \        Generation, Order Entry, Execution Management, Position Monitoring,\n\
+      \        Reconciliation, Settlement).\n    technology_solutions : List[str]\n\
+      \        Corresponding technology solution for each workflow stage.\n    vendor_in_house_flags\
+      \ : List[bool]\n        Boolean flag for each stage indicating whether the solution\
+      \ is\n        implemented in‑house (True) or outsourced to a vendor (False).\n\
+      \    role_names : List[str]\n        Names of internal governance roles.\n \
+      \   role_responsibility_1 : List[str]\n        First responsibility for each\
+      \ role.\n    role_responsibility_2 : List[str]\n        Second responsibility\
+      \ for each role.\n    role_responsibility_3 : List[str]\n        Third responsibility\
+      \ for each role.\n    role_authority_scope : List[str]\n        Authority scope\
+      \ for each role.\n\n    Returns\n    -------\n    Dict[str, Union[List[str],\
+      \ List[float], float, int]]\n        A dictionary containing the cost matrix,\
+      \ totals, line item count,\n        and budget overview.\n\n    Raises\n   \
+      \ ------\n    ValueError\n        Raised if any of the input lists have mismatched\
+      \ lengths.\n    TypeError\n        Raised if inputs are not of the expected\
+      \ types.\n\n    Examples\n    --------\n    >>> provider_names = [\"Prime Broker\"\
+      , \"Custodian\", \"Fund Admin\", \"Legal\n    Counsel\", \"Compliance Consultant\"\
+      ],\n    >>> provider_functions = [\"Trade execution and clearing\", \"Asset\n\
+      \    safekeeping\", \"NAV calculation and reporting\", \"Legal advice\", \"\
+      AML & KYC\n    oversight\"],\n    >>> workflow_stages = [\"Idea Generation\"\
+      , \"Signal Generation\", \"Order\n    Entry\", \"Execution Management\", \"\
+      Position Monitoring\", \"Reconciliation\",\n    \"Settlement\"],\n    >>> technology_solutions\
+      \ = [\"Data Analytics\", \"Portfolio Mgmt\", \"OMS\", \"FIX\n    Gateway\",\
+      \ \"Risk Engine\", \"Reconciliation Tool\", \"Settlement System\"],\n    >>>\
+      \ vendor_in_house_flags = [True, True, False, False, True, False, False],\n\
+      \    >>> role_names = [\"GP\", \"Investment Manager\", \"Compliance Officer\"\
+      , \"Chief\n    Risk Officer\", \"Chief Operating Officer\"],\n    >>> role_responsibility_1\
+      \ = [\"Set investment mandate\", \"Develop strategies\",\n    \"Ensure regulatory\
+      \ compliance\", \"Define risk limits\", \"Oversee operations\"],\n    >>> role_responsibility_2\
+      \ = [\"Allocate capital\", \"Monitor performance\",\n    \"Review AML policies\"\
+      , \"Approve risk models\", \"Manage budgets\"],\n    >>> role_responsibility_3\
+      \ = [\"Stakeholder communication\", \"Approve trades\",\n    \"Report violations\"\
+      , \"Maintain risk register\", \"Coordinate vendors\"],\n    >>> role_authority_scope\
+      \ = [\"Full authority\", \"Decision authority on\n    trades\", \"Legal & compliance\
+      \ decisions\", \"Risk approval\", \"Operational\n    decisions\"],\n    >>>\
+      \ budget = estimate_setup_and_operating_costs(provider_names,\n    provider_functions,\
+      \ workflow_stages, technology_solutions,\n    vendor_in_house_flags, role_names,\
+      \ role_responsibility_1,\n    role_responsibility_2, role_responsibility_3,\
+      \ role_authority_scope)\n    {\\n  \"service_provider_name\": [\"Prime Broker\"\
+      , \"Custodian\", \"Fund Admin\",\n    \"Legal Counsel\", \"Compliance Consultant\"\
+      , \"Data Analytics\", \"Portfolio\n    Mgmt\", \"OMS\", \"FIX Gateway\", \"\
+      Risk Engine\", \"Reconciliation Tool\",\n    \"Settlement System\"],\\n  \"\
+      monthly_cost\": [12000.0, 8000.0, 5000.0, 3000.0,\n    2500.0, 4000.0, 3500.0,\
+      \ 6000.0, 2000.0, 4500.0, 3000.0, 2500.0],\\n\n    \"annual_total\": [144000.0,\
+      \ 96000.0, 60000.0, 36000.0, 30000.0, 48000.0,\n    42000.0, 72000.0, 24000.0,\
+      \ 54000.0, 36000.0, 30000.0],\\n\n    \"total_monthly_budget\": 52000.0,\\n\
+      \  \"total_annual_budget\": 624000.0,\\n\n    \"line_item_count\": 12,\\n  \"\
+      budget_overview\": \"The annual budget totals\n    $624k, driven primarily by\
+      \ prime broker ($144k), custodial services ($96k),\n    and technology implementations\
+      \ such as OMS ($72k).\"\\n}\n\n    \"\"\"\n    return EstimateSetupAndOperatingCostsOutput(\n\
+      \        service_provider_name=[],\n        monthly_cost=[],\n        annual_total=[],\n\
+      \        total_monthly_budget=0.0,\n        total_annual_budget=0.0,\n     \
+      \   line_item_count=0,\n        budget_overview=\"\",\n    )"
     name: estimate_setup_and_operating_costs
     nodes_depended_on:
     - list_service_providers
@@ -985,10 +1718,47 @@ nodes:
     prompt: 'Create cost matrix with: Service Provider | Monthly Cost (USD) | Annual
       Total, including vendor fees, technology implementation, and operational overhead.
       Include 10-15 line items.'
+    shims: []
   identify_regulatory_requirements:
     agent: false
+    code_node_type: stub
     description: Maps the regulatory obligations that a newly formed hedge fund must
       satisfy based on its legal entity type and domicile.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ChooseLegalEntityTypeOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for choose_legal_entity_type node outputs.\"\"\"\n    legal_entity_type: str\
+      \ = (\n        Field(..., description=\"The chosen legal entity type (e.g.,\
+      \ LP, LLC, SICAV)\")\n    )\n    operational_advantages: List[str] = (\n   \
+      \     Field(..., description=\"List of three operational advantages of the chosen\
+      \ legal entity type\")\n    )\n    compliance_consideration: str = (\n     \
+      \   Field(..., description=\"One compliance consideration specific to the chosen\
+      \ legal entity type\")\n    )\n\n\nclass IdentifyRegulatoryRequirementsOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for identify_regulatory_requirements node outputs.\"\
+      \"\"\n    requirement: str = (\n        Field(..., description=\"The specific\
+      \ regulatory filing or registration required.\")\n    )\n    agency_citation:\
+      \ str = (\n        Field(..., description=\"The regulatory agency and citation\
+      \ or form number associated with the requirement.\")\n    )\n    implementation_notes:\
+      \ List[str] = (\n        Field(..., description=\"One or two brief notes describing\
+      \ how to implement or comply with the requirement.\")\n    )\n\n\ndef identify_regulatory_requirements(choose_legal_entity_type_input:\
+      \ ChooseLegalEntityTypeOutput, **kwargs) -> IdentifyRegulatoryRequirementsOutput:\n\
+      \    \"\"\"\n    Generate a list of all regulatory filings, registrations, and\
+      \ associated\n    implementation notes required for the hedge fund’s chosen\
+      \ legal entity and\n    jurisdiction.\n\n    Parameters\n    ----------\n  \
+      \  legal_entity_info : dict\n        Dictionary containing the legal entity\
+      \ type and jurisdiction as\n        returned by the parent node `choose_legal_entity_type`.\n\
+      \n    Returns\n    -------\n    List[dict]\n        A list of dictionaries,\
+      \ each containing a `requirement`,\n        `agency_citation`, and `implementation_notes`\
+      \ field.\n\n    Raises\n    ------\n    KeyError\n        If `legal_entity_info`\
+      \ does not contain expected keys such as\n        `legal_entity_type` or `jurisdiction`.\n\
+      \    ValueError\n        If the legal entity type or jurisdiction is unsupported\
+      \ or unknown.\n\n    Examples\n    --------\n    >>> legal_entity_info = {\n\
+      \    ...     'legal_entity_type': 'LLC',\n    ...     'jurisdiction': 'Delaware'\n\
+      \    >>> }\n    [\n      {\n        \"requirement\": \"Register with SEC as\
+      \ an investment adviser\",\n        \"agency_citation\": \"SEC, Form ADV\",\n\
+      \        \"implementation_notes\": [\n          \"File Form ADV Part 2A and\
+      \ 2B with the SEC\",\n          \"Maintain annual updates and filing deadlines\"\
+      \n\n    \"\"\"\n    return IdentifyRegulatoryRequirementsOutput(\n        requirement=\"\
+      \",\n        agency_citation=\"\",\n        implementation_notes=[],\n    )"
     name: identify_regulatory_requirements
     nodes_depended_on:
     - choose_legal_entity_type
@@ -1044,9 +1814,50 @@ nodes:
     prompt: List all required regulatory filings and registrations for the chosen
       jurisdiction and entity type including agency citations (e.g., SEC Form ADV).
       Add 1-2 implementation notes for each requirement.
+    shims: []
   list_service_providers:
     agent: false
+    code_node_type: stub
     description: Compile third-party vendor requirements
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ChooseLegalEntityTypeOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for choose_legal_entity_type node outputs.\"\"\"\n    legal_entity_type: str\
+      \ = (\n        Field(..., description=\"The chosen legal entity type (e.g.,\
+      \ LP, LLC, SICAV)\")\n    )\n    operational_advantages: List[str] = (\n   \
+      \     Field(..., description=\"List of three operational advantages of the chosen\
+      \ legal entity type\")\n    )\n    compliance_consideration: str = (\n     \
+      \   Field(..., description=\"One compliance consideration specific to the chosen\
+      \ legal entity type\")\n    )\n\n\nclass ListServiceProvidersOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for list_service_providers node outputs.\"\"\"\n \
+      \   provider_names: List[str] = (\n        Field(..., description=\"List of\
+      \ mandatory external service provider names in the order: prime broker, custodian,\
+      \ fund administrator, legal counsel, compliance consultant.\")\n    )\n    provider_functions:\
+      \ List[str] = (\n        Field(..., description=\"Core function description\
+      \ for each provider, matching the order of provider_names.\")\n    )\n\n\ndef\
+      \ list_service_providers(choose_legal_entity_type_input: ChooseLegalEntityTypeOutput,\
+      \ **kwargs) -> ListServiceProvidersOutput:\n    \"\"\"\n    Generate an ordered\
+      \ list of mandatory external service providers and their\n    core functions.\n\
+      \n    Parameters\n    ----------\n    legal_entity_type : str\n        The chosen\
+      \ legal entity type (e.g., LP, LLC, SICAV) obtained from\n        the `choose_legal_entity_type`\
+      \ node.\n\n    Returns\n    -------\n    dict\n        A dictionary with two\
+      \ keys: `provider_names` (List[str]) and\n        `provider_functions` (List[str]).\
+      \ Both lists are aligned so that\n        index *i* in `provider_names` corresponds\
+      \ to index *i* in\n        `provider_functions`.\n\n    Raises\n    ------\n\
+      \    ValueError\n        Raised if `legal_entity_type` is empty or not one of\
+      \ the supported\n        entity types.\n    KeyError\n        Raised if the\
+      \ internal mapping for the given entity type does not\n        contain entries\
+      \ for all required providers.\n\n    Examples\n    --------\n    >>> output\
+      \ = list_service_providers('LP')\n    >>> print(output['provider_names'])\n\
+      \    >>> print(output['provider_functions'])\n    [\"Prime Broker\", \"Custodian\"\
+      , \"Fund Administrator\", \"Legal Counsel\",\n    \"Compliance Consultant\"\
+      ]\\n[\"Facilitates trade execution and margin\n    management.\", \"Safeguards\
+      \ assets and provides custody services.\", \"Handles\n    NAV calculation, investor\
+      \ reporting, and fund accounting.\", \"Provides legal\n    structuring and regulatory\
+      \ compliance advice.\", \"Assesses and implements AML\n    and other compliance\
+      \ policies.\"]\n\n    >>> output = list_service_providers('SICAV')\n    >>>\
+      \ print(output['provider_functions'][2])\n    \"Handles NAV calculation, investor\
+      \ reporting, and fund accounting.\"\n\n    \"\"\"\n    return ListServiceProvidersOutput(\n\
+      \        provider_names=[],\n        provider_functions=[],\n    )"
     name: list_service_providers
     nodes_depended_on:
     - choose_legal_entity_type
@@ -1103,9 +1914,62 @@ nodes:
     prompt: 'Generate checklist of mandatory external service providers: prime broker,
       custodian, fund administrator, legal counsel, compliance consultant. Include
       1 line per provider with core function description.'
+    shims: []
   outliner_governance_structure:
     agent: false
+    code_node_type: stub
     description: Define internal authority framework
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ChooseLegalEntityTypeOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for choose_legal_entity_type node outputs.\"\"\"\n    legal_entity_type: str\
+      \ = (\n        Field(..., description=\"The chosen legal entity type (e.g.,\
+      \ LP, LLC, SICAV)\")\n    )\n    operational_advantages: List[str] = (\n   \
+      \     Field(..., description=\"List of three operational advantages of the chosen\
+      \ legal entity type\")\n    )\n    compliance_consideration: str = (\n     \
+      \   Field(..., description=\"One compliance consideration specific to the chosen\
+      \ legal entity type\")\n    )\n\n\nclass OutlinerGovernanceStructureOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for outliner_governance_structure node outputs.\"\"\
+      \"\n    role_names: List[str] = Field(..., description=\"Names of the roles\"\
+      )\n    role_responsibility_1: List[str] = (\n        Field(..., description=\"\
+      First responsibility for each role\")\n    )\n    role_responsibility_2: List[str]\
+      \ = (\n        Field(..., description=\"Second responsibility for each role\"\
+      )\n    )\n    role_responsibility_3: List[str] = (\n        Field(..., description=\"\
+      Third responsibility for each role\")\n    )\n    role_authority_scope: List[str]\
+      \ = (\n        Field(..., description=\"Authority scope for each role\")\n \
+      \   )\n\n\ndef outliner_governance_structure(choose_legal_entity_type_input:\
+      \ ChooseLegalEntityTypeOutput, **kwargs) -> OutlinerGovernanceStructureOutput:\n\
+      \    \"\"\"\n    Creates a governance framework for a hedge fund based on the\
+      \ selected legal\n    entity type.\n\n    Parameters\n    ----------\n    legal_entity_type\
+      \ : str\n        The legal entity type chosen for the fund (e.g., LP, LLC, SICAV).\n\
+      \n    Returns\n    -------\n    dict\n        Dictionary containing five lists:\
+      \ role_names, role_responsibility_1,\n        role_responsibility_2, role_responsibility_3,\
+      \ and\n        role_authority_scope.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If `legal_entity_type` is an empty string or not among the supported\n\
+      \        entity types.\n\n    Examples\n    --------\n    >>> outliner_governance_structure('LP')\n\
+      \    {\n      'role_names': ['GP', 'Investment Manager', 'Compliance Officer',\
+      \ 'Chief\n    Operating Officer', 'Investor Relations Officer'],\n      'role_responsibility_1':\
+      \ ['Oversee overall fund strategy', 'Develop trade\n    ideas', 'Ensure regulatory\
+      \ compliance', 'Manage day‑to‑day operations',\n    'Maintain investor communications'],\n\
+      \      'role_responsibility_2': ['Allocate capital', 'Approve trade execution',\n\
+      \    'Monitor AML/KYC', 'Coordinate vendor relationships', 'Distribute\n   \
+      \ performance reports'],\n      'role_responsibility_3': ['Set performance targets',\
+      \ 'Conduct risk\n    reviews', 'Draft compliance policies', 'Report to board',\
+      \ 'Handle investor\n    inquiries'],\n      'role_authority_scope': ['Strategic\
+      \ decisions', 'Trade approval up to\n    $10M', 'Compliance approvals', 'Operational\
+      \ budgets', 'Investor\n    disclosures']\n    }\n\n    >>> outliner_governance_structure('LLC')\n\
+      \    {\n      'role_names': ['GP', 'Investment Manager', 'Compliance Officer',\
+      \ 'Chief\n    Financial Officer', 'Investor Relations Officer'],\n      'role_responsibility_1':\
+      \ ['Set investment mandate', 'Identify market\n    opportunities', 'Maintain\
+      \ regulatory filings', 'Oversee financial\n    reporting', 'Engage investors'],\n\
+      \      'role_responsibility_2': ['Allocate capital within limits', 'Approve\n\
+      \    execution plans', 'Implement AML controls', 'Manage budgets', 'Provide\n\
+      \    performance updates'],\n      'role_responsibility_3': ['Define risk appetite',\
+      \ 'Conduct compliance\n    audits', 'Prepare annual reports', 'Ensure tax compliance',\
+      \ 'Coordinate\n    investor meetings'],\n      'role_authority_scope': ['Strategic\
+      \ direction', 'Trade approvals up to\n    $8M', 'Compliance approvals', 'Financial\
+      \ oversight', 'Investor disclosure']\n    }\n\n    \"\"\"\n    return OutlinerGovernanceStructureOutput(\n\
+      \        role_names=[],\n        role_responsibility_1=[],\n        role_responsibility_2=[],\n\
+      \        role_responsibility_3=[],\n        role_authority_scope=[],\n    )"
     name: outliner_governance_structure
     nodes_depended_on:
     - choose_legal_entity_type
@@ -1175,9 +2039,91 @@ nodes:
     prompt: 'Create governance chart with at least five roles: GP, Investment Manager,
       Compliance Officer, etc. For each role, define three core responsibilities and
       decision-making authority scope.'
+    shims: []
   produce_final_fund_plan_summary:
     agent: false
+    code_node_type: stub
     description: Create comprehensive launch blueprint
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass CompilePitchDeckOutlineOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for compile_pitch_deck_outline node outputs.\"\"\"\n    slide_titles: List[str]\
+      \ = (\n        Field(..., description=\"List of slide titles in the presentation\"\
+      )\n    )\n    core_messages: List[str] = (\n        Field(..., description=\"\
+      List of core messages for each slide\")\n    )\n    objectives_summary: str\
+      \ = (\n        Field(..., description=\"Summary of the objectives slides\")\n\
+      \    )\n    strategy_overview: str = (\n        Field(..., description=\"Overview\
+      \ of the strategy slides\")\n    )\n    risk_return_analysis: str = (\n    \
+      \    Field(..., description=\"Summary of the risk-return analysis slide\")\n\
+      \    )\n    team_description: str = (\n        Field(..., description=\"Description\
+      \ of the team slide\")\n    )\n    operations_compliance_summary: str = (\n\
+      \        Field(..., description=\"Summary of the operations/compliance slides\"\
+      )\n    )\n    financials_summary: str = (\n        Field(..., description=\"\
+      Summary of the financials slides\")\n    )\n    qa_topics: List[str] = Field(...,\
+      \ description=\"List of Q&A topics\")\n\n\nclass EstimateSetupAndOperatingCostsOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for estimate_setup_and_operating_costs node outputs.\"\
+      \"\"\n    service_provider_name: List[str] = (\n        Field(..., description=\"\
+      Names of the service providers or cost categories\")\n    )\n    monthly_cost:\
+      \ List[float] = (\n        Field(..., description=\"Monthly cost in USD for\
+      \ each service provider\")\n    )\n    annual_total: List[float] = (\n     \
+      \   Field(..., description=\"Annual total cost in USD for each service provider\
+      \ (Monthly Cost \\u00d7 12)\")\n    )\n    total_monthly_budget: float = (\n\
+      \        Field(..., description=\"Sum of all monthly costs across providers\"\
+      )\n    )\n    total_annual_budget: float = (\n        Field(..., description=\"\
+      Sum of all annual totals across providers\")\n    )\n    line_item_count: int\
+      \ = (\n        Field(..., description=\"Number of line items included in the\
+      \ cost matrix (typically 10\\u201115)\")\n    )\n    budget_overview: str =\
+      \ (\n        Field(..., description=\"Short textual summary of the overall budget,\
+      \ highlighting major cost drivers\")\n    )\n\n\nclass DesignComplianceProgramOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for design_compliance_program node outputs.\"\"\"\n\
+      \    accreditation_items: List[str] = (\n        Field(..., description=\"List\
+      \ of investor accreditation standard items required for compliance\")\n    )\n\
+      \    accreditation_dates: List[str] = (\n        Field(..., description=\"Implementation\
+      \ dates for each accreditation item (YYYY-MM-DD format)\")\n    )\n    subscription_items:\
+      \ List[str] = (\n        Field(..., description=\"List of subscription verification\
+      \ procedures to be followed\")\n    )\n    subscription_dates: List[str] = (\n\
+      \        Field(..., description=\"Implementation dates for each subscription\
+      \ procedure (YYYY-MM-DD format)\")\n    )\n    aml_items: List[str] = (\n  \
+      \      Field(..., description=\"List of anti-money laundering policy items to\
+      \ implement\")\n    )\n    aml_dates: List[str] = (\n        Field(..., description=\"\
+      Implementation dates for each AML policy item (YYYY-MM-DD format)\")\n    )\n\
+      \n\nclass ProduceFinalFundPlanSummaryOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for produce_final_fund_plan_summary node outputs.\"\"\"\n    summary:\
+      \ str = Field(..., description=\"The executive summary text\")\n    strategy:\
+      \ str = Field(..., description=\"Summary of the investment strategy\")\n   \
+      \ target_returns: str = (\n        Field(..., description=\"Description of target\
+      \ returns\")\n    )\n    risk_controls: str = (\n        Field(..., description=\"\
+      Overview of risk controls in place\")\n    )\n    regulatory_structure: str\
+      \ = (\n        Field(..., description=\"Description of the regulatory structure\"\
+      )\n    )\n    personnel: str = (\n        Field(..., description=\"Summary of\
+      \ key personnel and their roles\")\n    )\n    technology: str = Field(...,\
+      \ description=\"Overview of the technology stack\")\n    launch_timeline: str\
+      \ = (\n        Field(..., description=\"Description of the launch timeline\"\
+      )\n    )\n\n\ndef produce_final_fund_plan_summary(compile_pitch_deck_outline_input:\
+      \ CompilePitchDeckOutlineOutput, estimate_setup_and_operating_costs_input: EstimateSetupAndOperatingCostsOutput,\
+      \ design_compliance_program_input: DesignComplianceProgramOutput, **kwargs)\
+      \ -> ProduceFinalFundPlanSummaryOutput:\n    \"\"\"\n    Produces a 200-word\
+      \ executive summary covering strategy, target returns,\n    risk controls, regulatory\
+      \ structure, personnel, technology, and launch\n    timeline.\n\n    Parameters\n\
+      \    ----------\n    pitch_deck_outline : dict\n        Output from compile_pitch_deck_outline\
+      \ node\n    costs_estimation : dict\n        Output from estimate_setup_and_operating_costs\
+      \ node\n    compliance_program : dict\n        Output from design_compliance_program\
+      \ node\n\n    Returns\n    -------\n    dict\n        Dictionary containing\
+      \ the executive summary and its components\n\n    Raises\n    ------\n    ValueError\n\
+      \        If any of the input nodes are missing required fields\n\n    Examples\n\
+      \    --------\n    >>> pitch_deck_outline = {'strategy_overview': 'Long/short\
+      \ equity',\n    'risk_return_analysis': 'Target 15% annual return'}\n    >>>\
+      \ costs_estimation = {'total_annual_budget': 1000000.0, 'budget_overview':\n\
+      \    'Detailed breakdown of costs'}\n    >>> compliance_program = {'accreditation_items':\
+      \ ['Item 1', 'Item 2'],\n    'aml_items': ['AML Item 1']}\n    >>> produce_final_fund_plan_summary(pitch_deck_outline,\
+      \ costs_estimation,\n    compliance_program)\n    {'summary': '* Strategy: Long/short\
+      \ equity\\n* Target Returns: 15% annual\n    return\\n* Risk Controls: Detailed\
+      \ risk management framework\\n* Regulatory\n    Structure: Registered with regulatory\
+      \ bodies\\n* Personnel: Experienced team\n    in place\\n* Technology: State-of-the-art\
+      \ trading platform\\n* Launch\n    Timeline: Q1 2025'}\n\n    \"\"\"\n    return\
+      \ ProduceFinalFundPlanSummaryOutput(\n        summary=\"\",\n        strategy=\"\
+      \",\n        target_returns=\"\",\n        risk_controls=\"\",\n        regulatory_structure=\"\
+      \",\n        personnel=\"\",\n        technology=\"\",\n        launch_timeline=\"\
+      \",\n    )"
     name: produce_final_fund_plan_summary
     nodes_depended_on:
     - compile_pitch_deck_outline
@@ -1249,9 +2195,49 @@ nodes:
     prompt: 'Synthesize prior work into 200-word executive summary covering: strategy,
       target returns, risk controls, regulatory structure, personnel, technology,
       and launch timeline. Format as bullet-point summary with bold section headers.'
+    shims: []
   select_jurisdiction:
     agent: false
+    code_node_type: stub
     description: Choose optimal regulatory domicile
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ClarifyFundObjectivesOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for clarify_fund_objectives node outputs.\"\"\"\n    objectives_bullets: List[str]\
+      \ = (\n        Field(..., description=\"Bullet points summarizing investment\
+      \ purpose, competitive advantages, target return profiles, and long-term vision\
+      \ (maximum 8 bullets)\")\n    )\n\n\nclass SelectJurisdictionOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for select_jurisdiction node outputs.\"\"\"\n    chosen_jurisdiction:\
+      \ str = (\n        Field(..., description=\"The name of the selected fund domicile\"\
+      )\n    )\n    advantages: List[str] = (\n        Field(..., description=\"A\
+      \ list of two key advantages of the chosen jurisdiction\")\n    )\n    disadvantages:\
+      \ List[str] = (\n        Field(..., description=\"A list of two key disadvantages\
+      \ of the chosen jurisdiction\")\n    )\n    justification: str = (\n       \
+      \ Field(..., description=\"Brief explanation linking the jurisdiction to the\
+      \ fund\\u2019s objectives and strategy\")\n    )\n\n\ndef select_jurisdiction(clarify_fund_objectives_input:\
+      \ ClarifyFundObjectivesOutput, **kwargs) -> SelectJurisdictionOutput:\n    \"\
+      \"\"\n    Selects an optimal regulatory domicile for a hedge fund based on tax\n\
+      \    efficiency, regulatory simplicity, and investor appeal.\n\n    Parameters\n\
+      \    ----------\n    objectives_bullets : List[str]\n        Bullet points summarizing\
+      \ the fund's primary business objectives, as\n        produced by the clarify_fund_objectives\
+      \ node.\n\n    Returns\n    -------\n    dict\n        A dictionary containing\
+      \ the chosen jurisdiction, its advantages and\n        disadvantages, and a\
+      \ justification string.\n\n    Raises\n    ------\n    ValueError\n        If\
+      \ `objectives_bullets` is empty or not a list of strings.\n\n    Examples\n\
+      \    --------\n    >>> # Assume objectives_bullets derived from clarify_fund_objectives\n\
+      \    >>> objectives_bullets = [\n    ...     \"High alpha generation via event-driven\
+      \ strategies\",\n    ...     \"Target annual gross return of 20%\",\n    ...\
+      \     \"Limited regulatory reporting to speed decision-making\",\n    ...  \
+      \   \"Appeal to family offices and pension funds\",\n    >>> ]\n    >>> result\
+      \ = select_jurisdiction(objectives_bullets)\n    >>> print(result['chosen_jurisdiction'])\n\
+      \    \"Cayman Islands\"\n\n    >>> print(result['advantages'])\n    >>> print(result['disadvantages'])\n\
+      \    >>> print(result['justification'])\n    \"['Zero corporate tax', 'Flexible\
+      \ regulatory regime']\"\n    \"['Perceived political risk', 'Limited local investor\
+      \ base']\"\n    \"'The Cayman Islands provide a tax-neutral environment and\
+      \ minimal reporting\n    requirements, aligning with the fund’s aggressive return\
+      \ target and speed of\n    execution, while acknowledging the geopolitical and\
+      \ market liquidity\n    concerns.'\n\n    \"\"\"\n    return SelectJurisdictionOutput(\n\
+      \        chosen_jurisdiction=\"\",\n        advantages=[],\n        disadvantages=[],\n\
+      \        justification=\"\",\n    )"
     name: select_jurisdiction
     nodes_depended_on:
     - clarify_fund_objectives
@@ -1316,9 +2302,60 @@ nodes:
     prompt: Select the most favorable fund domicile (e.g., Cayman Islands, Delaware,
       Luxembourg) considering tax efficiency, regulatory simplicity, and investor
       appeal. Provide 2 advantages and 2 disadvantages specific to this jurisdiction.
+    shims: []
   set_performance_and_risk_targets:
     agent: false
+    code_node_type: stub
     description: Establish quantitative performance metrics for the hedge fund.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ChooseInvestmentStrategyOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for choose_investment_strategy node outputs.\"\"\"\n    strategy_category:\
+      \ str = (\n        Field(..., description=\"The chosen primary investment strategy\
+      \ category.\")\n    )\n    rationale: str = (\n        Field(..., description=\"\
+      A one-paragraph explanation aligning the strategy with the fund's objectives.\"\
+      )\n    )\n    risk_profile: str = (\n        Field(..., description=\"A concise\
+      \ description of the expected risk profile associated with the chosen strategy.\"\
+      )\n    )\n\n\nclass SetPerformanceAndRiskTargetsOutput(BaseModel):\n    \"\"\
+      \"Pydantic model for set_performance_and_risk_targets node outputs.\"\"\"\n\
+      \    metric_names: List[str] = (\n        Field(..., description=\"Names of\
+      \ the performance and risk metrics (e.g., Gross Return, Volatility, Sharpe Ratio,\
+      \ Max Drawdown).\")\n    )\n    target_values: List[float] = (\n        Field(...,\
+      \ description=\"Numerical target values corresponding to each metric (e.g.,\
+      \ 0.15 for 15% gross return, 0.10 for 10% volatility).\")\n    )\n    rationale_texts:\
+      \ List[str] = (\n        Field(..., description=\"Brief rationale for each target,\
+      \ explaining how it aligns with strategy and risk appetite.\")\n    )\n\n\n\
+      def set_performance_and_risk_targets(choose_investment_strategy_input: ChooseInvestmentStrategyOutput,\
+      \ **kwargs) -> SetPerformanceAndRiskTargetsOutput:\n    \"\"\"\n    Compute\
+      \ annual performance and risk targets based on the selected investment\n   \
+      \ strategy.\n\n    Parameters\n    ----------\n    strategy_category : str\n\
+      \        Primary investment strategy category selected by the parent node\n\
+      \        (e.g., 'Long/Short Equity', 'Event-Driven', 'Global Macro').\n    strategy_rationale\
+      \ : str\n        Textual justification for the strategy, used to inform target\n\
+      \        setting.\n    risk_profile : str\n        Brief description of the\
+      \ expected risk profile (e.g., 'Moderate\n        volatility, high return potential').\n\
+      \n    Returns\n    -------\n    dict\n        A dictionary with three keys:\
+      \ 'metric_names' (List[str]),\n        'target_values' (List[float]), and 'rationale_texts'\
+      \ (List[str]).\n\n    Raises\n    ------\n    ValueError\n        Raised if\
+      \ any of the input parameters are empty or not a string.\n    KeyError\n   \
+      \     Raised if the strategy_category is not recognized in the internal\n  \
+      \      mapping of target templates.\n\n    Examples\n    --------\n    >>> strategy_category\
+      \ = 'Long/Short Equity'\n    >>> strategy_rationale = 'Targeting alpha from\
+      \ long positions while hedging\n    with short bets.'\n    >>> risk_profile\
+      \ = 'Moderate volatility, high return potential'\n    >>> targets = set_performance_and_risk_targets(strategy_category,\n\
+      \    strategy_rationale, risk_profile)\n    >>> print(targets['metric_names'])\n\
+      \    >>> print(targets['target_values'])\n    >>> print(targets['rationale_texts'])\n\
+      \    \"['Gross Return', 'Volatility', 'Sharpe Ratio', 'Max Drawdown']\"\n  \
+      \  \"[0.15, 0.10, 1.5, 0.20]\"\n    \"['A 15% return aligns with long/short\
+      \ alpha goals.', '10% volatility\n    matches moderate risk appetite.', 'Sharpe\
+      \ of 1.5 indicates efficient\n    risk‑adjusted returns.', '20% drawdown tolerance\
+      \ protects capital during\n    market stress.']\n\n    >>> strategy_category\
+      \ = 'Event-Driven'\n    >>> strategy_rationale = 'Profit from merger arbitrage\
+      \ and distressed\n    events.'\n    >>> risk_profile = 'High volatility, low\
+      \ correlation to markets'\n    >>> targets = set_performance_and_risk_targets(strategy_category,\n\
+      \    strategy_rationale, risk_profile)\n    >>> print(targets['target_values'])\n\
+      \    [0.18, 0.15, 1.2, 0.25]\n\n    \"\"\"\n    return SetPerformanceAndRiskTargetsOutput(\n\
+      \        metric_names=[],\n        target_values=[],\n        rationale_texts=[],\n\
+      \    )"
     name: set_performance_and_risk_targets
     nodes_depended_on:
     - choose_investment_strategy
@@ -1396,3 +2433,4 @@ nodes:
     prompt: 'Define numerical annual targets for gross returns, volatility (standard
       deviation), Sharpe ratio, and maximum drawdown tolerance. Present as structured
       table with three columns: Metric | Target | Rationale.'
+    shims: []

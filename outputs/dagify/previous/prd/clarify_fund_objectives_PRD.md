@@ -1,0 +1,39 @@
+# clarify_fund_objectives PRD
+
+## Description
+Define core business goals of the hedge fund
+
+
+## Conceptual Info
+
+The node gathers and formats the foundational strategic directives that guide all subsequent planning stages of the hedge fund.
+
+## Docstring
+
+### Summary
+Generate a concise list of up to eight bullet points that articulate the hedge fund’s investment purpose, competitive advantages, target return expectations, and long‑term vision.
+
+### Parameters
+
+- **prompt_text** (str): Raw textual instruction supplied by the user or orchestrator. The function consumes this prompt verbatim to produce the bullet list.
+
+### Returns
+
+Dict[str, List[str]]: Dictionary with a single key `objectives_bullets` mapping to a list of strings, each string being a bullet point.
+
+### Raises
+
+- ValueError: If `prompt_text` is empty or not a string.
+- RuntimeError: If the generated list exceeds eight bullets or contains non‑string elements.
+
+### Examples
+
+```python
+>>> output = clarify_fund_objectives("State the primary business objectives for launching the hedge fund. List investment purpose, competitive advantages, target return profiles, and long‑term vision in concise bullet points (max 8 bullets)")
+{'objectives_bullets': ['Deliver alpha through long/short equity strategies targeting 20% annual gross returns.', 'Leverage proprietary quantitative models for edge in volatility forecasting.', 'Maintain a diversified portfolio across U.S. and EU markets to mitigate geopolitical risk.', 'Offer transparent fee structures to attract family offices.', 'Invest in ESG‑compliant assets to align with investor values.', 'Build a scalable technology platform to support high‑frequency data analytics.', 'Scale to $500M AUM within five years by tapping institutional capital.', 'Commit to a 10‑year growth roadmap with quarterly performance reviews.']}
+```
+
+```python
+>>> output = clarify_fund_objectives("Provide concise objectives for a hedge fund focused on event‑driven opportunities.")
+{'objectives_bullets': ['Capture mispricing from corporate events with a 15% gross return target.', 'Utilize a concentrated portfolio of 10‑20 positions for high conviction.', 'Maintain liquidity through short‑term debt and cash reserves.', 'Employ a risk‑parity framework to cap volatility at 12%.', 'Offer fee‑structured performance incentives to align manager and investor interests.', 'Leverage a network of deal partners for early access to events.', 'Expand to $250M AUM over three years.', 'Commit to ESG compliance and regular third‑party audits.']}
+```
