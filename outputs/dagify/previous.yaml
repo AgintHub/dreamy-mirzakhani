@@ -1,94 +1,129 @@
 dag_type: plain_text
-description: Execute a basic test by running multiple independent sub-tasks concurrently
-  to verify system performance and correctness.
-name: test_workflow_execution
+description: A workflow to help a software engineer strategically negotiate their
+  employment offer, including research, preparation, counteroffer scenarios, and execution.
+name: negotiate_job_offer
 nodes:
-  aggregate_test_results:
+  determine_minimum_acceptable_terms:
     agent: false
-    description: Compile and analyze test outputs to determine overall success.
-    name: aggregate_test_results
+    description: Establish the engineer's minimum salary, equity, and benefit thresholds
+    name: determine_minimum_acceptable_terms
     nodes_depended_on:
-    - collect_subtask_a_results
-    - collect_subtask_b_results
-    - collect_subtask_c_results
+    - research_industry_salary_benchmarks
+    - evaluate_existing_offer_components
+    nodes_dependent_on:
+    - prepare_counteroffer_scenarios
+    prompt: Calculate minimum acceptable compensation metrics (salary, equity value,
+      total cash bonus) based on industry benchmarks and the engineer's personal requirements.
+      State percentages of improvement over current offer.
+  draft_initial_negotiation_letter:
+    agent: false
+    description: Create a formal negotiation communication
+    name: draft_initial_negotiation_letter
+    nodes_depended_on:
+    - prepare_counteroffer_scenarios
+    - list_non_monetary_priorities
+    nodes_dependent_on:
+    - simulate_negotiation_discussion
+    prompt: Draft a professional email that 1) expresses appreciation for the offer,
+      2) provides data-backed requests for improvement in 3 key areas, and 3) leaves
+      room for further discussion. Maintain a collaborative tone.
+  evaluate_existing_offer_components:
+    agent: false
+    description: Quantify salary, equity, and benefits in the current offer
+    name: evaluate_existing_offer_components
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - identify_negotiation_leverage_points
+    prompt: Extract and document the numeric values, tenure schedules, and conditions
+      of the offered salary, stock options, signing bonus, and other benefits. Format
+      as an organized table.
+  evaluate_offer_benefits:
+    agent: false
+    description: Assess the value of non-salary benefits in the offer
+    name: evaluate_offer_benefits
+    nodes_depended_on:
+    - identify_role_specific_benefits
+    nodes_dependent_on:
+    - identify_negotiation_leverage_points
+    prompt: Compare the offered non-salary benefits against industry norms, converting
+      each to estimated annual value. Highlight substantial gaps or excesses compared
+      to typical packages.
+  identify_negotiation_leverage_points:
+    agent: false
+    description: Determine specific aspects to negotiate
+    name: identify_negotiation_leverage_points
+    nodes_depended_on:
+    - research_industry_salary_benchmarks
+    - evaluate_offer_benefits
+    - evaluate_existing_offer_components
+    nodes_dependent_on:
+    - prepare_counteroffer_scenarios
+    prompt: List 3-5 specific negotiable parameters where the offer could be improved,
+      referencing the benchmarks and assessment reports. For each point, state the
+      desired adjustment and supporting rationale.
+  identify_role_specific_benefits:
+    agent: false
+    description: List non-salary compensation elements relevant to the role
+    name: identify_role_specific_benefits
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - evaluate_offer_benefits
+    prompt: Identify 5-8 non-salary benefits typical for software engineering roles
+      (health, PTO, learning stipends, remote work policies, equity, etc.), including
+      approximate market values for each component.
+  list_non_monetary_priorities:
+    agent: false
+    description: Identify non-financial factors important to the engineer
+    name: list_non_monetary_priorities
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - prepare_counteroffer_scenarios
+    prompt: List 3-5 non-monetary work conditions vital to the engineer (flexible
+      hours, remote work options, career development paths, project autonomy), including
+      their relative priorities.
+  prepare_counteroffer_scenarios:
+    agent: false
+    description: Develop tiered negotiation strategies
+    name: prepare_counteroffer_scenarios
+    nodes_depended_on:
+    - determine_minimum_acceptable_terms
+    - identify_negotiation_leverage_points
+    - list_non_monetary_priorities
+    nodes_dependent_on:
+    - simulate_negotiation_discussion
+    prompt: 'Design three comprehensive counteroffer scenarios: 1) aspirational (stretch
+      goals), 2) realistic improvements, 3) minimum acceptable terms. For each scenario
+      include salary, equity, and non-monetary elements with negotiation tactics.'
+  research_industry_salary_benchmarks:
+    agent: false
+    description: Analyze current salary ranges for similar software engineering roles
+    name: research_industry_salary_benchmarks
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - identify_negotiation_leverage_points
+    prompt: Gather and analyze salary data from 3-5 authoritative sources (pay scales,
+      job platforms, industry reports) for software engineering roles with equivalent
+      experience and responsibilities as the offered position. Return a structured
+      report.
+  revise_negotiation_letter:
+    agent: false
+    description: Adjust the formal negotiation communication
+    name: revise_negotiation_letter
+    nodes_depended_on:
+    - simulate_negotiation_discussion
     nodes_dependent_on: []
-    prompt: Combine all subtask results into a comprehensive test report, highlighting
-      successes and issues.
-  collect_subtask_a_results:
+    prompt: Modify the initial negotiation letter incorporating feedback from the
+      role-play exercise. Strengthen position on non-negotiable terms and adjust concessions
+      based on simulated responses.
+  simulate_negotiation_discussion:
     agent: false
-    description: Collect outputs from subtask A for analysis.
-    name: collect_subtask_a_results
+    description: Practice the negotiation response scenarios
+    name: simulate_negotiation_discussion
     nodes_depended_on:
-    - execute_subtask_a
+    - prepare_counteroffer_scenarios
+    - draft_initial_negotiation_letter
     nodes_dependent_on:
-    - aggregate_test_results
-    prompt: Gather and record results from subtask A, including pass/fail status and
-      logs.
-  collect_subtask_b_results:
-    agent: false
-    description: Collect outputs from subtask B for analysis.
-    name: collect_subtask_b_results
-    nodes_depended_on:
-    - execute_subtask_b
-    nodes_dependent_on:
-    - aggregate_test_results
-    prompt: Gather and record results from subtask B, including validation metrics.
-  collect_subtask_c_results:
-    agent: false
-    description: Collect outputs from subtask C for analysis.
-    name: collect_subtask_c_results
-    nodes_depended_on:
-    - execute_subtask_c
-    nodes_dependent_on:
-    - aggregate_test_results
-    prompt: Gather and record results from subtask C, including timing and resource
-      usage.
-  execute_subtask_a:
-    agent: false
-    description: Perform the first atomic subtask to verify system response.
-    name: execute_subtask_a
-    nodes_depended_on:
-    - initialize_test_environment
-    nodes_dependent_on:
-    - collect_subtask_a_results
-    prompt: 'Run subtask A: perform specific independent operation 1 (e.g., check
-      system response).'
-  execute_subtask_b:
-    agent: false
-    description: Perform the second atomic subtask to verify output correctness.
-    name: execute_subtask_b
-    nodes_depended_on:
-    - initialize_test_environment
-    nodes_dependent_on:
-    - collect_subtask_b_results
-    prompt: 'Run subtask B: perform specific independent operation 2 (e.g., validate
-      output format).'
-  execute_subtask_c:
-    agent: false
-    description: Perform the third atomic subtask to verify performance metrics.
-    name: execute_subtask_c
-    nodes_depended_on:
-    - initialize_test_environment
-    nodes_dependent_on:
-    - collect_subtask_c_results
-    prompt: 'Run subtask C: perform specific independent operation 3 (e.g., measure
-      execution time).'
-  initialize_test_environment:
-    agent: false
-    description: Prepare the system environment required to run the test.
-    name: initialize_test_environment
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - start_test
-    prompt: Set up the testing environment, including configuration files, necessary
-      dependencies, and test data. Confirm readiness for execution.
-  start_test:
-    agent: false
-    description: Trigger the start of the testing process.
-    name: start_test
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - execute_subtask_a
-    - execute_subtask_b
-    - execute_subtask_c
-    prompt: Begin the test procedure, initiating all concurrent sub-tasks for verification.
+    - revise_negotiation_letter
+    prompt: Conduct a role-play with a peer where they act as the employer rejecting
+      or partially accepting each counteroffer scenario. Document responses to potential
+      pushback and adjust positioning accordingly.
