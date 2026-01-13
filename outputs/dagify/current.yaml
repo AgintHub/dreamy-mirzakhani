@@ -1,5 +1,5 @@
 dag_type: plain_text
-description: Reversed workflow from UI, with data flow reversed.
+description: Generated workflow from UI.
 name: reversed_extended_test_workflow
 nodes:
   allocate_infrastructure:
@@ -105,7 +105,7 @@ nodes:
     nodes_depended_on:
     - prioritize_test_objectives
     nodes_dependent_on: []
-    prompt: desaB no eht detiiteirp tset sevitcejbo, enifed eht etercnoc scirtem dna
+    prompt: desaB on eht detiiteirp tset sevitcejbo, enifed eht etercnoc scirtem dna
       sdradnats taht lliw eruaem tset sscecus.
   gather_raw_test_data:
     agent: false
@@ -126,7 +126,7 @@ nodes:
     - allocate_tools
     nodes_dependent_on:
     - define_test_objective
-    prompt: desaB no eht tset evitcejbo, yfitnedi eht stnenopmoc, smetsys, ro ssecsorp
+    prompt: desaB on eht tset evitcejbo, yfitnedi eht stnenopmoc, smetsys, ro ssecsorp
       taht lliw eb deludcni ni eht tset.
   prioritize_test_objectives:
     agent: false

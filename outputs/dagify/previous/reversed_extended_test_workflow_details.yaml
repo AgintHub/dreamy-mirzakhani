@@ -1,6 +1,6 @@
 dag_type: plain_text
-description: Generated workflow from UI.
-name: extended_test_workflow_concurrent_split_reversed
+description: Reversed workflow from UI, with data flow reversed.
+name: reversed_extended_test_workflow
 nodes:
   allocate_infrastructure:
     agent: false
@@ -9,8 +9,8 @@ nodes:
     nodes_depended_on:
     - develop_test_plan
     nodes_dependent_on:
-    - identify_test_scope
     - determine_test_criteria
+    - identify_test_scope
     prompt: etacollA eht yrassecen erutcurtsarfni (srevres, skrowten, stnemnorivne)
       desab no epocs dna airetric.
   allocate_personnel:
@@ -20,8 +20,8 @@ nodes:
     nodes_depended_on:
     - develop_test_plan
     nodes_dependent_on:
-    - identify_test_scope
     - determine_test_criteria
+    - identify_test_scope
     prompt: etacollA eht dedeen tset lesnecrap desab no epocs dna airetric.
   allocate_tools:
     agent: false
@@ -30,8 +30,8 @@ nodes:
     nodes_depended_on:
     - develop_test_plan
     nodes_dependent_on:
-    - identify_test_scope
     - determine_test_criteria
+    - identify_test_scope
     prompt: etacollA eht deriuqer gnitset sloat dna erawtfos gnidrocca ot epocs dna
       airetric.
   analyze_test_results:
@@ -133,8 +133,8 @@ nodes:
     description: Rank parts of the test objective by importance.
     name: prioritize_test_objectives
     nodes_depended_on:
-    - define_test_objective
     - determine_test_criteria
+    - define_test_objective
     nodes_dependent_on:
     - formulate_success_metrics
     prompt: weiveR eht denifed tset evitcejbo dna ezitirorP eht stnenopmoc fo eht
@@ -186,5 +186,5 @@ nodes:
     - analyze_test_results
     nodes_dependent_on:
     - structure_raw_test_data
-    prompt: mroffreP atad ytilauq skcehc no eht detceloc stluser ot erussa ycarucca,
+    prompt: mroffreP atad ytilauq skcehc on eht detceloc stluser ot erussa ycarucca,
       ssetelpmoc, dna ytnetsistnoc htiw tset airetric.
