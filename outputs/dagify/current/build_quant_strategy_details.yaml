@@ -1,10 +1,11 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: build_quant_strategy
 nodes:
   analyze_backtest_results:
     agent: false
-    description: Evaluate performance against benchmarks
+    description: Evaluate in‑sample backtest performance against predefined benchmarks,
+      distill key drivers and infractions, and recommend actionable parameter tweaks.
     name: analyze_backtest_results
     nodes_depended_on:
     - execute_in_sample_backtest
@@ -38,6 +39,96 @@ nodes:
     - description: Third suggested parameter adjustment
       key: parameter_adjustment_3
       type: str
+    prd:
+      conceptual_info: The node aggregates quantitative backtest outcomes and benchmark
+        definitions to surface actionable insights. It transforms raw equity curves,
+        trade‑level PnL, and risk metrics into concise, human‑readable summaries that
+        highlight performance levers and compliance breaches.
+      docstring:
+        examples:
+        - lines:
+          - result = analyze_backtest_results(
+          - '    equity_curve_dates=[''2020-01-01'', ''2020-01-02'', ''2020-01-03''],'
+          - '    equity_curve_values=[100000, 102000, 101500],'
+          - '    drawdown_series=[0.0, 0.0, -0.0025],'
+          - '    trade_ids=[''T1'', ''T2''],'
+          - '    trade_pnl=[2000, -500],'
+          - '    sharpe_ratio=1.5,'
+          - '    max_drawdown=0.025,'
+          - '    total_return=0.015,'
+          - '    cagr_target=0.12,'
+          - '    annual_volatility_constraint=0.18,'
+          - '    drawdown_limit=0.20,'
+          - '    sharpe_ratio_goal=1.4)'
+          - print(result['performance_driver_1'])
+          output: '"Positive correlation with S&P 500"'
+        - lines:
+          - result = analyze_backtest_results(
+          - '    equity_curve_dates=[''2020-01-01'', ''2020-01-02''],'
+          - '    equity_curve_values=[100000, 99000],'
+          - '    drawdown_series=[0.0, -0.01],'
+          - '    trade_ids=[''T1''],'
+          - '    trade_pnl=[-1000],'
+          - '    sharpe_ratio=0.8,'
+          - '    max_drawdown=0.01,'
+          - '    total_return=-0.01,'
+          - '    cagr_target=0.10,'
+          - '    annual_volatility_constraint=0.15,'
+          - '    drawdown_limit=0.10,'
+          - '    sharpe_ratio_goal=1.0)'
+          - print(result['constraint_violation_1'])
+          output: '"Sharpe ratio below target"'
+        parameters:
+        - description: Sequential dates of the equity curve in YYYY‑MM‑DD format.
+          name: equity_curve_dates
+          type: List[str]
+        - description: Equity value for each date in the equity curve.
+          name: equity_curve_values
+          type: List[float]
+        - description: Cumulative drawdown percentage at each date.
+          name: drawdown_series
+          type: List[float]
+        - description: Unique identifiers for each executed trade.
+          name: trade_ids
+          type: List[str]
+        - description: Profit or loss for each trade.
+          name: trade_pnl
+          type: List[float]
+        - description: Annualized Sharpe ratio of the backtest.
+          name: sharpe_ratio
+          type: float
+        - description: Maximum drawdown percentage observed during the backtest.
+          name: max_drawdown
+          type: float
+        - description: Total return percentage over the backtest period.
+          name: total_return
+          type: float
+        - description: Target CAGR in decimal form (e.g., 0.15 for 15%).
+          name: cagr_target
+          type: float
+        - description: Maximum acceptable annual volatility in decimal form.
+          name: annual_volatility_constraint
+          type: float
+        - description: Maximum allowable drawdown expressed as a decimal.
+          name: drawdown_limit
+          type: float
+        - description: Target Sharpe ratio to be achieved by the strategy.
+          name: sharpe_ratio_goal
+          type: float
+        raises:
+        - description: Raised if any required input list is empty or contains mismatched
+            lengths.
+          type: ValueError
+        - description: Raised if benchmark comparison fails due to inconsistent data
+            types.
+          type: RuntimeError
+        returns:
+          description: Dictionary containing the nine output fields specified in the
+            node's output structure.
+          type: Dict[str, str]
+        summary: Analyze in‑sample backtest results against performance benchmarks
+          and return top drivers, constraint violations, and parameter adjustment
+          recommendations.
     prompt: Compare backtest results to performance metrics. Identify 3 biggest performance
       drivers and 3 major constraint violations. Suggest parameter adjustments in
       bullet list.
@@ -63,7 +154,42 @@ nodes:
       type: float
     - description: List of risk limit rules with their thresholds
       key: risk_limit_rules
-      type: List[str]
+      type: str
+    prd:
+      conceptual_info: This node creates a set of risk limit rules to control portfolio-level
+        risks.
+      docstring:
+        examples:
+        - lines:
+          - 'performance_benchmarks = {''cagr_target'': 0.15, ''annual_volatility_constraint'':
+            0.20, ''drawdown_limit'': 0.25, ''sharpe_ratio_goal'': 1.5}'
+          - 'risk_limit_rules_input = {''portfolio_volatility'': 0.10, ''sector_concentration'':
+            0.30, ''drawdown_trigger'': 0.20, ''position_correlation'': 0.50}'
+          - risk_limits = build_risk_rules(performance_benchmarks, risk_limit_rules_input)
+          output: '{''portfolio_volatility_limit'': 0.10, ''sector_concentration_limit'':
+            0.30, ''drawdown_trigger_limit'': 0.20, ''position_correlation_limit'':
+            0.50, ''risk_limit_rules'': [''portfolio_volatility: 0.10'', ''sector_concentration:
+            0.30'', ''drawdown_trigger: 0.20'', ''position_correlation: 0.50'']}'
+        parameters:
+        - description: Performance benchmarks output from 'set_performance_benchmarks'
+            node
+          name: performance_benchmarks
+          type: dict
+        - description: Input dictionary containing risk limit rules and their thresholds
+          name: risk_limit_rules_input
+          type: dict
+        raises:
+        - description: If the input dictionary is empty or missing required keys
+          type: ValueError
+        - description: If the input dictionary values are not of the correct type
+          type: TypeError
+        returns:
+          description: A dictionary containing the portfolio volatility limit, sector
+            concentration limit, drawdown trigger limit, position correlation limit,
+            and a list of risk limit rules with their thresholds
+          type: dict
+        summary: Builds portfolio-level risk controls based on given risk limit rules
+          and thresholds.
     prompt: 'Specify 4 risk limit rules with thresholds: portfolio volatility, sector
       concentration, drawdown trigger, position correlation. Format as key-value pairs
       with numerical limits.'
@@ -90,6 +216,43 @@ nodes:
     - description: Position sizing algorithm description
       key: position_sizing_algorithm
       type: str
+    prd:
+      conceptual_info: 'This node determines the capital allocation logic for a quant
+        strategy by designing a position sizing algorithm with three rules: risk per
+        trade, volatility scaling, and maximum position size. It also references the
+        account equity in its calculations.'
+      docstring:
+        examples:
+        - lines:
+          - calculate_position_sizing(cagr_target=0.15, annual_volatility_constraint=0.20,
+            drawdown_limit=0.25, sharpe_ratio_goal=1.5)
+          output: '{''risk_per_trade'': 0.02, ''volatility_scaling_multiple'': 1.5,
+            ''maximum_position_size'': 10000.0, ''account_equity_reference'': 100000.0,
+            ''position_sizing_algorithm'': ''Risk-based position sizing''}'
+        parameters:
+        - description: Target compound annual growth rate
+          name: cagr_target
+          type: float
+        - description: Maximum acceptable annual volatility
+          name: annual_volatility_constraint
+          type: float
+        - description: Maximum allowable drawdown
+          name: drawdown_limit
+          type: float
+        - description: Target Sharpe ratio
+          name: sharpe_ratio_goal
+          type: float
+        raises:
+        - description: If any of the input parameters are invalid or inconsistent.
+          type: ValueError
+        returns:
+          description: 'A dictionary containing the calculated position sizing parameters:
+            risk per trade, volatility scaling multiple, maximum position size, account
+            equity reference, and position sizing algorithm description.'
+          type: dict
+        summary: This function calculates the position sizing parameters based on
+          the provided risk per trade, volatility scaling multiple, and maximum position
+          size, while considering the account equity.
     prompt: 'Design position sizing algorithm with 3 rules: risk per trade (%), volatility
       scaling (multiple), maximum position size. Include account equity references
       in equations.'
@@ -113,6 +276,78 @@ nodes:
         computational cost) supporting the methodology choice
       key: technical_reasons
       type: List[str]
+    prd:
+      conceptual_info: This node maps a high‑level strategy objective to a concrete
+        methodological framework, providing justification and technical rationale
+        that guides downstream rule and model design.
+      docstring:
+        examples:
+        - lines:
+          - result = choose_strategy_approach(
+          - '    strategy_sentence=''Capture momentum in small-cap stocks with <3%
+            daily volatility'','
+          - '    cagr_target=0.15,'
+          - '    annual_vol_target=0.20,'
+          - '    max_drawdown=0.25,'
+          - '    sharpe_goal=1.5)'
+          - print(result['methodology'])
+          - print(result['justifications'])
+          - print(result['technical_reasons'])
+          output: '```
+
+            methodology: ''rule-based''
+
+            justifications: [''Momentum signals are well captured by trend-following
+            rules.'', ''Requires minimal computational overhead for high-frequency
+            execution.'']
+
+            technical_reasons: [''Historical data is abundant and clean.'', ''Model
+            interpretability is critical for regulatory compliance.'', ''Low latency
+            execution is achievable with rule-based logic.'']
+
+            ```'
+        - lines:
+          - result = choose_strategy_approach(
+          - '    strategy_sentence=''Generate alpha from mean-reversion patterns in
+            high-volatility futures'','
+          - '    cagr_target=0.20,'
+          - '    annual_vol_target=0.35,'
+          - '    max_drawdown=0.30,'
+          - '    sharpe_goal=2.0)'
+          - print(result['methodology'])
+          output: '```
+
+            methodology: ''machine-learning''
+
+            ```'
+        parameters:
+        - description: One‑sentence statement of the strategy’s objective, e.g., 'Capture
+            momentum in small‑cap stocks with <3% daily volatility'.
+          name: strategy_sentence
+          type: str
+        - description: Target Compound Annual Growth Rate expressed as a decimal (e.g.,
+            0.15).
+          name: cagr_target
+          type: float
+        - description: Maximum acceptable annual volatility expressed as a decimal
+            (e.g., 0.20).
+          name: annual_vol_target
+          type: float
+        - description: Maximum drawdown limit expressed as a decimal (e.g., 0.25).
+          name: max_drawdown
+          type: float
+        - description: Target Sharpe ratio to be achieved.
+          name: sharpe_goal
+          type: float
+        raises:
+        - description: Raised if any required input is missing or of incorrect type.
+          type: ValueError
+        returns:
+          description: Dictionary containing `methodology`, `justifications`, and
+            `technical_reasons` as described in the output structure.
+          type: dict
+        summary: Selects the trading methodology (rule‑based, machine‑learning, or
+          hybrid) that best fits the strategy objective.
     prompt: Identify whether strategy will be rule-based (trend-following, mean-reversion),
       machine learning-based (XGBoost, LSTM), or hybrid. Justify with 2-3 technical
       reasons based on strategy objective.
@@ -161,21 +396,116 @@ nodes:
       key: strategy_sentence
       type: str
     - description: Target Compound Annual Growth Rate (CAGR) expressed as a decimal
-        (e.g., 0.15 for 15%)
       key: cagr_target
       type: float
-    - description: Maximum acceptable annual volatility expressed as a decimal (e.g.,
-        0.20 for 20%)
+    - description: Maximum acceptable annual volatility expressed as a decimal
       key: annual_vol_target
       type: float
-    - description: Maximum drawdown limit expressed as a decimal (e.g., 0.25 for 25%)
+    - description: Maximum drawdown limit expressed as a decimal
       key: max_drawdown
       type: float
     - description: Target Sharpe ratio to be achieved
       key: sharpe_goal
       type: float
+    prd:
+      conceptual_info: The `define_strategy_objective` node crystallises the high‑level
+        ambition of the quant strategy into a single, unambiguous sentence and binds
+        it to explicit quantitative performance and risk targets. This declaration
+        serves as the foundation for downstream decisions on methodology, risk controls,
+        position sizing, and backtesting parameters.
+      docstring:
+        examples:
+        - lines:
+          - 'output = define_strategy_objective(
+
+            '
+          - '    objective_description=''Capture momentum in small‑cap stocks with
+            <3%% daily volatility'',
+
+            '
+          - '    cagr_target=0.15,
+
+            '
+          - '    annual_vol_target=0.20,
+
+            '
+          - '    max_drawdown=0.25,
+
+            '
+          - '    sharpe_goal=1.5
+
+            '
+          - )
+          output: "{\n  'strategy_sentence': 'Capture momentum in small‑cap stocks\
+            \ with <3% daily volatility',\n  'cagr_target': 0.15,\n  'annual_vol_target':\
+            \ 0.20,\n  'max_drawdown': 0.25,\n  'sharpe_goal': 1.5\n}"
+        - lines:
+          - '# Invalid CAGR triggers ValueError
+
+            '
+          - 'try:
+
+            '
+          - '    define_strategy_objective(
+
+            '
+          - '        objective_description=''Long‑term growth strategy'',
+
+            '
+          - '        cagr_target=-0.05,
+
+            '
+          - '        annual_vol_target=0.15,
+
+            '
+          - '        max_drawdown=0.2,
+
+            '
+          - '        sharpe_goal=1.2
+
+            '
+          - '    )
+
+            '
+          - 'except ValueError as e:
+
+            '
+          - '    print(e)'
+          output: '"CAGR target must be between 0 and 1. Received: -0.05"'
+        parameters:
+        - description: Free‑text description of the intended trading goal (e.g., "Capture
+            momentum in small‑cap stocks with <3% daily volatility").
+          name: objective_description
+          type: str
+        - description: Desired Compound Annual Growth Rate expressed as a decimal
+            (e.g., 0.15 for 15%).
+          name: cagr_target
+          type: float
+        - description: Maximum acceptable annual volatility expressed as a decimal
+            (e.g., 0.20 for 20%).
+          name: annual_vol_target
+          type: float
+        - description: Maximum acceptable drawdown expressed as a decimal (e.g., 0.25
+            for 25%).
+          name: max_drawdown
+          type: float
+        - description: Target Sharpe ratio to be achieved by the strategy.
+          name: sharpe_goal
+          type: float
+        raises:
+        - description: Raised if any numeric benchmark is not within a realistic range
+            (e.g., CAGR < 0 or > 1).
+          type: ValueError
+        - description: Raised if input types do not match the expected types.
+          type: TypeError
+        returns:
+          description: Dictionary containing the objective sentence and all benchmark
+            values.
+          type: dict
+        summary: Create a one‑sentence objective and associated quantitative benchmarks
+          for a quantitative trading strategy.
     prompt: Define the quant strategy's objective in one sentence (e.g. 'Capture momentum
-      in small-cap stocks with <3% daily volatility'). Include performance and risk
+      in small‑cap stocks with <3% daily volatility'). Include performance and risk
       benchmarks.
   deploy_automated_backtest:
     agent: false
@@ -204,6 +534,47 @@ nodes:
         run
       key: compliance_report_path
       type: str
+    prd:
+      conceptual_info: This node sets up a continuous evaluation framework by creating
+        a Docker container that automates the backtesting pipeline, including data
+        monitoring, backtest execution, parameter optimization updates, and compliance
+        report generation.
+      docstring:
+        examples:
+        - lines:
+          - 'deploy_automated_backtest(backtest_parameters={''in_sample_start'': ''2020-01-01'',
+            ''out_sample_start'': ''2021-01-01''},'
+          - '                          optimized_parameters=[{''param1'': 0.1, ''param2'':
+            0.2}, {''param1'': 0.3, ''param2'': 0.4}],'
+          - '                          slippage_model={''bid_ask_spread_percent'':
+            0.05, ''price_impact_coefficient'': 0.01})'
+          output: '{''docker_image_name'': ''automated-backtest-image:latest'', ''ci_cd_yaml_generated'':
+            True, ''backtest_run_log'': ''/path/to/log.txt'', ''parameter_optimization_status'':
+            True, ''compliance_report_path'': ''/path/to/report.pdf''}'
+        parameters:
+        - description: Backtest parameters including in-sample and out-of-sample periods,
+            Monte Carlo simulations, and walk-forward analysis schedule
+          name: backtest_parameters
+          type: dict
+        - description: Top 3 parameter sets with their metrics from the optimization
+            process
+          name: optimized_parameters
+          type: list
+        - description: Slippage model parameters including bid-ask spread, price impact
+            coefficient, and time slippage decay factor
+          name: slippage_model
+          type: dict
+        raises:
+        - description: If backtest parameters are invalid or missing
+          type: ValueError
+        - description: If Docker image build or CI/CD YAML generation fails
+          type: RuntimeError
+        returns:
+          description: Dictionary containing the Docker image name, CI/CD YAML generation
+            status, backtest run log path, parameter optimization status, and compliance
+            report path
+          type: dict
+        summary: Creates a Docker container for automated backtesting pipeline.
     prompt: 'Create Docker container with automated testing pipeline: watches for
       new data, runs backtests, updates parameter optimization, and generates compliance-ready
       reports. Include CI/CD deployment YAML.'
@@ -216,19 +587,76 @@ nodes:
     - preprocess_data
     nodes_dependent_on: []
     output_structure:
-    - description: List of quantitative entry conditions as pseudo-code equations
+    - description: List of quantitative entry conditions as pseudo‑code equations
       key: entry_conditions
       type: List[str]
     - description: List of specific parameter values for the entry conditions
       key: parameter_values
       type: List[float]
-    - description: List of brief descriptions for each entry condition
+    - description: Brief description for each entry condition
       key: condition_descriptions
       type: List[str]
     - description: Whether the entry conditions are valid and can be used for initiating
         positions
       key: is_valid
       type: bool
+    prd:
+      conceptual_info: The `develop_entry_rules` node generates a set of quantitative
+        conditions that trigger the opening of a trade.  It takes the selected strategy
+        framework and the pre‑processed market data as inputs, then outputs a concise
+        list of pseudo‑code expressions, their numeric parameters, human‑readable
+        descriptions, and a validity flag that indicates whether the rules satisfy
+        all internal consistency checks (e.g., no circular dependencies, all required
+        indicators computed).
+      docstring:
+        examples:
+        - lines:
+          - entry_rules = develop_entry_rules(
+          - '    strategy_methodology=''rule-based'','
+          - '    preprocessed_data_meta={''indicators'': [''EMA20'', ''EMA50'', ''ATR'',
+            ''StdDev2'']})'
+          output: "{\n  'entry_conditions': [\n    'EMA20 > EMA50',\n    'Close >\
+            \ EMA20 + 2 * ATR',\n    'StdDev2 > 1.5'\n  ],\n  'parameter_values':\
+            \ [20.0, 50.0, 2.0, 1.5],\n  'condition_descriptions': [\n    'Short‑term\
+            \ EMA crossing above long‑term EMA',\n    'Price breaks above two‑ATR\
+            \ volatility breakout',\n    'Standard deviation exceeds 1.5 standard\
+            \ deviations'\n  ],\n  'is_valid': True\n}"
+        - lines:
+          - entry_rules = develop_entry_rules(
+          - '    strategy_methodology=''machine-learning'','
+          - '    preprocessed_data_meta={''indicators'': [''EMA20'']})'
+          output: 'ValueError: Unsupported strategy_methodology ''machine-learning''
+            for entry rule generation.'
+        parameters:
+        - description: Chosen strategy framework from `choose_strategy_approach`;
+            one of 'rule-based', 'machine-learning', or 'hybrid'.  Only 'rule-based'
+            and 'hybrid' are supported for explicit pseudo‑code generation.
+          name: strategy_methodology
+          type: str
+        - description: Metadata dictionary returned by `preprocess_data` indicating
+            available indicators, asset count, and time steps.  The function uses
+            this to validate that required inputs (e.g., EMA, ATR) exist.
+          name: preprocessed_data_meta
+          type: dict
+        raises:
+        - description: If `strategy_methodology` is not supported or required indicators
+            are missing from `preprocessed_data_meta`.
+          type: ValueError
+        - description: If input types do not match the expected signatures.
+          type: TypeError
+        returns:
+          description: 'Dictionary with keys:
+
+            - `entry_conditions`: List[str]
+
+            - `parameter_values`: List[float]
+
+            - `condition_descriptions`: List[str]
+
+            - `is_valid`: bool'
+          type: dict
+        summary: Generate a list of entry conditions, parameters, descriptions, and
+          a validity flag for a rule‑based trading strategy.
     prompt: Design 3-5 quantitative entry conditions (e.g. 50-period EMA crossover,
       volatility breakout above 2σ). Express as pseudo-code equations with specific
       parameter values.
@@ -241,18 +669,62 @@ nodes:
     - preprocess_data
     nodes_dependent_on: []
     output_structure:
-    - description: List of quantitative exit conditions as pseudo-code
+    - description: List of quantitative exit conditions expressed as pseudo-code equations.
       key: exit_conditions
       type: List[str]
-    - description: List of parameter values for the exit conditions
+    - description: Parameter values associated with each exit condition.
       key: parameter_values
       type: List[float]
-    - description: List of exit order types (limit/market)
+    - description: Order type for each exit condition (e.g., 'market', 'limit').
       key: exit_order_types
       type: List[str]
-    - description: Whether the exit rules are valid
+    - description: Whether the generated exit rules satisfy all validation checks.
       key: is_valid
       type: bool
+    prd:
+      conceptual_info: This node generates a set of quantitative exit rules that govern
+        when a trading strategy should close open positions. It takes the chosen strategy
+        framework and pre‑processed market data as inputs, formulates multiple exit
+        conditions using pseudo‑code, assigns realistic parameters, and tags each
+        condition with an order type. The output is a validated list of rules ready
+        for use in backtesting and live execution.
+      docstring:
+        examples:
+        - lines:
+          - '# Assume a rule‑based strategy and pre‑processed data containing 14‑day
+            ATR'
+          - 'rules = develop_exit_rules(methodology=''rule-based'', data_meta={''ATR_14'':
+            0.012, ''volatility'': 0.18})'
+          - print(rules['exit_conditions'])
+          output: "['price <= entry_price * (1 - 0.02 * ATR_14)',\n 'price >= entry_price\
+            \ * (1 + 0.03 * ATR_14)',\n 'time_in_position >= 10']"
+        - lines:
+          - '# Machine‑learning strategy with volatility‑based exit'
+          - 'rules = develop_exit_rules(methodology=''machine-learning'', data_meta={''volatility'':
+            0.22})'
+          - print(rules['exit_order_types'])
+          output: '[''market'', ''market'', ''limit'']'
+        parameters:
+        - description: Strategy framework selected by `choose_strategy_approach` ('rule-based',
+            'machine-learning', or 'hybrid').
+          name: methodology
+          type: str
+        - description: Metadata dictionary from `preprocess_data` (contains asset
+            list, volatility metrics, etc.).
+          name: data_meta
+          type: dict
+        raises:
+        - description: If the methodology string is not one of the supported types.
+          type: ValueError
+        - description: If required keys (e.g., 'ATR', 'volatility') are missing from
+            the data_meta.
+          type: KeyError
+        returns:
+          description: Dictionary containing exit_conditions (List[str]), parameter_values
+            (List[float]), exit_order_types (List[str]), and is_valid (bool).
+          type: dict
+        summary: Generate a validated set of quantitative exit rules for a trading
+          strategy.
     prompt: Design 3-5 quantitative exit conditions (e.g. stop-loss at 2% ATR). Express
       as pseudo-code with parameter values and exit order types (limit/market).
   execute_in_sample_backtest:
@@ -292,6 +764,110 @@ nodes:
     - description: Total return percentage over the backtest period
       key: total_return
       type: float
+    prd:
+      conceptual_info: Executes an in‑sample backtest of a quant strategy by simulating
+        trades on historical data using the previously defined entry/exit rules, position
+        sizing, slippage model, and risk constraints. It produces a daily equity curve,
+        drawdown series, and trade‑level PnL, along with key performance statistics.
+      docstring:
+        examples:
+        - lines:
+          - '# Example 1: Simple moving‑average crossover strategy'
+          - result = execute_in_sample_backtest(
+          - '    entry_conditions=["price > sma_50"],'
+          - '    exit_conditions=["price < sma_20"],'
+          - '    parameter_values=[50, 20],'
+          - '    position_sizing_algo="risk_per_trade_1percent",'
+          - '    slippage_params={'
+          - '        "bid_ask_spread_percent": 0.1,'
+          - '        "price_impact_coefficient": 0.0005,'
+          - '        "time_slippage_decay_factor": 0.99'
+          - '    },'
+          - '    risk_limits={'
+          - '        "portfolio_volatility_limit": 0.15,'
+          - '        "sector_concentration_limit": 0.4,'
+          - '        "drawdown_trigger_limit": 0.2,'
+          - '        "position_correlation_limit": 0.7'
+          - '    },'
+          - '    backtest_params={'
+          - '        "in_sample_start": "2020-01-01",'
+          - '        "in_sample_end": "2022-12-31"'
+          - '    },'
+          - '    historical_data=market_array)'
+          - '# Expected output (excerpt)'
+          - 'result["sharpe_ratio"]  # -> 1.25'
+          - 'result["max_drawdown"]   # -> 0.18'
+          - 'len(result["trade_ids"]) # -> 350'
+          output: '"... (dictionary containing the full backtest report) ..."'
+        - lines:
+          - '# Example 2: Strategy with stop‑loss and profit‑target'
+          - result = execute_in_sample_backtest(
+          - '    entry_conditions=["rsi < 30"],'
+          - '    exit_conditions=["rsi > 70", "price < stop_loss", "price > profit_target"],'
+          - '    parameter_values=[30, 70, 0.02, 0.05],'
+          - '    position_sizing_algo="volatility_scaling",'
+          - '    slippage_params={'
+          - '        "bid_ask_spread_percent": 0.2,'
+          - '        "price_impact_coefficient": 0.001,'
+          - '        "time_slippage_decay_factor": 0.95'
+          - '    },'
+          - '    risk_limits={'
+          - '        "portfolio_volatility_limit": 0.12,'
+          - '        "sector_concentration_limit": 0.3,'
+          - '        "drawdown_trigger_limit": 0.15,'
+          - '        "position_correlation_limit": 0.6'
+          - '    },'
+          - '    backtest_params={'
+          - '        "in_sample_start": "2018-01-01",'
+          - '        "in_sample_end": "2020-12-31"'
+          - '    },'
+          - '    historical_data=market_array)'
+          - '# Expected output (excerpt)'
+          - 'result["total_return"]   # -> 0.48'
+          - 'result["drawdown_series"][:5] # -> [0.0, -0.02, -0.015, -0.025, -0.02]'
+          output: '"... (dictionary containing the full backtest report) ..."'
+        parameters:
+        - description: Pseudo‑code expressions defining when to open positions.
+          name: entry_conditions
+          type: List[str]
+        - description: Pseudo‑code expressions defining when to close positions.
+          name: exit_conditions
+          type: List[str]
+        - description: Numerical values associated with the entry/exit conditions.
+          name: parameter_values
+          type: List[float]
+        - description: Description or identifier of the position sizing algorithm.
+          name: position_sizing_algo
+          type: str
+        - description: Dictionary with keys 'bid_ask_spread_percent', 'price_impact_coefficient',
+            'time_slippage_decay_factor'.
+          name: slippage_params
+          type: dict
+        - description: Risk limits including portfolio volatility, sector concentration,
+            drawdown trigger, and position correlation thresholds.
+          name: risk_limits
+          type: dict
+        - description: Backtest configuration containing in‑sample start/end dates,
+            walk‑forward windows, etc.
+          name: backtest_params
+          type: dict
+        - description: 4‑D array of pre‑processed market data (assets × features ×
+            time × channels).
+          name: historical_data
+          type: numpy.ndarray
+        raises:
+        - description: If any required input (e.g., entry_conditions) is missing or
+            empty.
+          type: ValueError
+        - description: If the backtest simulation fails due to insufficient data or
+            internal errors.
+          type: RuntimeError
+        returns:
+          description: Dictionary containing equity curve, drawdown series, trade
+            details, and performance statistics.
+          type: dict
+        summary: Run an in‑sample backtest of the strategy and return performance
+          metrics.
     prompt: Run backtest using in-sample period from configuration. Output equity
       curve (daily), drawdown series, PnL table with trade details. Use Sharpe ratio,
       max drawdown, total return metrics.
@@ -320,6 +896,47 @@ nodes:
     - description: Version identifier for the generated presentation
       key: presentation_version
       type: str
+    prd:
+      conceptual_info: Generate a comprehensive presentation summarizing the strategy,
+        its performance, risk analysis, and implementation details for stakeholders.
+      docstring:
+        examples:
+        - lines:
+          - 'generate_strategy_presentation(strategy_summary=''Strategy to capture
+            momentum in small-cap stocks'', performance_overview=''Sharpe ratio: 1.2,
+            CAGR: 15%'', risk_analysis=''Risk heatmap and equity curve visualizations'',
+            implementation_roadmap=''Implementation within 6 months with $1M capital'')'
+          output: '{''slide_titles'': [''Slide 1'', ''Slide 2'', ...], ''slide_contents'':
+            [''Content 1'', ''Content 2'', ...], ''equity_curve_image_path'': ''/path/to/equity_curve.png'',
+            ''risk_heatmap_image_path'': ''/path/to/risk_heatmap.png'', ''presentation_version'':
+            ''v1.0''}'
+        parameters:
+        - description: Summary of the strategy, including its objectives and methodology.
+          name: strategy_summary
+          type: str
+        - description: Overview of the strategy's performance, including key metrics
+            such as Sharpe ratio, CAGR, and maximum drawdown.
+          name: performance_overview
+          type: str
+        - description: Analysis of the strategy's risk profile, including risk heatmaps
+            and equity curves.
+          name: risk_analysis
+          type: str
+        - description: Roadmap for implementing the strategy, including key milestones
+            and capital requirements.
+          name: implementation_roadmap
+          type: str
+        raises:
+        - description: If any required input (strategy_summary, performance_overview,
+            risk_analysis, implementation_roadmap) is missing or empty.
+          type: ValueError
+        returns:
+          description: A dictionary containing the presentation's slide titles, contents,
+            equity curve image path, risk heatmap image path, and presentation version.
+          type: '{slide_titles: List[str], slide_contents: List[str], equity_curve_image_path:
+            str, risk_heatmap_image_path: str, presentation_version: str}'
+        summary: Creates a 12-slide presentation summarizing strategy details, performance
+          metrics, risk analysis, and implementation roadmap.
     prompt: 'Design 12-slide presentation with: strategy summary, performance overview,
       risk analysis, implementation roadmap, capital requirements. Include visualizations
       of equity curves and risk heatmaps.'
@@ -340,6 +957,66 @@ nodes:
     - description: Decay factor for slippage over time during execution
       key: time_slippage_decay_factor
       type: float
+    prd:
+      conceptual_info: Transforms cleaned market data into a quantitative slippage
+        model that estimates execution costs for each trade. The model aggregates
+        liquidity‑aware statistics such as average spread, depth‑adjusted impact,
+        and time‑decay of slippage to provide three key parameters usable by downstream
+        backtesting and live execution modules.
+      docstring:
+        examples:
+        - lines:
+          - '# Example 1: Using only pre‑processed metadata'
+          - model = implement_slippage_model(preprocessed_metadata={
+          - '    ''array_shape'': [10, 5, 252, 1],'
+          - '    ''num_assets'': 10,'
+          - '    ''num_time_steps'': 252,'
+          - '    ''price_normalized'': True,'
+          - '    ''volatility_calculated'': True,'
+          - '    ''data_integrity'': True'
+          - '})'
+          - print(model['bid_ask_spread_percent'])
+          output: '0.0012'
+        - lines:
+          - '# Example 2: Providing explicit liquidity statistics'
+          - model = implement_slippage_model(preprocessed_metadata={
+          - '    ''array_shape'': [5, 4, 500, 1],'
+          - '    ''num_assets'': 5,'
+          - '    ''num_time_steps'': 500,'
+          - '    ''price_normalized'': True,'
+          - '    ''volatility_calculated'': True,'
+          - '    ''data_integrity'': True'
+          - '}, market_liquidity_stats={'
+          - '    ''avg_spread'': 0.0015,'
+          - '    ''avg_depth'': 2000,'
+          - '    ''avg_trade_size'': 1000'
+          - '})'
+          - print(model['price_impact_coefficient'])
+          output: '0.000003'
+        parameters:
+        - description: Dictionary returned by `preprocess_data` containing `array_shape`,
+            `num_assets`, `num_time_steps`, `price_normalized`, `volatility_calculated`,
+            and `data_integrity` flags.
+          name: preprocessed_metadata
+          type: dict
+        - description: Optional dictionary with pre‑computed liquidity statistics
+            (e.g., average spread, average depth, trade size distribution). If omitted,
+            the function will compute these statistics directly from the pre‑processed
+            array.
+          name: market_liquidity_stats
+          type: dict
+        raises:
+        - description: Raised if `preprocessed_metadata` is missing required keys
+            or if `data_integrity` is False.
+          type: ValueError
+        - description: Raised if `market_liquidity_stats` contains non‑numeric values.
+          type: TypeError
+        returns:
+          description: Dictionary with keys `bid_ask_spread_percent`, `price_impact_coefficient`,
+            and `time_slippage_decay_factor`, each mapped to a float value.
+          type: dict
+        summary: Generate a three‑parameter slippage model from a pre‑processed market
+          data set.
     prompt: 'Define slippage model with 3 parameters: bid-ask spread %, price impact
       coefficient, time slippage decay factor. Base on dataset liquidity statistics.'
   optimize_parameters:
@@ -366,6 +1043,66 @@ nodes:
         sets
       key: top3_return
       type: List[float]
+    prd:
+      conceptual_info: The optimize_parameters node conducts a Bayesian optimization
+        over a 5‑dimensional space of entry and exit rule parameters. It leverages
+        back‑test results from the analyze_backtest_results node to guide the search
+        and respects risk controls defined elsewhere. The output lists the three best
+        parameter sets along with their Sharpe ratio, maximum drawdown, and total
+        return, enabling downstream nodes to pick a robust configuration.
+      docstring:
+        examples:
+        - lines:
+          - analysis_results = {
+          - '    ''sharpe_ratio'': 1.2,'
+          - '    ''max_drawdown'': 0.15,'
+          - '    ''total_return'': 0.35'
+          - '}'
+          - 'risk_limits = {''max_drawdown'': 0.2, ''volatility'': 0.25}'
+          - parameter_space = {
+          - '    ''entry_threshold'': (0.1, 0.5),'
+          - '    ''exit_threshold'': (0.05, 0.3),'
+          - '    ''stop_loss'': (0.01, 0.05),'
+          - '    ''take_profit'': (0.02, 0.1),'
+          - '    ''lookback'': (10, 60)'
+          - '}'
+          - top3_params, top3_sharpe, top3_dd, top3_ret = optimize_parameters(
+          - '    analysis_results, risk_limits, parameter_space, n_iter=50)'
+          - print(top3_params)
+          - print(top3_sharpe)
+          output: "['entry_threshold=0.34, exit_threshold=0.18, stop_loss=0.025, take_profit=0.06,\
+            \ lookback=30',\n 'entry_threshold=0.31, exit_threshold=0.20, stop_loss=0.030,\
+            \ take_profit=0.07, lookback=45',\n 'entry_threshold=0.36, exit_threshold=0.16,\
+            \ stop_loss=0.020, take_profit=0.05, lookback=25']\n[1.45, 1.42, 1.38]"
+        parameters:
+        - description: Dictionary containing back‑test performance metrics from analyze_backtest_results,
+            typically including 'sharpe_ratio', 'max_drawdown', and 'total_return'.
+          name: analysis_results
+          type: Dict[str, Any]
+        - description: Risk control thresholds such as maximum allowed drawdown and
+            volatility constraints. Keys correspond to metric names used in the optimization
+            objective.
+          name: risk_limits
+          type: Dict[str, float]
+        - description: Search domain for each of the five parameters. Each key maps
+            to a tuple (min, max) defining the continuous bounds.
+          name: parameter_space
+          type: Dict[str, Tuple[float, float]]
+        - description: Number of Bayesian optimization iterations to perform.
+          name: n_iter
+          type: int
+        raises:
+        - description: If any required key is missing from analysis_results or parameter_space.
+          type: ValueError
+        - description: If the Bayesian optimizer fails to converge or encounters numerical
+            instability.
+          type: RuntimeError
+        returns:
+          description: A tuple containing (top3_parameters, top3_sharpe, top3_drawdown,
+            top3_return). Each list has length three.
+          type: Tuple[List[str], List[float], List[float], List[float]]
+        summary: Execute Bayesian optimization over 5‑dimensional entry/exit rule
+          parameters and return the top 3 configurations with performance metrics.
     prompt: Perform 5-dimensional parameter sweep on entry/exit rules. Use Bayesian
       optimization to find best combination while maintaining risk controls. Output
       top 3 parameter sets with metrics.
@@ -397,12 +1134,79 @@ nodes:
         consistent timestamps)
       key: data_integrity
       type: bool
+    prd:
+      conceptual_info: Transforms raw market feeds into a structured, feature‑rich
+        4‑D NumPy array suitable for quantitative modeling.
+      docstring:
+        examples:
+        - lines:
+          - raw_data = {
+          - '    ''AAPL'': ['
+          - '        {''timestamp'': ''2023-01-01T09:30:00'', ''open'': 150.0, ''high'':
+            152.0, ''low'': 149.5, ''close'': 151.0, ''volume'': 1000000},'
+          - '        {''timestamp'': ''2023-01-01T10:30:00'', ''open'': 151.0, ''high'':
+            153.0, ''low'': 150.0, ''close'': 152.5, ''volume'': 1200000}'
+          - '    ],'
+          - '    ''MSFT'': ['
+          - '        {''timestamp'': ''2023-01-01T09:30:00'', ''open'': 250.0, ''high'':
+            251.0, ''low'': 249.0, ''close'': 250.5, ''volume'': 800000},'
+          - '        {''timestamp'': ''2023-01-01T10:30:00'', ''open'': 250.5, ''high'':
+            252.0, ''low'': 250.0, ''close'': 251.0, ''volume'': 900000}'
+          - '    ]'
+          - '}'
+          output: "{\n  'data': <4‑D array shape [2, 3, 2, 1]>,\n  'metadata': {\n\
+            \    'array_shape': [2, 3, 2, 1],\n    'num_assets': 2,\n    'num_time_steps':\
+            \ 2,\n    'price_normalized': true,\n    'volatility_calculated': true,\n\
+            \    'data_integrity': true\n  }\n}"
+        - lines:
+          - config = {
+          - '  ''normalization_method'': ''minmax'','
+          - '  ''volatility_window'': 10,'
+          - '  ''alignment_frequency'': ''1h'','
+          - '  ''features'': [''price'', ''volatility''],'
+          - '  ''channels'': [''price'']'
+          - '}'
+          output: "{\n  'data': <4‑D array shape [5, 2, 240, 1]>,\n  'metadata': {\n\
+            \    'array_shape': [5, 2, 240, 1],\n    'num_assets': 5,\n    'num_time_steps':\
+            \ 240,\n    'price_normalized': true,\n    'volatility_calculated': true,\n\
+            \    'data_integrity': true\n  }\n}"
+        parameters:
+        - description: Dictionary mapping asset tickers to raw OHLCV time series.
+            Each series is a list of dictionaries with keys ['timestamp', 'open',
+            'high', 'low', 'close', 'volume'].
+          name: raw_data
+          type: dict
+        - description: "Configuration dict containing preprocessing options: \n- `normalization_method`\
+            \ (str): 'minmax' or 'zscore';\n- `volatility_window` (int): Number of\
+            \ periods for rolling volatility;\n- `alignment_frequency` (str): Desired\
+            \ resampling frequency (e.g., '1h', '1d');\n- `features` (List[str]):\
+            \ Features to compute (e.g., ['price', 'volatility', 'returns']);\n- `channels`\
+            \ (List[str]): Optional channels such as ['price', 'volume']."
+          name: config
+          type: dict
+        raises:
+        - description: If any asset has fewer than 2 valid time steps after alignment.
+          type: ValueError
+        - description: If required OHLCV keys are missing in raw data.
+          type: KeyError
+        - description: If data integrity checks fail (e.g., NaNs remain after imputation).
+          type: RuntimeError
+        returns:
+          description: 'Dictionary containing the processed data and metadata:
+
+            - `data`: 4‑D NumPy array of shape [assets, features, time_steps, channels];
+
+            - `metadata`: Dict with keys ''array_shape'', ''num_assets'', ''num_time_steps'',
+            ''price_normalized'', ''volatility_calculated'', ''data_integrity''.'
+          type: dict
+        summary: Preprocesses raw market data by normalizing prices, computing volatility,
+          and aligning OHLCV into a 4‑D NumPy array.
     prompt: 'Create feature-engineered dataset from raw data including: price normalization,
       volatility calculations, and time-aligned OHLCV. Format as 4D numpy array with
       metadata dictionary.'
   select_data_sources:
     agent: false
-    description: Identify high-quality market data feeds
+    description: Identify high‑quality market data feeds
     name: select_data_sources
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -420,6 +1224,76 @@ nodes:
     - description: Classification of each source (e.g., "tick", "OHLCV", "fundamental")
       key: source_types
       type: List[str]
+    prd:
+      conceptual_info: The node selects and documents the market data feeds that will
+        be ingested into the pipeline. It ensures that each feed meets the time‑range,
+        frequency and data‑type requirements of the strategy, and produces a structured
+        list that downstream nodes (e.g., preprocess_data) can consume.
+      docstring:
+        examples:
+        - lines:
+          - source_names, time_ranges, frequencies, source_types = select_data_sources(
+          - '    strategy_objective=''Capture momentum in small‑cap stocks with <3%
+            daily volatility'','
+          - '    performance_benchmarks={'
+          - '        ''cagr_target'': 0.15,'
+          - '        ''annual_vol_target'': 0.20,'
+          - '        ''max_drawdown'': 0.25,'
+          - '        ''sharpe_goal'': 1.2'
+          - '    },'
+          - '    risk_limits={'
+          - '        ''portfolio_volatility_limit'': 0.15,'
+          - '        ''sector_concentration_limit'': 0.30,'
+          - '        ''drawdown_trigger_limit'': 0.20,'
+          - '        ''position_correlation_limit'': 0.70'
+          - '    },'
+          - '    entry_exit_requirements={'
+          - '        ''required_features'': [''SMA_50'', ''ATR_14'', ''volatility''],'
+          - '        ''data_type'': ''OHLCV'''
+          - '    }'
+          - )
+          output: "[\n  ['Bloomberg', 'YahooFinance', 'AlphaVantage'],\n  ['2018-01-01\
+            \ to 2023-12-31', '2018-01-01 to 2023-12-31', '2018-01-01 to 2023-12-31'],\n\
+            \  ['tick', '1d', '1d'],\n  ['tick', 'OHLCV', 'fundamental']\n]"
+        - lines:
+          - source_names, time_ranges, frequencies, source_types = select_data_sources(
+          - '    strategy_objective=''Mean‑reversion on FX pairs'','
+          - '    performance_benchmarks={},'
+          - '    risk_limits={},'
+          - '    entry_exit_requirements={}'
+          - )
+          output: "[\n  ['Reuters', 'Oanda'],\n  ['2015-01-01 to 2023-12-31', '2015-01-01\
+            \ to 2023-12-31'],\n  ['1h', 'tick'],\n  ['OHLCV', 'tick']\n]"
+        parameters:
+        - description: A concise one‑sentence description of the strategy’s goal (e.g.,
+            "Capture momentum in small‑cap stocks with <3% daily volatility").
+          name: strategy_objective
+          type: str
+        - description: Benchmark metrics dict with keys 'cagr_target', 'annual_vol_target',
+            'max_drawdown', 'sharpe_goal' produced by set_performance_benchmarks.
+          name: performance_benchmarks
+          type: dict
+        - description: Risk limits dict with keys 'portfolio_volatility_limit', 'sector_concentration_limit',
+            'drawdown_trigger_limit', 'position_correlation_limit' produced by build_risk_rules.
+          name: risk_limits
+          type: dict
+        - description: Entry/exit rule descriptors (e.g., required features such as
+            SMA, ATR, volatility) produced by develop_entry_rules and develop_exit_rules.
+          name: entry_exit_requirements
+          type: dict
+        raises:
+        - description: Raised if the strategy objective is empty or missing required
+            fields.
+          type: ValueError
+        - description: Raised if a requested data source is unavailable or does not
+            satisfy the required frequency/time‑range constraints.
+          type: LookupError
+        returns:
+          description: 'Four lists: source_names (List[str]), time_ranges (List[str]),
+            frequencies (List[str]), source_types (List[str])'
+          type: tuple
+        summary: Selects and validates high‑quality market data sources for a quantitative
+          strategy.
     prompt: List 3-5 market data sources required for this strategy (e.g. Bloomberg
       tick data, Yahoo Finance OHLCV, Alpha Vantage fundamental data). Specify time
       range and frequencies needed.
@@ -452,6 +1326,75 @@ nodes:
     - description: List of window sizes (in days) for walk-forward analysis
       key: walkforward_window_days
       type: List[int]
+    prd:
+      conceptual_info: This node establishes the temporal and stochastic bounds for
+        backtesting a quantitative strategy. It defines the in‑sample and out‑of‑sample
+        windows, the range of Monte Carlo simulation counts, and the schedule for
+        walk‑forward validation. The configuration produced here is consumed by downstream
+        nodes that execute the backtests, optimize parameters, and validate out‑of‑sample
+        performance.
+      docstring:
+        examples:
+        - lines:
+          - config = set_backtest_parameters(
+          - '    in_sample_start=''2020-01-01'','
+          - '    in_sample_end=''2021-12-31'','
+          - '    out_sample_start=''2022-01-01'','
+          - '    out_sample_end=''2022-12-31'','
+          - '    montecarlo_min=1000,'
+          - '    montecarlo_max=5000,'
+          - '    walkforward_window_days=[90, 180, 360])'
+          output: '{''in_sample_start'': ''2020-01-01'', ''in_sample_end'': ''2021-12-31'',
+            ''out_sample_start'': ''2022-01-01'', ''out_sample_end'': ''2022-12-31'',
+            ''montecarlo_min'': 1000, ''montecarlo_max'': 5000, ''walkforward_window_days'':
+            [90, 180, 360]}'
+        - lines:
+          - '# Invalid example: in_sample_end before start'
+          - set_backtest_parameters(
+          - '    in_sample_start=''2021-01-01'','
+          - '    in_sample_end=''2020-12-31'','
+          - '    out_sample_start=''2021-01-01'','
+          - '    out_sample_end=''2021-12-31'','
+          - '    montecarlo_min=500,'
+          - '    montecarlo_max=2000,'
+          - '    walkforward_window_days=[30, 60])'
+          output: 'ValueError: in_sample_end must be after in_sample_start'
+        parameters:
+        - description: Start date of the in-sample period in 'YYYY-MM-DD' format.
+          name: in_sample_start
+          type: str
+        - description: End date of the in-sample period in 'YYYY-MM-DD' format.
+          name: in_sample_end
+          type: str
+        - description: Start date of the out-of-sample period in 'YYYY-MM-DD' format.
+          name: out_sample_start
+          type: str
+        - description: End date of the out-of-sample period in 'YYYY-MM-DD' format.
+          name: out_sample_end
+          type: str
+        - description: Minimum number of Monte Carlo simulations to run.
+          name: montecarlo_min
+          type: int
+        - description: Maximum number of Monte Carlo simulations to run.
+          name: montecarlo_max
+          type: int
+        - description: Sequence of window sizes (in days) for walk‑forward analysis.
+            Each element defines the length of a training window before a test window
+            is applied.
+          name: walkforward_window_days
+          type: List[int]
+        raises:
+        - description: If any date string is not in ISO format or if `in_sample_end`
+            precedes `in_sample_start`.
+          type: ValueError
+        - description: If `montecarlo_min` is greater than `montecarlo_max` or if
+            any window size in `walkforward_window_days` is non‑positive.
+          type: ValueError
+        returns:
+          description: Dictionary containing the seven configuration fields specified
+            in `output_structure`.
+          type: Dict[str, Any]
+        summary: Configure the backtesting framework for a quantitative strategy.
     prompt: 'Define three test configurations: in-sample (date range), out-of-sample
       (date range), Monte Carlo (parameter range). Include walk-forward analysis schedule.'
   set_performance_benchmarks:
@@ -477,12 +1420,45 @@ nodes:
     - description: Target Sharpe ratio to be achieved by the strategy
       key: sharpe_ratio_goal
       type: float
+    prd:
+      conceptual_info: The node translates a textual specification of performance
+        goals into a structured dictionary of numerical benchmarks. These benchmarks
+        serve as inputs for downstream risk, sizing, and validation modules.
+      docstring:
+        examples:
+        - lines:
+          - benchmarks = set_performance_benchmarks('0.15, 0.20, 0.25, 1.8')
+          output: '{''cagr_target'': 0.15, ''annual_volatility_constraint'': 0.20,
+            ''drawdown_limit'': 0.25, ''sharpe_ratio_goal'': 1.8}'
+        - lines:
+          - benchmarks = set_performance_benchmarks('12%, 20%, 25%, 1.8')
+          output: '{''cagr_target'': 0.12, ''annual_volatility_constraint'': 0.20,
+            ''drawdown_limit'': 0.25, ''sharpe_ratio_goal'': 1.8}'
+        parameters:
+        - description: 'Raw prompt response containing numeric values for CAGR, volatility,
+            drawdown, and Sharpe ratio. Example: "0.12, 0.18, 0.25, 1.5".'
+          name: input_text
+          type: str
+        raises:
+        - description: If the input cannot be parsed into exactly four numeric values
+            or if any value is out of a reasonable range (e.g., negative CAGR).
+          type: ValueError
+        - description: If the input is not a string.
+          type: TypeError
+        returns:
+          description: Dictionary with keys 'cagr_target', 'annual_volatility_constraint',
+            'drawdown_limit', and 'sharpe_ratio_goal', each mapped to a float value.
+          type: Dict[str, float]
+        summary: Parse performance benchmark parameters from user input and return
+          a dictionary of numerical metrics.
     prompt: Specify CAGR target (number), annual volatility constraint (number), drawdown
       limit (%), and Sharpe ratio goal. Format as dictionary with numerical values
       only.
   validate_out_of_sample:
     agent: false
-    description: Test optimized strategy on fresh data
+    description: Test the top‑ranked parameter combination on fresh market data outside
+      the training window, quantify its performance relative to the in‑sample period,
+      and apply statistical tests to flag potential over‑fitting.
     name: validate_out_of_sample
     nodes_depended_on:
     - optimize_parameters
@@ -507,11 +1483,90 @@ nodes:
     - description: Boolean results for each of the three statistical overfitting tests
         (true if passed)
       key: overfitting_tests_passed
-      type: List[bool]
+      type: bool
     - description: Names of the statistical tests performed (e.g., t-test, Diebold-Mariano,
         etc.)
       key: overfitting_test_names
-      type: List[str]
+      type: str
+    prd:
+      conceptual_info: Runs the best parameter combination identified by Bayesian
+        optimisation on a held‑out data window, compares key risk‑return metrics to
+        the in‑sample period, and applies three statistical tests to detect over‑fitting.
+      docstring:
+        examples:
+        - lines:
+          - top3_parameters = ['alpha=0.1,beta=0.2,gamma=0.3',
+          - '                ''alpha=0.15,beta=0.25,gamma=0.35'','
+          - '                ''alpha=0.2,beta=0.3,gamma=0.4'']'
+          - top3_sharpe = [1.25, 1.10, 0.95]
+          - in_sample_equity = {
+          - '    ''dates'': [''2020-01-01'', ''2020-01-02''],'
+          - '    ''values'': [100000, 102500]}'
+          - 'def dummy_backtest(param_set):'
+          - '    return {''sharpe'': 1.05 if ''alpha=0.1'' in param_set else 0.9,'
+          - '            ''max_drawdown'': 0.12}'
+          - result = validate_out_of_sample(
+          - '    top3_parameters=top3_parameters,'
+          - '    top3_sharpe=top3_sharpe,'
+          - '    in_sample_equity=in_sample_equity,'
+          - '    out_sample_start=''2020-02-01'','
+          - '    out_sample_end=''2020-04-01'','
+          - '    backtest_function=dummy_backtest)'
+          output: "{\n  'selected_param_set': 'alpha=0.1,beta=0.2,gamma=0.3',\n  'in_sample_sharpe':\
+            \ 1.25,\n  'out_of_sample_sharpe': 1.05,\n  'in_sample_max_drawdown':\
+            \ 0.12,\n  'out_of_sample_max_drawdown': 0.12,\n  'overfitting_tests_passed':\
+            \ [True, False, True],\n  'overfitting_test_names': ['t-test', 'Diebold-Mariano',\
+            \ 'ADF']\n}"
+        - lines:
+          - '# Using the second best parameter set
+
+            result2 = validate_out_of_sample('
+          - '    top3_parameters=top3_parameters,'
+          - '    top3_sharpe=top3_sharpe,'
+          - '    in_sample_equity=in_sample_equity,'
+          - '    out_sample_start=''2020-02-01'','
+          - '    out_sample_end=''2020-04-01'','
+          - '    backtest_function=dummy_backtest)'
+          output: "{\n  'selected_param_set': 'alpha=0.15,beta=0.25,gamma=0.35',\n\
+            \  'in_sample_sharpe': 1.10,\n  'out_of_sample_sharpe': 0.90,\n  'in_sample_max_drawdown':\
+            \ 0.12,\n  'out_of_sample_max_drawdown': 0.12,\n  'overfitting_tests_passed':\
+            \ [False, False, True],\n  'overfitting_test_names': ['t-test', 'Diebold-Mariano',\
+            \ 'ADF']\n}"
+        parameters:
+        - description: List of the top three parameter‑set strings produced by ``optimize_parameters``.
+          name: top3_parameters
+          type: list[str]
+        - description: Sharpe ratios corresponding to each of the top three parameter
+            sets.
+          name: top3_sharpe
+          type: list[float]
+        - description: Dictionary containing in‑sample equity curve data with keys
+            ``dates`` and ``values``.
+          name: in_sample_equity
+          type: dict
+        - description: ISO format start date of the out‑sample window (YYYY‑MM‑DD).
+          name: out_sample_start
+          type: str
+        - description: ISO format end date of the out‑sample window (YYYY‑MM‑DD).
+          name: out_sample_end
+          type: str
+        - description: Callable that accepts a parameter set string and returns a
+            dict with ``sharpe`` and ``max_drawdown`` for a given date range.
+          name: backtest_function
+          type: Callable
+        raises:
+        - description: If the ``top3_parameters`` list is empty or does not contain
+            the selected set.
+          type: ValueError
+        - description: If the backtest function fails to return a valid performance
+            metric.
+          type: RuntimeError
+        returns:
+          description: A dictionary containing the selected parameter set identifier,
+            in‑sample and out‑of‑sample Sharpe ratios, max drawdowns, and over‑fitting
+            test results.
+          type: dict
+        summary: Validate a strategy on out‑of‑sample data and detect over‑fitting.
     prompt: Run selected parameter set against out-of-sample period. Compare drawdown
       characteristics and Sharpe ratio to in-sample. Detect overfitting through 3
       statistical tests (e.g. t-test, Diebold-Mariano).
