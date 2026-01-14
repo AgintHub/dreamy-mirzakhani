@@ -1,236 +1,114 @@
 dag_type: plain_text
-description: Creates a comprehensive execution plan for establishing a hedge fund,
-  covering strategic design, legal infrastructure, operational workflows, compliance,
-  and investor targeting in a highly concurrent architecture.
-name: build_hedge_fund
+description: A highly concurrent workflow for developing a chess engine from scratch,
+  covering chess theory, algorithm design, and software implementation.
+name: chess_engine_development
 nodes:
-  choose_investment_strategy:
+  algorithm_design:
     agent: false
-    description: Select primary investment methodology
-    name: choose_investment_strategy
+    description: Design a suitable algorithm for the chess engine, including move
+      generation, evaluation, and search.
+    name: algorithm_design
     nodes_depended_on:
-    - clarify_fund_objectives
-    nodes_dependent_on:
-    - define_asset_universe
-    - set_performance_and_risk_targets
-    - design_risk_management_framework
-    prompt: 'Choose from: market neutral, long/short equity, global macro, arbitrage,
-      event-driven, multi-strategy. Justify selection in 2 sentences matching fund
-      objectives.'
-  choose_legal_entity_type:
-    agent: false
-    description: Specify legal structure for fund vehicle
-    name: choose_legal_entity_type
-    nodes_depended_on:
-    - select_jurisdiction
-    nodes_dependent_on:
-    - list_service_providers
-    - outline_governance_structure
-    - identify_regulatory_requirements
-    prompt: 'Select from: LP, LLC, SICAV, unit investment trust. Explain why this
-      structure works with chosen jurisdiction in 2 sentences.'
-  clarify_fund_objectives:
-    agent: false
-    description: Generate core business objectives for the hedge fund
-    name: clarify_fund_objectives
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - choose_investment_strategy
-    - select_jurisdiction
-    - define_investor_profile
-    - outline_governance_structure
-    prompt: 'State primary business objectives for the hedge fund as a numbered list
-      covering: investment purpose, competitive edge, target returns, and 3-5-year
-      vision. Include risk/liquidity preferences but exclude specific strategies.'
-  compile_pitch_deck_outline:
-    agent: false
-    description: Design fundraising presentation
-    name: compile_pitch_deck_outline
-    nodes_depended_on:
-    - design_compliance_program
-    - define_investor_profile
-    - design_risk_management_framework
-    - draft_fee_structure
-    nodes_dependent_on:
-    - produce_final_fund_plan_summary
-    prompt: 'Create 10-12 slide structure with exact content for: team intro, strategy
-      deep dive, risk framework, fees, historical performance examples.'
-  create_hiring_plan:
-    agent: false
-    description: Determine staffing requirements
-    name: create_hiring_plan
-    nodes_depended_on:
-    - draft_operations_workflow
-    nodes_dependent_on:
-    - develop_timeline_and_milestones
-    prompt: 'List 8-12 roles with: FTE count, daily responsibilities, tech/systems
-      they manage. Format as 3-column table: Role | Responsibilities | Required Systems.'
-  define_asset_universe:
-    agent: false
-    description: Specify tradable instruments
-    name: define_asset_universe
-    nodes_depended_on:
-    - choose_investment_strategy
-    nodes_dependent_on:
-    - draft_operations_workflow
-    prompt: List 5-8 specific asset classes (e.g., US Treasuries, EM equities) aligned
-      with strategy. Show weight limits as percentages in 2-column table.
-  define_investor_profile:
-    agent: false
-    description: Create target investor persona
-    name: define_investor_profile
-    nodes_depended_on:
-    - clarify_fund_objectives
-    nodes_dependent_on:
-    - draft_fee_structure
-    - compile_pitch_deck_outline
-    prompt: Define IRR/liquidity expectations, minimum investment ($XK), risk appetite
-      (high/medium/low), and 2-3 preferred investor types (family offices, endowments,
-      etc.).
-  define_technology_stack:
-    agent: false
-    description: Specify tech infrastructure
-    name: define_technology_stack
-    nodes_depended_on:
-    - draft_operations_workflow
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - develop_timeline_and_milestones
-    prompt: 'Match each workflow step with precise tech components (EMM, TCA, risk
-      analytics). Format as 3-column table: Workflow Step | Tech Solution | Vendor
-      Requirements.'
-  design_compliance_program:
-    agent: false
-    description: Build internal controls
-    name: design_compliance_program
-    nodes_depended_on:
-    - identify_regulatory_requirements
-    - design_risk_management_framework
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    prompt: 'Create 12-month compliance roadmap with 3 phases: staff training, system
-      upgrades, and audit. Map each regulation to a monitoring schedule.'
-  design_risk_management_framework:
-    agent: false
-    description: Define risk controls
-    name: design_risk_management_framework
-    nodes_depended_on:
-    - set_performance_and_risk_targets
-    nodes_dependent_on:
-    - design_compliance_program
-    - compile_pitch_deck_outline
-    prompt: Create 4-6 non-overlapping risk controls (pos limit, VaR cap, diversification
-      rules) directly enforcing performance targets. Add 1 contingency protocol.
-  develop_timeline_and_milestones:
-    agent: false
-    description: Create launch schedule
-    name: develop_timeline_and_milestones
-    nodes_depended_on:
-    - estimate_setup_and_operating_costs
-    - define_technology_stack
-    - create_hiring_plan
-    nodes_dependent_on:
-    - produce_final_fund_plan_summary
-    prompt: 'Break into 6 phases with 2-3 milestones each: planning, legal, tech build,
-      hiring, marketing, launch. Include buffer timelines for each.'
-  draft_fee_structure:
-    agent: false
-    description: Create compensation model
-    name: draft_fee_structure
-    nodes_depended_on:
-    - set_performance_and_risk_targets
-    - estimate_setup_and_operating_costs
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    prompt: Propose management fee (%), performance fee (hard hurdle rate %, carried
-      interest %), and possible supplemental revenues. Format as 3-column table.
-  draft_operations_workflow:
-    agent: false
-    description: Map daily operations
-    name: draft_operations_workflow
-    nodes_depended_on:
-    - define_asset_universe
-    - list_service_providers
-    nodes_dependent_on:
-    - define_technology_stack
-    - create_hiring_plan
-    prompt: 'Divide into pre-trade, execution, post-trade phases. For each step (12-15
-      total), specify: action, responsible party, and maximum allowable error rate
-      (%).'
-  estimate_setup_and_operating_costs:
-    agent: false
-    description: Create cost model
-    name: estimate_setup_and_operating_costs
-    nodes_depended_on:
-    - list_service_providers
-    nodes_dependent_on:
-    - draft_fee_structure
-    - develop_timeline_and_milestones
-    prompt: 'Provide 12-month cost breakdown in USD: service fees (70%), overhead
-      (20%), contingency (10%). Format as 2-column table: Cost Item | Estimated USD.'
-  identify_regulatory_requirements:
-    agent: false
-    description: Note mandatory filings
-    name: identify_regulatory_requirements
-    nodes_depended_on:
-    - choose_legal_entity_type
-    nodes_dependent_on:
-    - design_compliance_program
-    - compile_pitch_deck_outline
-    prompt: List 4-6 core regulatory submissions (e.g., FINRA Form 1-M in the US).
-      For each, specify submission timeline and enforcement body.
-  list_service_providers:
-    agent: false
-    description: Identify external operational partners
-    name: list_service_providers
-    nodes_depended_on:
-    - choose_legal_entity_type
-    nodes_dependent_on:
-    - draft_operations_workflow
-    - estimate_setup_and_operating_costs
-    prompt: 'List 6-8 provider categories (prime broker, administrator, etc.) with
-      functional requirements. Format as 3-column table: Provider Type | Required
-      Functions | Delivery Standards.'
-  outline_governance_structure:
-    agent: false
-    description: Define corporate hierarchy
-    name: outline_governance_structure
-    nodes_depended_on:
-    - choose_legal_entity_type
-    nodes_dependent_on:
-    - produces_final_fund_plan_summary
-    prompt: 'Create a 3-level org chart (executive, operational, advisory), specifying:
-      decision rights, meeting schedules, monitoring responsibilities.'
-  produce_final_fund_plan_summary:
-    agent: false
-    description: Generate executive summary
-    name: produce_final_fund_plan_summary
-    nodes_depended_on:
-    - develop_timeline_and_milestones
-    - compile_pitch_deck_outline
-    - outline_governance_structure
+    - chess_theory_research
     nodes_dependent_on: []
-    prompt: Convert prior deliverables into a 600-word executive summary with 5 key
-      metrics, 3 differentiators, and 4 go/no-go criteria for capital partners.
-  select_jurisdiction:
+    prompt: Design a chess engine algorithm that incorporates chess theory research.
+      Describe the move generation, evaluation, and search components, including data
+      structures and pseudo-code.
+  chess_theory_research:
     agent: false
-    description: Determine optimal fund domicile
-    name: select_jurisdiction
-    nodes_depended_on:
-    - clarify_fund_objectives
-    nodes_dependent_on:
-    - choose_legal_entity_type
-    - identify_regulatory_requirements
-    prompt: List 2-3 candidate jurisdictions with rationales. Select one with 2-3
-      implementation-specific pros/cons (taxation, reporting, privacy laws).
-  set_performance_and_risk_targets:
+    description: Conduct research on chess theory, including openings, middlegame
+      strategies, and endgames.
+    name: chess_theory_research
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Research and document key concepts in chess theory, including common openings,
+      middlegame strategies, and endgames. Provide a list of 10 essential concepts
+      with brief descriptions.
+  documentation_and_maintenance:
     agent: false
-    description: Quantify financial goals
-    name: set_performance_and_risk_targets
+    description: Create documentation for the chess engine and plan for ongoing maintenance,
+      including updates and bug fixes.
+    name: documentation_and_maintenance
     nodes_depended_on:
-    - choose_investment_strategy
-    nodes_dependent_on:
-    - design_risk_management_framework
-    - draft_fee_structure
-    prompt: 'Set annual targets for: gross return (%), volatility (%), Sharpe ratio,
-      max drawdown limit, and liquidity requirement. Include strategy-specific benchmarks.'
+    - performance_optimization
+    nodes_dependent_on: []
+    prompt: Create comprehensive documentation for the chess engine, including user
+      guides, API references, and technical notes. Describe the maintenance plan,
+      including update schedules and bug tracking procedures.
+  evaluation_function_development:
+    agent: false
+    description: Develop an evaluation function to assess chess positions, including
+      material, mobility, and control.
+    name: evaluation_function_development
+    nodes_depended_on:
+    - algorithm_design
+    nodes_dependent_on: []
+    prompt: Create an evaluation function that considers material, mobility, and control.
+      Provide a mathematical formula and describe how it will be used in the chess
+      engine.
+  integration_and_deployment:
+    agent: false
+    description: Integrate the chess engine with the user interface and deploy the
+      application, including any necessary dependencies or libraries.
+    name: integration_and_deployment
+    nodes_depended_on:
+    - testing_and_debugging
+    - user_interface_design
+    nodes_dependent_on: []
+    prompt: Integrate the chess engine with the user interface and deploy the application.
+      Describe any dependencies or libraries required, including version numbers and
+      installation instructions.
+  move_generation_implementation:
+    agent: false
+    description: Implement move generation, including legal move checking and sorting.
+    name: move_generation_implementation
+    nodes_depended_on:
+    - algorithm_design
+    nodes_dependent_on: []
+    prompt: Implement move generation using a suitable data structure (e.g., bitboards).
+      Describe how legal moves will be checked and sorted, including any optimization
+      techniques.
+  performance_optimization:
+    agent: false
+    description: Optimize the chess engine's performance, including profiling, caching,
+      and parallelization.
+    name: performance_optimization
+    nodes_depended_on:
+    - integration_and_deployment
+    nodes_dependent_on: []
+    prompt: Optimize the chess engine's performance using profiling, caching, and
+      parallelization techniques. Describe the optimization methodology and any resulting
+      improvements in speed or accuracy.
+  search_algorithm_implementation:
+    agent: false
+    description: Implement a search algorithm, such as alpha-beta pruning or iterative
+      deepening.
+    name: search_algorithm_implementation
+    nodes_depended_on:
+    - algorithm_design
+    nodes_dependent_on: []
+    prompt: Implement a search algorithm to explore the game tree. Describe the algorithm's
+      parameters, including depth, width, and iteration limits.
+  testing_and_debugging:
+    agent: false
+    description: Test and debug the chess engine, including unit tests and integration
+      tests.
+    name: testing_and_debugging
+    nodes_depended_on:
+    - evaluation_function_development
+    - move_generation_implementation
+    - search_algorithm_implementation
+    nodes_dependent_on: []
+    prompt: Create a comprehensive test suite for the chess engine, including unit
+      tests and integration tests. Describe the testing methodology and any debugging
+      techniques used.
+  user_interface_design:
+    agent: false
+    description: Design a user-friendly interface for interacting with the chess engine,
+      including input and output formats.
+    name: user_interface_design
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Design a user interface for the chess engine, including input and output
+      formats. Describe how users will interact with the engine, including any visualization
+      tools or command-line interfaces.
