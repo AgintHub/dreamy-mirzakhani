@@ -1,141 +1,74 @@
 dag_type: plain_text
-description: A workflow to produce a six‑chapter cosmology book, including title,
-  outline, chapter content, cover, table of contents, bibliography, and final assembly.
-name: write_cosmology_book
+description: A workflow implementing quicksort as a purely functional program where
+  each node represents a distinct function in the sorting process. The workflow processes
+  unsorted input lists and returns sorted output lists using atomic, concurrent operations.
+name: pure_functional_quicksort
 nodes:
-  assemble_final_book:
+  concatenate_result:
     agent: false
-    description: Presents the complete book in a single document.
-    name: assemble_final_book
+    description: Combine the sorted left partition, pivot partition, and sorted right
+      partition
+    name: concatenate_result
     nodes_depended_on:
-    - create_table_of_contents
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
-    - write_chapter_4
-    - write_chapter_5
-    - write_chapter_6
-    - compile_bibliography
+    - sort_left
+    - partition_list
+    - sort_right
     nodes_dependent_on: []
-    prompt: Combine the cover, table of contents, chapters, and bibliography into
-      a single Markdown document representing the final book. Use headings for each
-      section and maintain formatting consistency.
-  compile_bibliography:
+    prompt: 'Concatenate the following three components: 1) the sorted left partition
+      from the quicksort operation, 2) the pivot partition from the original partitioned
+      data, and 3) the sorted right partition from the quicksort operation. Return
+      the final sorted list.'
+  input_list:
     agent: false
-    description: Creates the bibliography.
-    name: compile_bibliography
-    nodes_depended_on:
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
-    - write_chapter_4
-    - write_chapter_5
-    - write_chapter_6
-    nodes_dependent_on: []
-    prompt: Extract all referenced works from the chapters and format them in APA
-      style. List each source with authors, year, title, journal/book, and DOI if
-      available.
-  create_book_title:
-    agent: false
-    description: Produces the book title and subtitle.
-    name: create_book_title
+    description: The original unsorted input list to be sorted
+    name: input_list
     nodes_depended_on: []
     nodes_dependent_on:
-    - create_cover_design
-    prompt: Generate a concise, engaging title for a six‑chapter book about cosmology.
-      Include subtitle if appropriate.
-  create_table_of_contents:
+    - select_pivot
+    - partition_list
+    prompt: Provide the raw unsorted input list to be processed.
+  partition_list:
     agent: false
-    description: Creates the table of contents.
-    name: create_table_of_contents
+    description: Divide the input list into three partitions based on pivot value
+    name: partition_list
     nodes_depended_on:
-    - draft_book_outline
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
-    - write_chapter_4
-    - write_chapter_5
-    - write_chapter_6
-    nodes_dependent_on: []
-    prompt: Generate a table of contents that lists the book title, each chapter title
-      with page number placeholders, and the bibliography section. Format as a standard
-      academic TOC.
-  design_cover_design:
-    agent: false
-    description: Creates the cover layout.
-    name: design_cover_design
-    nodes_depended_on:
-    - create_book_title
+    - input_list
+    - select_pivot
     nodes_dependent_on:
-    - create_table_of_contents
-    prompt: Design a book cover that incorporates the title from the previous step.
-      Include a relevant cosmology image, author name placeholder, and publication
-      year placeholder.
-  draft_book_outline:
+    - sort_left
+    - sort_right
+    - concatenate_result
+    prompt: 'Partition the input list into three sublists: elements less than the
+      pivot, elements equal to the pivot, and elements greater than the pivot. Return
+      all three partitions in order.'
+  select_pivot:
     agent: false
-    description: Creates the chapter outline.
-    name: draft_book_outline
-    nodes_depended_on: []
+    description: Select a pivot element from the input list
+    name: select_pivot
+    nodes_depended_on:
+    - input_list
     nodes_dependent_on:
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
-    - write_chapter_4
-    - write_chapter_5
-    - write_chapter_6
-    prompt: Develop a detailed outline for a six‑chapter cosmology book. List chapter
-      titles, key subtopics, and a brief description for each chapter.
-  write_chapter_1:
+    - partition_list
+    prompt: Select a single pivot element from the input list. Return only the chosen
+      pivot element.
+  sort_left:
     agent: false
-    description: Produces Chapter 1 content.
-    name: write_chapter_1
+    description: Recursively apply quicksort to the left partition (less than pivot)
+    name: sort_left
     nodes_depended_on:
-    - draft_book_outline
-    nodes_dependent_on: []
-    prompt: Write Chapter 1 based on the outline. Focus on the introduction to cosmology,
-      historical context, and basic concepts. Keep the chapter length to ~2000 words.
-  write_chapter_2:
+    - partition_list
+    nodes_dependent_on:
+    - concatenate_result
+    prompt: Apply the quicksort algorithm to the left partition (elements less than
+      pivot) from the previous step. Return the sorted left partition.
+  sort_right:
     agent: false
-    description: Produces Chapter 2 content.
-    name: write_chapter_2
+    description: Recursively apply quicksort to the right partition (greater than
+      pivot)
+    name: sort_right
     nodes_depended_on:
-    - draft_book_outline
-    nodes_dependent_on: []
-    prompt: Write Chapter 2 based on the outline. Cover the Big Bang theory, observational
-      evidence, and the expansion of the universe. Target ~2000 words.
-  write_chapter_3:
-    agent: false
-    description: Produces Chapter 3 content.
-    name: write_chapter_3
-    nodes_depended_on:
-    - draft_book_outline
-    nodes_dependent_on: []
-    prompt: Write Chapter 3 based on the outline. Explain cosmic microwave background
-      radiation, its discovery, and significance. Target ~2000 words.
-  write_chapter_4:
-    agent: false
-    description: Produces Chapter 4 content.
-    name: write_chapter_4
-    nodes_depended_on:
-    - draft_book_outline
-    nodes_dependent_on: []
-    prompt: 'Write Chapter 4 based on the outline. Discuss dark matter: evidence,
-      candidates, and detection experiments. Target ~2000 words.'
-  write_chapter_5:
-    agent: false
-    description: Produces Chapter 5 content.
-    name: write_chapter_5
-    nodes_depended_on:
-    - draft_book_outline
-    nodes_dependent_on: []
-    prompt: Write Chapter 5 based on the outline. Cover dark energy and the accelerated
-      expansion of the universe. Target ~2000 words.
-  write_chapter_6:
-    agent: false
-    description: Produces Chapter 6 content.
-    name: write_chapter_6
-    nodes_depended_on:
-    - draft_book_outline
-    nodes_dependent_on: []
-    prompt: Write Chapter 6 based on the outline. Summarize future directions, open
-      questions, and technological advances in cosmology. Target ~2000 words.
+    - partition_list
+    nodes_dependent_on:
+    - concatenate_result
+    prompt: Apply the quicksort algorithm to the right partition (elements greater
+      than pivot) from the previous step. Return the sorted right partition.
