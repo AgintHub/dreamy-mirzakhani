@@ -1,68 +1,56 @@
 dag_type: plain_text
-description: A workflow for testing the capabilities of a workflow system.
+description: Create a workflow DAG to test fundamental operations.
 name: test_workflow
 nodes:
-  analyze_test_results:
+  construct_test_workflow:
     agent: false
-    description: Analyze the test results.
-    name: analyze_test_results
+    description: Construct the fundamental workflow DAG from the mapped tasks.
+    name: construct_test_workflow
     nodes_depended_on:
-    - execute_test
+    - map_decomposed_objective
     nodes_dependent_on: []
-    prompt: Analyze the results of the test. What conclusions can be drawn from the
-      data collected during the test?
-  define_test_objective:
+    prompt: Create a fundamental workflow DAG that is maximally concurrent, async,
+      and parallel from the mapped tasks and Elemental Thoughts framework.
+  decompose_objective:
     agent: false
-    description: Define the objective of the test.
-    name: define_test_objective
+    description: Decompose the parsed objective into constituent tasks.
+    name: decompose_objective
+    nodes_depended_on:
+    - parse_test_objective
+    nodes_dependent_on: []
+    prompt: Decompose the provided fundamental task into elemental operations.
+  execute_test_workflow:
+    agent: false
+    description: Execute the validated workflow DAG to finalize the test execution.
+    name: execute_test_workflow
+    nodes_depended_on:
+    - validate_test_workflow
+    nodes_dependent_on: []
+    prompt: Run the validated workflow DAG to execute the fundamental test objective.
+  map_decomposed_objective:
+    agent: false
+    description: Map each decomposed task to Elemental Thoughts framework.
+    name: map_decomposed_objective
+    nodes_depended_on:
+    - decompose_objective
+    nodes_dependent_on: []
+    prompt: Map the decomposed task elements to the Elemental Thoughts framework to
+      execute fundamental operations.
+  parse_test_objective:
+    agent: false
+    description: Parse the given Objective description.
+    name: parse_test_objective
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Define the primary goal of the test. What is the main objective that this
-      test is trying to achieve?
-  determine_test_criteria:
+    prompt: Parse the provided Objective description to create a fundamental and specific
+      task.
+  validate_test_workflow:
     agent: false
-    description: Determine the criteria for the test.
-    name: determine_test_criteria
+    description: Validate that the constructed workflow DAG adheres to acyclicity
+      and dependency requirements.
+    name: validate_test_workflow
     nodes_depended_on:
-    - define_test_objective
+    - construct_test_workflow
     nodes_dependent_on: []
-    prompt: Based on the test objective, determine the criteria that will be used
-      to evaluate the test results. What metrics or standards will be used to measure
-      success?
-  develop_test_plan:
-    agent: false
-    description: Develop a detailed test plan.
-    name: develop_test_plan
-    nodes_depended_on:
-    - identify_test_scope
-    - determine_test_criteria
-    nodes_dependent_on: []
-    prompt: Create a detailed test plan that includes the scope, criteria, and procedures
-      for the test. What steps will be taken to execute the test and collect results?
-  document_test_outcome:
-    agent: false
-    description: Document the test outcome.
-    name: document_test_outcome
-    nodes_depended_on:
-    - analyze_test_results
-    nodes_dependent_on: []
-    prompt: Document the outcome of the test. What were the results of the test, and
-      what do they indicate about the system or process being tested?
-  execute_test:
-    agent: false
-    description: Execute the test.
-    name: execute_test
-    nodes_depended_on:
-    - develop_test_plan
-    nodes_dependent_on: []
-    prompt: Execute the test according to the test plan. What actions will be taken
-      to carry out the test and collect results?
-  identify_test_scope:
-    agent: false
-    description: Identify the scope of the test.
-    name: identify_test_scope
-    nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on: []
-    prompt: Based on the test objective, identify the scope of the test. What components,
-      systems, or processes will be included in the test?
+    prompt: Verify that the constructed workflow DAG is acyclic and enforces the correct
+      dependencies.
