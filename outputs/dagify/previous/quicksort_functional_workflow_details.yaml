@@ -1,7 +1,5 @@
-dag_type: plain_text
-description: Implements quicksort as a functional program with atomic nodes for base
-  case, pivot selection, partitioning, recursive sorting, and result combination.
-  Maximizes concurrency in left/right partition sorting.
+dag_type: typed
+description: Generated workflow from UI.
 name: quicksort_functional_workflow
 nodes:
   base_case_check:
@@ -10,6 +8,13 @@ nodes:
     name: base_case_check
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether the input array is empty
+      key: is_empty
+      type: bool
+    - description: The input array, either empty or unchanged
+      key: output_array
+      type: List[int]
     prompt: Write a function 'base_case_check' that takes an array and returns it
       if empty. Otherwise return the array unchanged.
   combine_sorted_partitions:
@@ -21,6 +26,11 @@ nodes:
     - partition_equal_to
     - sort_right_partition
     nodes_dependent_on: []
+    output_structure:
+    - description: The fully concatenated sorted list resulting from combining the
+        left, equal, and right partitions.
+      key: combined_list
+      type: List[int]
     prompt: Write 'combine_partitions' that takes sorted left partition from 'sort_left',
       equal partition from 'partition_equal', and sorted right partition from 'sort_right',
       and concatenates them in order.
@@ -31,6 +41,10 @@ nodes:
     nodes_depended_on:
     - select_first_element_pivot
     nodes_dependent_on: []
+    output_structure:
+    - description: List of elements equal to the pivot
+      key: equal_elements
+      type: List[int]
     prompt: Write 'partition_equal' that takes array and pivot from 'select_pivot'
       and returns elements == pivot.
   partition_greater_than:
@@ -40,6 +54,10 @@ nodes:
     nodes_depended_on:
     - select_first_element_pivot
     nodes_dependent_on: []
+    output_structure:
+    - description: List of elements greater than the pivot
+      key: greater_than_partition
+      type: List[int]
     prompt: Write 'partition_greater' that takes array and pivot from 'select_pivot'
       and returns elements > pivot.
   partition_less_than:
@@ -49,6 +67,10 @@ nodes:
     nodes_depended_on:
     - select_first_element_pivot
     nodes_dependent_on: []
+    output_structure:
+    - description: List of elements less than the pivot
+      key: less_than_elements
+      type: List[int]
     prompt: Write 'partition_less_than' that takes array and pivot from 'select_pivot'
       and returns elements < pivot.
   select_first_element_pivot:
@@ -58,6 +80,13 @@ nodes:
     nodes_depended_on:
     - base_case_check
     nodes_dependent_on: []
+    output_structure:
+    - description: The selected pivot element
+      key: pivot
+      type: int
+    - description: The index of the pivot element in the original array
+      key: pivot_index
+      type: int
     prompt: Write a function 'select_pivot' that takes a non-empty array from 'base_case_check'
       and returns first element as pivot.
   sort_left_partition:
@@ -67,6 +96,10 @@ nodes:
     nodes_depended_on:
     - partition_less_than
     nodes_dependent_on: []
+    output_structure:
+    - description: The fully sorted list of elements that were less than the pivot
+      key: sorted_left
+      type: List[int]
     prompt: Write 'sort_left' that recursively applies quicksort to 'partition_less_than'
       output.
   sort_right_partition:
@@ -76,5 +109,9 @@ nodes:
     nodes_depended_on:
     - partition_greater_than
     nodes_dependent_on: []
+    output_structure:
+    - description: The sorted list of elements greater than the pivot
+      key: sorted_partition
+      type: List[int]
     prompt: Write 'sort_right' that recursively applies quicksort to 'partition_greater'
       output.

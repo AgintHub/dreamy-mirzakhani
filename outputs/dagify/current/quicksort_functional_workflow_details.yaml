@@ -1,4 +1,4 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: quicksort_functional_workflow
 nodes:
@@ -15,6 +15,33 @@ nodes:
     - description: The input array, either empty or unchanged
       key: output_array
       type: List[int]
+    prd:
+      conceptual_info: Determines whether a list of integers is empty and propagates
+        the list unchanged, providing a boolean flag for downstream logic.
+      docstring:
+        examples:
+        - lines:
+          - is_empty, output_array = base_case_check([3, 1, 4])
+          output: 'False
+
+            [3, 1, 4]'
+        - lines:
+          - is_empty, output_array = base_case_check([])
+          output: 'True
+
+            []'
+        parameters:
+        - description: List of integers to be checked.
+          name: array
+          type: List[int]
+        raises:
+        - description: If the input is not a list or contains non-integer elements.
+          type: TypeError
+        returns:
+          description: A tuple containing a boolean flag `is_empty` and the original
+            input list `output_array`.
+          type: Tuple[bool, List[int]]
+        summary: Return the input list unchanged while indicating if it is empty.
     prompt: Write a function 'base_case_check' that takes an array and returns it
       if empty. Otherwise return the array unchanged.
   combine_sorted_partitions:
@@ -31,6 +58,33 @@ nodes:
         left, equal, and right partitions.
       key: combined_list
       type: List[int]
+    prd:
+      conceptual_info: This node combines three sorted partitions into a single sorted
+        list.
+      docstring:
+        examples:
+        - lines:
+          - combine_sorted_partitions([1, 3], [2, 2], [4, 5])
+          output: '[1, 3, 2, 2, 4, 5]'
+        - lines:
+          - combine_sorted_partitions([], [1], [2, 3])
+          output: '[1, 2, 3]'
+        parameters:
+        - description: Sorted list of elements less than the pivot.
+          name: sorted_left
+          type: List[int]
+        - description: List of elements equal to the pivot.
+          name: equal_elements
+          type: List[int]
+        - description: Sorted list of elements greater than the pivot.
+          name: sorted_right
+          type: List[int]
+        raises: []
+        returns:
+          description: The fully concatenated sorted list.
+          type: List[int]
+        summary: Concatenates sorted left, equal, and sorted right partitions into
+          a single sorted list.
     prompt: Write 'combine_partitions' that takes sorted left partition from 'sort_left',
       equal partition from 'partition_equal', and sorted right partition from 'sort_right',
       and concatenates them in order.
@@ -45,6 +99,36 @@ nodes:
     - description: List of elements equal to the pivot
       key: equal_elements
       type: List[int]
+    prd:
+      conceptual_info: This node creates a list of elements that are equal to the
+        pivot element, which is obtained from the 'select_pivot' function.
+      docstring:
+        examples:
+        - lines:
+          - array = [1, 2, 3, 2, 4, 2, 5]
+          - pivot = 2
+          - result = partition_equal(array, pivot)
+          output: '[2, 2, 2]'
+        - lines:
+          - array = [10, 20, 30, 40, 50]
+          - pivot = 30
+          - result = partition_equal(array, pivot)
+          output: '[30]'
+        parameters:
+        - description: The input array to process.
+          name: array
+          type: List[int]
+        - description: The pivot element to compare with.
+          name: pivot
+          type: int
+        raises:
+        - description: If the input array is empty.
+          type: ValueError
+        returns:
+          description: A list of elements equal to the pivot.
+          type: List[int]
+        summary: Creates a list of elements from the input array that are equal to
+          the pivot element.
     prompt: Write 'partition_equal' that takes array and pivot from 'select_pivot'
       and returns elements == pivot.
   partition_greater_than:
@@ -58,6 +142,35 @@ nodes:
     - description: List of elements greater than the pivot
       key: greater_than_partition
       type: List[int]
+    prd:
+      conceptual_info: This node is responsible for partitioning the input array into
+        elements greater than the pivot.
+      docstring:
+        examples:
+        - lines:
+          - array = [3, 6, 8, 10, 1, 4, 7]
+          - pivot = 6
+          - greater_than_partition = partition_greater(array, pivot)
+          output: '[8, 10, 7]'
+        - lines:
+          - array = [1, 2, 3, 4, 5]
+          - pivot = 3
+          - greater_than_partition = partition_greater(array, pivot)
+          output: '[4, 5]'
+        parameters:
+        - description: The input array to be partitioned.
+          name: array
+          type: List[int]
+        - description: The pivot element to partition around.
+          name: pivot
+          type: int
+        raises:
+        - description: If the input array is empty.
+          type: ValueError
+        returns:
+          description: A list of elements greater than the pivot.
+          type: List[int]
+        summary: Partitions the input array into elements greater than the pivot.
     prompt: Write 'partition_greater' that takes array and pivot from 'select_pivot'
       and returns elements > pivot.
   partition_less_than:
@@ -71,6 +184,29 @@ nodes:
     - description: List of elements less than the pivot
       key: less_than_elements
       type: List[int]
+    prd:
+      conceptual_info: Partitions the input array into elements less than the given
+        pivot.
+      docstring:
+        examples:
+        - lines:
+          - partition_less_than([3, 1, 4, 1, 5, 9, 2], 5)
+          output: '[3, 1, 4, 1, 2]'
+        - lines:
+          - partition_less_than([5, 5, 5], 5)
+          output: '[]'
+        parameters:
+        - description: The input array to be partitioned.
+          name: array
+          type: List[int]
+        - description: The pivot element used for partitioning.
+          name: pivot
+          type: int
+        raises: []
+        returns:
+          description: A list of elements less than the pivot.
+          type: List[int]
+        summary: Partitions the input array into elements less than the given pivot.
     prompt: Write 'partition_less_than' that takes array and pivot from 'select_pivot'
       and returns elements < pivot.
   select_first_element_pivot:
@@ -87,11 +223,36 @@ nodes:
     - description: The index of the pivot element in the original array
       key: pivot_index
       type: int
+    prd:
+      conceptual_info: This node selects the first element of a non-empty array as
+        the pivot for further processing.
+      docstring:
+        examples:
+        - lines:
+          - array = [5, 2, 8, 3]
+          - pivot, pivot_index = select_pivot(array)
+          output: (5, 0)
+        - lines:
+          - array = [10, 7, 4, 1]
+          - pivot, pivot_index = select_pivot(array)
+          output: (10, 0)
+        parameters:
+        - description: A non-empty array of integers
+          name: array
+          type: List[int]
+        raises:
+        - description: If the input array is empty
+          type: ValueError
+        returns:
+          description: A tuple containing the pivot element and its index in the original
+            array
+          type: Tuple[int, int]
+        summary: Selects the first element of a non-empty array as the pivot.
     prompt: Write a function 'select_pivot' that takes a non-empty array from 'base_case_check'
       and returns first element as pivot.
   sort_left_partition:
     agent: false
-    description: Recursively sort less-than partition
+    description: Recursively sort the elements that are less than the pivot.
     name: sort_left_partition
     nodes_depended_on:
     - partition_less_than
@@ -100,6 +261,35 @@ nodes:
     - description: The fully sorted list of elements that were less than the pivot
       key: sorted_left
       type: List[int]
+    prd:
+      conceptual_info: The `sort_left` function implements the left‑partition recursion
+        of the functional quicksort algorithm. It takes the list of elements that
+        are smaller than the chosen pivot (produced by `partition_less_than`) and
+        returns that sub‑list sorted in ascending order.
+      docstring:
+        examples:
+        - lines:
+          - sorted_left = sort_left([5, 2, 3])
+          - print(sorted_left)
+          output: '[2, 3, 5]'
+        - lines:
+          - sorted_left = sort_left([])
+          - print(sorted_left)
+          output: '[]'
+        parameters:
+        - description: A list of integers that are strictly smaller than the pivot
+            selected by `select_first_element_pivot`.
+          name: less_than_elements
+          type: List[int]
+        raises:
+        - description: If an element in `less_than_elements` is not an integer.
+          type: ValueError
+        returns:
+          description: A new list containing the same integers as `less_than_elements`,
+            but sorted in non‑decreasing order.
+          type: List[int]
+        summary: Recursively sort the sub‑list of elements less than the pivot using
+          quicksort.
     prompt: Write 'sort_left' that recursively applies quicksort to 'partition_less_than'
       output.
   sort_right_partition:
@@ -113,5 +303,37 @@ nodes:
     - description: The sorted list of elements greater than the pivot
       key: sorted_partition
       type: List[int]
+    prd:
+      conceptual_info: This node takes the list of elements greater than the chosen
+        pivot and recursively applies the quicksort algorithm to produce a fully sorted
+        list of those elements.
+      docstring:
+        examples:
+        - lines:
+          - 'def sort_right(greater_than_partition):'
+          - '    if len(greater_than_partition) <= 1:'
+          - '        return greater_than_partition'
+          - '    pivot = greater_than_partition[0]'
+          - '    less = [x for x in greater_than_partition[1:] if x < pivot]'
+          - '    equal = [x for x in greater_than_partition[1:] if x == pivot]'
+          - '    greater = [x for x in greater_than_partition[1:] if x > pivot]'
+          - '    return sort_right(less) + [pivot] + equal + sort_right(greater)'
+          output: '[2, 3, 5, 8]'
+        - lines:
+          - print(sort_right([9, 7, 10, 8]))
+          output: '[7, 8, 9, 10]'
+        parameters:
+        - description: List of integers that are strictly greater than the pivot element.
+          name: greater_than_partition
+          type: List[int]
+        raises:
+        - description: If an element in `greater_than_partition` is not an integer.
+          type: ValueError
+        returns:
+          description: A new list containing the elements from `greater_than_partition`
+            sorted in non‑decreasing order.
+          type: List[int]
+        summary: Recursively sorts the partition containing elements greater than
+          the pivot using the quicksort algorithm.
     prompt: Write 'sort_right' that recursively applies quicksort to 'partition_greater'
       output.
