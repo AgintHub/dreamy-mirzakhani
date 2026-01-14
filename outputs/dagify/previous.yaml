@@ -1,111 +1,131 @@
 dag_type: plain_text
-description: A highly concurrent, elementally decomposed workflow that builds a complete
-  quicksort algorithm using only pure functional programming constructs. Each step
-  creates a single stateless function, and the final step assembles them into the
-  full quicksort implementation.
-name: functional_quicksort_implementation
+description: A DAG that implements quicksort using pure functional programming, where
+  each function (partition, recursive sort, concatenate, base‑case check) is represented
+  as an independent, stateless node.
+name: functional_quicksort_workflow
 nodes:
-  assemble_quicksort_module:
+  check_base_case:
     agent: false
-    description: Combine all previously defined functions into a single, exportable
-      functional quicksort module.
-    name: assemble_quicksort_module
+    description: Determine if the list is empty or has a single element (the base
+      case of quicksort).
+    name: check_base_case
     nodes_depended_on:
-    - define_concat_function
-    - define_recursive_quicksort_function
+    - input_list
     nodes_dependent_on:
-    - generate_quicksort_test_cases
-    prompt: Create a module `FunctionalQuickSort` that exports the `quickSort` function.
-      Ensure that `quickSort` internally uses `baseCase`, `compare`, `partition`,
-      and `concatLists` as defined earlier. Provide the module code in a language-agnostic
-      functional pseudo‑code format.
-  define_base_case_function:
+    - return_base_case
+    - select_pivot
+    prompt: Given the input list, output true if its length is 0 or 1, otherwise false.
+  concatenate_results:
     agent: false
-    description: Create a pure function that returns the input list unchanged when
-      its length is 0 or 1 (the quicksort base case).
-    name: define_base_case_function
+    description: Combine sorted_less, pivot, and sorted_greater into the final sorted
+      list.
+    name: concatenate_results
+    nodes_depended_on:
+    - sorted_less
+    - sorted_greater
+    - select_pivot
+    nodes_dependent_on:
+    - final_output
+    prompt: Return a new list formed by concatenating the sorted_less list, then the
+      pivot element, then the sorted_greater list.
+  final_output:
+    agent: false
+    description: Produce the final sorted list as the output of the workflow.
+    name: final_output
+    nodes_depended_on:
+    - concatenate_results
+    - return_base_case
+    nodes_dependent_on: []
+    prompt: If the base case path was taken, output the list from 'return_base_case';
+      otherwise, output the list from 'concatenate_results'.
+  input_list:
+    agent: false
+    description: Receive the list of values to be sorted.
+    name: input_list
     nodes_depended_on: []
     nodes_dependent_on:
-    - define_compare_function
-    prompt: Write a stateless function `baseCase(lst)` that returns `lst` if `len(lst)
-      <= 1`, otherwise returns `null`. Use only functional syntax (no mutable state).
-  define_compare_function:
+    - check_base_case
+    prompt: Provide the list of elements (e.g., [3, 1, 4, 1, 5, 9]) that should be
+      sorted using quicksort.
+  partition_greater:
     agent: false
-    description: Create a pure comparator function that determines ordering between
-      two elements.
-    name: define_compare_function
+    description: Create a sub‑list of all elements greater than or equal to the pivot.
+    name: partition_greater
     nodes_depended_on:
-    - define_base_case_function
+    - select_pivot
+    - input_list
     nodes_dependent_on:
-    - define_partition_function
-    prompt: Write a stateless function `compare(a, b)` that returns `true` if `a`
-      should come before `b` in sorted order, otherwise `false`. Assume a generic
-      comparable type and avoid side‑effects.
-  define_concat_function:
+    - sort_greater
+    prompt: From the input list (excluding the pivot), filter and return all elements
+      that are greater than or equal to the pivot.
+  partition_less:
     agent: false
-    description: Create a pure function that concatenates three lists (less, pivot
-      list, greater) in order.
-    name: define_concat_function
+    description: Create a sub‑list of all elements less than the pivot.
+    name: partition_less
     nodes_depended_on:
-    - define_recursive_quicksort_function
+    - select_pivot
+    - input_list
     nodes_dependent_on:
-    - assemble_quicksort_module
-    prompt: Write a stateless function `concatLists(less, pivot, greater)` that returns
-      a new list equal to `less` followed by `pivot` (as a single‑element list) followed
-      by `greater`. Use only functional list operations.
-  define_partition_function:
+    - sort_less
+    prompt: From the input list (excluding the pivot), filter and return all elements
+      that are strictly less than the pivot.
+  return_base_case:
     agent: false
-    description: Create a pure partition function that splits a list into two sub‑lists
-      (less and greater) based on a pivot using the comparator.
-    name: define_partition_function
+    description: If the base case is true, return the list unchanged.
+    name: return_base_case
     nodes_depended_on:
-    - define_compare_function
-    nodes_dependent_on:
-    - define_recursive_quicksort_function
-    prompt: Write a stateless function `partition(pivot, lst, compare)` that returns
-      a tuple `(less, greater)` where `less` contains all elements for which `compare(elem,
-      pivot)` is true, and `greater` contains the rest. Use only functional constructs
-      (map, filter, recursion).
-  define_recursive_quicksort_function:
-    agent: false
-    description: Create the core recursive quicksort function that calls itself on
-      the `less` and `greater` sub‑lists returned by the partition function.
-    name: define_recursive_quicksort_function
-    nodes_depended_on:
-    - define_partition_function
-    - define_base_case_function
-    nodes_dependent_on:
-    - define_concat_function
-    prompt: 'Write a stateless recursive function `quickSort(lst, compare)` that:
-
-      1. Calls `baseCase(lst)`; if it returns a list, return that list.
-
-      2. Otherwise selects the first element as `pivot`.
-
-      3. Calls `partition(pivot, lstTail, compare)` to get `(less, greater)` (where
-      `lstTail` is `lst` without the first element).
-
-      4. Recursively sorts `less` and `greater` by calling `quickSort` on each.
-
-      5. Returns the concatenation of sorted `less`, `[pivot]`, and sorted `greater`.
-
-      Do not use any mutable variables; rely on function composition.'
-  generate_quicksort_test_cases:
-    agent: false
-    description: Produce a set of pure test cases to verify the functional quicksort
-      implementation works for various input shapes.
-    name: generate_quicksort_test_cases
-    nodes_depended_on:
-    - assemble_quicksort_module
+    - check_base_case
+    - input_list
     nodes_dependent_on: []
-    prompt: 'Write three independent, pure test expressions that call `FunctionalQuickSort.quickSort`
-      with:
-
-      1. An empty list.
-
-      2. A list of distinct integers.
-
-      3. A list containing duplicate values.
-
-      For each test, include the expected sorted result. Do not use any mutable state;
-      express tests as expressions returning a boolean indicating pass/fail.'
+    prompt: If the previous step indicated a base case, echo back the original list
+      as the sorted result.
+  select_pivot:
+    agent: false
+    description: Choose the first element of the list as the pivot for partitioning.
+    name: select_pivot
+    nodes_depended_on:
+    - check_base_case
+    - input_list
+    nodes_dependent_on:
+    - partition_less
+    - partition_greater
+    prompt: Extract the first element of the input list and output it as the pivot
+      value.
+  sort_greater:
+    agent: false
+    description: Recursively apply quicksort to the 'greater' sub‑list.
+    name: sort_greater
+    nodes_depended_on:
+    - partition_greater
+    nodes_dependent_on:
+    - sorted_greater
+    prompt: Apply the same quicksort workflow to the list produced by 'partition_greater'
+      and output the sorted sub‑list.
+  sort_less:
+    agent: false
+    description: Recursively apply quicksort to the 'less' sub‑list.
+    name: sort_less
+    nodes_depended_on:
+    - partition_less
+    nodes_dependent_on:
+    - sorted_less
+    prompt: Apply the same quicksort workflow to the list produced by 'partition_less'
+      and output the sorted sub‑list.
+  sorted_greater:
+    agent: false
+    description: Capture the result of sorting the 'greater' sub‑list.
+    name: sorted_greater
+    nodes_depended_on:
+    - sort_greater
+    nodes_dependent_on:
+    - concatenate_results
+    prompt: Pass through the sorted output received from 'sort_greater'.
+  sorted_less:
+    agent: false
+    description: Capture the result of sorting the 'less' sub‑list.
+    name: sorted_less
+    nodes_depended_on:
+    - sort_less
+    nodes_dependent_on:
+    - concatenate_results
+    prompt: Pass through the sorted output received from 'sort_less'.
