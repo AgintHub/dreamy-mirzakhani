@@ -1,5 +1,5 @@
-dag_type: plain_text
-description: Create a workflow DAG to test fundamental operations.
+dag_type: typed
+description: Generated workflow from UI.
 name: test_workflow
 nodes:
   construct_test_workflow:
@@ -9,6 +9,22 @@ nodes:
     nodes_depended_on:
     - map_decomposed_objective
     nodes_dependent_on: []
+    output_structure:
+    - description: Name of the constructed workflow DAG.
+      key: workflow_name
+      type: str
+    - description: Description of the constructed workflow DAG.
+      key: workflow_description
+      type: str
+    - description: JSON representation of the graph structure of the workflow DAG.
+      key: graph_json
+      type: str
+    - description: List of metrics related to the workflow DAG, such as size and complexity.
+      key: dag_metrics
+      type: List[float]
+    - description: Whether the constructed workflow DAG is acyclic.
+      key: acyclicity_status
+      type: bool
     prompt: Create a fundamental workflow DAG that is maximally concurrent, async,
       and parallel from the mapped tasks and Elemental Thoughts framework.
   decompose_objective:
@@ -18,6 +34,16 @@ nodes:
     nodes_depended_on:
     - parse_test_objective
     nodes_dependent_on: []
+    output_structure:
+    - description: The decomposed task represented as a string
+      key: decomposed_task
+      type: str
+    - description: A list of component tasks
+      key: component_tasks
+      type: List[str]
+    - description: Type of operation
+      key: operation_type
+      type: str
     prompt: Decompose the provided fundamental task into elemental operations.
   execute_test_workflow:
     agent: false
@@ -26,6 +52,16 @@ nodes:
     nodes_depended_on:
     - validate_test_workflow
     nodes_dependent_on: []
+    output_structure:
+    - description: Status of the test execution
+      key: test_execution_status
+      type: str
+    - description: List of numerical test results
+      key: result_values
+      type: List[int]
+    - description: Log messages generated during test execution
+      key: execution_logs
+      type: str
     prompt: Run the validated workflow DAG to execute the fundamental test objective.
   map_decomposed_objective:
     agent: false
@@ -34,6 +70,16 @@ nodes:
     nodes_depended_on:
     - decompose_objective
     nodes_dependent_on: []
+    output_structure:
+    - description: List of objectives mapped to Elemental Thoughts framework
+      key: mapped_objectives
+      type: List[str]
+    - description: List of execution statuses for each decomposed task
+      key: task_execution_status
+      type: List[str]
+    - description: List of error messages encountered during mapping process
+      key: error_messages
+      type: List[str]
     prompt: Map the decomposed task elements to the Elemental Thoughts framework to
       execute fundamental operations.
   parse_test_objective:
@@ -52,5 +98,15 @@ nodes:
     nodes_depended_on:
     - construct_test_workflow
     nodes_dependent_on: []
+    output_structure:
+    - description: ' Whether the constructed workflow DAG is acyclic'
+      key: dag_acyclicity
+      type: bool
+    - description: Whether the constructed workflow DAG enforces the correct dependencies
+      key: dependency_requirements_met
+      type: bool
+    - description: ' Whether the constructed workflow DAG is valid'
+      key: dag_validation_status
+      type: bool
     prompt: Verify that the constructed workflow DAG is acyclic and enforces the correct
       dependencies.
