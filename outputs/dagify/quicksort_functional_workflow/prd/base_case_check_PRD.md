@@ -6,35 +6,29 @@ Check if array is empty and return it directly if true
 
 ## Conceptual Info
 
-Determines whether a list of integers is empty and propagates the list unchanged, providing a boolean flag for downstream logic.
+This node serves as the quicksort algorithm's base case checker, immediately returning empty arrays to terminate recursion for efficiency.
 
 ## Docstring
 
 ### Summary
-Return the input list unchanged while indicating if it is empty.
+Check if input array is empty and return a tuple with boolean flag and array. Returns same array regardless of emptiness for non-empty cases.
 
 ### Parameters
 
-- **array** (List[int]): List of integers to be checked.
+- **array** (List[int]): Input list of integers to check for emptiness
 
 ### Returns
 
-Tuple[bool, List[int]]: A tuple containing a boolean flag `is_empty` and the original input list `output_array`.
-
-### Raises
-
-- TypeError: If the input is not a list or contains non-integer elements.
+Tuple[bool, List[int]]: is_empty: Boolean indicating array emptiness, output_array: Same input array or empty list
 
 ### Examples
 
 ```python
->>> is_empty, output_array = base_case_check([3, 1, 4])
-False
-[3, 1, 4]
+>>> base_case_check([])
+{'is_empty': True, 'output_array': []}
 ```
 
 ```python
->>> is_empty, output_array = base_case_check([])
-True
-[]
+>>> base_case_check([3, 1, 4])
+{'is_empty': False, 'output_array': [3, 1, 4]}
 ```
