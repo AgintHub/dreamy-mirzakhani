@@ -6,38 +6,34 @@ Create list of elements > pivot
 
 ## Conceptual Info
 
-This node is responsible for partitioning the input array into elements greater than the pivot.
+Filters elements from the input array that are strictly greater than the selected pivot, used for partitioning in the quicksort workflow.
 
 ## Docstring
 
 ### Summary
-Partitions the input array into elements greater than the pivot.
+Returns a list of elements from the input array that are strictly greater than the given pivot.
 
 ### Parameters
 
-- **array** (List[int]): The input array to be partitioned.
-- **pivot** (int): The pivot element to partition around.
+- **array** (List[int]): The unmodified input array from which to filter elements (does not exclude the pivot itself).
+- **pivot** (int): The pivot value selected by 'select_first_element_pivot', used as the comparison threshold.
 
 ### Returns
 
-List[int]: A list of elements greater than the pivot.
+List[int]: A new list containing only elements from the input array with values > pivot, preserving original order.
 
 ### Raises
 
-- ValueError: If the input array is empty.
+- ValueError: If the input array is empty (though unlikely due to upstream 'base_case_check').
 
 ### Examples
 
 ```python
->>> array = [3, 6, 8, 10, 1, 4, 7]
->>> pivot = 6
->>> greater_than_partition = partition_greater(array, pivot)
-[8, 10, 7]
+>>> partition_greater_than([5, 3, 8, 1, 6], 5)
+[8, 6]
 ```
 
 ```python
->>> array = [1, 2, 3, 4, 5]
->>> pivot = 3
->>> greater_than_partition = partition_greater(array, pivot)
-[4, 5]
+>>> partition_greater_than([5, 5, 5], 5)
+[]
 ```

@@ -6,35 +6,33 @@ Select first element as pivot
 
 ## Conceptual Info
 
-This node selects the first element of a non-empty array as the pivot for further processing.
+Selects the first element of a non-empty array as the pivot for quicksort. This provides a deterministic pivot choice and tracks its original index for partitioning.
 
 ## Docstring
 
 ### Summary
-Selects the first element of a non-empty array as the pivot.
+Returns the first element of a non-empty array as the pivot value and its index.
 
 ### Parameters
 
-- **array** (List[int]): A non-empty array of integers
+- **arr** (List[int]): Non-empty array from base_case_check validation. Assumed to contain only integers.
 
 ### Returns
 
-Tuple[int, int]: A tuple containing the pivot element and its index in the original array
+Tuple[int, int]: Tuple where first element is the pivot value (int) and second is the pivot index (int, always 0).
 
 ### Raises
 
-- ValueError: If the input array is empty
+- ValueError: If input array is empty. Note: This should never occur as base_case_check already validates non-emptiness.
 
 ### Examples
 
 ```python
->>> array = [5, 2, 8, 3]
->>> pivot, pivot_index = select_pivot(array)
-(5, 0)
+>>> select_pivot([7, 2, 5, 1])
+(7, 0)
 ```
 
 ```python
->>> array = [10, 7, 4, 1]
->>> pivot, pivot_index = select_pivot(array)
-(10, 0)
+>>> select_pivot([42])
+(42, 0)
 ```
