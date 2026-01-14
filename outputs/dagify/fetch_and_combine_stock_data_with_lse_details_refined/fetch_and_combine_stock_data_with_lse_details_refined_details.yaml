@@ -12,41 +12,6 @@ nodes:
     nodes_depended_on:
     - identify_lse_stocks
     nodes_dependent_on: []
-    output_structure:
-    - description: Fully‑qualified HTTPS URL including endpoint and query parameters
-      key: request_url
-      type: str
-    - description: 'List of HTTP header strings in the format ''Header-Name: value'''
-      key: request_headers
-      type: List[str]
-    - description: Bearer token used for authentication, sourced from the environment
-      key: auth_token
-      type: str
-    - description: Protocol details such as 'HTTP/2 over TLS 1.3'
-      key: protocol_version
-      type: str
-    - description: 'HSTS header value ''Strict-Transport-Security: max-age=63072000;
-        includeSubDomains'''
-      key: hsts_header
-      type: str
-    - description: Hostname of the primary datacenter (e.g., 'dc-eu-central.lse.com')
-      key: primary_datacenter
-      type: str
-    - description: Hostname of the fallback datacenter (e.g., 'dc-us-west.lse.com')
-      key: fallback_datacenter
-      type: str
-    - description: Expected round‑trip latency in milliseconds for the primary datacenter
-      key: expected_latency_ms
-      type: int
-    - description: Maximum number of retry attempts for 5xx or network failures
-      key: retry_count
-      type: int
-    - description: Initial back‑off delay in milliseconds before the first retry
-      key: initial_backoff_ms
-      type: int
-    - description: Multiplier used to double the back‑off delay after each retry
-      key: backoff_multiplier
-      type: float
     prompt: "Construct a fully-qualified HTTPS request to the London Stock Exchange\
       \ (LSE) API for the stock symbols provided by the previous step. Include the\
       \ following components:\n1. **Endpoint**: `https://api.londonstockexchange.com/v1/quotes`.\n\
@@ -69,44 +34,53 @@ nodes:
       \ the next node."
   construct_nasdaq_api_request:
     agent: false
-    description: Builds a secure, protocol‑compliant HTTP(S) request to the NASDAQ
-      public API for real‑time stock data, embedding authentication, field selection,
+    description: Builds a secure, protocol-compliant HTTP(S) request to the NASDAQ
+      public API for real-time stock data, embedding authentication, field selection,
       and latency considerations. The generated request includes explicit TLS settings,
-      HSTS enforcement, retry logic, and datacenter targeting to guarantee low‑latency,
+      HSTS enforcement, retry logic, and datacenter targeting to guarantee low-latency,
       highly available data retrieval.
     name: construct_nasdaq_api_request
     nodes_depended_on:
     - identify_nasdaq_stocks
     nodes_dependent_on: []
     output_structure:
-    - description: The fully‑qualified HTTPS URL including base endpoint and all query
-        parameters.
-      key: full_url
+    - description: The base URL of the NASDAQ data service
+      key: base_url
       type: str
-    - description: A list of HTTP header lines to be sent with the request.
-      key: headers_list
-      type: List[str]
-    - description: Human‑readable description of the expected round‑trip latency range
-        (e.g., "<120 ms from primary US datacenter").
-      key: expected_latency_ms_range
+    - description: The query parameters used in the request
+      key: query_params
       type: str
-    prompt: "Using the list of stock symbols from the previous node, compose a fully-qualified\
-      \ HTTPS GET request to the NASDAQ data service. Include: \n        1. Base URL:\
-      \ `https://api.nasdaq.com/api/quotes` \n        2. Query parameters: \n    \
-      \       - `symbols` – comma‑separated symbols (e.g., `AAPL,MSFT`) \n       \
-      \    - `fields` – comma‑separated list of fields (e.g., `price,volume,change`)\
-      \ \n           - `format=json` \n        3. Headers: \n           - `Accept:\
-      \ application/json` \n           - `User-Agent: NASDAQDataFetcher/1.0` \n  \
-      \         - `X-Api-Key: <YOUR_KEY>` \n        4. Protocol details: \n      \
-      \     - Use TLS 1.3 with cipher suite `TLS_AES_128_GCM_SHA256`. \n         \
-      \  - Enforce HSTS with `max-age=31536000`. \n        5. Latency expectations:\
-      \ \n           - Expected round‑trip time per request: < 120 ms from primary\
-      \ US datacenter. \n           - Retry policy: exponential backoff up to 3 attempts\
-      \ with a base delay of 200 ms. \n        6. Data center selection: \n      \
-      \     - Primary: `us-east-1` (Virginia) \n           - Secondary: `us-west-2`\
-      \ (Oregon) \n           - Tertiary: `eu-central-1` (Frankfurt) for cross‑border\
-      \ compliance. \n        Construct the request string and provide a JSON object\
-      \ with the full URL, headers, and expected latency range."
+    - description: The headers used in the request
+      key: headers
+      type: str
+    - description: The protocol details used in the request
+      key: protocol_details
+      type: str
+    - description: The latency expectations of the request
+      key: latency_expectations
+      type: str
+    - description: The data center used in the request
+      key: data_center
+      type: str
+    - description: The request string generated by the node
+      key: request_string
+      type: str
+    - description: The JSON object generated by the node
+      key: json_object
+      type: str
+    prompt: 'Using the list of stock symbols from the previous node, compose a fully-qualified
+      HTTPS GET request to the NASDAQ data service. Include: 1. Base URL: https://api.nasdaq.com/api/quotes
+      2. Query parameters: - symbols – comma-separated symbols (e.g., AAPL,MSFT) -
+      fields – comma-separated list of fields (e.g., price,volume,change) - format=json
+      3. Headers: - Accept: application/json - User-Agent: NASDAQDataFetcher/1.0 -
+      X-Api-Key: <YOUR_KEY> 4. Protocol details: - Use TLS 1.3 with cipher suite TLS_AES_128_GCM_SHA256.
+      - Enforce HSTS with max-age=31536000. 5. Latency expectations: - Expected round-trip
+      time per request: < 120 ms from primary US datacenter. - Retry policy: exponential
+      backoff up to 3 attempts with a base delay of 200 ms. 6. Data center selection:
+      - Primary: us-east-1 (Virginia) - Secondary: us-west-2 (Oregon) - Tertiary:
+      eu-central-1 (Frankfurt) for cross-border compliance. Construct the request
+      string and provide a JSON object with the full URL, headers, and expected latency
+      range.'
   construct_nyse_api_request:
     agent: false
     description: Constructs the API request for fetching NYSE stock data, incorporating
@@ -118,54 +92,15 @@ nodes:
     - identify_nyse_stocks
     nodes_dependent_on: []
     output_structure:
-    - description: The full HTTPS endpoint URL to be called.
-      key: endpoint_url
+    - description: The fully constructed API URL
+      key: api_url
       type: str
-    - description: Comma‑separated list of stock symbols to query.
-      key: query_symbols
-      type: List[str]
-    - description: ISO‑8601 start date for the data range.
-      key: query_start_date
+    - description: The constructed query parameters string
+      key: query_params
       type: str
-    - description: ISO‑8601 end date for the data range.
-      key: query_end_date
-      type: str
-    - description: Desired data frequency (e.g., '1min', 'daily').
-      key: query_frequency
-      type: str
-    - description: User-Agent header value.
-      key: headers_user_agent
-      type: str
-    - description: API key header value.
-      key: headers_api_key
-      type: str
-    - description: TLS protocol version to be used (e.g., 'TLS1.2').
-      key: tls_version
-      type: str
-    - description: Certificate hashing algorithm (e.g., 'SHA-256').
-      key: cert_hash_algo
-      type: str
-    - description: Maximum number of requests allowed in a burst.
-      key: rate_limit_burst
-      type: int
-    - description: Minimum expected latency in milliseconds.
-      key: latency_expected_min
-      type: int
-    - description: Maximum expected latency in milliseconds.
-      key: latency_expected_max
-      type: int
-    - description: Number of retry attempts on failure.
-      key: retry_attempts
-      type: int
-    - description: Initial back‑off delay in milliseconds.
-      key: retry_backoff_initial_ms
-      type: int
-    - description: Multiplier applied to the back‑off delay for each retry.
-      key: retry_backoff_multiplier
+    - description: The expected latency in milliseconds
+      key: expected_latency_ms
       type: float
-    - description: List of datacenter identifiers used for failover (e.g., ['NY4','CH1','LD4']).
-      key: failover_datacenters
-      type: List[str]
     prompt: Construct a RESTful API request for fetching NYSE stock data via HTTPS
       protocol, using the identified stock symbols, with an expected latency of 50-100
       ms, and available data centers in New York (NY4), Chicago (CH1), and London
@@ -190,41 +125,17 @@ nodes:
     - identify_toronto_stock_exchange_stocks
     nodes_dependent_on: []
     output_structure:
-    - description: Fully-qualified HTTPS endpoint for the TSE API request.
-      key: endpoint_url
+    - description: The URL of the TSE API endpoint.
+      key: api_endpoint
       type: str
-    - description: HTTP method used for the request (e.g., GET, POST).
-      key: request_method
-      type: str
-    - description: Comma‑separated list of stock symbols to include in the query string.
-      key: query_params_symbols
-      type: List[str]
-    - description: Value of the 'Accept' header.
-      key: header_accept
-      type: str
-    - description: Value of the 'Content-Type' header.
-      key: header_content_type
-      type: str
-    - description: Authorization header containing the API key.
-      key: header_authorization
-      type: str
-    - description: List of stock symbols included in the JSON request body.
-      key: body_symbols
-      type: List[str]
-    - description: Time interval specification (e.g., '1d', '1h') for historical data.
-      key: body_time_intervals
-      type: str
-    - description: Requested data format (e.g., 'json', 'csv').
-      key: body_data_format
-      type: str
-    - description: Maximum allowed request rate as per TSE API usage guidelines.
-      key: max_requests_per_second
+    - description: The latency requirement for the data feed.
+      key: latency_requirement
       type: int
-    - description: Indicates whether gzip compression is enabled for the request payload.
-      key: compression_enabled
-      type: bool
+    - description: A list of parameters for the API request body.
+      key: body
+      type: List[str]
     prompt: Construct a secure, RESTful API request to the Toronto Stock Exchange
-      (TSE) for fetching real‑time and historical stock data, utilizing the HTTPS
+      (TSE) for fetching real-time and historical stock data, utilizing the HTTPS
       protocol with TLS 1.2 encryption and specifying the API endpoint as https://www.tmx.com/rs/api/
       with a latency of less than 50ms, supporting data feeds from data centers located
       in Toronto, New York, and London. Ensure the request includes the stock symbols
@@ -248,32 +159,19 @@ nodes:
     - construct_lse_api_request
     nodes_dependent_on: []
     output_structure:
-    - description: Indicates whether the HTTP request completed successfully without
-        HTTP errors.
-      key: request_successful
-      type: bool
-    - description: The final HTTP status code returned by the LSE API after all retry
-        attempts.
-      key: http_status_code
-      type: int
-    - description: Measured round‑trip latency in milliseconds for the successful
-        request.
-      key: latency_ms
-      type: int
-    - description: The datacenter (e.g., London, NewYork, Singapore) that was used
-        for the successful fetch.
-      key: selected_datacenter
-      type: str
-    - description: Number of retry attempts performed before achieving a successful
-        response.
-      key: retry_attempts
-      type: int
-    - description: Whether the circuit breaker was triggered during this fetch operation.
-      key: circuit_breaker_activated
-      type: bool
-    - description: List of error messages captured during the fetch process, if any.
-      key: error_messages
+    - description: Raw stock data fetched from the LSE API, including tickers, prices,
+        and other relevant information.
+      key: stock_data
       type: List[str]
+    - description: Latency in milliseconds of the data fetch operation.
+      key: latency_ms
+      type: float
+    - description: Datacenter from which the data was fetched.
+      key: datacenter
+      type: str
+    - description: Any error messages encountered during the data fetch operation.
+      key: error_msg
+      type: str
     prompt: 'Fetch the stock data from the LSE using the previously constructed API
       request, handling errors and exceptions through retry mechanisms with exponential
       backoff, logging anomalous responses, and implementing circuit breakers to prevent
@@ -295,30 +193,23 @@ nodes:
     - construct_nasdaq_api_request
     nodes_dependent_on: []
     output_structure:
-    - description: Whether the HTTP request succeeded without server errors
-      key: request_successful
-      type: bool
-    - description: HTTP status code returned by the NASDAQ API
-      key: http_status_code
-      type: int
-    - description: Raw response payload (JSON string) returned by the API
-      key: response_body
+    - description: Metadata about the data feed, including server response times and
+        error messages
+      key: metadata
       type: str
-    - description: Measured round‑trip latency in milliseconds for the successful
-        request
-      key: fetch_latency_ms
-      type: int
-    - description: Error message if the request failed or a non‑200 status code was
-        returned; empty string on success
-      key: error_message
+    - description: The actual stock data retrieved from the NASDAQ API
+      key: data
       type: str
-    - description: Identifier of the NASDAQ datacenter that served the request (e.g.,
-        us-east-1, us-west-2, eu-central-1)
-      key: datacenter_used
+    - description: The latency of the data retrieval process in milliseconds
+      key: latency
+      type: float
+    - description: The data center from which the data was retrieved
+      key: data_center
       type: str
-    - description: Number of retry attempts performed (0 if no retry was needed)
-      key: retries_attempted
-      type: int
+    - description: The availability of the data feed, including information about
+        any errors or issues encountered during retrieval
+      key: availability
+      type: str
     prompt: Fetch the stock data from the NASDAQ using the constructed API request
       over HTTPS, with a timeout of 5 seconds and retry mechanism for handling 500-level
       server errors, incorporating technical details such as API endpoint URIs, query
@@ -340,98 +231,70 @@ nodes:
     - construct_nyse_api_request
     nodes_dependent_on: []
     output_structure:
-    - description: List of ticker symbols returned in the response
-      key: symbol_list
+    - description: List of NYSE stock symbols
+      key: symbols
       type: List[str]
-    - description: ISO‑8601 UTC timestamps for each record
-      key: timestamp_list
-      type: List[str]
-    - description: Opening price for each symbol
-      key: open_list
-      type: List[float]
-    - description: Highest price for each symbol
-      key: high_list
-      type: List[float]
-    - description: Lowest price for each symbol
-      key: low_list
-      type: List[float]
-    - description: Closing price for each symbol
-      key: close_list
-      type: List[float]
-    - description: Trade volume for each symbol
-      key: volume_list
-      type: List[int]
-    - description: Adjusted closing price for each symbol
-      key: adjusted_close_list
-      type: List[float]
-    - description: Round‑trip latency of the HTTP request in milliseconds
-      key: request_latency_ms
-      type: int
-    - description: Data center region reported in the `x-datacenter-location` header
-      key: data_center_region
+    - description: Timestamp of the retrieved data
+      key: timestamp
       type: str
-    - description: HTTP status code returned by the NYSE API
-      key: http_status
+    - description: Open price of the stock
+      key: open
+      type: float
+    - description: High price of the stock
+      key: high
+      type: float
+    - description: Low price of the stock
+      key: low
+      type: float
+    - description: Close price of the stock
+      key: close
+      type: float
+    - description: Volume of the stock
+      key: volume
       type: int
-    - description: Number of retry attempts performed due to 429 or 5xx errors
-      key: retry_attempts
-      type: int
+    - description: Adjusted close price of the stock
+      key: adjusted_close
+      type: float
+    - description: Network latency in milliseconds
+      key: latency
+      type: float
+    - description: Name of the data center where the data was retrieved from
+      key: data_center
+      type: str
     prompt: 'Using the API request constructed by `construct_nyse_api_request`, send
       an HTTPS GET to the NYSE data feed endpoint with the appropriate `Authorization`
-      bearer token and `Accept: application/json`. Retrieve the response payload,
-      handling HTTP status codes 200‑206 for success and implementing exponential
-      back‑off for 429 and 5xx errors. Parse the JSON, extract the fields: `symbol`,
-      `timestamp`, `open`, `high`, `low`, `close`, `volume`, and `adjusted_close`.
-      Log request latency (in milliseconds) and data center region (e.g., US‑East‑Coast,
-      US‑West‑Coast) from the `x-datacenter-location` header. Store the parsed records
-      in a structured format (e.g., Pandas DataFrame or Parquet) for downstream analysis.'
+      bearer token and `Accept: application/json`.'
   fetch_toronto_stock_exchange_stock_data:
     agent: false
-    description: Retrieves real‑time stock price and volume data for the identified
+    description: Retrieves real-time stock price and volume data for the identified
       Toronto Stock Exchange securities. The node performs a secure HTTPS request
       to the TSE API, handling authentication, failover between primary and secondary
-      data centers, and ensuring low‑latency delivery. It validates the response schema,
+      data centers, and ensuring low-latency delivery. It validates the response schema,
       logs errors, and emits a clean JSON payload for downstream analytics.
     name: fetch_toronto_stock_exchange_stock_data
     nodes_depended_on:
     - construct_toronto_stock_exchange_api_request
     nodes_dependent_on: []
     output_structure:
-    - description: True if the final HTTP request returned a 2xx status code; otherwise
-        False.
-      key: request_successful
-      type: bool
-    - description: Measured round‑trip latency in milliseconds for the HTTP request
-        that returned the final response.
-      key: response_latency_ms
+    - description: HTTP status code of the response
+      key: status_code
       type: int
-    - description: Number of retry attempts performed before achieving a successful
-        response (0 if first attempt succeeded).
-      key: retry_attempts
-      type: int
-    - description: The HTTP status code returned by the final request.
-      key: http_status_code
-      type: int
-    - description: Size of the JSON payload received, in bytes.
-      key: response_size_bytes
-      type: int
-    - description: Number of stock quote records contained in the parsed JSON payload.
-      key: record_count
-      type: int
-    - description: True if the JSON payload conforms to the TSE public schema; otherwise
-        False.
-      key: valid_schema
-      type: bool
-    - description: Error message if the request failed or the schema validation failed;
-        empty string otherwise.
-      key: error_message
+    - description: Parsed JSON response from the TSE API
+      key: response_body
       type: str
+    - description: Latency of the failover to the secondary data center (EU West)
+        in milliseconds
+      key: failover_latency_ms
+      type: float
+    - description: Number of times the request was retried due to exponential backoff
+      key: retry_count
+      type: int
     prompt: 'Using the fully constructed API request, perform a HTTPS GET to the Toronto
       Stock Exchange data service at `https://api.tse.ca/v1/quotes` with the specified
       query parameters and authentication headers. Ensure the request includes a `User-Agent:
       DataPipeline/1.0` and a `Cache-Control: no-cache`. Execute the call against
       the primary data center located in Toronto (Canada Central) with an expected
-      round‑trip latency of 80–120 ms; if a failover is required, automatically redirect
+      round-trip latency of 80–120 ms; if a failover is required, automatically redirect
       to the secondary data center in London (EU West) with a 120–160 ms latency.
       Capture the JSON response, validate the schema against the TSE public spec,
       and return the payload as a parsed JSON object. Log any HTTP status codes outside
@@ -447,29 +310,6 @@ nodes:
     name: identify_lse_stocks
     nodes_depended_on: []
     nodes_dependent_on: []
-    output_structure:
-    - description: The ticker symbols of the LSE equities to be fetched.
-      key: symbol
-      type: List[str]
-    - description: The primary market code (e.g., "LON") for each symbol.
-      key: market
-      type: List[str]
-    - description: The preferred data feed protocol for each symbol (e.g., FIX, REST,
-        WebSocket).
-      key: protocol
-      type: List[str]
-    - description: Expected latency window in milliseconds for real‑time quotes and
-        end‑of‑day snapshots for each symbol.
-      key: latency_ms
-      type: List[int]
-    - description: The nearest data centre location for each symbol (e.g., "London‑West",
-        "London‑East").
-      key: datacenter
-      type: List[str]
-    - description: The subscription tier required for each symbol (e.g., Tier 1, Tier 2,
-        Tier 3).
-      key: tier
-      type: List[str]
     prompt: 'Retrieve the list of LSE stock symbols to be fetched. For each symbol,
       specify:
 
@@ -495,26 +335,6 @@ nodes:
     name: identify_nasdaq_stocks
     nodes_depended_on: []
     nodes_dependent_on: []
-    output_structure:
-    - description: Comma‑separated list of NASDAQ stock symbols to retrieve
-      key: symbol_list
-      type: List[str]
-    - description: Primary data feed protocol for each symbol (e.g., Bloomberg API
-        v4, Refinitiv Eikon REST, IEX Cloud, Nasdaq TotalView 2.0)
-      key: feed_list
-      type: List[str]
-    - description: Expected round‑trip latency for historical and real‑time data in
-        the format "historical:xx,real‑time:yy" (in milliseconds)
-      key: latency_ms_list
-      type: List[str]
-    - description: Nearest available data center or region for each feed (e.g., US‑East‑Coast,
-        EU‑London, APAC‑Tokyo)
-      key: datacenter_list
-      type: List[str]
-    - description: Protocol‑specific authentication or rate‑limit constraints to respect
-        for each symbol
-      key: constraints_list
-      type: List[str]
     prompt: 'Generate a comma‑separated list of the NASDAQ stock symbols that should
       be retrieved. For each symbol, include: - The primary data feed protocol to
       use (e.g., Bloomberg API v4, Refinitiv Eikon REST, IEX Cloud, Nasdaq TotalView
@@ -530,28 +350,28 @@ nodes:
     agent: false
     description: Retrieves the comprehensive, real-time list of NYSE equities by querying
       the NYSE public data feed via HTTPS/2 with TLS 1.3, handling pagination, authentication,
-      and rate‑limit retries. The node captures per-request latency, identifies the
+      and rate-limit retries. The node captures per-request latency, identifies the
       serving data center, and outputs a clean JSON array of symbols along with company
       names and listing dates for downstream analysis.
     name: identify_nyse_stocks
     nodes_depended_on: []
     nodes_dependent_on: []
     output_structure:
-    - description: List of NYSE equity symbols retrieved.
+    - description: List of NYSE symbols
       key: symbols
       type: List[str]
-    - description: Corresponding company names for each symbol.
+    - description: List of company names corresponding to the symbols
       key: company_names
       type: List[str]
-    - description: ISO 8601 dates when each equity was listed.
+    - description: List of listing dates corresponding to the symbols
       key: listing_dates
       type: List[str]
-    - description: Round‑trip latency in milliseconds for each API request page.
-      key: latency_ms
-      type: List[int]
-    - description: Data center region (us-east-1, us-west-2, eu-central-1) from which
-        each request was served.
-      key: data_centers
+    - description: List of latencies in milliseconds for each request
+      key: latencies
+      type: List[float]
+    - description: List of data center regions (`us-east-1`, `us-west-2`, or `eu-central-1`)
+        from which the data was served
+      key: data_center_regions
       type: List[str]
     prompt: 'Query the NYSE market data API to enumerate all active equities for the
       current trading day. Request the list using the HTTPS/2 protocol with TLS 1.3
@@ -579,50 +399,48 @@ nodes:
     nodes_depended_on: []
     nodes_dependent_on: []
     output_structure:
-    - description: List of 4‑letter ticker symbols, sorted alphabetically.
-      key: tickers
-      type: List[str]
-    - description: List of full legal company names corresponding to each ticker.
-      key: companies
-      type: List[str]
-    - description: List of Standard Global Industry Classification sectors for each
-        company.
-      key: sectors
-      type: List[str]
-    - description: List of industry classifications within each sector.
-      key: industries
-      type: List[str]
-    - description: List indicating the market cap tier (Large, Mid, Small) for each
-        company.
-      key: market_cap_tiers
-      type: List[str]
-    - description: List of preferred data feed protocols (WebSocket, REST, or FIX)
-        for each ticker.
-      key: feed_protocols
-      type: List[str]
-    - description: List of expected latency values in milliseconds associated with
-        each feed protocol.
+    - description: 4-letter ticker symbol
+      key: ticker
+      type: str
+    - description: Full legal name of the company
+      key: company
+      type: str
+    - description: Standard Global Industry Classification sector
+      key: sector
+      type: str
+    - description: Standard Global Industry Classification industry
+      key: industry
+      type: str
+    - description: Market capitalization tier (Large, Mid, or Small)
+      key: market_cap_tier
+      type: str
+    - description: Preferred data feed protocol (WebSocket, REST, or FIX)
+      key: feed_protocol
+      type: str
+    - description: Expected latency in milliseconds
       key: latency_ms
-      type: List[int]
-    - description: List of primary data center identifiers (e.g., Toronto, New York,
-        Frankfurt) for each ticker.
-      key: data_centers
-      type: List[str]
-    prompt: "Generate a curated list of Toronto Stock Exchange (TSE) equities for\
-      \ downstream data acquisition, including:\n\n1. **Ticker Symbol** – 4-letter\
-      \ code.\n2. **Company Name** – Full legal name.\n3. **Sector & Industry** –\
-      \ Standard Global Industry Classification.\n4. **Market Cap Tier** – Large,\
-      \ Mid, or Small cap.\n5. **Preferred Data Feed Protocol** – WebSocket, REST,\
-      \ or FIX, with associated **expected latency** (e.g., WebSocket ~20 ms, REST\
-      \ ~200 ms, FIX ~5 ms).\n6. **Primary Data Center** – e.g., Toronto (ON-1), New\
-      \ York (NY-2), Frankfurt (DE-3) – to inform routing and redundancy.\n\nOutput\
-      \ the information in a single JSON array, each element containing the fields\
-      \ listed above. Ensure the list is sorted alphabetically by ticker and excludes\
-      \ any delisted or inactive securities.\n\nExample element:\n```json\n{\n  \"\
-      ticker\": \"RY\",\n  \"company\": \"Royal Bank of Canada\",\n  \"sector\": \"\
-      Financials\",\n  \"industry\": \"Banking\",\n  \"market_cap_tier\": \"Large\"\
-      ,\n  \"feed_protocol\": \"WebSocket\",\n  \"latency_ms\": 20,\n  \"data_center\"\
-      : \"Toronto\"\n}\n```"
+      type: float
+    - description: Primary data center location (e.g., Toronto (ON-1), New York (NY-2),
+        Frankfurt (DE-3))
+      key: data_center
+      type: str
+    prompt: 'Generate a curated list of Toronto Stock Exchange (TSE) equities for
+      downstream data acquisition, including:
+
+
+      1. **Ticker Symbol** – 4-letter code.
+
+      2. **Company Name** – Full legal name.
+
+      3. **Sector & Industry** – Standard Global Industry Classification.
+
+      4. **Market Cap Tier** – Large, Mid, or Small cap.
+
+      5. **Preferred Data Feed Protocol** – WebSocket, REST, or FIX, with associated
+      **expected latency** (e.g., WebSocket ~20 ms, REST ~200 ms, FIX ~5 ms).
+
+      6. **Primary Data Center** – e.g., Toronto (ON-1), New York (NY-2), Frankfurt
+      (DE-3) – to inform routing and redundancy.'
   normalize_combined_stock_data:
     agent: false
     description: Performs protocol‑level alignment, missing‑value handling, consistency
@@ -634,35 +452,34 @@ nodes:
     - store_combined_stock_data
     nodes_dependent_on: []
     output_structure:
-    - description: Identifier of the exchange (e.g., 'LSE', 'NASDAQ', 'NYSE', 'TSX')
+    - description: Exchange ID.
       key: exchange_id
       type: str
-    - description: Ticker symbol of the security
+    - description: Stock symbol.
       key: symbol
       type: str
-    - description: Timestamp of the record in ISO‑8601 UTC format
+    - description: Timestamp in UTC format.
       key: timestamp_utc
       type: str
-    - description: Normalized trade price
+    - description: Stock price.
       key: price
       type: float
-    - description: Normalized trade volume
+    - description: Traded volume.
       key: volume
       type: int
-    - description: Round‑trip ingest latency in milliseconds
+    - description: Ingest latency in milliseconds.
       key: ingest_latency_ms
       type: int
-    - description: Data center where the record was persisted (e.g., 'us-east-1',
-        'eu-west-2')
+    - description: Storage data center.
       key: storage_datacenter
       type: str
-    - description: Flag indicating whether the record passed all normalization checks
+    - description: ' Whether the data is normalized.'
       key: normalized_flag
       type: bool
     prompt: "Normalize the unified stock dataset obtained from `store_combined_stock_data`.\
       \ The dataset consolidates tick‑level feeds from LSE, NASDAQ, NYSE, and Toronto\
-      \ Stock Exchange. Perform the following steps:\n\n1. **Protocol Alignment**\
-      \ – Convert all timestamps to UTC, enforce ISO‑8601 format, and reconcile time‑zone\
+      \ Stock Exchange. Perform the following steps:\n1. **Protocol Alignment** –\
+      \ Convert all timestamps to UTC, enforce ISO‑8601 format, and reconcile time‑zone\
       \ offsets using the exchange’s official time‑zone metadata.\n2. **Missing‑Value\
       \ Imputation** – Apply exchange‑specific imputation strategies: forward‑fill\
       \ for intra‑day price series, linear interpolation for cross‑exchange arbitrage\
@@ -675,9 +492,7 @@ nodes:
       \ (e.g., \"us-east‑1\", \"eu-west-2\") based on the region where `store_combined_stock_data`\
       \ persisted the data.\n6. **Output Schema** – Return a Parquet file with the\
       \ following columns:\n   - `exchange_id`, `symbol`, `timestamp_utc`, `price`,\
-      \ `volume`, `ingest_latency_ms`, `storage_datacenter`, `normalized_flag`.\n\n\
-      Ensure the output schema and field names match those expected by downstream\
-      \ analytical and modeling pipelines."
+      \ `volume`, `ingest_latency_ms`, `storage_datacenter`, `normalized_flag`."
   parse_lse_stock_data:
     agent: false
     description: Transforms raw LSE stock data fetched via HTTPS into a sanitized,
@@ -688,21 +503,20 @@ nodes:
     - fetch_lse_stock_data
     nodes_dependent_on: []
     output_structure:
-    - description: CSV representation of the parsed and cleaned data. Each row corresponds
-        to a trade record with columns for symbol, timestamp, open, high, low, close,
-        volume, and adjusted_close.
-      key: csv_payload
+    - description: List of JSON strings representing normalized stock data
+      key: sanitized_stock_data
+      type: List[str]
+    - description: Protocol details used to fetch the stock data (e.g., HTTPS)
+      key: protocol_info
       type: str
-    - description: Number of trade records successfully parsed and included in csv_payload.
-      key: records_count
-      type: int
-    - description: Round‑trip latency in milliseconds from data receipt to completion
-        of parsing.
-      key: ingest_latency_ms
-      type: int
-    - description: Identifier of the datacenter from which the data was fetched (e.g.,
-        London, New_York, Singapore).
-      key: data_center
+    - description: Round-trip latency in milliseconds
+      key: latency_ms
+      type: float
+    - description: Datacenter location where the stock data was fetched from
+      key: datacenter_provenance
+      type: str
+    - description: Validation details for the stock data (e.g., timestamp, price bounds)
+      key: validation_info
       type: str
     prompt: Parse the raw CSV/JSON payload returned by the LSE API into a clean, normalized
       Pandas DataFrame.
@@ -717,42 +531,39 @@ nodes:
     - fetch_nasdaq_stock_data
     nodes_dependent_on: []
     output_structure:
-    - description: Ticker symbol for each record
+    - description: The NASDAQ stock symbol
       key: symbol
-      type: List[str]
-    - description: ISO-8601 UTC date for each record
+      type: str
+    - description: The date in ISO-8601 format
       key: date
-      type: List[str]
-    - description: Opening price (IEEE 754 double) for each record
+      type: str
+    - description: The opening price
       key: open
-      type: List[float]
-    - description: Highest price for each record
+      type: float
+    - description: The highest price during the interval
       key: high
-      type: List[float]
-    - description: Lowest price for each record
+      type: float
+    - description: The lowest price during the interval
       key: low
-      type: List[float]
-    - description: Closing price for each record
+      type: float
+    - description: The closing price
       key: close
-      type: List[float]
-    - description: Traded volume for each record
+      type: float
+    - description: The traded volume
       key: volume
-      type: List[int]
-    - description: Adjusted closing price for each record
+      type: int
+    - description: The adjusted close for splits/dividends
       key: adjusted_close
-      type: List[float]
-    - description: Market capitalization for each record
-      key: market_cap
-      type: List[float]
-    - description: Datacenter from which the data was fetched (e.g., US-East, US-West)
+      type: float
+    - description: The source datacenter
       key: source_datacenter
       type: str
-    - description: Round‑trip latency (ms) reported by the fetch node
+    - description: The fetch latency in milliseconds
       key: fetch_latency_ms
-      type: int
-    - description: Time (ms) taken to parse the entire payload
+      type: float
+    - description: The parse duration in milliseconds
       key: parse_duration_ms
-      type: int
+      type: float
     prompt: 'Parse the raw NASDAQ JSON payload returned by the API into a normalized,
       query-ready table. The input will include a timestamped, multi-asset bundle
       from a specific datacenter (US-East or US-West). For each record, extract the
@@ -774,34 +585,6 @@ nodes:
     nodes_depended_on:
     - fetch_nyse_stock_data
     nodes_dependent_on: []
-    output_structure:
-    - description: Total number of validated records output by the node.
-      key: records_count
-      type: int
-    - description: ISO‑8601 UTC timestamps of each record ingestion, in chronological
-        order.
-      key: record_timestamps
-      type: List[str]
-    - description: Ticker symbols corresponding to each record, aligned with `record_timestamps`.
-      key: record_symbols
-      type: List[str]
-    - description: Last traded price for each record, aligned with `record_timestamps`.
-      key: record_prices
-      type: List[float]
-    - description: Total traded volume for each record, aligned with `record_timestamps`.
-      key: record_volumes
-      type: List[int]
-    - description: Network latency in milliseconds recorded for each request, aligned
-        with `record_timestamps`.
-      key: record_metadata_latency_ms
-      type: List[int]
-    - description: Datacenter region (e.g., US‑East‑1, EU‑West‑2) that served each
-        record, aligned with `record_timestamps`.
-      key: record_metadata_datacenter
-      type: List[str]
-    - description: Source URL from which each record was fetched, aligned with `record_timestamps`.
-      key: record_metadata_source_url
-      type: List[str]
     prompt: "Parse the fetched NYSE stock data into a clean, query-friendly schema:\n\
       \n1. **Protocol details** – Assume the data arrives over HTTPS via the NYSE’s\
       \ public API using JSON-lines format with `application/json` content-type.\n\
@@ -822,7 +605,7 @@ nodes:
   parse_toronto_stock_exchange_stock_data:
     agent: false
     description: Transforms the raw JSON stock feed from the Toronto Stock Exchange
-      into a rigorously validated, high‑precision time‑series DataFrame, enriching
+      into a rigorously validated, high-precision time-series DataFrame, enriching
       it with latency and datacenter provenance metadata for auditability and downstream
       analytics.
     name: parse_toronto_stock_exchange_stock_data
@@ -830,45 +613,38 @@ nodes:
     - fetch_toronto_stock_exchange_stock_data
     nodes_dependent_on: []
     output_structure:
-    - description: Ticker symbol of the security
+    - description: Ticker symbol
       key: ticker
       type: str
-    - description: ISO 8601 UTC timestamp of the trade record
-      key: timestamp_utc
+    - description: Timestamp in ISO 8601 UTC format
+      key: timestamp
       type: str
-    - description: Opening price of the interval
-      key: open_price
+    - description: Opening price
+      key: open
       type: float
-    - description: Highest price of the interval
-      key: high_price
+    - description: Highest price during the interval
+      key: high
       type: float
-    - description: Lowest price of the interval
-      key: low_price
+    - description: Lowest price during the interval
+      key: low
       type: float
-    - description: Closing price of the interval
-      key: close_price
+    - description: Closing price
+      key: close
       type: float
-    - description: Adjusted close price accounting for splits/dividends
-      key: adjusted_close_price
-      type: float
-    - description: Total traded volume for the interval
-      key: volume_traded
+    - description: Traded volume
+      key: volume
       type: int
-    - description: True if price jump exceeds 10× previous day range
-      key: anomaly_detected
-      type: bool
-    - description: True if fetch latency exceeded 200 ms or an error code was received
-      key: warning_flag
-      type: bool
-    - description: URL of the data source API
-      key: source_url
+    - description: Adjusted close for splits/dividends
+      key: adjusted_close
+      type: float
+    - description: Source URL of the data
+      key: source
       type: str
-    - description: Round‑trip latency reported by the fetch node in milliseconds
-      key: request_latency_ms
+    - description: Round-trip time recorded by the fetch node
+      key: request_latency
       type: int
-    - description: CDN edge or datacenter that served the data (e.g., toronto-east,
-        toronto-west)
-      key: datacenter_origin
+    - description: Indicates the originating CDN edge
+      key: datacenter
       type: str
     prompt: 'Parse the raw JSON payload returned from the Toronto Stock Exchange API
       into a canonical, time-series DataFrame with the following schema:
@@ -896,7 +672,7 @@ nodes:
       - Validate the presence of all required fields and discard rows with missing
       or NaN values.
 
-      - Convert numeric fields to high‑precision `Decimal` to avoid floating‑point
+      - Convert numeric fields to high-precision `Decimal` to avoid floating-point
       drift.
 
       - Ensure timestamps are coerced to UTC and sorted ascending.
@@ -905,74 +681,40 @@ nodes:
       range, logging them for downstream risk checks.
 
       - Output a Pandas DataFrame, serialized as a parquet file (`{ticker}_data.parquet`)
-      stored in the designated data lake, with a partition key on `Ticker`.
-
-
-      Additionally, annotate the output with metadata:
-
-      - **Source**: `https://api.torontostockexchange.com/v1/quotes`.
-
-      - **Request Latency**: Report the round‑trip time recorded by the fetch node
-      (in milliseconds).
-
-      - **Datacenter**: Indicate the originating CDN edge (e.g., `toronto-east`, `toronto-west`).
-
-
-      If the fetch node reports a latency > 200 ms or an error code, the parser should
-      emit a warning but continue processing the available payload. The final artifact
-      must be consumable by downstream analytics nodes without further transformation.'
+      stored in the designated data lake, with a partition key on `Ticker`.'
   repartition_combined_stock_data:
     agent: false
     description: Reorganizes the normalized stock dataset into an efficient, distributed
-      partition layout that matches the chosen storage engine’s key strategy. The
-      node orchestrates protocol‑aware data ingestion, enforces low‑latency guarantees
-      per data source, and aligns partitions with datacenter geography to reduce cross‑region
-      costs and improve query performance.
+      partition layout that matches the chosen storage engine’s key strategy.
     name: repartition_combined_stock_data
     nodes_depended_on:
     - normalize_combined_stock_data
     nodes_dependent_on: []
     output_structure:
-    - description: Protocol used for data ingestion (e.g., Kafka, Pulsar, Kinesis).
-      key: transport_protocol
+    - description: The new partition schema generated for the repartitioned data
+      key: new_partition_schema
       type: str
-    - description: Target ingestion latency in milliseconds for this data feed.
-      key: ingestion_latency_ms
-      type: int
-    - description: Geographical data center used for repartitioning (e.g., US‑East‑1,
-        EU‑Frankfurt, AP‑Tokyo).
-      key: datacenter_location
-      type: str
-    - description: Strategy used for partitioning files (e.g., hash(symbol+date),
-        time_window).
-      key: partition_scheme
-      type: str
-    - description: Number of replicas for each partition to ensure durability.
+    - description: The replication factor used for the repartitioned data
       key: replication_factor
       type: int
-    - description: Number of shard rebalancing operations performed during repartitioning.
-      key: shard_rebalance_count
-      type: int
-    - description: Concise text log summarizing partition schema, replication settings,
-        and rebalancing actions.
-      key: audit_log
-      type: str
+    - description: Whether any shard rebalancing was performed during the repartitioning
+        process
+      key: shard_rebalancing_status
+      type: bool
+    - description: The average ingestion latency achieved for the repartitioned data
+      key: average_ingestion_latency
+      type: float
+    - description: The reduction in cross-region traffic achieved by aligning partitions
+        with datacenter geography
+      key: cross_region_traffic_reduction
+      type: float
     prompt: Repartition the normalized combined stock dataset across the distributed
-      storage fabric to optimize query latency and ingestion throughput. For each
-      data feed, explicitly specify the transport protocol (e.g., Kafka, Pulsar, or
-      Amazon Kinesis), the target ingestion latency (≤ 200 ms for real‑time feeds,
-      ≤ 5 s for batch feeds), and the geo‑location of the datacenter (US‑East‑1, EU‑Frankfurt,
-      AP‑Tokyo). Ensure that the repartitioning logic aligns with the underlying storage
-      engine’s partition key strategy (e.g., hash‑based on symbol+date for Parquet,
-      time‑windowed for ORC) and that the resulting files are co‑located within the
-      same availability zone to minimize cross‑region traffic. Finally, generate a
-      concise audit log detailing the new partition schema, replication factor, and
-      any shard rebalancing performed.
+      storage fabric to optimize query latency and ingestion throughput.
   store_combined_stock_data:
     agent: false
     description: Persist the aggregated, cleaned, and normalized stock data from LSE,
-      NYSE, NASDAQ, and TSX into a fault‑tolerant, geo‑distributed data lake with
-      strict schema validation, versioning, and low‑latency ingestion via HTTPS/REST.
+      NYSE, NASDAQ, and TSX into a fault-tolerant, geo-distributed data lake with
+      strict schema validation, versioning, and low-latency ingestion via HTTPS/REST.
     name: store_combined_stock_data
     nodes_depended_on:
     - parse_lse_stock_data
@@ -981,23 +723,20 @@ nodes:
     - parse_toronto_stock_exchange_stock_data
     nodes_dependent_on: []
     output_structure:
-    - description: Name of the stored parquet file (including path) where the combined
-        dataset is persisted.
-      key: file_name
+    - description: Schema of the stock dataset stored in the data lake.
+      key: data_schema
       type: str
-    - description: Size of the stored file in bytes.
-      key: file_size_bytes
+    - description: Total number of records stored in the data lake.
+      key: dataset_size
       type: int
-    - description: Total number of records written to the file.
-      key: records_count
-      type: int
-    - description: Identifier of the data‑center region (e.g., us-east-1, eu-west-2)
-        where the file was stored.
-      key: storage_datacenter
-      type: str
-    - description: Flag indicating whether the dataset passed all schema validation
-        checks before storage.
-      key: schema_validated
+    - description: Whether the data has been successfully stored in the data lake.
+      key: storage_status
       type: bool
-    prompt: Persist the unified, schema‑validated stock dataset into the company‑wide
+    - description: Ingestion time taken to store the data in the data lake.
+      key: latency
+      type: float
+    - description: Any error messages encountered during data storage.
+      key: error_message
+      type: str
+    prompt: Persist the unified, schema-validated stock dataset into the company-wide
       data lake.
