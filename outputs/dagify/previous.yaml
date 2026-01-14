@@ -1,22 +1,9 @@
 dag_type: plain_text
-description: Fetch stock data from multiple exchanges, including the London Stock
-  Exchange (LSE), and combine it into a single dataset with detailed technical information
-  on how to combine LSE data.
-name: fetch_and_combine_stock_data_with_lse_details
+description: This workflow fetches stock data from various exchanges, combines and
+  processes the data, and includes detailed technical information on how to handle
+  LSE data, such as missing values and inconsistencies.
+name: fetch_and_combine_stock_data_with_lse_details_refined
 nodes:
-  combine_stock_data_with_lse_details:
-    agent: false
-    description: Combine the parsed stock data from all exchanges with LSE details.
-    name: combine_stock_data_with_lse_details
-    nodes_depended_on:
-    - parse_lse_stock_data
-    - parse_nasdaq_stock_data
-    - parse_nyse_stock_data
-    - parse_toronto_stock_exchange_stock_data
-    nodes_dependent_on: []
-    prompt: Combine the parsed stock data from all exchanges into a single dataset,
-      including detailed technical information on how to combine LSE data, such as
-      handling missing values and data inconsistencies.
   construct_lse_api_request:
     agent: false
     description: Construct the API request for fetching LSE stock data with detailed
@@ -24,7 +11,8 @@ nodes:
     name: construct_lse_api_request
     nodes_depended_on:
     - identify_lse_stocks
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - fetch_lse_stock_data
     prompt: Construct the API request for fetching data from the LSE for the identified
       stocks, including parameters for data frequency, time range, and stock symbols.
   construct_nasdaq_api_request:
@@ -33,7 +21,8 @@ nodes:
     name: construct_nasdaq_api_request
     nodes_depended_on:
     - identify_nasdaq_stocks
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - fetch_nasdaq_stock_data
     prompt: Construct the API request for fetching data from the NASDAQ for the identified
       stocks.
   construct_nyse_api_request:
@@ -42,7 +31,8 @@ nodes:
     name: construct_nyse_api_request
     nodes_depended_on:
     - identify_nyse_stocks
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - fetch_nyse_stock_data
     prompt: Construct the API request for fetching data from the NYSE for the identified
       stocks.
   construct_toronto_stock_exchange_api_request:
@@ -52,7 +42,8 @@ nodes:
     name: construct_toronto_stock_exchange_api_request
     nodes_depended_on:
     - identify_toronto_stock_exchange_stocks
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - fetch_toronto_stock_exchange_stock_data
     prompt: Construct the API request for fetching data from the Toronto Stock Exchange
       for the identified stocks.
   fetch_lse_stock_data:
@@ -61,7 +52,8 @@ nodes:
     name: fetch_lse_stock_data
     nodes_depended_on:
     - construct_lse_api_request
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - parse_lse_stock_data
     prompt: Fetch the stock data from the LSE using the constructed API request, handling
       errors and exceptions.
   fetch_nasdaq_stock_data:
@@ -70,7 +62,8 @@ nodes:
     name: fetch_nasdaq_stock_data
     nodes_depended_on:
     - construct_nasdaq_api_request
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - parse_nasdaq_stock_data
     prompt: Fetch the stock data from the NASDAQ using the constructed API request.
   fetch_nyse_stock_data:
     agent: false
@@ -78,7 +71,8 @@ nodes:
     name: fetch_nyse_stock_data
     nodes_depended_on:
     - construct_nyse_api_request
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - parse_nyse_stock_data
     prompt: Fetch the stock data from the NYSE using the constructed API request.
   fetch_toronto_stock_exchange_stock_data:
     agent: false
@@ -86,7 +80,8 @@ nodes:
     name: fetch_toronto_stock_exchange_stock_data
     nodes_depended_on:
     - construct_toronto_stock_exchange_api_request
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - parse_toronto_stock_exchange_stock_data
     prompt: Fetch the stock data from the Toronto Stock Exchange using the constructed
       API request.
   identify_lse_stocks:
@@ -94,36 +89,51 @@ nodes:
     description: Identify the stocks to fetch from the London Stock Exchange (LSE).
     name: identify_lse_stocks
     nodes_depended_on: []
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - construct_lse_api_request
     prompt: List the stock symbols of the LSE stocks to fetch.
   identify_nasdaq_stocks:
     agent: false
     description: Identify the stocks to fetch from the NASDAQ.
     name: identify_nasdaq_stocks
     nodes_depended_on: []
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - construct_nasdaq_api_request
     prompt: List the stock symbols of the NASDAQ stocks to fetch.
   identify_nyse_stocks:
     agent: false
     description: Identify the stocks to fetch from the NYSE.
     name: identify_nyse_stocks
     nodes_depended_on: []
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - construct_nyse_api_request
     prompt: List the stock symbols of the NYSE stocks to fetch.
   identify_toronto_stock_exchange_stocks:
     agent: false
     description: Identify the stocks to fetch from the Toronto Stock Exchange.
     name: identify_toronto_stock_exchange_stocks
     nodes_depended_on: []
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - construct_toronto_stock_exchange_api_request
     prompt: List the stock symbols of the Toronto Stock Exchange stocks to fetch.
+  normalize_combined_stock_data:
+    agent: false
+    description: Normalize the combined stock data.
+    name: normalize_combined_stock_data
+    nodes_depended_on:
+    - store_combined_stock_data
+    nodes_dependent_on:
+    - repartition_combined_stock_data
+    prompt: Normalize the combined stock data, including handling missing values and
+      data inconsistencies.
   parse_lse_stock_data:
     agent: false
     description: Parse the fetched LSE stock data.
     name: parse_lse_stock_data
     nodes_depended_on:
     - fetch_lse_stock_data
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - store_combined_stock_data
     prompt: Parse the fetched LSE stock data into a structured format, including data
       cleaning and normalization.
   parse_nasdaq_stock_data:
@@ -132,7 +142,8 @@ nodes:
     name: parse_nasdaq_stock_data
     nodes_depended_on:
     - fetch_nasdaq_stock_data
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - store_combined_stock_data
     prompt: Parse the fetched NASDAQ stock data into a structured format.
   parse_nyse_stock_data:
     agent: false
@@ -140,7 +151,8 @@ nodes:
     name: parse_nyse_stock_data
     nodes_depended_on:
     - fetch_nyse_stock_data
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - store_combined_stock_data
     prompt: Parse the fetched NYSE stock data into a structured format.
   parse_toronto_stock_exchange_stock_data:
     agent: false
@@ -148,6 +160,29 @@ nodes:
     name: parse_toronto_stock_exchange_stock_data
     nodes_depended_on:
     - fetch_toronto_stock_exchange_stock_data
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - store_combined_stock_data
     prompt: Parse the fetched Toronto Stock Exchange stock data into a structured
       format.
+  repartition_combined_stock_data:
+    agent: false
+    description: Repartition the combined stock data.
+    name: repartition_combined_stock_data
+    nodes_depended_on:
+    - normalize_combined_stock_data
+    nodes_dependent_on: []
+    prompt: Repartition the normalized combined stock data for efficient storage and
+      querying.
+  store_combined_stock_data:
+    agent: false
+    description: Store the combined stock data.
+    name: store_combined_stock_data
+    nodes_depended_on:
+    - parse_lse_stock_data
+    - parse_nasdaq_stock_data
+    - parse_nyse_stock_data
+    - parse_toronto_stock_exchange_stock_data
+    nodes_dependent_on:
+    - normalize_combined_stock_data
+    prompt: Store the combined stock data from all exchanges in a centralized storage
+      system.
