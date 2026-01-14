@@ -1,87 +1,111 @@
 dag_type: plain_text
-description: A step-by-step workflow for implementing the Quicksort algorithm, including
-  pivot selection, partitioning logic, recursion, edge cases, and code integration
-name: implement_quicksort_algorithm
+description: A highly concurrent, elementally decomposed workflow that builds a complete
+  quicksort algorithm using only pure functional programming constructs. Each step
+  creates a single stateless function, and the final step assembles them into the
+  full quicksort implementation.
+name: functional_quicksort_implementation
 nodes:
-  define_quicksort_function_signature:
+  assemble_quicksort_module:
     agent: false
-    description: Create the base function declaration with parameters and return type
-    name: define_quicksort_function_signature
+    description: Combine all previously defined functions into a single, exportable
+      functional quicksort module.
+    name: assemble_quicksort_module
+    nodes_depended_on:
+    - define_concat_function
+    - define_recursive_quicksort_function
+    nodes_dependent_on:
+    - generate_quicksort_test_cases
+    prompt: Create a module `FunctionalQuickSort` that exports the `quickSort` function.
+      Ensure that `quickSort` internally uses `baseCase`, `compare`, `partition`,
+      and `concatLists` as defined earlier. Provide the module code in a language-agnostic
+      functional pseudo‑code format.
+  define_base_case_function:
+    agent: false
+    description: Create a pure function that returns the input list unchanged when
+      its length is 0 or 1 (the quicksort base case).
+    name: define_base_case_function
     nodes_depended_on: []
     nodes_dependent_on:
-    - select_pivot_strategy
-    - handle_base_cases
-    prompt: Write the function signature for quicksort that accepts an array and returns
-      a sorted array. Use clear parameter names and proper syntax for your target
-      language.
-  document_edge_case_handling:
+    - define_compare_function
+    prompt: Write a stateless function `baseCase(lst)` that returns `lst` if `len(lst)
+      <= 1`, otherwise returns `null`. Use only functional syntax (no mutable state).
+  define_compare_function:
     agent: false
-    description: Create comments about duplicate values and memory
-    name: document_edge_case_handling
+    description: Create a pure comparator function that determines ordering between
+      two elements.
+    name: define_compare_function
     nodes_depended_on:
-    - integrate_components
+    - define_base_case_function
+    nodes_dependent_on:
+    - define_partition_function
+    prompt: Write a stateless function `compare(a, b)` that returns `true` if `a`
+      should come before `b` in sorted order, otherwise `false`. Assume a generic
+      comparable type and avoid side‑effects.
+  define_concat_function:
+    agent: false
+    description: Create a pure function that concatenates three lists (less, pivot
+      list, greater) in order.
+    name: define_concat_function
+    nodes_depended_on:
+    - define_recursive_quicksort_function
+    nodes_dependent_on:
+    - assemble_quicksort_module
+    prompt: Write a stateless function `concatLists(less, pivot, greater)` that returns
+      a new list equal to `less` followed by `pivot` (as a single‑element list) followed
+      by `greater`. Use only functional list operations.
+  define_partition_function:
+    agent: false
+    description: Create a pure partition function that splits a list into two sub‑lists
+      (less and greater) based on a pivot using the comparator.
+    name: define_partition_function
+    nodes_depended_on:
+    - define_compare_function
+    nodes_dependent_on:
+    - define_recursive_quicksort_function
+    prompt: Write a stateless function `partition(pivot, lst, compare)` that returns
+      a tuple `(less, greater)` where `less` contains all elements for which `compare(elem,
+      pivot)` is true, and `greater` contains the rest. Use only functional constructs
+      (map, filter, recursion).
+  define_recursive_quicksort_function:
+    agent: false
+    description: Create the core recursive quicksort function that calls itself on
+      the `less` and `greater` sub‑lists returned by the partition function.
+    name: define_recursive_quicksort_function
+    nodes_depended_on:
+    - define_partition_function
+    - define_base_case_function
+    nodes_dependent_on:
+    - define_concat_function
+    prompt: 'Write a stateless recursive function `quickSort(lst, compare)` that:
+
+      1. Calls `baseCase(lst)`; if it returns a list, return that list.
+
+      2. Otherwise selects the first element as `pivot`.
+
+      3. Calls `partition(pivot, lstTail, compare)` to get `(less, greater)` (where
+      `lstTail` is `lst` without the first element).
+
+      4. Recursively sorts `less` and `greater` by calling `quickSort` on each.
+
+      5. Returns the concatenation of sorted `less`, `[pivot]`, and sorted `greater`.
+
+      Do not use any mutable variables; rely on function composition.'
+  generate_quicksort_test_cases:
+    agent: false
+    description: Produce a set of pure test cases to verify the functional quicksort
+      implementation works for various input shapes.
+    name: generate_quicksort_test_cases
+    nodes_depended_on:
+    - assemble_quicksort_module
     nodes_dependent_on: []
-    prompt: Add code comments explaining how the implementation handles duplicate
-      values and space complexity considerations.
-  handle_base_cases:
-    agent: false
-    description: Add conditions for empty arrays/single-element arrays
-    name: handle_base_cases
-    nodes_depended_on:
-    - define_quicksort_function_signature
-    nodes_dependent_on:
-    - integrate_components
-    prompt: Create conditional logic that immediately returns the array if it contains
-      zero or one elements. Use proper array length checks for your language.
-  implement_partitioning:
-    agent: false
-    description: Write code to move elements relative to the pivot
-    name: implement_partitioning
-    nodes_depended_on:
-    - select_pivot_strategy
-    nodes_dependent_on:
-    - implement_recursive_sort
-    prompt: Implement the array partitioning logic using the selected pivot strategy.
-      Show how elements less than the pivot move to one side and greater elements
-      to the other.
-  implement_recursive_sort:
-    agent: false
-    description: Create recursive calls for left and right subarrays
-    name: implement_recursive_sort
-    nodes_depended_on:
-    - implement_partitioning
-    nodes_dependent_on:
-    - integrate_components
-    prompt: Write the recursive sorting calls that operate on the left and right subarrays
-      generated by partitioning. Ensure proper base case handling.
-  integrate_components:
-    agent: false
-    description: Combine all elements into working implementation
-    name: integrate_components
-    nodes_depended_on:
-    - implement_recursive_sort
-    - handle_base_cases
-    nodes_dependent_on:
-    - write_test_cases
-    prompt: Assemble the base case handling, pivot selection partitioning logic, and
-      recursive calls into a complete, syntactically correct Quicksort implementation.
-  select_pivot_strategy:
-    agent: false
-    description: Choose between first-element, last-element, middle-element, or random
-      pivot selection
-    name: select_pivot_strategy
-    nodes_depended_on:
-    - define_quicksort_function_signature
-    nodes_dependent_on:
-    - implement_partitioning
-    prompt: Decide on the pivot selection strategy for Quicksort (e.g., 'middle element'
-      or 'random element') and document your choice with implementation-ready pseudocode.
-  write_test_cases:
-    agent: false
-    description: Develop test scenarios for different input types
-    name: write_test_cases
-    nodes_depended_on:
-    - integrate_components
-    nodes_dependent_on: []
-    prompt: 'Create test cases for Quicksort covering: empty array, single-element,
-      sorted, reverse-sorted, and random arrays. Include expected outcomes.'
+    prompt: 'Write three independent, pure test expressions that call `FunctionalQuickSort.quickSort`
+      with:
+
+      1. An empty list.
+
+      2. A list of distinct integers.
+
+      3. A list containing duplicate values.
+
+      For each test, include the expected sorted result. Do not use any mutable state;
+      express tests as expressions returning a boolean indicating pass/fail.'
