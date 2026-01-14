@@ -1,4 +1,4 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: merge_sort_recursively
 nodes:
@@ -31,24 +31,73 @@ nodes:
     - description: Whether the input list is a base case (i.e., length 1 or less).
       key: base_case_status
       type: bool
+    prd:
+      conceptual_info: The base case for the recursive merge sort function defines
+        whether a list is already sorted and has a length of 1 or less.
+      docstring:
+        examples:
+        - lines:
+          - define_base_case([1])
+          - define_base_case([])
+          output: 'True
+
+            True'
+        parameters:
+        - description: The input list to be sorted.
+          name: input_list
+          type: List[str]
+        raises: []
+        returns:
+          description: Whether the input list is a base case (i.e., length 1 or less).
+          type: bool
+        summary: Determines if a list is a base case for the recursive merge sort
+          function.
     prompt: Define the base case for the recursive merge sort function. The base case
       should handle lists of length 1 or less, which are already sorted.
   define_merge_function:
     agent: false
-    description: Define a function to merge two sorted lists into one sorted list.
+    description: This node defines a function to merge two sorted lists into one sorted
+      sorted list. It takes two sorted integer lists and combines them efficiently
+      to produce a single sorted list, maintaining order.
     name: define_merge_function
     nodes_depended_on: []
     nodes_dependent_on: []
     output_structure:
-    - description: The first list of integers to merge.
+    - description: The first sorted list of integers to merge.
       key: input_list1
       type: List[int]
-    - description: The second list of integers to merge.
+    - description: The second sorted list of integers to merge.
       key: input_list2
       type: List[int]
-    - description: The sorted list resulting from merging the two input lists.
+    - description: The resulting sorted list after merging the two input lists.
       key: output_sorted_list
       type: List[int]
+    prd:
+      conceptual_info: This node implements the merging step needed for the merge
+        sort algorithm, combining two sorted lists into one sorted list efficiently.
+      docstring:
+        examples:
+        - lines:
+          - merge_lists([1, 3, 5], [2, 4, 6])
+          output: '[1, 2, 3, 4, 5, 6]'
+        - lines:
+          - merge_lists([1, 2], [3, 4])
+          output: '[1, 2, 3, 4]'
+        parameters:
+        - description: First sorted list of integers.
+          name: input_list1
+          type: List[int]
+        - description: Second sorted list of integers.
+          name: input_list2
+          type: List[int]
+        raises:
+        - description: Raised if either input is not a list of integers.
+          type: TypeError
+        returns:
+          description: A single sorted list containing all elements from both input
+            lists.
+          type: List[int]
+        summary: Merges two sorted lists into a single sorted list.
     prompt: Define a function that merges two sorted lists into one sorted list. The
       function should take two lists as input and return a single sorted list.
   define_recursive_case:
@@ -70,6 +119,36 @@ nodes:
     - description: The two sorted halves of the input list.
       key: sorted_halves
       type: List[int]
+    prd:
+      conceptual_info: The recursive case for the merge sort function, which recursively
+        splits the input list into two halves, sorts each half, and then merges the
+        two sorted halves.
+      docstring:
+        examples:
+        - lines:
+          - sorted_halves = define_recursive_case([1, 3, 5, 7, 9])
+          - print(sorted_halves)
+          output: '[[1, 3, 5], [7, 9]]'
+        - lines:
+          - sorted_halves = define_recursive_case([2, 4, 6, 8, 10])
+          - print(sorted_halves)
+          output: '[[2, 4, 6], [8, 10]]'
+        parameters:
+        - description: The input list to be recursively sorted.
+          name: input_list
+          type: List[int]
+        - description: The current recursion depth of the merge sort function.
+          name: recursion_depth
+          type: int
+        raises:
+        - description: If the input list is not a list of integers.
+          type: ValueError
+        returns:
+          description: The two sorted halves of the input list.
+          type: List[List[int]]
+        summary: Define the recursive case for the merge sort function, which splits
+          the input list into two halves, recursively sorts each half, and then merges
+          the two sorted halves.
     prompt: Define the recursive case for the merge sort function. The recursive case
       should split the input list into two halves, recursively sort each half, and
       then merge the two sorted halves.
@@ -79,6 +158,37 @@ nodes:
     name: define_split_function
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: The left half of the input list.
+      key: left_half
+      type: List[int]
+    - description: The right half of the input list.
+      key: right_half
+      type: List[int]
+    prd:
+      conceptual_info: Splits a list into two halves.
+      docstring:
+        examples:
+        - lines:
+          - 'def split_list(input_list):'
+          - '  mid_index = len(input_list) // 2'
+          - '  return input_list[:mid_index], input_list[mid_index:]'
+          output: ([0, 1, 2], [3, 4, 5])
+        - lines:
+          - list_to_split = [1, 2, 3, 4, 5]
+          - left_half, right_half = split_list(list_to_split)
+          output: ([1, 2], [3, 4, 5])
+        parameters:
+        - description: The list to be split.
+          name: input_list
+          type: List[Int]
+        raises:
+        - description: If the input list is None or empty.
+          type: ValueError
+        returns:
+          description: A tuple containing the two halves of the input list.
+          type: Tuple[List[Int], List[Int]]
+        summary: Splits a list into two halves.
     prompt: Define a function that splits a list into two halves. The function should
       take a list as input and return two lists, each containing half of the original
       list's elements.
