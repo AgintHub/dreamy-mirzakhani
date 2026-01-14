@@ -1,246 +1,138 @@
-dag_type: spec
-description: Generated workflow from UI.
-name: quicksort_functional_dag
+dag_type: plain_text
+description: Workflow to gather financial data on stocks, ETFs, and futures, analyze
+  an equity portfolio, construct a daily overnight dynamic hedge based on implied
+  valuation vs NAV, and send orders for execution at the next morning's opening auction,
+  rebalancing daily.
+name: overnight_dynamic_hedge_construction_and_execution
 nodes:
-  combine_results:
+  compute_implied_valuation_vs_nav:
     agent: false
-    description: Combine the sorted left partition, the equal pivot partition, and
-      the sorted right partition into a single, fully sorted list.
-    name: combine_results
+    description: Calculate the implied valuation difference for stocks based on NAV
+      and market prices.
+    name: compute_implied_valuation_vs_nav
     nodes_depended_on:
-    - sort_left
-    - sort_right
-    - partition_list
-    nodes_dependent_on: []
-    output_structure:
-    - description: Final sorted list produced by concatenating the sorted less sublist,
-        the equal pivot elements, and the sorted greater sublist.
-      key: sorted_list
-      type: int
-    prd:
-      conceptual_info: 'This node assembles the results of the recursive quicksort
-        steps. It takes three pieces: the sorted elements less than the pivot, the
-        elements equal to the pivot (the pivot value replicated as needed), and the
-        sorted elements greater than the pivot. By concatenating these three lists,
-        it yields the final sorted sequence for the current recursive call.'
-      docstring:
-        examples:
-        - lines:
-          - combine_results([1, 2], [3, 3], [4, 5, 6])
-          output: '[1, 2, 3, 3, 4, 5, 6]'
-        - lines:
-          - combine_results([], [], [7, 8, 9])
-          output: '[7, 8, 9]'
-        parameters:
-        - description: The sorted sublist of elements that are less than the pivot.
-          name: sorted_less
-          type: List[int]
-        - description: The list of elements from the input that are exactly equal
-            to the pivot value.
-          name: equal
-          type: List[int]
-        - description: The sorted sublist of elements that are greater than the pivot.
-          name: sorted_greater_sublist
-          type: List[int]
-        raises:
-        - description: If any input is not a list of integers.
-          type: TypeError
-        - description: If inputs contain non-integer elements.
-          type: ValueError
-        returns:
-          description: The final concatenated list representing the sorted sequence
-            for this partition.
-          type: List[int]
-        summary: Merge three parts (sorted less, equal pivot, sorted greater) into
-          the final sorted list.
-    prompt: Concatenate the sorted 'less' sublist, the 'equal' list of pivot elements,
-      and the sorted 'greater' sublist to form the final sorted list. Input parameters
-      are the sorted_less sublist (elements < pivot), equal (elements == pivot), and
-      sorted_greater_sublist (elements > pivot). Output a JSON array representing
-      the final sorted list.
-  partition_list:
+    - fetch_stock_financial_data
+    - fetch_etf_financial_data
+    - fetch_futures_financial_data
+    - fetch_portfolio_holdings
+    nodes_dependent_on:
+    - construct_hedge_ratios
+    prompt: Using fetched stock, ETF, and futures data along with portfolio holdings,
+      calculate for each stock the implied valuation metric relative to its NAV or
+      benchmark, producing a valuation delta per security.
+  construct_hedge_ratios:
     agent: false
-    description: Partition the list into elements less than, equal to, and greater
-      than the pivot.
-    name: partition_list
+    description: Formulate target hedge ratios for each stock based on implied valuation
+      differences.
+    name: construct_hedge_ratios
     nodes_depended_on:
-    - select_pivot
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of elements from the input that are less than the pivot value.
-      key: less
-      type: int
-    - description: List of elements from the input that are exactly equal to the pivot
-        value.
-      key: equal
-      type: int
-    - description: List of elements from the input that are greater than the pivot
-        value.
-      key: greater
-      type: int
-    prd:
-      conceptual_info: Divides an unsorted integer list into three distinct sub‑lists
-        based on a pivot value supplied by the parent node. This is the core partition
-        step of the quick‑sort algorithm.
-      docstring:
-        examples:
-        - lines:
-          - partition_list([9, 3, 5, 2, 8, 5, 1], 5)
-          output: '{''less'': [3, 2, 1], ''equal'': [5, 5], ''greater'': [9, 8]}'
-        - lines:
-          - partition_list([4, 4, 4], 4)
-          output: '{''less'': [], ''equal'': [4, 4, 4], ''greater'': []}'
-        parameters:
-        - description: The unsorted list of integers to be partitioned.
-          name: input_list
-          type: List[int]
-        - description: The pivot value around which the list is partitioned. Obtained
-            from the `select_pivot` node.
-          name: pivot
-          type: int
-        raises:
-        - description: If `input_list` is not a list of integers or if `pivot` is
-            not an integer.
-          type: TypeError
-        - description: If `input_list` is empty.
-          type: ValueError
-        returns:
-          description: A dictionary with keys 'less', 'equal', and 'greater' mapping
-            to the respective sub‑lists of integers.
-          type: Dict[str, List[int]]
-        summary: 'Partition a list of integers into three groups relative to a pivot
-          value: less than, equal to, and greater than the pivot.'
-    prompt: 'Given the input list and the selected pivot, separate elements into three
-      lists: elements less than the pivot, equal to the pivot, and greater than the
-      pivot. Return as a JSON object with keys ''less'', ''equal'', and ''greater''.'
-  select_pivot:
+    - compute_implied_valuation_vs_nav
+    nodes_dependent_on:
+    - generate_hedging_instructions
+    prompt: Translate valuation deltas into specific hedge ratios per stock, indicating
+      the notional exposure or quantity of each hedging instrument required to neutralize
+      valuation risk.
+  fetch_etf_financial_data:
     agent: false
-    description: Select a pivot element from the unsorted list.
-    name: select_pivot
+    description: Retrieve latest financial data for ETFs in the investment universe.
+    name: fetch_etf_financial_data
     nodes_depended_on: []
-    nodes_dependent_on: []
-    output_structure:
-    - description: Single-element list containing the pivot value selected from the
-        input list.
-      key: pivot
-      type: int
-    prd:
-      conceptual_info: The node extracts a single pivot value from an input list of
-        integers, typically the first element, and returns it wrapped in a one‑element
-        list. This pivot is later used to partition the list for the quicksort algorithm.
-      docstring:
-        examples:
-        - lines:
-          - select_pivot([7, 3, 9, 1])
-          output: '[7]'
-        - lines:
-          - select_pivot([42])
-          output: '[42]'
-        parameters:
-        - description: The list of integers from which the pivot will be selected.
-            Must contain at least one element.
-          name: unsorted_list
-          type: list[int]
-        raises:
-        - description: If ``unsorted_list`` is empty, because a pivot cannot be selected
-            from an empty collection.
-          type: ValueError
-        - description: If ``unsorted_list`` is not a list of integers.
-          type: TypeError
-        returns:
-          description: A list of length 1 whose sole element is the selected pivot
-            value.
-          type: list[int]
-        summary: 'Select the pivot element for quicksort.
-
-
-          The function receives an unsorted list of integers and returns a one‑element
-          list containing the chosen pivot value. By convention the first element
-          of the input list is used as the pivot, but the implementation may be changed
-          without affecting downstream nodes as long as the return type remains a
-          single‑element integer list.'
-    prompt: Select a pivot element (e.g., first element) from the input list. Return
-      the pivot value as a single-element JSON array.
-  sort_left:
+    nodes_dependent_on:
+    - fetch_stock_financial_data
+    - fetch_futures_financial_data
+    - fetch_portfolio_holdings
+    prompt: Fetch the latest market and NAV data for all ETFs, including price, volume,
+      NAV, and holdings data as of the most recent market close.
+  fetch_futures_financial_data:
     agent: false
-    description: Recursively apply quicksort to the left (less than pivot) partition.
-    name: sort_left
-    nodes_depended_on:
-    - partition_list
-    nodes_dependent_on: []
-    output_structure:
-    - description: The sorted sublist of elements that are less than the pivot.
-      key: sorted_less
-      type: List[int]
-    prd:
-      conceptual_info: The `sort_left` node receives the `less` partition from `partition_list`,
-        recursively sorts it using the same quicksort workflow, and outputs the sorted
-        left sublist. It is a core recursive step that ensures all elements smaller
-        than the current pivot end up in order before final concatenation.
-      docstring:
-        examples:
-        - lines:
-          - sorted_less = sort_left([3, 1, 4, 2])
-          output: '[1, 2, 3, 4]'
-        - lines:
-          - sorted_less = sort_left([])
-          output: '[]'
-        parameters:
-        - description: List of integers that are smaller than the current pivot, obtained
-            from the `partition_list` node.
-          name: less
-          type: List[int]
-        raises:
-        - description: If `less` is not a list of integers.
-          type: TypeError
-        - description: If the recursion depth exceeds Python's limit, indicating a
-            possible non‑terminating input.
-          type: RecursionError
-        returns:
-          description: A new list containing the elements of `less` sorted in ascending
-            order.
-          type: List[int]
-        summary: Recursively sorts the 'less' partition of a list using the quicksort
-          algorithm.
-    prompt: Apply the quicksort process to the 'less' sublist. Return the sorted sublist
-      as a JSON array.
-  sort_right:
+    description: Retrieve latest price and volume data for futures contracts relevant
+      to hedging.
+    name: fetch_futures_financial_data
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - fetch_stock_financial_data
+    - fetch_etf_financial_data
+    - fetch_portfolio_holdings
+    prompt: Fetch the latest settlement prices, volumes, and open interest for futures
+      contracts covering indexes and sectors related to the equity portfolio as of
+      the most recent close.
+  fetch_portfolio_holdings:
     agent: false
-    description: Recursively apply quicksort to the right (greater than pivot) partition.
-    name: sort_right
+    description: Retrieve current equity portfolio holdings and weights.
+    name: fetch_portfolio_holdings
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - compute_implied_valuation_vs_nav
+    prompt: Obtain the list of stocks in the equity portfolio with quantities and
+      current weights as of market close.
+  fetch_stock_financial_data:
+    agent: false
+    description: Retrieve latest financial data for stocks in the portfolio universe.
+    name: fetch_stock_financial_data
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - fetch_etf_financial_data
+    - fetch_futures_financial_data
+    - fetch_portfolio_holdings
+    prompt: Fetch the latest market and fundamental data for all relevant stocks,
+      including price, volume, dividend, and earnings data as of the most recent market
+      close.
+  format_trade_orders:
+    agent: false
+    description: Format the generated hedge trade instructions into the standard order
+      entry format required by the execution system.
+    name: format_trade_orders
     nodes_depended_on:
-    - partition_list
+    - generate_hedging_instructions
+    nodes_dependent_on:
+    - submit_trade_orders
+    prompt: Convert the list of hedge trade instructions into properly formatted trade
+      orders, with standardized fields such as instrument ID, order type, quantity,
+      price limit, and order timing parameters for opening auction execution.
+  generate_hedging_instructions:
+    agent: false
+    description: Create explicit trading instructions representing the hedge trades
+      required to balance portfolio risks overnight.
+    name: generate_hedging_instructions
+    nodes_depended_on:
+    - construct_hedge_ratios
+    nodes_dependent_on:
+    - format_trade_orders
+    prompt: Based on the hedge ratios per security, generate a detailed list of buy/sell
+      instructions specifying instrument, quantity, and direction for the overnight
+      hedge targeting the next morning's market open auction.
+  schedule_daily_rebalance:
+    agent: false
+    description: Set up automated daily rescheduling of the entire hedge construction
+      and execution workflow.
+    name: schedule_daily_rebalance
+    nodes_depended_on:
+    - verify_order_submission
     nodes_dependent_on: []
-    output_structure:
-    - description: Sorted list of elements that are greater than the pivot.
-      key: sorted_greater_sublist
-      type: List[int]
-    prd:
-      conceptual_info: This node receives the 'greater' partition from `partition_list`
-        and recursively sorts it using the quicksort algorithm, returning the sorted
-        sub‑list.
-      docstring:
-        examples:
-        - lines:
-          - sorted_right = sort_right([9, 7, 5, 8])
-          output: '[5, 7, 8, 9]'
-        - lines:
-          - sort_right([])
-          output: '[]'
-        parameters:
-        - description: List of integers that are greater than the current pivot, produced
-            by the `partition_list` node.
-          name: greater_sublist
-          type: List[int]
-        raises:
-        - description: If `greater_sublist` is not a list of integers.
-          type: TypeError
-        - description: If the recursion depth exceeds Python's limit due to malformed
-            input.
-          type: RecursionError
-        returns:
-          description: The input sub‑list sorted in ascending order.
-          type: List[int]
-        summary: Recursively quicksort the sub‑list of elements greater than the pivot.
-    prompt: Apply the quicksort process to the 'greater' sublist. Return the sorted
-      sublist as a JSON array.
+    prompt: Create a recurring schedule to trigger this workflow after daily market
+      close to perform data refresh, hedge recalculation, order preparation, and submission
+      for daily portfolio rebalancing.
+  submit_trade_orders:
+    agent: false
+    description: Send formatted trade orders to the execution system for placing during
+      the next morning's opening auction.
+    name: submit_trade_orders
+    nodes_depended_on:
+    - format_trade_orders
+    nodes_dependent_on:
+    - verify_order_submission
+    prompt: Transmit the formatted trade orders to the authorized execution platform
+      or broker with instructions to fill at the market open auction the following
+      trading day.
+  verify_order_submission:
+    agent: false
+    description: Confirm successful submission of hedge trade orders to the execution
+      venue.
+    name: verify_order_submission
+    nodes_depended_on:
+    - submit_trade_orders
+    nodes_dependent_on:
+    - schedule_daily_rebalance
+    prompt: Check the execution system's response to confirm that all hedge trade
+      orders have been accepted and queued for the next market opening auction. Report
+      any errors or rejections.
