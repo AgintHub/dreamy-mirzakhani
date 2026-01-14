@@ -1,7 +1,5 @@
-dag_type: plain_text
-description: A workflow to implement quicksort using functional programming decomposed
-  into individual functions for pivot selection, partitioning, recursive sorting,
-  and result combination, enabling maximum concurrency.
+dag_type: typed
+description: Generated workflow from UI.
 name: quicksort_functional_dag
 nodes:
   combine_results:
@@ -14,6 +12,11 @@ nodes:
     - sort_right
     - partition_list
     nodes_dependent_on: []
+    output_structure:
+    - description: Final sorted list produced by concatenating the sorted less sublist,
+        the equal pivot elements, and the sorted greater sublist.
+      key: sorted_list
+      type: List[int]
     prompt: Concatenate the sorted 'less' sublist, the 'equal' list of pivot elements,
       and the sorted 'greater' sublist to form the final sorted list. Return as a
       JSON array.
@@ -24,10 +27,19 @@ nodes:
     name: partition_list
     nodes_depended_on:
     - select_pivot
-    nodes_dependent_on:
-    - sort_left
-    - sort_right
-    - combine_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of elements from the input that are less than the pivot value.
+      key: less
+      type: List[int]
+    - description: List of elements from the input that are exactly equal to the pivot
+        value.
+      key: equal
+      type: List[int]
+    - description: List of elements from the input that are greater than the pivot
+        value.
+      key: greater
+      type: List[int]
     prompt: 'Given the input list and the selected pivot, separate elements into three
       lists: elements less than the pivot, equal to the pivot, and greater than the
       pivot. Return as a JSON object with keys ''less'', ''equal'', and ''greater''.'
@@ -36,8 +48,12 @@ nodes:
     description: Select a pivot element from the unsorted list.
     name: select_pivot
     nodes_depended_on: []
-    nodes_dependent_on:
-    - partition_list
+    nodes_dependent_on: []
+    output_structure:
+    - description: Single-element list containing the pivot value selected from the
+        input list.
+      key: pivot
+      type: List[int]
     prompt: Select a pivot element (e.g., first element) from the input list. Return
       the pivot value as a single-element JSON array.
   sort_left:
@@ -46,8 +62,11 @@ nodes:
     name: sort_left
     nodes_depended_on:
     - partition_list
-    nodes_dependent_on:
-    - combine_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: The sorted sublist of elements that are less than the pivot.
+      key: sorted_less
+      type: List[int]
     prompt: Apply the quicksort process to the 'less' sublist. Return the sorted sublist
       as a JSON array.
   sort_right:
@@ -56,7 +75,10 @@ nodes:
     name: sort_right
     nodes_depended_on:
     - partition_list
-    nodes_dependent_on:
-    - combine_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Sorted list of elements that are greater than the pivot.
+      key: sorted_greater_sublist
+      type: List[int]
     prompt: Apply the quicksort process to the 'greater' sublist. Return the sorted
       sublist as a JSON array.
