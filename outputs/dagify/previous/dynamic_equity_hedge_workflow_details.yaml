@@ -1,87 +1,101 @@
 dag_type: plain_text
-description: A highly concurrent workflow for constructing an overnight dynamic hedge
-  for a given equity portfolio, utilizing financial data for stocks, ETFs, and futures,
-  and executing trades at the morning opening auction.
+description: Collect financial data, calculate implied valuation and NAV, construct
+  a hedge, generate and execute trade orders at the morning opening auction, and rebalance
+  the portfolio daily.
 name: dynamic_equity_hedge_workflow
 nodes:
-  calculate_implied_valuation:
+  compute_implied_valuation:
     agent: false
-    description: Calculate the implied valuation of the equity portfolio based on
-      options market data.
-    name: calculate_implied_valuation
+    description: Calculate the portfolio’s implied valuation from options market data.
+    name: compute_implied_valuation
     nodes_depended_on:
-    - gather_historical_data
+    - gather_stock_data
+    - gather_etf_data
+    - gather_futures_data
     nodes_dependent_on:
     - construct_hedge
-    prompt: Use the Black-Scholes model or other suitable methods to estimate the
-      implied valuation of the portfolio, incorporating volatility, interest rates,
-      and other relevant factors.
-  calculate_nav:
+    prompt: Using the collected option data, estimate the implied valuation of the
+      portfolio with an appropriate model such as Black–Scholes or a volatility‑adjusted
+      approach.
+  compute_nav:
     agent: false
-    description: Calculate the Net Asset Value (NAV) of the equity portfolio.
-    name: calculate_nav
+    description: Compute the portfolio’s net asset value (NAV).
+    name: compute_nav
     nodes_depended_on:
-    - gather_historical_data
+    - gather_stock_data
+    - gather_etf_data
+    - gather_futures_data
     nodes_dependent_on:
     - construct_hedge
-    prompt: Compute the NAV of the portfolio by summing the current market values
-      of its constituent assets, using end-of-day prices or other suitable valuation
-      methodologies.
+    prompt: Sum the current market values of all stocks, ETFs, and futures in the
+      portfolio to calculate the Net Asset Value.
   construct_hedge:
     agent: false
-    description: Construct an overnight dynamic hedge for the equity portfolio, utilizing
-      the calculated implied valuation and NAV.
+    description: Create the hedge strategy for the portfolio.
     name: construct_hedge
     nodes_depended_on:
-    - calculate_implied_valuation
-    - calculate_nav
+    - compute_implied_valuation
+    - compute_nav
     nodes_dependent_on:
     - generate_trade_orders
-    prompt: Employ a suitable hedging strategy, such as a delta-neutral hedge or a
-      dynamic replication approach, to minimize potential losses or maximize gains,
-      based on the calculated implied valuation and NAV.
+    prompt: Based on the implied valuation and NAV, design a delta‑neutral or dynamic
+      hedge that minimizes risk for the overnight period.
   execute_trades:
     agent: false
-    description: Execute the generated trade orders at the morning opening auction.
+    description: Execute the trade orders at the morning opening auction.
     name: execute_trades
     nodes_depended_on:
     - generate_trade_orders
-    nodes_dependent_on: []
-    prompt: Submit the trade orders to the exchange or brokerage platform, ensuring
-      timely and accurate execution, and monitor the trades for any potential issues
-      or discrepancies.
-  gather_historical_data:
+    nodes_dependent_on:
+    - rebalance_portfolio
+    prompt: Submit the trade orders to the exchange or broker, ensuring execution
+      at the opening auction and monitoring for completion or issues.
+  gather_etf_data:
     agent: false
-    description: Collect historical financial data for stocks, ETFs, and futures,
-      including prices, volumes, and other relevant metrics.
-    name: gather_historical_data
+    description: Collect current and option market data for the portfolio's ETFs.
+    name: gather_etf_data
     nodes_depended_on: []
     nodes_dependent_on:
-    - calculate_implied_valuation
-    - calculate_nav
-    prompt: Retrieve historical financial data for the specified assets, covering
-      the past year, from reputable sources such as Quandl or Alpha Vantage.
+    - compute_implied_valuation
+    - compute_nav
+    prompt: Retrieve the latest daily price, volume, and option data for all ETFs
+      in the portfolio from a reliable data source.
+  gather_futures_data:
+    agent: false
+    description: Collect current market data for the portfolio's futures.
+    name: gather_futures_data
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - compute_implied_valuation
+    - compute_nav
+    prompt: Retrieve the latest daily price and volume data for all futures contracts
+      related to the portfolio from a reliable data source.
+  gather_stock_data:
+    agent: false
+    description: Collect current and option market data for the portfolio's stocks.
+    name: gather_stock_data
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - compute_implied_valuation
+    - compute_nav
+    prompt: Retrieve the latest daily price, volume, and option data for all stocks
+      in the portfolio from a reliable data source.
   generate_trade_orders:
     agent: false
-    description: Generate trade orders for the constructed hedge, to be executed at
-      the morning opening auction.
+    description: Generate the trade orders to be executed at the opening auction.
     name: generate_trade_orders
     nodes_depended_on:
     - construct_hedge
     nodes_dependent_on:
     - execute_trades
-    prompt: Create a list of trade orders, including the assets to be traded, quantities,
-      and prices, to be executed at the opening auction, taking into account factors
-      such as liquidity, volatility, and market conditions.
+    prompt: Translate the hedge strategy into executable trade orders, specifying
+      assets, quantities, and target prices for the morning opening auction.
   rebalance_portfolio:
     agent: false
-    description: Rebalance the equity portfolio daily to maintain the desired hedge
-      ratio and minimize potential losses.
+    description: Rebalance the portfolio daily after trade execution.
     name: rebalance_portfolio
     nodes_depended_on:
     - execute_trades
-    nodes_dependent_on:
-    - gather_historical_data
-    prompt: Adjust the portfolio composition by buying or selling assets, as needed,
-      to maintain the optimal hedge ratio, taking into account changes in market conditions,
-      volatility, and other relevant factors.
+    nodes_dependent_on: []
+    prompt: Adjust the portfolio holdings by buying or selling assets to maintain
+      the target hedge ratio and account for any changes in market conditions.

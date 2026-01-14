@@ -1,101 +1,129 @@
 dag_type: plain_text
-description: Collect financial data, calculate implied valuation and NAV, construct
-  a hedge, generate and execute trade orders at the morning opening auction, and rebalance
-  the portfolio daily.
+description: Generated workflow for constructing and executing a dynamic equity portfolio
+  hedge using detailed market data analysis and risk modeling.
 name: dynamic_equity_hedge_workflow
 nodes:
   compute_implied_valuation:
     agent: false
-    description: Calculate the portfolio’s implied valuation from options market data.
+    description: Derive forward-looking portfolio valuation from derivatives pricing
+      models.
     name: compute_implied_valuation
     nodes_depended_on:
-    - gather_stock_data
-    - gather_etf_data
-    - gather_futures_data
+    - compute_implied_volatility
+    - compute_nav
     nodes_dependent_on:
     - construct_hedge
-    prompt: Using the collected option data, estimate the implied valuation of the
-      portfolio with an appropriate model such as Black–Scholes or a volatility‑adjusted
-      approach.
+    prompt: 'Apply Black-Scholes model to construct implied portfolio valuation using:
+      S=spot price, K=strike price, t=time to expiration, r=10Y Treasury yield as
+      risk-free rate, σ=implied volatility from options chain. Implement volatility
+      skew adjustments for out-of-the-money contracts to reflect market expectations.'
+  compute_implied_volatility:
+    agent: false
+    description: Quantify volatility risk through both historical and market-implied
+      measures.
+    name: compute_implied_volatility
+    nodes_depended_on:
+    - gather_stock_data
+    nodes_dependent_on:
+    - compute_implied_valuation
+    prompt: Calculate historical volatility (21-day annualized standard deviation)
+      and compare against options-implied volatility using the Black-Scholes model.
+      Generate volatility surface for the portfolio by aggregating moneyness (strike/spot
+      ratio) and time-to-maturity dimensions.
   compute_nav:
     agent: false
-    description: Compute the portfolio’s net asset value (NAV).
+    description: Generate marked-to-market portfolio valuation with liquidity adjustments.
     name: compute_nav
     nodes_depended_on:
     - gather_stock_data
     - gather_etf_data
     - gather_futures_data
-    nodes_dependent_on:
-    - construct_hedge
-    prompt: Sum the current market values of all stocks, ETFs, and futures in the
-      portfolio to calculate the Net Asset Value.
+    nodes_dependent_on: []
+    prompt: Calculate net asset value (NAV) by summing marked-to-market values of
+      long/short positions. Apply haircutting to illiquid assets using default parameters
+      (e.g., 98% for ETFs, 95% for futures). Include dividend-adjusted stock valuations
+      and embedded option exposures in the NAV computation.
   construct_hedge:
     agent: false
-    description: Create the hedge strategy for the portfolio.
+    description: Mathematically construct precise hedge ratios with specific instrument
+      parameters.
     name: construct_hedge
     nodes_depended_on:
     - compute_implied_valuation
     - compute_nav
     nodes_dependent_on:
     - generate_trade_orders
-    prompt: Based on the implied valuation and NAV, design a delta‑neutral or dynamic
-      hedge that minimizes risk for the overnight period.
+    prompt: 'Calculate delta neutrality: (Δ_position - Σ Δ_hedges) * hedge_ratio =
+      0. Use vega-hedging against volatility risk with options straddles. Optimize
+      gamma exposure to maintain hedge effectiveness over price movements. Specify
+      position sizing using $100K/point basis per contract for futures hedging.'
   execute_trades:
     agent: false
-    description: Execute the trade orders at the morning opening auction.
+    description: Execute trades during opening auction with real-time liquidity monitoring.
     name: execute_trades
     nodes_depended_on:
     - generate_trade_orders
     nodes_dependent_on:
     - rebalance_portfolio
-    prompt: Submit the trade orders to the exchange or broker, ensuring execution
-      at the opening auction and monitoring for completion or issues.
+    prompt: Submit pre-market orders via FIX protocol at 4:00 AM ET. Monitor auction
+      price discovery using market depth data (BIDS/ASKS at 4:00 AM NYSE reference
+      price). Implement circuit breakers to pause execution if bid-ask spread exceeds
+      10 ticks for futures.
   gather_etf_data:
     agent: false
-    description: Collect current and option market data for the portfolio's ETFs.
+    description: Acquire structural and liquidity parameters of ETF holdings for accurate
+      valuation modeling.
     name: gather_etf_data
     nodes_depended_on: []
-    nodes_dependent_on:
-    - compute_implied_valuation
-    - compute_nav
-    prompt: Retrieve the latest daily price, volume, and option data for all ETFs
-      in the portfolio from a reliable data source.
+    nodes_dependent_on: []
+    prompt: Extract ETF data including NAV (net asset value) per share, total expense
+      ratio, liquidity metrics (IOPV vs bid-ask spread), and embedded options data
+      (covered call or put protection structures). Use EOD Historical Data API for
+      market price and volume history, and Morningstar for fund composition details.
   gather_futures_data:
     agent: false
-    description: Collect current market data for the portfolio's futures.
+    description: Capture granular futures market data for risk management of derivative
+      exposures.
     name: gather_futures_data
     nodes_depended_on: []
-    nodes_dependent_on:
-    - compute_implied_valuation
-    - compute_nav
-    prompt: Retrieve the latest daily price and volume data for all futures contracts
-      related to the portfolio from a reliable data source.
+    nodes_dependent_on: []
+    prompt: Retrieve futures contract specifications (tick size, multiplier, settlement
+      rules), open interest, and continuous price history (1-minute bars) from IntercontinentalExchange
+      (ICE) API. Calculate basis (cash-futures spread) and contango/backwardation
+      metrics for commodity exposure.
   gather_stock_data:
     agent: false
-    description: Collect current and option market data for the portfolio's stocks.
+    description: Collect comprehensive equity market data including price feed, options
+      Greeks, and liquidity metrics.
     name: gather_stock_data
     nodes_depended_on: []
-    nodes_dependent_on:
-    - compute_implied_valuation
-    - compute_nav
-    prompt: Retrieve the latest daily price, volume, and option data for all stocks
-      in the portfolio from a reliable data source.
+    nodes_dependent_on: []
+    prompt: Collect real-time stock price data (last traded price, bid-ask spreads),
+      option chain data (strike prices, implied volatility, Greeks including delta,
+      gamma, theta), and fundamental metrics (dividend yield, earnings dates) from
+      Bloomberg or Yahoo Finance API for all equities in the portfolio. Include open
+      interest and volume-weighted average prices for liquid contracts.
   generate_trade_orders:
     agent: false
-    description: Generate the trade orders to be executed at the opening auction.
+    description: Transform hedge parameters into executable, risk-compliant trade
+      tickets.
     name: generate_trade_orders
     nodes_depended_on:
     - construct_hedge
     nodes_dependent_on:
     - execute_trades
-    prompt: Translate the hedge strategy into executable trade orders, specifying
-      assets, quantities, and target prices for the morning opening auction.
+    prompt: Create ICE FIX futures orders with price-time priority algorithms (IOC/FOK).
+      For options, generate market-on-close (MOC) limit orders based on open interest
+      weighting. Include pre-trade risk checks for position notional (max 20% of portfolio)
+      and slippage analysis using market impact models.
   rebalance_portfolio:
     agent: false
-    description: Rebalance the portfolio daily after trade execution.
+    description: Verify and adjust hedge effectiveness after trade execution.
     name: rebalance_portfolio
     nodes_depended_on:
     - execute_trades
     nodes_dependent_on: []
-    prompt: Adjust the portfolio holdings by buying or selling assets to maintain
-      the target hedge ratio and account for any changes in market conditions.
+    prompt: 'Post-trade risk check: Calculate portfolio delta (Σ Δ_i * position_i)
+      and compare against target 0.15. Rebalance by adjusting futures exposure if
+      delta drifts >0.15. Apply transaction cost analysis using liquidity heatmaps
+      from Equiscope for rebalancing decisions.'
