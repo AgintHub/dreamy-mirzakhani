@@ -1,150 +1,201 @@
 dag_type: plain_text
-description: Create a detailed plan for designing, building, testing, and launching
-  a rocket.
-name: build_a_rocket
+description: Creates a detailed plan for building a hedge fund, covering objectives,
+  strategy, structure, risk management, operations, and launch preparations.
+name: build_hedge_fund
 nodes:
-  assemble_rocket_components:
+  choose_investment_strategy:
     agent: false
-    description: Assemble the rocket's components.
-    name: assemble_rocket_components
+    description: Identify the high-level investment strategy category.
+    name: choose_investment_strategy
     nodes_depended_on:
-    - design_rocket_structure
-    - choose_propulsion_system
-    - select_guidance_system
-    - evaluate_landing_system
+    - clarify_fund_objectives
     nodes_dependent_on: []
-    prompt: 'Assemble the rocket''s components, including the structural components,
-      propulsion system, guidance system, and landing system.
-
-      Use standardized fasteners and interfaces for assembly.'
-  choose_propulsion_system:
+    prompt: Select one primary hedge fund strategy category that best serves the fund
+      objectives (e.g., long/short equity, global macro). Provide a one-sentence rationale.
+  choose_legal_entity_type:
     agent: false
-    description: Design a modular propulsion system for the rocket.
-    name: choose_propulsion_system
+    description: Determine the legal structure for the fund vehicle.
+    name: choose_legal_entity_type
     nodes_depended_on:
-    - define_rocket_specs
-    nodes_dependent_on:
-    - design_rocket_structure
-    prompt: 'Select a suitable propulsion system for the rocket, considering the engine
-      type, nozzle design, and thrust requirements.
-
-      Recommend a modular propulsion system with interchangeable engines.'
-  conduct_flight_tests:
-    agent: false
-    description: Conduct flight tests on the rocket.
-    name: conduct_flight_tests
-    nodes_depended_on:
-    - conduct_stress_tests
+    - select_jurisdiction
     nodes_dependent_on: []
-    prompt: 'Perform flight tests on the rocket, simulating the ascent, coast, and
-      re-entry phases.
-
-      Verify the correct operation of each system.'
-  conduct_stress_tests:
+    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
+      for the chosen jurisdiction. Give a one-sentence explanation.
+  clarify_fund_objectives:
     agent: false
-    description: Conduct stress tests on the rocket.
-    name: conduct_stress_tests
-    nodes_depended_on:
-    - integrate_rocket_systems
-    nodes_dependent_on: []
-    prompt: 'Perform stress tests on the rocket, simulating the vibration, temperature,
-      and pressure loads during launch and flight.
-
-      Verify the integrity of the rocket''s components.'
-  define_rocket_specs:
-    agent: false
-    description: Identify the rocket's requirements and performance objectives.
-    name: define_rocket_specs
+    description: Define the primary business objectives for the hedge fund.
+    name: clarify_fund_objectives
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: 'Determine the rocket''s payload capacity, fuel type, launch site, and
-      mission objectives.
-
-      Assume a payload capacity of 1000 kg, liquid fuel, and a coastal launch site.
-
-      Consider a small satellite deployment mission.'
-  design_rocket_structure:
+    prompt: State the primary business objectives for launching the hedge fund. Produce
+      a concise bullet list covering investment purpose, competitive edge, and long-term
+      vision (max 8 bullets).
+  compile_pitch_deck_outline:
     agent: false
-    description: Create a preliminary design for the rocket's structural components.
-    name: design_rocket_structure
+    description: Framework for fundraising presentation.
+    name: compile_pitch_deck_outline
     nodes_depended_on:
-    - define_rocket_specs
+    - clarify_fund_objectives
+    - define_investor_profile
+    - choose_investment_strategy
+    - set_performance_and_risk_targets
+    - draft_fee_structure
+    - design_risk_management_framework
     nodes_dependent_on: []
-    prompt: 'Design a lightweight yet robust rocket structure capable of withstanding
-      Launch Site Air Pressure (LSAP), aerodynamic loads, and stage separation forces.
-
-      Assume a cylindrical shape with interchangeable boosters and a payload fairing.'
-  evaluate_landing_system:
+    prompt: Create a 10-slide outline (slide titles only) for an investor pitch deck
+      incorporating objectives, strategy, team, edge, risk controls, fees, and expected
+      returns.
+  create_hiring_plan:
     agent: false
-    description: Design a landing system for the rocket.
-    name: evaluate_landing_system
+    description: Determine initial staffing requirements.
+    name: create_hiring_plan
     nodes_depended_on:
-    - define_rocket_specs
-    - choose_propulsion_system
-    nodes_dependent_on:
-    - select_guidance_system
-    prompt: 'Design a landing system for the rocket, considering the deployment of
-      a parachute or a retrorocket.
-
-      Assume a controlled descent with a parachute.'
-  integrate_rocket_systems:
-    agent: false
-    description: Integrate the rocket's systems.
-    name: integrate_rocket_systems
-    nodes_depended_on:
-    - assemble_rocket_components
-    - test_rocket_systems
+    - draft_operations_workflow
     nodes_dependent_on: []
-    prompt: 'Integrate the rocket''s systems, including the propulsion system, guidance
-      system, and landing system.
-
-      Verify the correct operation of each system.'
-  launch_rocket:
+    prompt: List essential full-time positions for launch (max 8), with one-line responsibility
+      each. Align roles with operations workflow gaps.
+  define_asset_universe:
     agent: false
-    description: Launch the rocket.
-    name: launch_rocket
+    description: Enumerate tradable assets and instruments.
+    name: define_asset_universe
     nodes_depended_on:
-    - receive_certification
+    - choose_investment_strategy
     nodes_dependent_on: []
-    prompt: 'Launch the rocket at the designated location and time, adhering to all
-      safety protocols.
-
-      Verify the correct operation of the rocket''s systems.'
-  receive_certification:
+    prompt: List the specific asset classes and instruments the chosen strategy will
+      trade (e.g., US large-cap equities, S&P futures). Keep list ≤10 items.
+  define_investor_profile:
     agent: false
-    description: Obtain certification for the rocket.
-    name: receive_certification
+    description: Describe the target investor segment for the fund.
+    name: define_investor_profile
     nodes_depended_on:
-    - conduct_flight_tests
+    - clarify_fund_objectives
     nodes_dependent_on: []
-    prompt: 'Obtain certification from regulatory authorities for the safe operation
-      of the rocket.
-
-      Assume meeting all relevant legal and safety requirements.'
-  select_guidance_system:
+    prompt: 'Based on the stated fund objectives, specify the ideal target investor
+      profile (e.g., family offices, pensions). List key characteristics: typical
+      ticket size, risk tolerance, liquidity preference, and geographic focus.'
+  define_technology_stack:
     agent: false
-    description: Design a guidance system for the rocket.
-    name: select_guidance_system
+    description: Specify technology tools supporting operations.
+    name: define_technology_stack
     nodes_depended_on:
-    - define_rocket_specs
-    - choose_propulsion_system
-    nodes_dependent_on:
-    - design_rocket_structure
-    prompt: 'Choose a suitable guidance system for the rocket, including a navigation
-      computer, accelerometers, and gyroscopes.
-
-      Consider a dual-string star tracker for navigation.'
-  test_rocket_systems:
-    agent: false
-    description: Test the rocket's systems in a simulated environment.
-    name: test_rocket_systems
-    nodes_depended_on:
-    - design_rocket_structure
-    - choose_propulsion_system
-    - select_guidance_system
-    - evaluate_landing_system
+    - draft_operations_workflow
     nodes_dependent_on: []
-    prompt: 'Perform a simulation-based testing of the rocket''s systems, including
-      the propulsion system, guidance system, and landing system.
-
-      Evaluate the performance of each system for various scenarios.'
+    prompt: 'Identify required software and infrastructure components for each operations
+      step (e.g., OMS, EMS, risk system). Present as 2-column table: Ops Step | Tech
+      Component.'
+  design_compliance_program:
+    agent: false
+    description: Create compliance policies aligned with regulations and risk.
+    name: design_compliance_program
+    nodes_depended_on:
+    - identify_regulatory_requirements
+    - design_risk_management_framework
+    nodes_dependent_on: []
+    prompt: 'Generate a compliance checklist mapping each regulatory requirement to
+      a specific internal policy or procedure. Table with columns: Requirement | Policy
+      Reference.'
+  design_risk_management_framework:
+    agent: false
+    description: Outline quantitative and qualitative risk controls.
+    name: design_risk_management_framework
+    nodes_depended_on:
+    - set_performance_and_risk_targets
+    nodes_dependent_on: []
+    prompt: 'List core risk controls aligned with the target metrics: position limits,
+      VaR limits, stop-loss rules, liquidity thresholds. Provide 4–6 bullet points.'
+  develop_timeline_and_milestones:
+    agent: false
+    description: Create phased schedule leading to fund launch.
+    name: develop_timeline_and_milestones
+    nodes_depended_on:
+    - draft_operations_workflow
+    - define_technology_stack
+    - create_hiring_plan
+    - compile_pitch_deck_outline
+    nodes_dependent_on: []
+    prompt: Prepare a launch timeline with monthly milestones over the next 12 months.
+      Include regulatory filing, service provider onboarding, capital raise, tech
+      deployment, and go-live.
+  draft_fee_structure:
+    agent: false
+    description: Set management and performance fee levels.
+    name: draft_fee_structure
+    nodes_depended_on:
+    - set_performance_and_risk_targets
+    - estimate_setup_and_operating_costs
+    nodes_dependent_on: []
+    prompt: Propose management and performance fee percentages that balance cost recovery
+      and competitiveness. Include incentive hurdle if relevant. Summarize in ≤3 sentences.
+  draft_operations_workflow:
+    agent: false
+    description: Map core trade and post-trade operational steps.
+    name: draft_operations_workflow
+    nodes_depended_on:
+    - define_asset_universe
+    - list_service_providers
+    - design_risk_management_framework
+    nodes_dependent_on: []
+    prompt: 'Sketch the daily trade lifecycle: idea generation → order entry → execution
+      → confirmation → settlement → reconciliation. List each step with primary responsible
+      party (internal or provider).'
+  estimate_setup_and_operating_costs:
+    agent: false
+    description: Rough cost model for fund setup and operations.
+    name: estimate_setup_and_operating_costs
+    nodes_depended_on:
+    - list_service_providers
+    nodes_dependent_on: []
+    prompt: 'Provide a simple annual cost estimate (in USD) for each listed service
+      provider plus overhead (office, tech). Present as two columns: Cost Item | Estimated
+      USD.'
+  identify_regulatory_requirements:
+    agent: false
+    description: Outline key regulatory filings and registrations.
+    name: identify_regulatory_requirements
+    nodes_depended_on:
+    - choose_legal_entity_type
+    nodes_dependent_on: []
+    prompt: List the primary registrations or filings required for the selected entity
+      and jurisdiction (e.g., SEC Form ADV). Provide citation to governing body names
+      only.
+  list_service_providers:
+    agent: false
+    description: Enumerate required third-party service provider categories.
+    name: list_service_providers
+    nodes_depended_on:
+    - choose_legal_entity_type
+    nodes_dependent_on: []
+    prompt: 'Generate a checklist of mandatory external service providers: prime broker,
+      fund administrator, auditor, legal counsel, compliance consultant, and custodian.
+      No descriptive text—just provider types.'
+  produce_final_fund_plan_summary:
+    agent: false
+    description: Generate an all-in summary of the hedge fund plan.
+    name: produce_final_fund_plan_summary
+    nodes_depended_on:
+    - design_compliance_program
+    - compile_pitch_deck_outline
+    - develop_timeline_and_milestones
+    nodes_dependent_on: []
+    prompt: Synthesize prior outputs into a concise executive summary (≤400 words)
+      covering strategy, structure, risk, ops, fees, timeline. Bullet or short paragraphs
+      allowed.
+  select_jurisdiction:
+    agent: false
+    description: Choose the optimal fund domicile considering objectives.
+    name: select_jurisdiction
+    nodes_depended_on:
+    - clarify_fund_objectives
+    nodes_dependent_on: []
+    prompt: Pick the fund domicile (e.g., Cayman, Delaware, Luxembourg) considering
+      objectives. Provide 2 pros and 2 cons for the selected jurisdiction only.
+  set_performance_and_risk_targets:
+    agent: false
+    description: Quantify return and risk goals.
+    name: set_performance_and_risk_targets
+    nodes_depended_on:
+    - choose_investment_strategy
+    nodes_dependent_on: []
+    prompt: Define numerical annual targets for gross return, volatility (standard
+      deviation), Sharpe ratio, and maximum drawdown consistent with the chosen strategy.
+      Present as a 4-row table.
