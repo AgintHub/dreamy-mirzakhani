@@ -1,114 +1,150 @@
 dag_type: plain_text
-description: A highly concurrent workflow for developing a chess engine from scratch,
-  covering chess theory, algorithm design, and software implementation.
-name: chess_engine_development
+description: Create a detailed plan for designing, building, testing, and launching
+  a rocket.
+name: build_a_rocket
 nodes:
-  algorithm_design:
+  assemble_rocket_components:
     agent: false
-    description: Design a suitable algorithm for the chess engine, including move
-      generation, evaluation, and search.
-    name: algorithm_design
+    description: Assemble the rocket's components.
+    name: assemble_rocket_components
     nodes_depended_on:
-    - chess_theory_research
+    - design_rocket_structure
+    - choose_propulsion_system
+    - select_guidance_system
+    - evaluate_landing_system
     nodes_dependent_on: []
-    prompt: Design a chess engine algorithm that incorporates chess theory research.
-      Describe the move generation, evaluation, and search components, including data
-      structures and pseudo-code.
-  chess_theory_research:
+    prompt: 'Assemble the rocket''s components, including the structural components,
+      propulsion system, guidance system, and landing system.
+
+      Use standardized fasteners and interfaces for assembly.'
+  choose_propulsion_system:
     agent: false
-    description: Conduct research on chess theory, including openings, middlegame
-      strategies, and endgames.
-    name: chess_theory_research
+    description: Design a modular propulsion system for the rocket.
+    name: choose_propulsion_system
+    nodes_depended_on:
+    - define_rocket_specs
+    nodes_dependent_on:
+    - design_rocket_structure
+    prompt: 'Select a suitable propulsion system for the rocket, considering the engine
+      type, nozzle design, and thrust requirements.
+
+      Recommend a modular propulsion system with interchangeable engines.'
+  conduct_flight_tests:
+    agent: false
+    description: Conduct flight tests on the rocket.
+    name: conduct_flight_tests
+    nodes_depended_on:
+    - conduct_stress_tests
+    nodes_dependent_on: []
+    prompt: 'Perform flight tests on the rocket, simulating the ascent, coast, and
+      re-entry phases.
+
+      Verify the correct operation of each system.'
+  conduct_stress_tests:
+    agent: false
+    description: Conduct stress tests on the rocket.
+    name: conduct_stress_tests
+    nodes_depended_on:
+    - integrate_rocket_systems
+    nodes_dependent_on: []
+    prompt: 'Perform stress tests on the rocket, simulating the vibration, temperature,
+      and pressure loads during launch and flight.
+
+      Verify the integrity of the rocket''s components.'
+  define_rocket_specs:
+    agent: false
+    description: Identify the rocket's requirements and performance objectives.
+    name: define_rocket_specs
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Research and document key concepts in chess theory, including common openings,
-      middlegame strategies, and endgames. Provide a list of 10 essential concepts
-      with brief descriptions.
-  documentation_and_maintenance:
+    prompt: 'Determine the rocket''s payload capacity, fuel type, launch site, and
+      mission objectives.
+
+      Assume a payload capacity of 1000 kg, liquid fuel, and a coastal launch site.
+
+      Consider a small satellite deployment mission.'
+  design_rocket_structure:
     agent: false
-    description: Create documentation for the chess engine and plan for ongoing maintenance,
-      including updates and bug fixes.
-    name: documentation_and_maintenance
+    description: Create a preliminary design for the rocket's structural components.
+    name: design_rocket_structure
     nodes_depended_on:
-    - performance_optimization
+    - define_rocket_specs
     nodes_dependent_on: []
-    prompt: Create comprehensive documentation for the chess engine, including user
-      guides, API references, and technical notes. Describe the maintenance plan,
-      including update schedules and bug tracking procedures.
-  evaluation_function_development:
+    prompt: 'Design a lightweight yet robust rocket structure capable of withstanding
+      Launch Site Air Pressure (LSAP), aerodynamic loads, and stage separation forces.
+
+      Assume a cylindrical shape with interchangeable boosters and a payload fairing.'
+  evaluate_landing_system:
     agent: false
-    description: Develop an evaluation function to assess chess positions, including
-      material, mobility, and control.
-    name: evaluation_function_development
+    description: Design a landing system for the rocket.
+    name: evaluate_landing_system
     nodes_depended_on:
-    - algorithm_design
-    nodes_dependent_on: []
-    prompt: Create an evaluation function that considers material, mobility, and control.
-      Provide a mathematical formula and describe how it will be used in the chess
-      engine.
-  integration_and_deployment:
+    - define_rocket_specs
+    - choose_propulsion_system
+    nodes_dependent_on:
+    - select_guidance_system
+    prompt: 'Design a landing system for the rocket, considering the deployment of
+      a parachute or a retrorocket.
+
+      Assume a controlled descent with a parachute.'
+  integrate_rocket_systems:
     agent: false
-    description: Integrate the chess engine with the user interface and deploy the
-      application, including any necessary dependencies or libraries.
-    name: integration_and_deployment
+    description: Integrate the rocket's systems.
+    name: integrate_rocket_systems
     nodes_depended_on:
-    - testing_and_debugging
-    - user_interface_design
+    - assemble_rocket_components
+    - test_rocket_systems
     nodes_dependent_on: []
-    prompt: Integrate the chess engine with the user interface and deploy the application.
-      Describe any dependencies or libraries required, including version numbers and
-      installation instructions.
-  move_generation_implementation:
+    prompt: 'Integrate the rocket''s systems, including the propulsion system, guidance
+      system, and landing system.
+
+      Verify the correct operation of each system.'
+  launch_rocket:
     agent: false
-    description: Implement move generation, including legal move checking and sorting.
-    name: move_generation_implementation
+    description: Launch the rocket.
+    name: launch_rocket
     nodes_depended_on:
-    - algorithm_design
+    - receive_certification
     nodes_dependent_on: []
-    prompt: Implement move generation using a suitable data structure (e.g., bitboards).
-      Describe how legal moves will be checked and sorted, including any optimization
-      techniques.
-  performance_optimization:
+    prompt: 'Launch the rocket at the designated location and time, adhering to all
+      safety protocols.
+
+      Verify the correct operation of the rocket''s systems.'
+  receive_certification:
     agent: false
-    description: Optimize the chess engine's performance, including profiling, caching,
-      and parallelization.
-    name: performance_optimization
+    description: Obtain certification for the rocket.
+    name: receive_certification
     nodes_depended_on:
-    - integration_and_deployment
+    - conduct_flight_tests
     nodes_dependent_on: []
-    prompt: Optimize the chess engine's performance using profiling, caching, and
-      parallelization techniques. Describe the optimization methodology and any resulting
-      improvements in speed or accuracy.
-  search_algorithm_implementation:
+    prompt: 'Obtain certification from regulatory authorities for the safe operation
+      of the rocket.
+
+      Assume meeting all relevant legal and safety requirements.'
+  select_guidance_system:
     agent: false
-    description: Implement a search algorithm, such as alpha-beta pruning or iterative
-      deepening.
-    name: search_algorithm_implementation
+    description: Design a guidance system for the rocket.
+    name: select_guidance_system
     nodes_depended_on:
-    - algorithm_design
-    nodes_dependent_on: []
-    prompt: Implement a search algorithm to explore the game tree. Describe the algorithm's
-      parameters, including depth, width, and iteration limits.
-  testing_and_debugging:
+    - define_rocket_specs
+    - choose_propulsion_system
+    nodes_dependent_on:
+    - design_rocket_structure
+    prompt: 'Choose a suitable guidance system for the rocket, including a navigation
+      computer, accelerometers, and gyroscopes.
+
+      Consider a dual-string star tracker for navigation.'
+  test_rocket_systems:
     agent: false
-    description: Test and debug the chess engine, including unit tests and integration
-      tests.
-    name: testing_and_debugging
+    description: Test the rocket's systems in a simulated environment.
+    name: test_rocket_systems
     nodes_depended_on:
-    - evaluation_function_development
-    - move_generation_implementation
-    - search_algorithm_implementation
+    - design_rocket_structure
+    - choose_propulsion_system
+    - select_guidance_system
+    - evaluate_landing_system
     nodes_dependent_on: []
-    prompt: Create a comprehensive test suite for the chess engine, including unit
-      tests and integration tests. Describe the testing methodology and any debugging
-      techniques used.
-  user_interface_design:
-    agent: false
-    description: Design a user-friendly interface for interacting with the chess engine,
-      including input and output formats.
-    name: user_interface_design
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Design a user interface for the chess engine, including input and output
-      formats. Describe how users will interact with the engine, including any visualization
-      tools or command-line interfaces.
+    prompt: 'Perform a simulation-based testing of the rocket''s systems, including
+      the propulsion system, guidance system, and landing system.
+
+      Evaluate the performance of each system for various scenarios.'
