@@ -1,201 +1,141 @@
 dag_type: plain_text
-description: Creates a detailed plan for building a hedge fund, covering objectives,
-  strategy, structure, risk management, operations, and launch preparations.
-name: build_hedge_fund
+description: A workflow to produce a six‑chapter cosmology book, including title,
+  outline, chapter content, cover, table of contents, bibliography, and final assembly.
+name: write_cosmology_book
 nodes:
-  choose_investment_strategy:
+  assemble_final_book:
     agent: false
-    description: Identify the high-level investment strategy category.
-    name: choose_investment_strategy
+    description: Presents the complete book in a single document.
+    name: assemble_final_book
     nodes_depended_on:
-    - clarify_fund_objectives
+    - create_table_of_contents
+    - write_chapter_1
+    - write_chapter_2
+    - write_chapter_3
+    - write_chapter_4
+    - write_chapter_5
+    - write_chapter_6
+    - compile_bibliography
     nodes_dependent_on: []
-    prompt: Select one primary hedge fund strategy category that best serves the fund
-      objectives (e.g., long/short equity, global macro). Provide a one-sentence rationale.
-  choose_legal_entity_type:
+    prompt: Combine the cover, table of contents, chapters, and bibliography into
+      a single Markdown document representing the final book. Use headings for each
+      section and maintain formatting consistency.
+  compile_bibliography:
     agent: false
-    description: Determine the legal structure for the fund vehicle.
-    name: choose_legal_entity_type
+    description: Creates the bibliography.
+    name: compile_bibliography
     nodes_depended_on:
-    - select_jurisdiction
+    - write_chapter_1
+    - write_chapter_2
+    - write_chapter_3
+    - write_chapter_4
+    - write_chapter_5
+    - write_chapter_6
     nodes_dependent_on: []
-    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
-      for the chosen jurisdiction. Give a one-sentence explanation.
-  clarify_fund_objectives:
+    prompt: Extract all referenced works from the chapters and format them in APA
+      style. List each source with authors, year, title, journal/book, and DOI if
+      available.
+  create_book_title:
     agent: false
-    description: Define the primary business objectives for the hedge fund.
-    name: clarify_fund_objectives
+    description: Produces the book title and subtitle.
+    name: create_book_title
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: State the primary business objectives for launching the hedge fund. Produce
-      a concise bullet list covering investment purpose, competitive edge, and long-term
-      vision (max 8 bullets).
-  compile_pitch_deck_outline:
+    nodes_dependent_on:
+    - create_cover_design
+    prompt: Generate a concise, engaging title for a six‑chapter book about cosmology.
+      Include subtitle if appropriate.
+  create_table_of_contents:
     agent: false
-    description: Framework for fundraising presentation.
-    name: compile_pitch_deck_outline
+    description: Creates the table of contents.
+    name: create_table_of_contents
     nodes_depended_on:
-    - clarify_fund_objectives
-    - define_investor_profile
-    - choose_investment_strategy
-    - set_performance_and_risk_targets
-    - draft_fee_structure
-    - design_risk_management_framework
+    - draft_book_outline
+    - write_chapter_1
+    - write_chapter_2
+    - write_chapter_3
+    - write_chapter_4
+    - write_chapter_5
+    - write_chapter_6
     nodes_dependent_on: []
-    prompt: Create a 10-slide outline (slide titles only) for an investor pitch deck
-      incorporating objectives, strategy, team, edge, risk controls, fees, and expected
-      returns.
-  create_hiring_plan:
+    prompt: Generate a table of contents that lists the book title, each chapter title
+      with page number placeholders, and the bibliography section. Format as a standard
+      academic TOC.
+  design_cover_design:
     agent: false
-    description: Determine initial staffing requirements.
-    name: create_hiring_plan
+    description: Creates the cover layout.
+    name: design_cover_design
     nodes_depended_on:
-    - draft_operations_workflow
-    nodes_dependent_on: []
-    prompt: List essential full-time positions for launch (max 8), with one-line responsibility
-      each. Align roles with operations workflow gaps.
-  define_asset_universe:
+    - create_book_title
+    nodes_dependent_on:
+    - create_table_of_contents
+    prompt: Design a book cover that incorporates the title from the previous step.
+      Include a relevant cosmology image, author name placeholder, and publication
+      year placeholder.
+  draft_book_outline:
     agent: false
-    description: Enumerate tradable assets and instruments.
-    name: define_asset_universe
-    nodes_depended_on:
-    - choose_investment_strategy
-    nodes_dependent_on: []
-    prompt: List the specific asset classes and instruments the chosen strategy will
-      trade (e.g., US large-cap equities, S&P futures). Keep list ≤10 items.
-  define_investor_profile:
+    description: Creates the chapter outline.
+    name: draft_book_outline
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - write_chapter_1
+    - write_chapter_2
+    - write_chapter_3
+    - write_chapter_4
+    - write_chapter_5
+    - write_chapter_6
+    prompt: Develop a detailed outline for a six‑chapter cosmology book. List chapter
+      titles, key subtopics, and a brief description for each chapter.
+  write_chapter_1:
     agent: false
-    description: Describe the target investor segment for the fund.
-    name: define_investor_profile
+    description: Produces Chapter 1 content.
+    name: write_chapter_1
     nodes_depended_on:
-    - clarify_fund_objectives
+    - draft_book_outline
     nodes_dependent_on: []
-    prompt: 'Based on the stated fund objectives, specify the ideal target investor
-      profile (e.g., family offices, pensions). List key characteristics: typical
-      ticket size, risk tolerance, liquidity preference, and geographic focus.'
-  define_technology_stack:
+    prompt: Write Chapter 1 based on the outline. Focus on the introduction to cosmology,
+      historical context, and basic concepts. Keep the chapter length to ~2000 words.
+  write_chapter_2:
     agent: false
-    description: Specify technology tools supporting operations.
-    name: define_technology_stack
+    description: Produces Chapter 2 content.
+    name: write_chapter_2
     nodes_depended_on:
-    - draft_operations_workflow
+    - draft_book_outline
     nodes_dependent_on: []
-    prompt: 'Identify required software and infrastructure components for each operations
-      step (e.g., OMS, EMS, risk system). Present as 2-column table: Ops Step | Tech
-      Component.'
-  design_compliance_program:
+    prompt: Write Chapter 2 based on the outline. Cover the Big Bang theory, observational
+      evidence, and the expansion of the universe. Target ~2000 words.
+  write_chapter_3:
     agent: false
-    description: Create compliance policies aligned with regulations and risk.
-    name: design_compliance_program
+    description: Produces Chapter 3 content.
+    name: write_chapter_3
     nodes_depended_on:
-    - identify_regulatory_requirements
-    - design_risk_management_framework
+    - draft_book_outline
     nodes_dependent_on: []
-    prompt: 'Generate a compliance checklist mapping each regulatory requirement to
-      a specific internal policy or procedure. Table with columns: Requirement | Policy
-      Reference.'
-  design_risk_management_framework:
+    prompt: Write Chapter 3 based on the outline. Explain cosmic microwave background
+      radiation, its discovery, and significance. Target ~2000 words.
+  write_chapter_4:
     agent: false
-    description: Outline quantitative and qualitative risk controls.
-    name: design_risk_management_framework
+    description: Produces Chapter 4 content.
+    name: write_chapter_4
     nodes_depended_on:
-    - set_performance_and_risk_targets
+    - draft_book_outline
     nodes_dependent_on: []
-    prompt: 'List core risk controls aligned with the target metrics: position limits,
-      VaR limits, stop-loss rules, liquidity thresholds. Provide 4–6 bullet points.'
-  develop_timeline_and_milestones:
+    prompt: 'Write Chapter 4 based on the outline. Discuss dark matter: evidence,
+      candidates, and detection experiments. Target ~2000 words.'
+  write_chapter_5:
     agent: false
-    description: Create phased schedule leading to fund launch.
-    name: develop_timeline_and_milestones
+    description: Produces Chapter 5 content.
+    name: write_chapter_5
     nodes_depended_on:
-    - draft_operations_workflow
-    - define_technology_stack
-    - create_hiring_plan
-    - compile_pitch_deck_outline
+    - draft_book_outline
     nodes_dependent_on: []
-    prompt: Prepare a launch timeline with monthly milestones over the next 12 months.
-      Include regulatory filing, service provider onboarding, capital raise, tech
-      deployment, and go-live.
-  draft_fee_structure:
+    prompt: Write Chapter 5 based on the outline. Cover dark energy and the accelerated
+      expansion of the universe. Target ~2000 words.
+  write_chapter_6:
     agent: false
-    description: Set management and performance fee levels.
-    name: draft_fee_structure
+    description: Produces Chapter 6 content.
+    name: write_chapter_6
     nodes_depended_on:
-    - set_performance_and_risk_targets
-    - estimate_setup_and_operating_costs
+    - draft_book_outline
     nodes_dependent_on: []
-    prompt: Propose management and performance fee percentages that balance cost recovery
-      and competitiveness. Include incentive hurdle if relevant. Summarize in ≤3 sentences.
-  draft_operations_workflow:
-    agent: false
-    description: Map core trade and post-trade operational steps.
-    name: draft_operations_workflow
-    nodes_depended_on:
-    - define_asset_universe
-    - list_service_providers
-    - design_risk_management_framework
-    nodes_dependent_on: []
-    prompt: 'Sketch the daily trade lifecycle: idea generation → order entry → execution
-      → confirmation → settlement → reconciliation. List each step with primary responsible
-      party (internal or provider).'
-  estimate_setup_and_operating_costs:
-    agent: false
-    description: Rough cost model for fund setup and operations.
-    name: estimate_setup_and_operating_costs
-    nodes_depended_on:
-    - list_service_providers
-    nodes_dependent_on: []
-    prompt: 'Provide a simple annual cost estimate (in USD) for each listed service
-      provider plus overhead (office, tech). Present as two columns: Cost Item | Estimated
-      USD.'
-  identify_regulatory_requirements:
-    agent: false
-    description: Outline key regulatory filings and registrations.
-    name: identify_regulatory_requirements
-    nodes_depended_on:
-    - choose_legal_entity_type
-    nodes_dependent_on: []
-    prompt: List the primary registrations or filings required for the selected entity
-      and jurisdiction (e.g., SEC Form ADV). Provide citation to governing body names
-      only.
-  list_service_providers:
-    agent: false
-    description: Enumerate required third-party service provider categories.
-    name: list_service_providers
-    nodes_depended_on:
-    - choose_legal_entity_type
-    nodes_dependent_on: []
-    prompt: 'Generate a checklist of mandatory external service providers: prime broker,
-      fund administrator, auditor, legal counsel, compliance consultant, and custodian.
-      No descriptive text—just provider types.'
-  produce_final_fund_plan_summary:
-    agent: false
-    description: Generate an all-in summary of the hedge fund plan.
-    name: produce_final_fund_plan_summary
-    nodes_depended_on:
-    - design_compliance_program
-    - compile_pitch_deck_outline
-    - develop_timeline_and_milestones
-    nodes_dependent_on: []
-    prompt: Synthesize prior outputs into a concise executive summary (≤400 words)
-      covering strategy, structure, risk, ops, fees, timeline. Bullet or short paragraphs
-      allowed.
-  select_jurisdiction:
-    agent: false
-    description: Choose the optimal fund domicile considering objectives.
-    name: select_jurisdiction
-    nodes_depended_on:
-    - clarify_fund_objectives
-    nodes_dependent_on: []
-    prompt: Pick the fund domicile (e.g., Cayman, Delaware, Luxembourg) considering
-      objectives. Provide 2 pros and 2 cons for the selected jurisdiction only.
-  set_performance_and_risk_targets:
-    agent: false
-    description: Quantify return and risk goals.
-    name: set_performance_and_risk_targets
-    nodes_depended_on:
-    - choose_investment_strategy
-    nodes_dependent_on: []
-    prompt: Define numerical annual targets for gross return, volatility (standard
-      deviation), Sharpe ratio, and maximum drawdown consistent with the chosen strategy.
-      Present as a 4-row table.
+    prompt: Write Chapter 6 based on the outline. Summarize future directions, open
+      questions, and technological advances in cosmology. Target ~2000 words.
