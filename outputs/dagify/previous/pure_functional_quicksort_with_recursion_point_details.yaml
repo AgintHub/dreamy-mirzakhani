@@ -13,8 +13,9 @@ nodes:
     - sort_right
     nodes_dependent_on: []
     output_structure:
-    - description: The final sorted list of integers
-      key: sorted_list
+    - description: The fully sorted list resulting from concatenating the sorted left
+        partition, the pivot partition, and the sorted right partition
+      key: final_sorted_list
       type: List[int]
     prompt: 'Concatenate the following three components: 1) the sorted left partition
       from the quicksort operation, 2) the pivot partition from the original partitioned
@@ -27,8 +28,8 @@ nodes:
     nodes_depended_on: []
     nodes_dependent_on: []
     output_structure:
-    - description: The raw unsorted input list to be sorted
-      key: input_list
+    - description: The raw unsorted list of integers to be sorted
+      key: unsorted_values
       type: List[int]
     prompt: Provide the raw unsorted input list to be processed.
   partition_list:
@@ -60,11 +61,11 @@ nodes:
     - partition_list
     nodes_dependent_on: []
     output_structure:
-    - description: The left partition sorted in ascending order
-      key: sorted_left
+    - description: The sorted left partition
+      key: sorted_left_partition
       type: List[int]
-    - description: The right partition sorted in ascending order
-      key: sorted_right
+    - description: The sorted right partition
+      key: sorted_right_partition
       type: List[int]
     prompt: Recursively apply the quicksort algorithm to both the left partition (elements
       less than pivot) and the right partition (elements greater than pivot) from
@@ -77,7 +78,7 @@ nodes:
     - input_list
     nodes_dependent_on: []
     output_structure:
-    - description: The chosen pivot element from the input list
+    - description: The selected pivot element from the input list
       key: pivot_element
       type: int
     prompt: Select a single pivot element from the input list. Return only the chosen
@@ -90,7 +91,7 @@ nodes:
     - quicksort
     nodes_dependent_on: []
     output_structure:
-    - description: The sorted left partition of the input list
+    - description: The sorted left partition
       key: sorted_left_partition
       type: List[int]
     prompt: Apply the quicksort algorithm to the left partition from the previous
@@ -103,7 +104,7 @@ nodes:
     - quicksort
     nodes_dependent_on: []
     output_structure:
-    - description: The sorted right partition
+    - description: The right partition sorted in ascending order
       key: sorted_right_partition
       type: List[int]
     prompt: Apply the quicksort algorithm to the right partition from the previous
