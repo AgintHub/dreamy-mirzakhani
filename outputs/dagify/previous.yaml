@@ -1,16 +1,18 @@
 dag_type: plain_text
-description: A workflow for fetching stock data from the NYSE and NASDAQ.
-name: fetch_stock_data
+description: Fetch stock data from the NYSE, NASDAQ, and Toronto Stock Exchange.
+name: fetch_stock_data_all_exchanges
 nodes:
   combine_stock_data:
     agent: false
-    description: Combine the parsed NYSE and NASDAQ stock data.
+    description: Combine the parsed stock data from all exchanges.
     name: combine_stock_data
     nodes_depended_on:
     - parse_nyse_stock_data
     - parse_nasdaq_stock_data
+    - parse_toronto_stock_exchange_stock_data
     nodes_dependent_on: []
-    prompt: Combine the parsed NYSE and NASDAQ stock data into a single dataset.
+    prompt: Combine the parsed NYSE, NASDAQ, and Toronto Stock Exchange stock data
+      into a single dataset.
   construct_nasdaq_api_request:
     agent: false
     description: Construct the API request for fetching NASDAQ stock data.
@@ -29,6 +31,16 @@ nodes:
     nodes_dependent_on: []
     prompt: Construct the API request for fetching data from the NYSE for the identified
       stocks.
+  construct_toronto_stock_exchange_api_request:
+    agent: false
+    description: Construct the API request for fetching Toronto Stock Exchange stock
+      data.
+    name: construct_toronto_stock_exchange_api_request
+    nodes_depended_on:
+    - identify_toronto_stock_exchange_stocks
+    nodes_dependent_on: []
+    prompt: Construct the API request for fetching data from the Toronto Stock Exchange
+      for the identified stocks.
   fetch_nasdaq_stock_data:
     agent: false
     description: Fetch the stock data from the NASDAQ.
@@ -45,6 +57,15 @@ nodes:
     - construct_nyse_api_request
     nodes_dependent_on: []
     prompt: Fetch the stock data from the NYSE using the constructed API request.
+  fetch_toronto_stock_exchange_stock_data:
+    agent: false
+    description: Fetch the stock data from the Toronto Stock Exchange.
+    name: fetch_toronto_stock_exchange_stock_data
+    nodes_depended_on:
+    - construct_toronto_stock_exchange_api_request
+    nodes_dependent_on: []
+    prompt: Fetch the stock data from the Toronto Stock Exchange using the constructed
+      API request.
   identify_nasdaq_stocks:
     agent: false
     description: Identify the stocks to fetch from the NASDAQ.
@@ -59,6 +80,13 @@ nodes:
     nodes_depended_on: []
     nodes_dependent_on: []
     prompt: List the stock symbols of the NYSE stocks to fetch.
+  identify_toronto_stock_exchange_stocks:
+    agent: false
+    description: Identify the stocks to fetch from the Toronto Stock Exchange.
+    name: identify_toronto_stock_exchange_stocks
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: List the stock symbols of the Toronto Stock Exchange stocks to fetch.
   parse_nasdaq_stock_data:
     agent: false
     description: Parse the fetched NASDAQ stock data.
@@ -75,3 +103,12 @@ nodes:
     - fetch_nyse_stock_data
     nodes_dependent_on: []
     prompt: Parse the fetched NYSE stock data into a structured format.
+  parse_toronto_stock_exchange_stock_data:
+    agent: false
+    description: Parse the fetched Toronto Stock Exchange stock data.
+    name: parse_toronto_stock_exchange_stock_data
+    nodes_depended_on:
+    - fetch_toronto_stock_exchange_stock_data
+    nodes_dependent_on: []
+    prompt: Parse the fetched Toronto Stock Exchange stock data into a structured
+      format.
