@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A workflow for implementing the merge sort algorithm recursively and
-  functionally, where each function is a node.
+dag_type: typed
+description: Generated workflow from UI.
 name: merge_sort_recursively
 nodes:
   combine_merge_and_split:
@@ -11,6 +10,10 @@ nodes:
     nodes_depended_on:
     - define_recursive_case
     nodes_dependent_on: []
+    output_structure:
+    - description: A sorted list of integers.
+      key: sorted_list
+      type: List[int]
     prompt: Combine the merge and split functions to create the final merge sort function.
       The final function should take a list as input and return a sorted list.
   define_base_case:
@@ -21,6 +24,13 @@ nodes:
     - define_merge_function
     - define_split_function
     nodes_dependent_on: []
+    output_structure:
+    - description: The input list to be sorted.
+      key: input_list
+      type: List[str]
+    - description: Whether the input list is a base case (i.e., length 1 or less).
+      key: base_case_status
+      type: bool
     prompt: Define the base case for the recursive merge sort function. The base case
       should handle lists of length 1 or less, which are already sorted.
   define_merge_function:
@@ -29,6 +39,16 @@ nodes:
     name: define_merge_function
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: The first list of integers to merge.
+      key: input_list1
+      type: List[int]
+    - description: The second list of integers to merge.
+      key: input_list2
+      type: List[int]
+    - description: The sorted list resulting from merging the two input lists.
+      key: output_sorted_list
+      type: List[int]
     prompt: Define a function that merges two sorted lists into one sorted list. The
       function should take two lists as input and return a single sorted list.
   define_recursive_case:
@@ -40,6 +60,16 @@ nodes:
     - define_merge_function
     - define_split_function
     nodes_dependent_on: []
+    output_structure:
+    - description: The input list for the recursive merge sort function.
+      key: input_list
+      type: List[int]
+    - description: The current recursion depth of the merge sort function.
+      key: recursion_depth
+      type: int
+    - description: The two sorted halves of the input list.
+      key: sorted_halves
+      type: List[int]
     prompt: Define the recursive case for the merge sort function. The recursive case
       should split the input list into two halves, recursively sort each half, and
       then merge the two sorted halves.
@@ -59,6 +89,16 @@ nodes:
     nodes_depended_on:
     - combine_merge_and_split
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether the test cases passed successfully
+      key: test_result
+      type: bool
+    - description: The sorted list resulting from the merge sort function
+      key: sorted_list
+      type: List[int]
+    - description: Any error messages generated during the test cases
+      key: error_message
+      type: str
     prompt: Test the merge sort function with sample inputs. The test cases should
       cover a variety of scenarios, including lists of different lengths and containing
       different types of data.
