@@ -1,13 +1,55 @@
-dag_type: spec
+dag_type: stub
 description: Generated workflow from UI.
 name: fetch_and_combine_stock_data_with_lse_details_refined
 nodes:
   construct_lse_api_request:
     agent: false
+    code_node_type: stub
     description: Builds a robust, protocol-optimized HTTP/2 request to the LSE API,
       embedding all necessary query parameters, headers, authentication, latency considerations,
       and datacenter routing logic to fetch historical or real-time quote data for
       the identified stock symbols.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass IdentifyLseStocksOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ identify_lse_stocks node outputs.\"\"\"\n    symbol: str = (\n        Field(...,\
+      \ description=\"The primary market code (e.g., 'LON') and ticker.\")\n    )\n\
+      \    market: int = Field(..., description=\"The market code (e.g., 1, 2...).\"\
+      )\n    protocol: str = (\n        Field(..., description=\"The preferred data\
+      \ feed protocol (e.g., FIX, REST, WebSocket).\")\n    )\n    latency_ms: int\
+      \ = (\n        Field(..., description=\"Expected latency window (ms) for real\\\
+      u2011time quotes and end\\u2011of\\u2011day snapshots.\")\n    )\n    datacenter:\
+      \ str = (\n        Field(..., description=\"The nearest data centre location\
+      \ (e.g., 'London\\u2011West', 'London\\u2011East').\")\n    )\n    tier: int\
+      \ = (\n        Field(..., description=\"Optional: the subscription tier required\
+      \ (e.g., Tier 1, Tier 2, Tier 3).\")\n    )\n\n\nclass ConstructLseApiRequestOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for construct_lse_api_request node outputs.\"\"\"\n\
+      \    lse_api_url: str = (\n        Field(..., description=\"The HTTPS URL of\
+      \ the LSE API request.\")\n    )\n    query_parameters: List[str] = (\n    \
+      \    Field(..., description=\"A list of query parameters to be used in the LSE\
+      \ API request.\")\n    )\n    headers: List[str] = (\n        Field(..., description=\"\
+      A list of headers to be used in the LSE API request.\")\n    )\n    authentication:\
+      \ str = (\n        Field(..., description=\"The authentication credentials used\
+      \ in the LSE API request.\")\n    )\n    latency_considerations: str = (\n \
+      \       Field(..., description=\"The latency considerations used in the LSE\
+      \ API request.\")\n    )\n    datacenter_routing_logic: str = (\n        Field(...,\
+      \ description=\"The datacenter routing logic used in the LSE API request.\"\
+      )\n    )\n\n\ndef construct_lse_api_request(identify_lse_stocks_input: IdentifyLseStocksOutput,\
+      \ **kwargs) -> ConstructLseApiRequestOutput:\n    \"\"\"\n    Constructs a high-quality\
+      \ HTTPS request to the LSE API.\n\n    Parameters\n    ----------\n    lse_symbol\
+      \ : str\n        The LSE symbol to be queried.\n\n    Returns\n    -------\n\
+      \    Dict[str, str]\n        A dictionary containing the HTTPS URL of the LSE\
+      \ API request, query\n        parameters, headers, authentication, latency considerations,\
+      \ and\n        datacenter routing logic.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If the LSE symbol is not found.\n\n    Examples\n    --------\n   \
+      \ >>> lse_url = construct_lse_api_request('AAPL', '2022-01-01', '2022-01-31')\n\
+      \    >>> print(lse_url)\n    {'lse_api_url': 'https://api.lse.co.uk/v1/quotes/AAPL',\
+      \ 'query_parameters':\n    ['symbol=AAPL', 'start_date=2022-01-01', 'end_date=2022-01-31'],\
+      \ 'headers':\n    ['Authorization: Bearer lse_api_key'], 'authentication': 'lsapikey',\n\
+      \    'latency_considerations': 'high', 'datacenter_routing_logic': 'lse-\n \
+      \   datacenter'}\n\n    \"\"\"\n    return ConstructLseApiRequestOutput(\n \
+      \       lse_api_url=\"\",\n        query_parameters=[],\n        headers=[],\n\
+      \        authentication=\"\",\n        latency_considerations=\"\",\n      \
+      \  datacenter_routing_logic=\"\",\n    )"
     name: construct_lse_api_request
     nodes_depended_on:
     - identify_lse_stocks
@@ -60,11 +102,53 @@ nodes:
         summary: Constructs a high-quality HTTPS request to the LSE API.
     prompt: Construct a fully-qualified HTTPS request to the London Stock Exchange
       (LSE) API for the stock symbols provided by the previous step.
+    shims: []
   construct_nasdaq_api_request:
     agent: false
+    code_node_type: stub
     description: Builds a secure, protocol-compliant HTTP(S) request to the NASDAQ
       public API for real-time stock data, embedding authentication, field selection,
       and latency considerations.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass IdentifyNasdaqStocksOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ identify_nasdaq_stocks node outputs.\"\"\"\n    nasdaq_stock_symbols: List[str]\
+      \ = (\n        Field(..., description=\"Comma-separated list of NASDAQ stock\
+      \ symbols\")\n    )\n    protocol: str = (\n        Field(..., description=\"\
+      Optimal data feed protocol for each symbol\")\n    )\n    expected_latency:\
+      \ List[float] = (\n        Field(..., description=\"Expected round-trip latency\
+      \ in milliseconds for each symbol\")\n    )\n    datacenter: str = (\n     \
+      \   Field(..., description=\"Nearest available data center or region for each\
+      \ symbol\")\n    )\n    constraints: str = (\n        Field(..., description=\"\
+      Protocol-specific authentication or rate-limit constraints for each symbol\"\
+      )\n    )\n\n\nclass ConstructNasdaqApiRequestOutput(BaseModel):\n    \"\"\"\
+      Pydantic model for construct_nasdaq_api_request node outputs.\"\"\"\n    base_url:\
+      \ str = (\n        Field(..., description=\"Base URL for the NASDAQ data service\"\
+      )\n    )\n    query_params: List[str] = (\n        Field(..., description=\"\
+      List of query parameters for the request\")\n    )\n    tls_settings: str =\
+      \ (\n        Field(..., description=\"TLS settings for the request, including\
+      \ the cipher suite and HSTS enforcement\")\n    )\n    latency_expectations:\
+      \ str = (\n        Field(..., description=\"Expected latency for the request,\
+      \ in milliseconds\")\n    )\n    retry_policy: str = (\n        Field(..., description=\"\
+      Retry policy for the request, including the number of attempts and delay\")\n\
+      \    )\n    data_centers: List[str] = (\n        Field(..., description=\"List\
+      \ of data centers for the request, including primary, secondary, and tertiary\"\
+      )\n    )\n    request_string: str = (\n        Field(..., description=\"Full\
+      \ request string for the NASDAQ API\")\n    )\n    full_url: str = (\n     \
+      \   Field(..., description=\"Full URL for the NASDAQ API request\")\n    )\n\
+      \    expected_latency: float = (\n        Field(..., description=\"Expected\
+      \ latency for the request, in milliseconds\")\n    )\n\n\ndef construct_nasdaq_api_request(identify_nasdaq_stocks_input:\
+      \ IdentifyNasdaqStocksOutput, **kwargs) -> ConstructNasdaqApiRequestOutput:\n\
+      \    \"\"\"Builds a secure, protocol-compliant HTTP(S) request to the NASDAQ\
+      \ public API for real-time stock data, embedding authentication, field selection,\
+      \ and latency considerations.\n\n    Args:\n        identify_nasdaq_stocks_input:\
+      \ Input from the 'identify_nasdaq_stocks' node.\n        **kwargs: Additional\
+      \ keyword arguments.\n\n    Returns:\n        ConstructNasdaqApiRequestOutput:\
+      \ Object containing outputs for this node.\n    \"\"\"\n    # TODO: Implement\
+      \ this function\n\n    # Return stub output with placeholder values\n    return\
+      \ ConstructNasdaqApiRequestOutput(\n        base_url=\"\",\n        query_params=[],\n\
+      \        tls_settings=\"\",\n        latency_expectations=\"\",\n        retry_policy=\"\
+      \",\n        data_centers=[],\n        request_string=\"\",\n        full_url=\"\
+      \",\n        expected_latency=0.0,\n    )"
     name: construct_nasdaq_api_request
     nodes_depended_on:
     - identify_nasdaq_stocks
@@ -100,11 +184,80 @@ nodes:
     - description: Expected latency for the request, in milliseconds
       key: expected_latency
       type: float
+    prd:
+      conceptual_info: ''
+      docstring:
+        examples: []
+        parameters: []
+        raises: []
+        returns: null
+        summary: ''
     prompt: Using the list of stock symbols from the previous node, compose a fully-qualified
       HTTPS GET request to the NASDAQ data service.
+    shims: []
   construct_nyse_api_request:
     agent: false
+    code_node_type: stub
     description: Constructs the API request for fetching NYSE stock data.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass IdentifyNyseStocksOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ identify_nyse_stocks node outputs.\"\"\"\n    NYSE_equities: List[str] = Field(...,\
+      \ description=\"List of NYSE equities\")\n    equity_count: int = Field(...,\
+      \ description=\"Total number of NYSE equities\")\n    fetch_success: bool =\
+      \ (\n        Field(..., description=\"Whether the data fetch operation was successful\"\
+      )\n    )\n\n\nclass ConstructNyseApiRequestOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for construct_nyse_api_request node outputs.\"\"\"\n    nyse_api_request_string:\
+      \ str = (\n        Field(..., description=\"The constructed NYSE API request\
+      \ string.\")\n    )\n    api_endpoint: str = (\n        Field(..., description=\"\
+      The API endpoint URL for the NYSE stock data.\")\n    )\n    user_agent_header:\
+      \ str = (\n        Field(..., description=\"The User-Agent header value for\
+      \ the API request.\")\n    )\n    api_key_authentication: str = (\n        Field(...,\
+      \ description=\"The API key authentication token for the NYSE API.\")\n    )\n\
+      \    tls_settings: str = (\n        Field(..., description=\"The TLS settings,\
+      \ including the protocol version and cipher suite, for the API request.\")\n\
+      \    )\n    data_centers: List[str] = (\n        Field(..., description=\"The\
+      \ list of available data centers for the NYSE API, including New York (NY4),\
+      \ Chicago (CH1), and London (LD4).\")\n    )\n    latency_expectation: int =\
+      \ (\n        Field(..., description=\"The expected latency for the NYSE API\
+      \ request, in milliseconds.\")\n    )\n    retry_policy: str = (\n        Field(...,\
+      \ description=\"The retry policy for the NYSE API request, including the number\
+      \ of retries and the backoff strategy.\")\n    )\n    error_handling_mechanisms:\
+      \ str = (\n        Field(..., description=\"The comprehensive set of error handling\
+      \ mechanisms, including failure analysis and mitigation strategies.\")\n   \
+      \ )\n\n\ndef construct_nyse_api_request(identify_nyse_stocks_input: IdentifyNyseStocksOutput,\
+      \ **kwargs) -> ConstructNyseApiRequestOutput:\n    \"\"\"\n    Constructs the\
+      \ NYSE API request string.\n\n    Parameters\n    ----------\n    api_endpoint\
+      \ : str\n        The base URL of the NYSE API.\n    stock_symbols : List[str]\n\
+      \        The list of stock symbols to query.\n    date_range : str\n       \
+      \ The date range for the data query.\n    data_frequency : str\n        The\
+      \ data frequency, such as 1-minute or daily bars.\n    api_key_authentication\
+      \ : str\n        The API key authentication token for the NYSE API.\n    user_agent_header\
+      \ : str\n        The User-Agent header value for the API request.\n    tls_settings\
+      \ : str\n        The TLS settings, including the protocol version and cipher\
+      \ suite,\n        for the API request.\n    retry_policy : str\n        The\
+      \ retry policy for the NYSE API request, including the number of\n        retries\
+      \ and the backoff strategy.\n\n    Returns\n    -------\n    nyse_api_request_string\n\
+      \        The constructed NYSE API request string.\n\n    Raises\n    ------\n\
+      \    ValueError\n        If any of the required inputs are missing or invalid.\n\
+      \    ConnectionError\n        If there is a connection issue with the NYSE API.\n\
+      \n    Examples\n    --------\n    >>> stock_symbols = ['AAPL', 'GOOG', 'MSFT']\n\
+      \    >>> date_range = '2020-01-01:2020-01-31'\n    >>> data_frequency = '1min'\n\
+      \    >>> api_key_authentication = 'your_api_key'\n    >>> user_agent_header\
+      \ = 'Your-User-Agent'\n    >>> tls_settings = 'TLS 1.2, SHA-256'\n    >>> retry_policy\
+      \ = '3 retries with exponential backoff'\n    >>> construct_nyse_api_request(api_endpoint,\
+      \ stock_symbols, date_range,\n    data_frequency, api_key_authentication, user_agent_header,\
+      \ tls_settings,\n    retry_policy)\n    The constructed NYSE API request string.\n\
+      \n    >>> stock_symbols = ['AAPL', 'GOOG', 'MSFT']\n    >>> date_range = '2020-01-01:2020-01-31'\n\
+      \    >>> data_frequency = '1min'\n    >>> api_key_authentication = 'your_api_key'\n\
+      \    >>> user_agent_header = 'Your-User-Agent'\n    >>> tls_settings = 'TLS\
+      \ 1.2, SHA-256'\n    >>> retry_policy = '3 retries with exponential backoff'\n\
+      \    >>> construct_nyse_api_request(api_endpoint, stock_symbols, date_range,\n\
+      \    data_frequency, api_key_authentication, user_agent_header, tls_settings,\n\
+      \    retry_policy)\n    The constructed NYSE API request string.\n\n    \"\"\
+      \"\n    return ConstructNyseApiRequestOutput(\n        nyse_api_request_string=\"\
+      \",\n        api_endpoint=\"\",\n        user_agent_header=\"\",\n        api_key_authentication=\"\
+      \",\n        tls_settings=\"\",\n        data_centers=[],\n        latency_expectation=0,\n\
+      \        retry_policy=\"\",\n        error_handling_mechanisms=\"\",\n    )"
     name: construct_nyse_api_request
     nodes_depended_on:
     - identify_nyse_stocks
@@ -215,13 +368,61 @@ nodes:
       certificate hashing to ensure secure data transmission. Provide a comprehensive
       set of error handling mechanisms, including retry logic with exponential backoff,
       to mitigate potential connection issues and API rate limiting errors.
+    shims: []
   construct_toronto_stock_exchange_api_request:
     agent: false
+    code_node_type: stub
     description: Constructs a technically sophisticated API request for retrieving
       data from the Toronto Stock Exchange, incorporating essential parameters such
       as API endpoints, data feed specifications, latency requirements, and API key
       authentication, to facilitate efficient and secure data acquisition for the
       specified stock symbols.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass IdentifyTorontoStockExchangeStocksOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for identify_toronto_stock_exchange_stocks node outputs.\"\
+      \"\"\n    ticker: str = Field(..., description=\"4-letter ticker symbol\")\n\
+      \    company_name: str = Field(..., description=\"Full legal name of the company\"\
+      )\n    sector_industry: str = (\n        Field(..., description=\"Sector and\
+      \ industry classification (SGI/Global Industry Classification standard)\")\n\
+      \    )\n    market_cap_tier: str = (\n        Field(..., description=\"Market\
+      \ capitalization tier: Large, Mid, or Small\")\n    )\n    preferred_data_feed_protocol:\
+      \ str = (\n        Field(..., description=\"Preferred data feed protocol: WebSocket,\
+      \ REST, or FIX\")\n    )\n    expected_latency_ms: int = (\n        Field(...,\
+      \ description=\"Expected latency in milliseconds for real-time data feed\")\n\
+      \    )\n    datacenter: str = (\n        Field(..., description=\"Primary data\
+      \ center location (e.g., Toronto ON-1)\")\n    )\n\n\nclass ConstructTorontoStockExchangeApiRequestOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for construct_toronto_stock_exchange_api_request node\
+      \ outputs.\"\"\"\n    api_request_string: str = (\n        Field(..., description=\"\
+      The constructed API request string\")\n    )\n    api_endpoint: str = (\n  \
+      \      Field(..., description=\"The API endpoint URL for the Toronto Stock Exchange\"\
+      )\n    )\n    user_agent_header: str = (\n        Field(..., description=\"\
+      The User-Agent header value for the API request\")\n    )\n    api_key_authentication:\
+      \ str = (\n        Field(..., description=\"The API key authentication token\
+      \ for the Toronto Stock Exchange API\")\n    )\n    tls_settings: str = (\n\
+      \        Field(..., description=\"The TLS settings, including the protocol version\
+      \ and cipher suite, for the API request\")\n    )\n    latency_expectation:\
+      \ int = (\n        Field(..., description=\"The expected latency for the API\
+      \ request, in milliseconds\")\n    )\n    data_centers: str = (\n        Field(...,\
+      \ description=\"The list of available data centers for the Toronto Stock Exchange\
+      \ API, including Toronto, New York, and London\")\n    )\n\n\ndef construct_toronto_stock_exchange_api_request(identify_toronto_stock_exchange_stocks_input:\
+      \ IdentifyTorontoStockExchangeStocksOutput, **kwargs) -> ConstructTorontoStockExchangeApiRequestOutput:\n\
+      \    \"\"\"\n    Constructs a technically sophisticated API request for retrieving\
+      \ data from\n    the Toronto Stock Exchange.\n\n    Returns\n    -------\n \
+      \   dict\n        A dictionary containing the API request string, API endpoint,\
+      \ user\n        agent header, API key authentication, TLS settings, latency\n\
+      \        expectation, and data centers\n\n    Examples\n    --------\n    >>>\
+      \ toronto_stock_exchange_api_request =\n    construct_toronto_stock_exchange_api_request('TSE')\n\
+      \    >>> print(toronto_stock_exchange_api_request['api_request_string'])\n \
+      \   >>> print(toronto_stock_exchange_api_request['api_endpoint'])\n    >>> print(toronto_stock_exchange_api_request['user_agent_header'])\n\
+      \    >>> print(toronto_stock_exchange_api_request['api_key_authentication'])\n\
+      \    >>> print(toronto_stock_exchange_api_request['tls_settings'])\n    >>>\
+      \ print(toronto_stock_exchange_api_request['latency_expectation'])\n    >>>\
+      \ print(toronto_stock_exchange_api_request['data_centers'])\n    {'api_request_string':\
+      \ ..., 'api_endpoint': ..., 'user_agent_header': ...,\n    'api_key_authentication':\
+      \ ..., 'tls_settings': ..., 'latency_expectation':\n    ..., 'data_centers':\
+      \ ...}\n\n    \"\"\"\n    return ConstructTorontoStockExchangeApiRequestOutput(\n\
+      \        api_request_string=\"\",\n        api_endpoint=\"\",\n        user_agent_header=\"\
+      \",\n        api_key_authentication=\"\",\n        tls_settings=\"\",\n    \
+      \    latency_expectation=0,\n        data_centers=\"\",\n    )"
     name: construct_toronto_stock_exchange_api_request
     nodes_depended_on:
     - identify_toronto_stock_exchange_stocks
@@ -289,14 +490,50 @@ nodes:
       with a valid API key. The request body should be formatted in JSON, containing
       the stock symbols and any additional required parameters, such as time intervals
       and data formats.
+    shims: []
   fetch_lse_stock_data:
     agent: false
+    code_node_type: stub
     description: Initiates a secured, HTTPS-based data fetch operation from the London
       Stock Exchange (LSE) via a meticulously constructed API request, incorporating
       detailed parameters for stock symbols, data frequency, and time range, while
       ensuring robust error handling and exception management to guarantee data integrity
       and consistency, across multiple datacenters in London, New York, and Singapore
       with latency averaging 50ms, 100ms, and 120ms respectively.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ConstructLseApiRequestOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for construct_lse_api_request node outputs.\"\"\"\n    lse_api_url: str =\
+      \ (\n        Field(..., description=\"The HTTPS URL of the LSE API request.\"\
+      )\n    )\n    query_parameters: List[str] = (\n        Field(..., description=\"\
+      A list of query parameters to be used in the LSE API request.\")\n    )\n  \
+      \  headers: List[str] = (\n        Field(..., description=\"A list of headers\
+      \ to be used in the LSE API request.\")\n    )\n    authentication: str = (\n\
+      \        Field(..., description=\"The authentication credentials used in the\
+      \ LSE API request.\")\n    )\n    latency_considerations: str = (\n        Field(...,\
+      \ description=\"The latency considerations used in the LSE API request.\")\n\
+      \    )\n    datacenter_routing_logic: str = (\n        Field(..., description=\"\
+      The datacenter routing logic used in the LSE API request.\")\n    )\n\n\nclass\
+      \ FetchLseStockDataOutput(BaseModel):\n    \"\"\"Pydantic model for fetch_lse_stock_data\
+      \ node outputs.\"\"\"\n    raw_data: str = (\n        Field(..., description=\"\
+      The raw JSON data received from the LSE API.\")\n    )\n    error: bool = (\n\
+      \        Field(..., description=\"Whether any errors occurred during the data\
+      \ fetch operation.\")\n    )\n    latency: float = (\n        Field(..., description=\"\
+      The average latency experienced during the data fetch operation.\")\n    )\n\
+      \    datacenter: str = (\n        Field(..., description=\"The datacenter used\
+      \ to fetch the data (one of London, New York, or Singapore).\")\n    )\n\n\n\
+      def fetch_lse_stock_data(construct_lse_api_request_input: ConstructLseApiRequestOutput,\
+      \ **kwargs) -> FetchLseStockDataOutput:\n    \"\"\"\n    Fetches stock data\
+      \ from the London Stock Exchange (LSE).\n\n    Parameters\n    ----------\n\
+      \    lse_api_request : str\n        The LSE API request.\n\n    Returns\n  \
+      \  -------\n    tuple[str, bool, float, str]\n        A tuple containing the\
+      \ raw JSON data, a boolean indicating whether\n        any errors occurred,\
+      \ the average latency, and the datacenter used to\n        fetch the data.\n\
+      \n    Raises\n    ------\n    Exception\n        If an unexpected error occurs\
+      \ during the data fetch operation.\n\n    Examples\n    --------\n    >>> lse_api_request\
+      \ = construct_lse_api_request().lse_api_url\n    (raw_json_data, False, latency,\
+      \ datacenter)\n\n    \"\"\"\n    return FetchLseStockDataOutput(\n        raw_data=\"\
+      \",\n        error=False,\n        latency=0.0,\n        datacenter=\"\",\n\
+      \    )"
     name: fetch_lse_stock_data
     nodes_depended_on:
     - construct_lse_api_request
@@ -340,10 +577,58 @@ nodes:
       request, handling errors and exceptions through retry mechanisms with exponential
       backoff, logging anomalous responses, and implementing circuit breakers to prevent
       cascading failures.
+    shims: []
   fetch_nasdaq_stock_data:
     agent: false
+    code_node_type: stub
     description: Retrieves the stock data from the NASDAQ exchange through a technically
       sophisticated API request.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ConstructNasdaqApiRequestOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for construct_nasdaq_api_request node outputs.\"\"\"\n    base_url: str =\
+      \ (\n        Field(..., description=\"Base URL for the NASDAQ data service\"\
+      )\n    )\n    query_params: List[str] = (\n        Field(..., description=\"\
+      List of query parameters for the request\")\n    )\n    tls_settings: str =\
+      \ (\n        Field(..., description=\"TLS settings for the request, including\
+      \ the cipher suite and HSTS enforcement\")\n    )\n    latency_expectations:\
+      \ str = (\n        Field(..., description=\"Expected latency for the request,\
+      \ in milliseconds\")\n    )\n    retry_policy: str = (\n        Field(..., description=\"\
+      Retry policy for the request, including the number of attempts and delay\")\n\
+      \    )\n    data_centers: List[str] = (\n        Field(..., description=\"List\
+      \ of data centers for the request, including primary, secondary, and tertiary\"\
+      )\n    )\n    request_string: str = (\n        Field(..., description=\"Full\
+      \ request string for the NASDAQ API\")\n    )\n    full_url: str = (\n     \
+      \   Field(..., description=\"Full URL for the NASDAQ API request\")\n    )\n\
+      \    expected_latency: float = (\n        Field(..., description=\"Expected\
+      \ latency for the request, in milliseconds\")\n    )\n\n\nclass FetchNasdaqStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for fetch_nasdaq_stock_data node outputs.\"\"\"\n\
+      \    nasdaq_stock_data: List[str] = (\n        Field(..., description=\"List\
+      \ of stock data in JSON format fetched from the NASDAQ API\")\n    )\n    nasdaq_api_endpoint:\
+      \ str = (\n        Field(..., description=\"API endpoint URI of the NASDAQ API\"\
+      )\n    )\n    nasdaq_query_params: str = (\n        Field(..., description=\"\
+      Query parameters used to specify stock symbols and date ranges\")\n    )\n \
+      \   nasdaq_http_headers: str = (\n        Field(..., description=\"HTTP headers\
+      \ used for authentication and rate limiting\")\n    )\n    nasdaq_latency: float\
+      \ = (\n        Field(..., description=\"Latency of the data feed in milliseconds\"\
+      )\n    )\n    nasdaq_data_feed_availability: str = (\n        Field(..., description=\"\
+      Metadata on data feed availability, including server response times and error\
+      \ messages\")\n    )\n\n\ndef fetch_nasdaq_stock_data(construct_nasdaq_api_request_input:\
+      \ ConstructNasdaqApiRequestOutput, **kwargs) -> FetchNasdaqStockDataOutput:\n\
+      \    \"\"\"\n    Constructs a secure, protocol-compliant HTTP(S) request to\
+      \ the NASDAQ API\n    and fetches the stock data over HTTPS.\n\n    Parameters\n\
+      \    ----------\n    api_request : str\n        API request string\n    timeout\
+      \ : int\n        Timeout in seconds\n    retry_policy : str\n        Retry policy\
+      \ for handling 500-level server errors\n\n    Returns\n    -------\n    dict\n\
+      \        Returns a dictionary containing the stock data in JSON format, API\n\
+      \        endpoint URI, query parameters, HTTP headers, latency, and data feed\n\
+      \        availability.\n\n    Raises\n    ------\n    Exception\n        Raises\
+      \ an exception if the API request fails or the timeout is\n        exceeded\n\
+      \n    Examples\n    --------\n    >>>\n    fetch_nasdaq_stock_data(api_request='https://api.nasdaq.com/qsvc/v1/stocks',\n\
+      \    timeout=5, retry_policy='2')\n    {\"nasdaq_stock_data\": [\"{\"symbol\"\
+      : \"AAPL\", \"price\": 150.0}\"]}\n\n    \"\"\"\n    return FetchNasdaqStockDataOutput(\n\
+      \        nasdaq_stock_data=[],\n        nasdaq_api_endpoint=\"\",\n        nasdaq_query_params=\"\
+      \",\n        nasdaq_http_headers=\"\",\n        nasdaq_latency=0.0,\n      \
+      \  nasdaq_data_feed_availability=\"\",\n    )"
     name: fetch_nasdaq_stock_data
     nodes_depended_on:
     - construct_nasdaq_api_request
@@ -400,12 +685,51 @@ nodes:
     prompt: Fetch the stock data from the NASDAQ using the constructed API request
       over HTTPS, with a timeout of 5 seconds and retry mechanism for handling 500-level
       server errors
+    shims: []
   fetch_nyse_stock_data:
     agent: false
+    code_node_type: stub
     description: Executes the authenticated HTTP request to the NYSE data feed, retrieves
       the latest market snapshot for the specified symbols, measures network latency,
       records the data center source, and returns a clean, structured dataset ready
       for analytical processing.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ConstructNyseApiRequestOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for construct_nyse_api_request node outputs.\"\"\"\n    nyse_api_request_string:\
+      \ str = (\n        Field(..., description=\"The constructed NYSE API request\
+      \ string.\")\n    )\n    api_endpoint: str = (\n        Field(..., description=\"\
+      The API endpoint URL for the NYSE stock data.\")\n    )\n    user_agent_header:\
+      \ str = (\n        Field(..., description=\"The User-Agent header value for\
+      \ the API request.\")\n    )\n    api_key_authentication: str = (\n        Field(...,\
+      \ description=\"The API key authentication token for the NYSE API.\")\n    )\n\
+      \    tls_settings: str = (\n        Field(..., description=\"The TLS settings,\
+      \ including the protocol version and cipher suite, for the API request.\")\n\
+      \    )\n    data_centers: List[str] = (\n        Field(..., description=\"The\
+      \ list of available data centers for the NYSE API, including New York (NY4),\
+      \ Chicago (CH1), and London (LD4).\")\n    )\n    latency_expectation: int =\
+      \ (\n        Field(..., description=\"The expected latency for the NYSE API\
+      \ request, in milliseconds.\")\n    )\n    retry_policy: str = (\n        Field(...,\
+      \ description=\"The retry policy for the NYSE API request, including the number\
+      \ of retries and the backoff strategy.\")\n    )\n    error_handling_mechanisms:\
+      \ str = (\n        Field(..., description=\"The comprehensive set of error handling\
+      \ mechanisms, including failure analysis and mitigation strategies.\")\n   \
+      \ )\n\n\nclass FetchNyseStockDataOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for fetch_nyse_stock_data node outputs.\"\"\"\n    NYSE_Data: str = Field(...,\
+      \ description=\"Clean, structured NYSE dataset\")\n    Network_Latency: float\
+      \ = (\n        Field(..., description=\"Network latency in milliseconds\")\n\
+      \    )\n    Data_Center_Source: str = (\n        Field(..., description=\"Data\
+      \ center source (e.g., New York, London)\")\n    )\n\n\ndef fetch_nyse_stock_data(construct_nyse_api_request_input:\
+      \ ConstructNyseApiRequestOutput, **kwargs) -> FetchNyseStockDataOutput:\n  \
+      \  \"\"\"Executes the authenticated HTTP request to the NYSE data feed, retrieves\
+      \ the latest market snapshot for the specified symbols, measures network latency,\
+      \ records the data center source, and returns a clean, structured dataset ready\
+      \ for analytical processing.\n\n    Args:\n        construct_nyse_api_request_input:\
+      \ Input from the 'construct_nyse_api_request' node.\n        **kwargs: Additional\
+      \ keyword arguments.\n\n    Returns:\n        FetchNyseStockDataOutput: Object\
+      \ containing outputs for this node.\n    \"\"\"\n    # TODO: Implement this\
+      \ function\n\n    # Return stub output with placeholder values\n    return FetchNyseStockDataOutput(\n\
+      \        NYSE_Data=\"\",\n        Network_Latency=0.0,\n        Data_Center_Source=\"\
+      \",\n    )"
     name: fetch_nyse_stock_data
     nodes_depended_on:
     - construct_nyse_api_request
@@ -420,16 +744,63 @@ nodes:
     - description: Data center source (e.g., New York, London)
       key: Data_Center_Source
       type: str
+    prd:
+      conceptual_info: ''
+      docstring:
+        examples: []
+        parameters: []
+        raises: []
+        returns: null
+        summary: ''
     prompt: 'Using the API request constructed by `construct_nyse_api_request`, send
       an HTTPS GET to the NYSE data feed endpoint with the appropriate `Authorization`
       bearer token and `Accept: application/json`.'
+    shims: []
   fetch_toronto_stock_exchange_stock_data:
     agent: false
+    code_node_type: stub
     description: Retrieves real-time stock price and volume data for the identified
       Toronto Stock Exchange securities. The node performs a secure HTTPS request
       to the TSE API, handling authentication, failover between primary and secondary
       data centers, and ensuring low-latency delivery. It validates the response schema,
       logs errors, and emits a clean JSON payload for downstream analytics.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass ConstructTorontoStockExchangeApiRequestOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for construct_toronto_stock_exchange_api_request node\
+      \ outputs.\"\"\"\n    api_request_string: str = (\n        Field(..., description=\"\
+      The constructed API request string\")\n    )\n    api_endpoint: str = (\n  \
+      \      Field(..., description=\"The API endpoint URL for the Toronto Stock Exchange\"\
+      )\n    )\n    user_agent_header: str = (\n        Field(..., description=\"\
+      The User-Agent header value for the API request\")\n    )\n    api_key_authentication:\
+      \ str = (\n        Field(..., description=\"The API key authentication token\
+      \ for the Toronto Stock Exchange API\")\n    )\n    tls_settings: str = (\n\
+      \        Field(..., description=\"The TLS settings, including the protocol version\
+      \ and cipher suite, for the API request\")\n    )\n    latency_expectation:\
+      \ int = (\n        Field(..., description=\"The expected latency for the API\
+      \ request, in milliseconds\")\n    )\n    data_centers: str = (\n        Field(...,\
+      \ description=\"The list of available data centers for the Toronto Stock Exchange\
+      \ API, including Toronto, New York, and London\")\n    )\n\n\nclass FetchTorontoStockExchangeStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for fetch_toronto_stock_exchange_stock_data node outputs.\"\
+      \"\"\n    timestamp: str = Field(..., description=\"ISO-8601 UTC of record ingestion\"\
+      )\n    exchange: str = Field(..., description=\"NYSE\")\n    symbol: str = Field(...,\
+      \ description=\"Ticker symbol\")\n    price: float = Field(..., description=\"\
+      Last traded price\")\n    volume: int = Field(..., description=\"Total traded\
+      \ volume\")\n    metadata: str = (\n        Field(..., description=\"Object\
+      \ containing latency_ms, datacenter, and source_url\")\n    )\n\n\ndef fetch_toronto_stock_exchange_stock_data(construct_toronto_stock_exchange_api_request_input:\
+      \ ConstructTorontoStockExchangeApiRequestOutput, **kwargs) -> FetchTorontoStockExchangeStockDataOutput:\n\
+      \    \"\"\"\n    Perform HTTPS GET request to the Toronto Stock Exchange data\
+      \ service with\n    specified query parameters and authentication headers.\n\
+      \n    Parameters\n    ----------\n    api_request : str\n        Fully constructed\
+      \ API request\n\n    Returns\n    -------\n    dict[str, any]\n        Parsed\
+      \ JSON response from the TSE API\n\n    Raises\n    ------\n    requests.RequestException\n\
+      \        If there is a problem with the HTTPS request\n    json.JSONDecodeError\n\
+      \        If the response is not valid JSON\n\n    Examples\n    --------\n \
+      \   >>> response = fetch_toronto_stock_exchange_stock_data('api_request')\n\
+      \    {'timestamp': '2023-03-01 10:00:00', 'exchange': 'NYSE', 'symbol': 'AAPL',\n\
+      \    'price': 100.0, 'volume': 1000, 'metadata': {'latency_ms': 80, 'datacenter':\n\
+      \    'Toronoto', 'source_url': 'https://api.tse.ca/v1/quotes'}\n\n    \"\"\"\
+      \n    return FetchTorontoStockExchangeStockDataOutput(\n        timestamp=\"\
+      \",\n        exchange=\"\",\n        symbol=\"\",\n        price=0.0,\n    \
+      \    volume=0,\n        metadata=\"\",\n    )"
     name: fetch_toronto_stock_exchange_stock_data
     nodes_depended_on:
     - construct_toronto_stock_exchange_api_request
@@ -488,13 +859,43 @@ nodes:
       and return the payload as a parsed JSON object. Log any HTTP status codes outside
       the 2xx range and retry up to two times with exponential backoff (initial delay
       200 ms, multiplier 2).'
+    shims: []
   identify_lse_stocks:
     agent: false
+    code_node_type: stub
     description: Generates a comprehensive, protocol‑aware catalogue of London Stock
       Exchange (LSE) equities to be queried. The output includes precise data‑feed
       details—protocol, latency expectations, and geographically proximate data‑centre
       information—to enable downstream nodes to select the optimal ingestion pathway
       and satisfy strict performance SLAs.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass IdentifyLseStocksOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for identify_lse_stocks node outputs.\"\"\"\n    symbol:\
+      \ str = (\n        Field(..., description=\"The primary market code (e.g., 'LON')\
+      \ and ticker.\")\n    )\n    market: int = Field(..., description=\"The market\
+      \ code (e.g., 1, 2...).\")\n    protocol: str = (\n        Field(..., description=\"\
+      The preferred data feed protocol (e.g., FIX, REST, WebSocket).\")\n    )\n \
+      \   latency_ms: int = (\n        Field(..., description=\"Expected latency window\
+      \ (ms) for real\\u2011time quotes and end\\u2011of\\u2011day snapshots.\")\n\
+      \    )\n    datacenter: str = (\n        Field(..., description=\"The nearest\
+      \ data centre location (e.g., 'London\\u2011West', 'London\\u2011East').\")\n\
+      \    )\n    tier: int = (\n        Field(..., description=\"Optional: the subscription\
+      \ tier required (e.g., Tier 1, Tier 2, Tier 3).\")\n    )\n\n\ndef identify_lse_stocks(general_input:\
+      \ str, **kwargs) -> IdentifyLseStocksOutput:\n    \"\"\"\n    Return a structured\
+      \ catalogue of LSE equities with per-symbol data feed\n    protocol, latency,\
+      \ and datacenter requirements.\n\n    Returns\n    -------\n    List[Dict[str,\
+      \ Union[str, int]]]\n        A list of records, each describing an LSE symbol\
+      \ with fields:\n        symbol, market, protocol, latency_ms, datacenter, and\
+      \ tier.\n\n    Raises\n    ------\n    ValueError\n        Raised if the catalogue\
+      \ cannot be retrieved or a symbol entry is\n        malformed.\n    RuntimeError\n\
+      \        Raised if downstream data feeds or data centers are unavailable.\n\n\
+      \    Examples\n    --------\n    >>> identify_lse_stocks()\n    [{\"symbol\"\
+      : \"LON-AAL\", \"market\": 1, \"protocol\": \"REST\", \"latency_ms\": 120,\n\
+      \    \"datacenter\": \"London-West\", \"tier\": 1}]\n\n    >>> identify_lse_stocks()\n\
+      \    [{\"symbol\": \"LON-LLOY\", \"market\": 1, \"protocol\": \"FIX\", \"latency_ms\"\
+      : 65,\n    \"datacenter\": \"London-East\", \"tier\": 2}]\n\n    \"\"\"\n  \
+      \  return IdentifyLseStocksOutput(\n        symbol=\"\",\n        market=0,\n\
+      \        protocol=\"\",\n        latency_ms=0,\n        datacenter=\"\",\n \
+      \       tier=0,\n    )"
     name: identify_lse_stocks
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -565,11 +966,38 @@ nodes:
       and satisfy strict performance SLAs.
 
       Agent: False'
+    shims: []
   identify_nasdaq_stocks:
     agent: false
+    code_node_type: stub
     description: Selects a curated set of NASDAQ-listed equities for data retrieval,
       specifying for each the optimal data feed protocol, expected latency, and preferred
       datacenter location.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass IdentifyNasdaqStocksOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ identify_nasdaq_stocks node outputs.\"\"\"\n    nasdaq_stock_symbols: List[str]\
+      \ = (\n        Field(..., description=\"Comma-separated list of NASDAQ stock\
+      \ symbols\")\n    )\n    protocol: str = (\n        Field(..., description=\"\
+      Optimal data feed protocol for each symbol\")\n    )\n    expected_latency:\
+      \ List[float] = (\n        Field(..., description=\"Expected round-trip latency\
+      \ in milliseconds for each symbol\")\n    )\n    datacenter: str = (\n     \
+      \   Field(..., description=\"Nearest available data center or region for each\
+      \ symbol\")\n    )\n    constraints: str = (\n        Field(..., description=\"\
+      Protocol-specific authentication or rate-limit constraints for each symbol\"\
+      )\n    )\n\n\ndef identify_nasdaq_stocks(general_input: str, **kwargs) -> IdentifyNasdaqStocksOutput:\n\
+      \    \"\"\"\n    Retrieves a list of NASDAQ stock symbols with their optimal\
+      \ data feed\n    protocols, expected latencies, and data center locations.\n\
+      \n    Parameters\n    ----------\n    nasdaq_stocks : List[str]\n        List\
+      \ of NASDAQ stock symbols\n\n    Returns\n    -------\n    List[Dict[str, str]]\n\
+      \        List of dictionaries containing NASDAQ stock symbol information\n\n\
+      \    Raises\n    ------\n    ValueError\n        If the input list is empty\
+      \ or invalid\n\n    Examples\n    --------\n    >>> nasdaq_stocks = ['AAPL',\
+      \ 'MSFT', 'GOOGL']\n    >>> result = identify_nasdaq_stocks(nasdaq_stocks)\n\
+      \    ['AAPL: Bloomberg API v4, 50ms, US-East-Coast, authentication required',\n\
+      \    'MSFT: IEX Cloud, 30ms, EU-London, no constraints', 'GOOGL: Nasdaq TotalView\n\
+      \    2.0, 20ms, APAC-Tokyo, no constraints']\n\n    \"\"\"\n    return IdentifyNasdaqStocksOutput(\n\
+      \        nasdaq_stock_symbols=[],\n        protocol=\"\",\n        expected_latency=[],\n\
+      \        datacenter=\"\",\n        constraints=\"\",\n    )"
     name: identify_nasdaq_stocks
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -622,8 +1050,10 @@ nodes:
       (e.g., US-East-Coast, EU-London, APAC-Tokyo) that offers the lowest latency
       for each feed - Any protocol-specific authentication or rate-limit constraints
       that must be respected'
+    shims: []
   identify_nyse_stocks:
     agent: false
+    code_node_type: stub
     description: '
 
       Retrieves the comprehensive, real-time list of NYSE equities by querying the
@@ -631,6 +1061,22 @@ nodes:
       and rate-limit retries.
 
       '
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass IdentifyNyseStocksOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ identify_nyse_stocks node outputs.\"\"\"\n    NYSE_equities: List[str] = Field(...,\
+      \ description=\"List of NYSE equities\")\n    equity_count: int = Field(...,\
+      \ description=\"Total number of NYSE equities\")\n    fetch_success: bool =\
+      \ (\n        Field(..., description=\"Whether the data fetch operation was successful\"\
+      )\n    )\n\n\ndef identify_nyse_stocks(general_input: str, **kwargs) -> IdentifyNyseStocksOutput:\n\
+      \    \"\"\"\nRetrieves the comprehensive, real-time list of NYSE equities by\
+      \ querying the NYSE public data feed via HTTPS/2 with TLS 1.3, handling pagination,\
+      \ authentication, and rate-limit retries.\n\n\n    Args:\n        general_input:\
+      \ General input string for the root node.\n        **kwargs: Additional keyword\
+      \ arguments.\n\n    Returns:\n        IdentifyNyseStocksOutput: Object containing\
+      \ outputs for this node.\n    \"\"\"\n    # TODO: Implement this function\n\n\
+      \    # Return stub output with placeholder values\n    return IdentifyNyseStocksOutput(\n\
+      \        NYSE_equities=[],\n        equity_count=0,\n        fetch_success=False,\n\
+      \    )"
     name: identify_nyse_stocks
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -644,19 +1090,63 @@ nodes:
     - description: Whether the data fetch operation was successful
       key: fetch_success
       type: bool
+    prd:
+      conceptual_info: ''
+      docstring:
+        examples: []
+        parameters: []
+        raises: []
+        returns: null
+        summary: ''
     prompt: '
 
       Query the NYSE market data API to enumerate all active equities for the current
       trading day.
 
       '
+    shims: []
   identify_toronto_stock_exchange_stocks:
     agent: false
+    code_node_type: stub
     description: Compiles a comprehensive, protocol-aware catalog of active Toronto
       Stock Exchange equities for automated data ingestion. The node specifies each
       ticker's sector, market-cap classification, optimal data-feed protocol with
       associated latency expectations, and the primary data-center location to enable
       latency-optimized routing and high-availability strategies.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass IdentifyTorontoStockExchangeStocksOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for identify_toronto_stock_exchange_stocks node outputs.\"\
+      \"\"\n    ticker: str = Field(..., description=\"4-letter ticker symbol\")\n\
+      \    company_name: str = Field(..., description=\"Full legal name of the company\"\
+      )\n    sector_industry: str = (\n        Field(..., description=\"Sector and\
+      \ industry classification (SGI/Global Industry Classification standard)\")\n\
+      \    )\n    market_cap_tier: str = (\n        Field(..., description=\"Market\
+      \ capitalization tier: Large, Mid, or Small\")\n    )\n    preferred_data_feed_protocol:\
+      \ str = (\n        Field(..., description=\"Preferred data feed protocol: WebSocket,\
+      \ REST, or FIX\")\n    )\n    expected_latency_ms: int = (\n        Field(...,\
+      \ description=\"Expected latency in milliseconds for real-time data feed\")\n\
+      \    )\n    datacenter: str = (\n        Field(..., description=\"Primary data\
+      \ center location (e.g., Toronto ON-1)\")\n    )\n\n\ndef identify_toronto_stock_exchange_stocks(general_input:\
+      \ str, **kwargs) -> IdentifyTorontoStockExchangeStocksOutput:\n    \"\"\"\n\
+      \    Return a curated list of Toronto Stock Exchange equities with ticker,\n\
+      \    company_name, sector_industry, market_cap_tier,\n    preferred_data_feed_protocol,\
+      \ expected_latency_ms, and datacenter.\n\n    Returns\n    -------\n    List[Dict[str,\
+      \ Any]]\n        A list where each element is a dict with keys: ticker, company_name,\n\
+      \        sector_industry, market_cap_tier, preferred_data_feed_protocol,\n \
+      \       expected_latency_ms, datacenter.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If the resolved catalog contains missing mandatory fields or invalid\n\
+      \        value ranges.\n    TypeError\n        If the resolved catalog elements\
+      \ are not dictionaries with the\n        expected schema.\n\n    Examples\n\
+      \    --------\n    >>> identify_toronto_stock_exchange_stocks()\n    [{'ticker':\
+      \ 'BCE', 'company_name': 'BCE Inc.', 'sector_industry':\n    'Communication\
+      \ Services - Telecom', 'market_cap_tier': 'Large',\n    'preferred_data_feed_protocol':\
+      \ 'WebSocket', 'expected_latency_ms': 20,\n    'datacenter': 'Toronto (ON-1)'},\
+      \ {'ticker': 'SHOP', 'company_name': 'Shopify\n    Inc.', 'sector_industry':\
+      \ 'Technology - Internet Retail', 'market_cap_tier':\n    'Large', 'preferred_data_feed_protocol':\
+      \ 'REST', 'expected_latency_ms': 45,\n    'datacenter': 'Toronto (ON-1)'}]\n\
+      \n    \"\"\"\n    return IdentifyTorontoStockExchangeStocksOutput(\n       \
+      \ ticker=\"\",\n        company_name=\"\",\n        sector_industry=\"\",\n\
+      \        market_cap_tier=\"\",\n        preferred_data_feed_protocol=\"\",\n\
+      \        expected_latency_ms=0,\n        datacenter=\"\",\n    )"
     name: identify_toronto_stock_exchange_stocks
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -738,12 +1228,47 @@ nodes:
       ticker''s sector, market-cap classification, optimal data-feed protocol with
       associated latency expectations, and the primary data-center location to enable
       latency-optimized routing and high-availability strategies.'
+    shims: []
   normalize_combined_stock_data:
     agent: false
+    code_node_type: stub
     description: Performs protocol-level alignment, missing-value handling, consistency
       validation, latency annotation, and datacenter tagging on the consolidated multi-exchange
       stock dataset to produce a clean, uniformly formatted, and traceable Parquet
       archive ready for downstream analytics and model training.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass StoreCombinedStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for store_combined_stock_data node outputs.\"\"\"\n\
+      \    schema_validated: bool = (\n        Field(..., description=\"Whether the\
+      \ data is schema-validated\")\n    )\n    versioning_status: str = (\n     \
+      \   Field(..., description=\"Current versioning status of the data lake\")\n\
+      \    )\n    ingestion_latency_ms: int = (\n        Field(..., description=\"\
+      Latency of data ingestion in milliseconds\")\n    )\n    data_lake_region: str\
+      \ = (\n        Field(..., description=\"Region where the data lake is located\"\
+      )\n    )\n    data_lake_size_gb: float = (\n        Field(..., description=\"\
+      Current size of the data lake in GB\")\n    )\n\n\nclass NormalizeCombinedStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for normalize_combined_stock_data node outputs.\"\"\
+      \"\n    latency_annotation: float = (\n        Field(..., description=\"The\
+      \ average latency of the combined stock data.\")\n    )\n    datacenter_tag:\
+      \ str = (\n        Field(..., description=\"The datacenter where the stock data\
+      \ was stored.\")\n    )\n    schema_validated: bool = (\n        Field(...,\
+      \ description=\"Whether the stock data schema is valid.\")\n    )\n\n\ndef normalize_combined_stock_data(store_combined_stock_data_input:\
+      \ StoreCombinedStockDataOutput, **kwargs) -> NormalizeCombinedStockDataOutput:\n\
+      \    \"\"\"\n    Normalize the unified stock dataset and annotate provenance\
+      \ to produce a\n    clean, schema-validated Parquet archive.\n\n    Parameters\n\
+      \    ----------\n    consolidated_dataset_uri : str\n        URI to the consolidated\
+      \ stock dataset created by\n        store_combined_stock_data.\n\n    Returns\n\
+      \    -------\n    tuple[float, str, bool]\n        A tuple containing (latency_annotation\
+      \ in ms, datacenter_tag,\n        schema_validated).\n\n    Raises\n    ------\n\
+      \    ValueError\n        If the input URI is invalid or points to a non-stock\
+      \ dataset.\n    FileNotFoundError\n        If the dataset cannot be located.\n\
+      \    RuntimeError\n        If schema validation fails or required metadata is\
+      \ missing.\n\n    Examples\n    --------\n    >>> normalize_combined_stock_data({'consolidated_dataset_uri':\
+      \ 's3://data-\n    lake/combined_stock_v1.parquet'})\n    (latency_annotation=12.5,\
+      \ datacenter_tag='us-east-1', schema_validated=True)\n\n    >>> normalize_combined_stock_data({'consolidated_dataset_uri':\n\
+      \    'gs://bucket/combined_v2.parquet'})\n    (latency_annotation=48.7, datacenter_tag='eu-west-2',\
+      \ schema_validated=True)\n\n    \"\"\"\n    return NormalizeCombinedStockDataOutput(\n\
+      \        latency_annotation=0.0,\n        datacenter_tag=\"\",\n        schema_validated=False,\n\
+      \    )"
     name: normalize_combined_stock_data
     nodes_depended_on:
     - store_combined_stock_data
@@ -794,11 +1319,43 @@ nodes:
       validation, latency annotation, and datacenter tagging on the consolidated multi-exchange
       stock dataset to produce a clean, uniformly formatted, and traceable Parquet
       archive ready for downstream analytics and model training.
+    shims: []
   parse_lse_stock_data:
     agent: false
+    code_node_type: stub
     description: Transforms raw LSE stock data fetched via HTTPS into a sanitized,
       schema-validated Pandas DataFrame, enriching the output with protocol, latency,
       and datacenter provenance for downstream analytics and SLA monitoring.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass FetchLseStockDataOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ fetch_lse_stock_data node outputs.\"\"\"\n    raw_data: str = (\n        Field(...,\
+      \ description=\"The raw JSON data received from the LSE API.\")\n    )\n   \
+      \ error: bool = (\n        Field(..., description=\"Whether any errors occurred\
+      \ during the data fetch operation.\")\n    )\n    latency: float = (\n     \
+      \   Field(..., description=\"The average latency experienced during the data\
+      \ fetch operation.\")\n    )\n    datacenter: str = (\n        Field(..., description=\"\
+      The datacenter used to fetch the data (one of London, New York, or Singapore).\"\
+      )\n    )\n\n\nclass ParseLseStockDataOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for parse_lse_stock_data node outputs.\"\"\"\n    lse_api_response:\
+      \ str = (\n        Field(..., description=\"The raw API response from the LSE\"\
+      )\n    )\n    dataframe_rows: List[str] = (\n        Field(..., description=\"\
+      The rows of the parsed Pandas DataFrame as a list of strings\")\n    )\n   \
+      \ protocol_used: str = (\n        Field(..., description=\"The protocol used\
+      \ for fetching the LSE stock data\")\n    )\n    fetch_latency_ms: float = (\n\
+      \        Field(..., description=\"The latency in milliseconds for fetching the\
+      \ LSE stock data\")\n    )\n    datacenter_origin: str = (\n        Field(...,\
+      \ description=\"The datacenter origin of the LSE stock data\")\n    )\n\n\n\
+      def parse_lse_stock_data(fetch_lse_stock_data_input: FetchLseStockDataOutput,\
+      \ **kwargs) -> ParseLseStockDataOutput:\n    \"\"\"Transforms raw LSE stock\
+      \ data fetched via HTTPS into a sanitized, schema-validated Pandas DataFrame,\
+      \ enriching the output with protocol, latency, and datacenter provenance for\
+      \ downstream analytics and SLA monitoring.\n\n    Args:\n        fetch_lse_stock_data_input:\
+      \ Input from the 'fetch_lse_stock_data' node.\n        **kwargs: Additional\
+      \ keyword arguments.\n\n    Returns:\n        ParseLseStockDataOutput: Object\
+      \ containing outputs for this node.\n    \"\"\"\n    # TODO: Implement this\
+      \ function\n\n    # Return stub output with placeholder values\n    return ParseLseStockDataOutput(\n\
+      \        lse_api_response=\"\",\n        dataframe_rows=[],\n        protocol_used=\"\
+      \",\n        fetch_latency_ms=0.0,\n        datacenter_origin=\"\",\n    )"
     name: parse_lse_stock_data
     nodes_depended_on:
     - fetch_lse_stock_data
@@ -819,14 +1376,64 @@ nodes:
     - description: The datacenter origin of the LSE stock data
       key: datacenter_origin
       type: str
+    prd:
+      conceptual_info: ''
+      docstring:
+        examples: []
+        parameters: []
+        raises: []
+        returns: null
+        summary: ''
     prompt: Parse the raw CSV/JSON payload returned by the LSE API into a clean, normalized
       Pandas DataFrame.
+    shims: []
   parse_nasdaq_stock_data:
     agent: false
+    code_node_type: stub
     description: Converts raw NASDAQ API responses into a clean, structured dataset.
       Handles protocol-level details such as datacenter origin, fetch latency, and
       parse timing, while ensuring data integrity and compliance with the feed’s latency
       SLAs.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass FetchNasdaqStockDataOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ fetch_nasdaq_stock_data node outputs.\"\"\"\n    nasdaq_stock_data: List[str]\
+      \ = (\n        Field(..., description=\"List of stock data in JSON format fetched\
+      \ from the NASDAQ API\")\n    )\n    nasdaq_api_endpoint: str = (\n        Field(...,\
+      \ description=\"API endpoint URI of the NASDAQ API\")\n    )\n    nasdaq_query_params:\
+      \ str = (\n        Field(..., description=\"Query parameters used to specify\
+      \ stock symbols and date ranges\")\n    )\n    nasdaq_http_headers: str = (\n\
+      \        Field(..., description=\"HTTP headers used for authentication and rate\
+      \ limiting\")\n    )\n    nasdaq_latency: float = (\n        Field(..., description=\"\
+      Latency of the data feed in milliseconds\")\n    )\n    nasdaq_data_feed_availability:\
+      \ str = (\n        Field(..., description=\"Metadata on data feed availability,\
+      \ including server response times and error messages\")\n    )\n\n\nclass ParseNasdaqStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for parse_nasdaq_stock_data node outputs.\"\"\"\n\
+      \    symbol: str = Field(..., description=\"Stock symbol.\")\n    date: str\
+      \ = Field(..., description=\"ISO-8601 UTC date.\")\n    open: float = Field(...,\
+      \ description=\"Opening price.\")\n    high: float = Field(..., description=\"\
+      Highest price during the interval.\")\n    low: float = Field(..., description=\"\
+      Lowest price during the interval.\")\n    close: float = Field(..., description=\"\
+      Closing price.\")\n    volume: int = Field(..., description=\"Traded volume.\"\
+      )\n    adjusted_close: float = (\n        Field(..., description=\"Adjusted\
+      \ close for splits/dividends.\")\n    )\n    market_cap: float = Field(...,\
+      \ description=\"Market capitalization.\")\n    source_datacenter: str = Field(...,\
+      \ description=\"Datacenter origin.\")\n    fetch_latency_ms: int = (\n     \
+      \   Field(..., description=\"Fetch latency in milliseconds.\")\n    )\n    parse_duration_ms:\
+      \ int = (\n        Field(..., description=\"Parse duration in milliseconds.\"\
+      )\n    )\n\n\ndef parse_nasdaq_stock_data(fetch_nasdaq_stock_data_input: FetchNasdaqStockDataOutput,\
+      \ **kwargs) -> ParseNasdaqStockDataOutput:\n    \"\"\"Converts raw NASDAQ API\
+      \ responses into a clean, structured dataset. Handles protocol-level details\
+      \ such as datacenter origin, fetch latency, and parse timing, while ensuring\
+      \ data integrity and compliance with the feed’s latency SLAs.\n\n    Args:\n\
+      \        fetch_nasdaq_stock_data_input: Input from the 'fetch_nasdaq_stock_data'\
+      \ node.\n        **kwargs: Additional keyword arguments.\n\n    Returns:\n \
+      \       ParseNasdaqStockDataOutput: Object containing outputs for this node.\n\
+      \    \"\"\"\n    # TODO: Implement this function\n\n    # Return stub output\
+      \ with placeholder values\n    return ParseNasdaqStockDataOutput(\n        symbol=\"\
+      \",\n        date=\"\",\n        open=0.0,\n        high=0.0,\n        low=0.0,\n\
+      \        close=0.0,\n        volume=0,\n        adjusted_close=0.0,\n      \
+      \  market_cap=0.0,\n        source_datacenter=\"\",\n        fetch_latency_ms=0,\n\
+      \        parse_duration_ms=0,\n    )"
     name: parse_nasdaq_stock_data
     nodes_depended_on:
     - fetch_nasdaq_stock_data
@@ -868,6 +1475,14 @@ nodes:
     - description: Parse duration in milliseconds.
       key: parse_duration_ms
       type: int
+    prd:
+      conceptual_info: ''
+      docstring:
+        examples: []
+        parameters: []
+        raises: []
+        returns: null
+        summary: ''
     prompt: 'Parse the raw NASDAQ JSON payload returned by the API into a normalized,
       query-ready table. The input will include a timestamped, multi-asset bundle
       from a specific datacenter (US-East or US-West). For each record, extract the
@@ -880,11 +1495,38 @@ nodes:
       with an upper bound of 5 s per full payload. If the payload exceeds 10 MB, split
       it into paginated segments and process each sequentially, aggregating the results
       into the final array.'
+    shims: []
   parse_nyse_stock_data:
     agent: false
+    code_node_type: stub
     description: Transforms raw NYSE stock data retrieved over HTTPS into a normalized,
       time-stamped JSON structure, incorporating latency metrics, datacenter provenance,
       and rigorous validation to ensure downstream consistency.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass FetchNyseStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for fetch_nyse_stock_data node outputs.\"\"\"\n  \
+      \  NYSE_Data: str = Field(..., description=\"Clean, structured NYSE dataset\"\
+      )\n    Network_Latency: float = (\n        Field(..., description=\"Network\
+      \ latency in milliseconds\")\n    )\n    Data_Center_Source: str = (\n     \
+      \   Field(..., description=\"Data center source (e.g., New York, London)\")\n\
+      \    )\n\n\nclass ParseNyseStockDataOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for parse_nyse_stock_data node outputs.\"\"\"\n    timestamp: str = (\n  \
+      \      Field(..., description=\"ISO\\u20118601 UTC of record ingestion\")\n\
+      \    )\n    exchange: str = Field(..., description=\"NYSE\")\n    symbol: str\
+      \ = Field(..., description=\"ticker symbol\")\n    price: float = Field(...,\
+      \ description=\"last traded price (float)\")\n    volume: int = Field(..., description=\"\
+      total traded volume (integer)\")\n    metadata: str = (\n        Field(...,\
+      \ description=\"object containing `latency_ms`, `datacenter`, and `source_url`\"\
+      )\n    )\n\n\ndef parse_nyse_stock_data(fetch_nyse_stock_data_input: FetchNyseStockDataOutput,\
+      \ **kwargs) -> ParseNyseStockDataOutput:\n    \"\"\"Transforms raw NYSE stock\
+      \ data retrieved over HTTPS into a normalized, time-stamped JSON structure,\
+      \ incorporating latency metrics, datacenter provenance, and rigorous validation\
+      \ to ensure downstream consistency.\n\n    Args:\n        fetch_nyse_stock_data_input:\
+      \ Input from the 'fetch_nyse_stock_data' node.\n        **kwargs: Additional\
+      \ keyword arguments.\n\n    Returns:\n        ParseNyseStockDataOutput: Object\
+      \ containing outputs for this node.\n    \"\"\"\n    # TODO: Implement this\
+      \ function\n\n    # Return stub output with placeholder values\n    return ParseNyseStockDataOutput(\n\
+      \        timestamp=\"\",\n        exchange=\"\",\n        symbol=\"\",\n   \
+      \     price=0.0,\n        volume=0,\n        metadata=\"\",\n    )"
     name: parse_nyse_stock_data
     nodes_depended_on:
     - fetch_nyse_stock_data
@@ -908,6 +1550,14 @@ nodes:
     - description: object containing `latency_ms`, `datacenter`, and `source_url`
       key: metadata
       type: str
+    prd:
+      conceptual_info: ''
+      docstring:
+        examples: []
+        parameters: []
+        raises: []
+        returns: null
+        summary: ''
     prompt: "Parse the fetched NYSE stock data into a clean, query-friendly schema:\\\
       \n1. **Protocol details** – Assume the data arrives over HTTPS via the NYSE’s\
       \ public API using JSON-lines format with `application/json` content-type.\\\
@@ -926,12 +1576,51 @@ nodes:
       \ current system time. Flag and discard any malformed records.\\\n6. **Return**\
       \ – A list of validated, structured records ready for downstream analytics or\
       \ storage.\\\n      "
+    shims: []
   parse_toronto_stock_exchange_stock_data:
     agent: false
+    code_node_type: stub
     description: Transforms the raw JSON stock feed from the Toronto Stock Exchange
       into a rigorously validated, high-precision time-series DataFrame, enriching
       it with latency and datacenter provenance metadata for auditability and downstream
       analytics.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass FetchTorontoStockExchangeStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for fetch_toronto_stock_exchange_stock_data node outputs.\"\
+      \"\"\n    timestamp: str = Field(..., description=\"ISO-8601 UTC of record ingestion\"\
+      )\n    exchange: str = Field(..., description=\"NYSE\")\n    symbol: str = Field(...,\
+      \ description=\"Ticker symbol\")\n    price: float = Field(..., description=\"\
+      Last traded price\")\n    volume: int = Field(..., description=\"Total traded\
+      \ volume\")\n    metadata: str = (\n        Field(..., description=\"Object\
+      \ containing latency_ms, datacenter, and source_url\")\n    )\n\n\nclass ParseTorontoStockExchangeStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for parse_toronto_stock_exchange_stock_data node outputs.\"\
+      \"\"\n    ticker: str = Field(..., description=\"Ticker symbol.\")\n    timestamp:\
+      \ str = (\n        Field(..., description=\"Exact trade timestamp (ISO 8601\
+      \ UTC)\")\n    )\n    open: float = Field(..., description=\"Opening price.\"\
+      )\n    high: float = Field(..., description=\"Highest price during the interval.\"\
+      )\n    low: float = Field(..., description=\"Lowest price during the interval.\"\
+      )\n    close: float = Field(..., description=\"Closing price.\")\n    volume:\
+      \ int = Field(..., description=\"Traded volume.\")\n    adjusted_close: float\
+      \ = (\n        Field(..., description=\"Adjusted close for splits/dividends.\"\
+      )\n    )\n\n\ndef parse_toronto_stock_exchange_stock_data(fetch_toronto_stock_exchange_stock_data_input:\
+      \ FetchTorontoStockExchangeStockDataOutput, **kwargs) -> ParseTorontoStockExchangeStockDataOutput:\n\
+      \    \"\"\"\n    Validates Toronto Stock Exchange API data into a high-precision\
+      \ time-series\n    DataFrame.\n\n    Returns\n    -------\n    DataFrame\n \
+      \       Validated and transformed time-series data.\n\n    Raises\n    ------\n\
+      \    ValueError\n        Invalid data format or missing required fields.\n\n\
+      \    Examples\n    --------\n    >>> api_response = {'timestamp': '2022-01-01T12:00:00',\
+      \ 'ticker': 'AAPL',\n    'open': 100.0, 'high': 120.0, 'low': 90.0, 'close':\
+      \ 110.0, 'volume': 10000,\n    'adjusted_close': 115.0}\n    >>> dataframe =\
+      \ parse_toronto_stock_exchange_stock_data(api_response)\n    >>> print(dataframe)\n\
+      \        ticker  timestamp  open  high   low  close  volume  adjusted_close\n\
+      \    0     AAPL 2022-01-01T12:00:00  100.0  120.0   90.0  110.0  10000\n   \
+      \ 115.0\n\n    >>> api_response = {'timestamp': None, 'ticker': 'AAPL', 'open':\
+      \ 100.0,\n    'high': 120.0, 'low': 90.0, 'close': 110.0, 'volume': 10000,\n\
+      \    'adjusted_close': 115.0}\n    >>> dataframe = parse_toronto_stock_exchange_stock_data(api_response)\n\
+      \    >>> print(dataframe)\n    ValueError: Invalid data format or missing required\
+      \ fields.\n\n    \"\"\"\n    return ParseTorontoStockExchangeStockDataOutput(\n\
+      \        ticker=\"\",\n        timestamp=\"\",\n        open=0.0,\n        high=0.0,\n\
+      \        low=0.0,\n        close=0.0,\n        volume=0,\n        adjusted_close=0.0,\n\
+      \    )"
     name: parse_toronto_stock_exchange_stock_data
     nodes_depended_on:
     - fetch_toronto_stock_exchange_stock_data
@@ -993,10 +1682,44 @@ nodes:
           DataFrame.
     prompt: 'Parse the raw JSON payload returned from the Toronto Stock Exchange API
       into a canonical, time-series DataFrame with the following schema:'
+    shims: []
   repartition_combined_stock_data:
     agent: false
+    code_node_type: stub
     description: Reorganizes the normalized stock dataset into an efficient, distributed
       partition layout that matches the chosen storage engine’s key strategy.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass NormalizeCombinedStockDataOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for normalize_combined_stock_data node outputs.\"\"\"\n    latency_annotation:\
+      \ float = (\n        Field(..., description=\"The average latency of the combined\
+      \ stock data.\")\n    )\n    datacenter_tag: str = (\n        Field(..., description=\"\
+      The datacenter where the stock data was stored.\")\n    )\n    schema_validated:\
+      \ bool = (\n        Field(..., description=\"Whether the stock data schema is\
+      \ valid.\")\n    )\n\n\nclass RepartitionCombinedStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for repartition_combined_stock_data node outputs.\"\
+      \"\"\n    storage_layout_name: str = (\n        Field(..., description=\"Name\
+      \ of the chosen storage layout\")\n    )\n    optimized_partitions_count: int\
+      \ = (\n        Field(..., description=\"Number of optimized partitions\")\n\
+      \    )\n    total_data_size_gb: float = Field(..., description=\"Total data\
+      \ size in GB\")\n    latency_optimized_percentage: float = (\n        Field(...,\
+      \ description=\"Percentage of latency optimized\")\n    )\n    data_distribution_metrics:\
+      \ List[bool] = (\n        Field(..., description=\"List of metrics for data\
+      \ distribution\")\n    )\n\n\ndef repartition_combined_stock_data(normalize_combined_stock_data_input:\
+      \ NormalizeCombinedStockDataOutput, **kwargs) -> RepartitionCombinedStockDataOutput:\n\
+      \    \"\"\"\n    Repartitions the normalized combined stock data into a distributed\
+      \ storage\n    layout.\n\n    Parameters\n    ----------\n    combined_stock_data\
+      \ : dict\n        Normalized combined stock data\n\n    Returns\n    -------\n\
+      \    dict\n        Storage layout name, optimized partitions count, total data\
+      \ size in\n        GB, latency optimized percentage, and data distribution metrics\n\
+      \n    Raises\n    ------\n    ValueError\n        If the input data is malformed\n\
+      \n    Examples\n    --------\n    >>> repartition_combined_stock_data(combined_stock_data={'stocks':\
+      \ [{'name':\n    'AAPL', 'price': 100.0}, {'name': 'GOOG', 'price': 200.0}]})\n\
+      \    {'storage_layout_name': 'distributed_layout', 'optimized_partitions_count':\n\
+      \    2, 'total_data_size_gb': 1.0, 'latency_optimized_percentage': 0.8,\n  \
+      \  'data_distribution_metrics': [True, True]}\n\n    \"\"\"\n    return RepartitionCombinedStockDataOutput(\n\
+      \        storage_layout_name=\"\",\n        optimized_partitions_count=0,\n\
+      \        total_data_size_gb=0.0,\n        latency_optimized_percentage=0.0,\n\
+      \        data_distribution_metrics=[],\n    )"
     name: repartition_combined_stock_data
     nodes_depended_on:
     - normalize_combined_stock_data
@@ -1044,11 +1767,88 @@ nodes:
           storage layout.
     prompt: Repartition the normalized combined stock dataset across the distributed
       storage fabric to optimize query latency and ingestion throughput.
+    shims: []
   store_combined_stock_data:
     agent: false
+    code_node_type: stub
     description: Persist the aggregated, cleaned, and normalized stock data from LSE,
       NYSE, NASDAQ, and TSX into a fault-tolerant, geo-distributed data lake with
       strict schema validation, versioning, and low-latency ingestion via HTTPS/REST.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass ParseLseStockDataOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ parse_lse_stock_data node outputs.\"\"\"\n    lse_api_response: str = (\n\
+      \        Field(..., description=\"The raw API response from the LSE\")\n   \
+      \ )\n    dataframe_rows: List[str] = (\n        Field(..., description=\"The\
+      \ rows of the parsed Pandas DataFrame as a list of strings\")\n    )\n    protocol_used:\
+      \ str = (\n        Field(..., description=\"The protocol used for fetching the\
+      \ LSE stock data\")\n    )\n    fetch_latency_ms: float = (\n        Field(...,\
+      \ description=\"The latency in milliseconds for fetching the LSE stock data\"\
+      )\n    )\n    datacenter_origin: str = (\n        Field(..., description=\"\
+      The datacenter origin of the LSE stock data\")\n    )\n\n\nclass ParseNasdaqStockDataOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for parse_nasdaq_stock_data node outputs.\"\"\"\n\
+      \    symbol: str = Field(..., description=\"Stock symbol.\")\n    date: str\
+      \ = Field(..., description=\"ISO-8601 UTC date.\")\n    open: float = Field(...,\
+      \ description=\"Opening price.\")\n    high: float = Field(..., description=\"\
+      Highest price during the interval.\")\n    low: float = Field(..., description=\"\
+      Lowest price during the interval.\")\n    close: float = Field(..., description=\"\
+      Closing price.\")\n    volume: int = Field(..., description=\"Traded volume.\"\
+      )\n    adjusted_close: float = (\n        Field(..., description=\"Adjusted\
+      \ close for splits/dividends.\")\n    )\n    market_cap: float = Field(...,\
+      \ description=\"Market capitalization.\")\n    source_datacenter: str = Field(...,\
+      \ description=\"Datacenter origin.\")\n    fetch_latency_ms: int = (\n     \
+      \   Field(..., description=\"Fetch latency in milliseconds.\")\n    )\n    parse_duration_ms:\
+      \ int = (\n        Field(..., description=\"Parse duration in milliseconds.\"\
+      )\n    )\n\n\nclass ParseNyseStockDataOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for parse_nyse_stock_data node outputs.\"\"\"\n    timestamp: str =\
+      \ (\n        Field(..., description=\"ISO\\u20118601 UTC of record ingestion\"\
+      )\n    )\n    exchange: str = Field(..., description=\"NYSE\")\n    symbol:\
+      \ str = Field(..., description=\"ticker symbol\")\n    price: float = Field(...,\
+      \ description=\"last traded price (float)\")\n    volume: int = Field(..., description=\"\
+      total traded volume (integer)\")\n    metadata: str = (\n        Field(...,\
+      \ description=\"object containing `latency_ms`, `datacenter`, and `source_url`\"\
+      )\n    )\n\n\nclass ParseTorontoStockExchangeStockDataOutput(BaseModel):\n \
+      \   \"\"\"Pydantic model for parse_toronto_stock_exchange_stock_data node outputs.\"\
+      \"\"\n    ticker: str = Field(..., description=\"Ticker symbol.\")\n    timestamp:\
+      \ str = (\n        Field(..., description=\"Exact trade timestamp (ISO 8601\
+      \ UTC)\")\n    )\n    open: float = Field(..., description=\"Opening price.\"\
+      )\n    high: float = Field(..., description=\"Highest price during the interval.\"\
+      )\n    low: float = Field(..., description=\"Lowest price during the interval.\"\
+      )\n    close: float = Field(..., description=\"Closing price.\")\n    volume:\
+      \ int = Field(..., description=\"Traded volume.\")\n    adjusted_close: float\
+      \ = (\n        Field(..., description=\"Adjusted close for splits/dividends.\"\
+      )\n    )\n\n\nclass StoreCombinedStockDataOutput(BaseModel):\n    \"\"\"Pydantic\
+      \ model for store_combined_stock_data node outputs.\"\"\"\n    schema_validated:\
+      \ bool = (\n        Field(..., description=\"Whether the data is schema-validated\"\
+      )\n    )\n    versioning_status: str = (\n        Field(..., description=\"\
+      Current versioning status of the data lake\")\n    )\n    ingestion_latency_ms:\
+      \ int = (\n        Field(..., description=\"Latency of data ingestion in milliseconds\"\
+      )\n    )\n    data_lake_region: str = (\n        Field(..., description=\"Region\
+      \ where the data lake is located\")\n    )\n    data_lake_size_gb: float = (\n\
+      \        Field(..., description=\"Current size of the data lake in GB\")\n \
+      \   )\n\n\ndef store_combined_stock_data(parse_lse_stock_data_input: ParseLseStockDataOutput,\
+      \ parse_nasdaq_stock_data_input: ParseNasdaqStockDataOutput, parse_nyse_stock_data_input:\
+      \ ParseNyseStockDataOutput, parse_toronto_stock_exchange_stock_data_input: ParseTorontoStockExchangeStockDataOutput,\
+      \ **kwargs) -> StoreCombinedStockDataOutput:\n    \"\"\"\n    Store the combined\
+      \ stock data in a geo-distributed data lake with strict\n    schema validation,\
+      \ versioning, and low-latency ingestion.\n\n    Parameters\n    ----------\n\
+      \    lse_data : List[str]\n        LSE stock data from `parse_lse_stock_data`\
+      \ node.\n    nasdaq_data : List[str]\n        NASDAQ stock data from `parse_nasdaq_stock_data`\
+      \ node.\n    nyse_data : List[str]\n        NYSE stock data from `parse_nyse_stock_data`\
+      \ node.\n    tsx_data : List[str]\n        TSX stock data from `parse_toronto_stock_exchange_stock_data`\
+      \ node.\n\n    Returns\n    -------\n    Dict[str, str]\n        Dictionary\
+      \ containing boolean indicating schema validation, current\n        versioning\
+      \ status, ingestion latency, data lake region, and current\n        data lake\
+      \ size.\n\n    Raises\n    ------\n    ValueError\n        If input data is\
+      \ not in the correct format.\n\n    Examples\n    --------\n    >>> lse_data\
+      \ = parse_lse_stock_data(fetch_lse_stock_data())\n    >>> nasdaq_data = parse_nasdaq_stock_data(fetch_nasdaq_stock_data())\n\
+      \    >>> nyse_data = parse_nyse_stock_data(fetch_nyse_stock_data())\n    >>>\
+      \ tsx_data = parse_toronto_stock_exchange_stock_data(fetch_toronto_stock_e\n\
+      \    xchange_stock_data())\n    >>> store_combined_stock_data(lse_data, nasdaq_data,\
+      \ nyse_data, tsx_data)\n    {schema_validated: True, versioning_status: Version\
+      \ 1.0,\n    ingestion_latency_ms: 100, data_lake_region: US East, data_lake_size_gb:\n\
+      \    100.0}\n\n    \"\"\"\n    return StoreCombinedStockDataOutput(\n      \
+      \  schema_validated=False,\n        versioning_status=\"\",\n        ingestion_latency_ms=0,\n\
+      \        data_lake_region=\"\",\n        data_lake_size_gb=0.0,\n    )"
     name: store_combined_stock_data
     nodes_depended_on:
     - parse_lse_stock_data
@@ -1112,3 +1912,4 @@ nodes:
     prompt: Persist the aggregated, cleaned, and normalized stock data from LSE, NYSE,
       NASDAQ, and TSX into a fault-tolerant, geo-distributed data lake with strict
       schema validation, versioning, and low-latency ingestion via HTTPS/REST.
+    shims: []
