@@ -1,8 +1,6 @@
 dag_type: plain_text
-description: A workflow implementing quicksort as a purely functional program where
-  each node represents a distinct function in the sorting process. The workflow processes
-  unsorted input lists and returns sorted output lists using atomic, concurrent operations.
-name: pure_functional_quicksort
+description: Modified quicksort workflow with added recursion point node labeled 'quicksort'
+name: pure_functional_quicksort_with_recursion_point
 nodes:
   concatenate_result:
     agent: false
@@ -35,12 +33,22 @@ nodes:
     - input_list
     - select_pivot
     nodes_dependent_on:
-    - sort_left
-    - sort_right
-    - concatenate_result
+    - quicksort
     prompt: 'Partition the input list into three sublists: elements less than the
       pivot, elements equal to the pivot, and elements greater than the pivot. Return
       all three partitions in order.'
+  quicksort:
+    agent: false
+    description: Recursively apply quicksort to both the left and right partitions
+    name: quicksort
+    nodes_depended_on:
+    - partition_list
+    nodes_dependent_on:
+    - sort_left
+    - sort_right
+    prompt: Recursively apply the quicksort algorithm to both the left partition (elements
+      less than pivot) and the right partition (elements greater than pivot) from
+      the previous step. Return the sorted left and right partitions.
   select_pivot:
     agent: false
     description: Select a pivot element from the input list
@@ -53,22 +61,21 @@ nodes:
       pivot element.
   sort_left:
     agent: false
-    description: Recursively apply quicksort to the left partition (less than pivot)
+    description: Apply quicksort to the left partition
     name: sort_left
     nodes_depended_on:
-    - partition_list
+    - quicksort
     nodes_dependent_on:
     - concatenate_result
-    prompt: Apply the quicksort algorithm to the left partition (elements less than
-      pivot) from the previous step. Return the sorted left partition.
+    prompt: Apply the quicksort algorithm to the left partition from the previous
+      step. Return the sorted left partition.
   sort_right:
     agent: false
-    description: Recursively apply quicksort to the right partition (greater than
-      pivot)
+    description: Apply quicksort to the right partition
     name: sort_right
     nodes_depended_on:
-    - partition_list
+    - quicksort
     nodes_dependent_on:
     - concatenate_result
-    prompt: Apply the quicksort algorithm to the right partition (elements greater
-      than pivot) from the previous step. Return the sorted right partition.
+    prompt: Apply the quicksort algorithm to the right partition from the previous
+      step. Return the sorted right partition.

@@ -1,5 +1,5 @@
-dag_type: plain_text
-description: Modified quicksort workflow with added recursion point node labeled 'quicksort'
+dag_type: typed
+description: Generated workflow from UI.
 name: pure_functional_quicksort_with_recursion_point
 nodes:
   concatenate_result:
@@ -12,6 +12,10 @@ nodes:
     - partition_list
     - sort_right
     nodes_dependent_on: []
+    output_structure:
+    - description: The final sorted list of integers
+      key: sorted_list
+      type: List[int]
     prompt: 'Concatenate the following three components: 1) the sorted left partition
       from the quicksort operation, 2) the pivot partition from the original partitioned
       data, and 3) the sorted right partition from the quicksort operation. Return
@@ -21,9 +25,11 @@ nodes:
     description: The original unsorted input list to be sorted
     name: input_list
     nodes_depended_on: []
-    nodes_dependent_on:
-    - select_pivot
-    - partition_list
+    nodes_dependent_on: []
+    output_structure:
+    - description: The raw unsorted input list to be sorted
+      key: input_list
+      type: List[int]
     prompt: Provide the raw unsorted input list to be processed.
   partition_list:
     agent: false
@@ -32,8 +38,17 @@ nodes:
     nodes_depended_on:
     - input_list
     - select_pivot
-    nodes_dependent_on:
-    - quicksort
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of elements less than the pivot
+      key: less_than_pivot
+      type: List[int]
+    - description: List of elements equal to the pivot
+      key: equal_to_pivot
+      type: List[int]
+    - description: List of elements greater than the pivot
+      key: greater_than_pivot
+      type: List[int]
     prompt: 'Partition the input list into three sublists: elements less than the
       pivot, elements equal to the pivot, and elements greater than the pivot. Return
       all three partitions in order.'
@@ -43,9 +58,14 @@ nodes:
     name: quicksort
     nodes_depended_on:
     - partition_list
-    nodes_dependent_on:
-    - sort_left
-    - sort_right
+    nodes_dependent_on: []
+    output_structure:
+    - description: The left partition sorted in ascending order
+      key: sorted_left
+      type: List[int]
+    - description: The right partition sorted in ascending order
+      key: sorted_right
+      type: List[int]
     prompt: Recursively apply the quicksort algorithm to both the left partition (elements
       less than pivot) and the right partition (elements greater than pivot) from
       the previous step. Return the sorted left and right partitions.
@@ -55,8 +75,11 @@ nodes:
     name: select_pivot
     nodes_depended_on:
     - input_list
-    nodes_dependent_on:
-    - partition_list
+    nodes_dependent_on: []
+    output_structure:
+    - description: The chosen pivot element from the input list
+      key: pivot_element
+      type: int
     prompt: Select a single pivot element from the input list. Return only the chosen
       pivot element.
   sort_left:
@@ -65,8 +88,11 @@ nodes:
     name: sort_left
     nodes_depended_on:
     - quicksort
-    nodes_dependent_on:
-    - concatenate_result
+    nodes_dependent_on: []
+    output_structure:
+    - description: The sorted left partition of the input list
+      key: sorted_left_partition
+      type: List[int]
     prompt: Apply the quicksort algorithm to the left partition from the previous
       step. Return the sorted left partition.
   sort_right:
@@ -75,7 +101,10 @@ nodes:
     name: sort_right
     nodes_depended_on:
     - quicksort
-    nodes_dependent_on:
-    - concatenate_result
+    nodes_dependent_on: []
+    output_structure:
+    - description: The sorted right partition
+      key: sorted_right_partition
+      type: List[int]
     prompt: Apply the quicksort algorithm to the right partition from the previous
       step. Return the sorted right partition.
