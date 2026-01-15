@@ -1,170 +1,114 @@
 dag_type: plain_text
-description: A workflow for mastering a new programmable layer of abstraction involving
-  agents, subagents, their prompts, contexts, memory, modes, permissions, tools, plugins,
-  skills, hooks, MCP, LSP, slash commands, workflows, IDE integrations, and a mental
-  model for strengths and pitfalls of stochastic, fallible, unintelligible and changing
-  entities intermingled with traditional engineering.
-name: build_programmable_layer
+description: Extract and organize dataflows from agents, subagents, prompts, contexts,
+  memory, modes, permissions, tools, plugins, skills, hooks, MCP, LSP, slash commands,
+  workflows, and IDE integrations.
+name: extract_dataflows
 nodes:
-  build_mental_model:
+  define_dataflow_boundaries:
     agent: false
-    description: Highlight the value of this mental model for developers, researchers,
-      and users, and outline implications for effective collaboration and strategic
-      decision-making.
-    name: build_mental_model
+    description: Establish clear boundaries for data flows between agents and tools.
+    name: define_dataflow_boundaries
+    nodes_depended_on:
+    - describe_prompts_contexts_memory_modes
+    - list_permissions_mcp_lsp_hooks
+    nodes_dependent_on: []
+    prompt: Define and enforce strict boundaries on data flows between agents and
+      integrations, emphasizing data integrity, security, and reliability.
+  describe_prompts_contexts_memory_modes:
+    agent: false
+    description: Define the structures of prompts, contexts, and memory as they relate
+      to agents.
+    name: describe_prompts_contexts_memory_modes
+    nodes_depended_on:
+    - model_subagents
+    nodes_dependent_on: []
+    prompt: Formulate the design components of prompts, the format of contextual data,
+      and memory usage within agents, ensuring cohesion and scalability.
+  establish_mindmaps:
+    agent: false
+    description: Develop comprehensive mind maps for complexity visualization.
+    name: establish_mindmaps
+    nodes_depended_on:
+    - map_workflow_structures
+    - evaluate_skills_hierarchies
+    nodes_dependent_on: []
+    prompt: Design coherent mind maps to organize and visualize complex relationships,
+      skill hierarchies, and workflow structures, facilitating mental modeling and
+      clarity.
+  evaluate_skills_hierarchies:
+    agent: false
+    description: Determine skills, skills hierarchies, and expertise requirements
+      for agents.
+    name: evaluate_skills_hierarchies
+    nodes_depended_on:
+    - model_subagents
+    - describe_prompts_contexts_memory_modes
+    nodes_dependent_on: []
+    prompt: Explain how agents accumulate skills, develop hierarchies, and define
+      expertise requirements for optimal performance and adaptability.
+  extract_tools_plugins_skills:
+    agent: false
+    description: Enumerate available tools, plugins, and skills used by agents.
+    name: extract_tools_plugins_skills
+    nodes_depended_on:
+    - list_agents
+    nodes_dependent_on: []
+    prompt: Systematically categorize and list all available tools, plugins, and skills
+      utilized by agents, emphasizing diversity and compatibility.
+  integrate_ideside_plugins:
+    agent: false
+    description: Integrate tools and plugins on the IDE side for seamless interaction.
+    name: integrate_ideside_plugins
+    nodes_depended_on:
+    - extract_tools_plugins_skills
+    - map_workflow_structures
+    nodes_dependent_on: []
+    prompt: Systematically integrate tools and plugins within the IDE, ensuring smooth
+      interaction and collaboration with agents, enhancing productivity.
+  list_agents:
+    agent: false
+    description: List all known agent types and their relationships.
+    name: list_agents
     nodes_depended_on: []
-    nodes_dependent_on:
-    - evaluate_agent_capabilities
-    prompt: Construct a mental model for software agents, emphasizing their strengths,
-      weaknesses, and areas for improvement in understanding and working with agents.
-  choose_context_representation:
+    nodes_dependent_on: []
+    prompt: Describe all known types of agents, their structures, relationships, and
+      interactions.
+  list_permissions_mcp_lsp_hooks:
     agent: false
-    description: Clarify the advantages of each format and provide guidelines for
-      defining a suitable context representation scheme.
-    name: choose_context_representation
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - infer_contextual_representation
-    prompt: Select a representation format for agent contexts, such as JSON, XML,
-      or a purpose-built format.
-  create_agent_mcp_model:
-    agent: false
-    description: Describe how MCP integrates with agents, providing mechanisms for
-      dynamic planning, decision-making, and self-awareness.
-    name: create_agent_mcp_model
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - develop_mcp_architecture
-    prompt: Propose a model-based control framework (MCP) for software agents, focusing
-      on real-time feedback loops and situational awareness.
-  create_agent_memory_model:
-    agent: false
-    description: Discuss common data structures and algorithms used for agent memory
-      management and highlight the significance of memory in agent cognition.
-    name: create_agent_memory_model
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - configure_memory_storage
-    prompt: Develop a theoretical framework for memory representation in software
-      agents, addressing how knowledge is stored, retrieved, and managed.
-  define_agent_permissions:
-    agent: false
-    description: Describe best practices for granular permissions, role-based access
-      control, and secure identity management for agents.
-    name: define_agent_permissions
+    description: Inventory existing permissions, MCP, LSP, and hooks within the system.
+    name: list_permissions_mcp_lsp_hooks
     nodes_depended_on:
-    - master_agent_fundamentals
-    nodes_dependent_on:
-    - assign_permissions_hierarchy
-    prompt: Establish guidelines for setting up agent permissions, balancing levels
-      of autonomy and access to system functionality.
-  design_agent_modes:
+    - extract_tools_plugins_skills
+    nodes_dependent_on: []
+    prompt: List all current system permissions, MCP integrations, LSP interfaces,
+      and hook mechanisms to identify dependencies and ensure accessibility.
+  map_workflow_structures:
     agent: false
-    description: Explain the concept of mode switching, highlighting its implications
-      on agent behavior, knowledge acquisition, and adaptability.
-    name: design_agent_modes
+    description: Outline the workflow structures, mapping agents and integrations.
+    name: map_workflow_structures
     nodes_depended_on:
-    - master_agent_fundamentals
-    nodes_dependent_on:
-    - configure_mode_switching
-    prompt: Develop a set of operating modes for software agents, specifying their
-      functional behavior, performance, and decision-making approaches.
-  design_slash_command_system:
+    - list_agents
+    - model_subagents
+    - extract_tools_plugins_skills
+    nodes_dependent_on: []
+    prompt: Organize workflows, identifying relationships between agents, subagents,
+      tools, plugins, and integrations, promoting harmony and compatibility.
+  model_subagents:
     agent: false
-    description: Highlight the role of slash commands in agents, emphasizing improved
-      usability, natural language interaction, and adaptive interfaces.
-    name: design_slash_command_system
+    description: Define the subagent model and its components.
+    name: model_subagents
     nodes_depended_on:
-    - design_subagent_architecture
-    nodes_dependent_on:
-    - build_slash_command_set
-    prompt: Formulate a slash command system for software agents, enabling users to
-      interact via conversational interfaces and intuitive command sets.
-  design_subagent_architecture:
+    - list_agents
+    nodes_dependent_on: []
+    prompt: Develop a fundamental model of subagents, encompassing their creation,
+      interaction with parents, and lifecycle management.
+  organize_into_architectures:
     agent: false
-    description: Discuss methods for specifying responsibilities, roles, and interface
-      definitions for subagents, ensuring effective collaboration and component reuse.
-    name: design_subagent_architecture
+    description: Synthesize dataflows, skills, and workflows into overarching architectures.
+    name: organize_into_architectures
     nodes_depended_on:
-    - master_agent_fundamentals
-    nodes_dependent_on:
-    - create_subagent_blueprint
-    prompt: Propose an architecture for a subagent that enables modular and composable
-      design.
-  design_workflows_for_agents:
-    agent: false
-    description: Discuss challenges and best practices for implementing workflow-based
-      approaches within software agents.
-    name: design_workflows_for_agents
-    nodes_depended_on:
-    - master_agent_fundamentals
-    nodes_dependent_on:
-    - configure_workflow_engine
-    prompt: Establish a meta-design for software agent workflows, outlining principles
-      for workflow structuring, deployment, and lifecycle management.
-  develop_agent_skill_framework:
-    agent: false
-    description: Emphasize the importance of skill frameworks in supporting adaptability,
-      decision-making, and strategic planning in agents.
-    name: develop_agent_skill_framework
-    nodes_depended_on:
-    - design_subagent_architecture
-    nodes_dependent_on:
-    - build_subagent_skills
-    prompt: Establish a structured methodology for developing skills in software agents,
-      emphasizing knowledge representation, acquisition, and utilization.
-  develop_lsp_integrator:
-    agent: false
-    description: Explain the value of incorporating LSP components into agent design,
-      with an emphasis on adaptive and knowledge-intensive tasks.
-    name: develop_lsp_integrator
-    nodes_depended_on:
-    - master_agent_fundamentals
-    nodes_dependent_on:
-    - deploy_lsp_integration
-    prompt: Devise an infrastructure for integrating language structures and frameworks
-      (LSP) into software agents, facilitating more expressive and flexible language
-      representations.
-  integrate_ides_with_agents:
-    agent: false
-    description: Highlight key considerations for integrating development tools with
-      software agents, including version control, debugging, and collaboration.
-    name: integrate_ides_with_agents
-    nodes_depended_on:
-    - master_agent_fundamentals
-    nodes_dependent_on:
-    - configure_ide_integration
-    prompt: Devise an integration strategy for development tools and IDEs, providing
-      a seamless experience for agent development, testing, and deployment.
-  integrate_tools_and_plugins:
-    agent: false
-    description: Outline strategies for tool integration, focusing on agent-environment
-      interactions and adaptability to changing requirements.
-    name: integrate_tools_and_plugins
-    nodes_depended_on:
-    - master_agent_fundamentals
-    nodes_dependent_on:
-    - configure_plugin_loading_strategy
-    prompt: Introduce a plugin architecture for software agents, enabling modular
-      and composable components for extended functionality.
-  map_hooks_andcallbacks:
-    agent: false
-    description: Highlight the benefits and challenges of using hooks and callbacks
-      in agents and discuss best practices for their implementation.
-    name: map_hooks_andcallbacks
-    nodes_depended_on:
-    - master_agent_fundamentals
-    nodes_dependent_on:
-    - deploy_hooks_and_callbacks
-    prompt: Create an approach for integrating hooks and callbacks in software agents,
-      enabling customizable behavior and event-driven programming.
-  master_agent_fundamentals:
-    agent: false
-    description: Provide in-depth descriptions of each characteristic and explain
-      how agents differ from traditional computer programs.
-    name: master_agent_fundamentals
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - define_agent_concepts
-    prompt: Define key characteristics of a software agent, including autonomy, reactivity,
-      proactivity, motivation, and learning capabilities.
+    - establish_mindmaps
+    - define_dataflow_boundaries
+    nodes_dependent_on: []
+    prompt: Combine information about dataflows, skills, and workflows into logical
+      system architectures, prioritizing alignment, compatibility, and modularity.
