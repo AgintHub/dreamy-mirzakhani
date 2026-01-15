@@ -1,191 +1,212 @@
 dag_type: plain_text
-description: A workflow to organize and build a mental model for a new programmable
-  abstraction layer involving agents, subagents, contexts, memory, and related concepts
-  while addressing strengths and pitfalls of stochastic systems in engineering contexts.
-name: organize_programmable_abstraction_layer
+description: A workflow to systematically organize and structure the emerging complexity
+  of agent-based systems involving prompts, tools, memory, permissions, workflows,
+  and mental models for stochastic AI entities.
+name: organize_agent_abstraction_layer_complexity
 nodes:
-  analyze_stochastic_impact:
+  analyze_memory_and_context_lifecycles:
     agent: false
-    description: Quantify reliability risks across interface boundaries
-    name: analyze_stochastic_impact
+    description: Describe how stateful information is created, updated, and discarded.
+    name: analyze_memory_and_context_lifecycles
     nodes_depended_on:
-    - build_abstraction_framework
-    - map_interactions
+    - identify_state_management_concepts
     nodes_dependent_on:
-    - create_fallibility_profile
-    - define_engineering_guardrails
-    prompt: Evaluate potential for outcome variability at each interface in the architecture.
-      Assign error probabilities and propagation paths to sensitive components.
-  build_abstraction_framework:
+    - produce_organized_reference_document
+    prompt: 'For each state management concept, describe its lifecycle: when it is
+      initialized, how it is updated, and when it is cleared or expired. Use one sentence
+      per concept.'
+  analyze_security_and_permission_patterns:
     agent: false
-    description: Construct architectural blueprint with implementation hierarchy
-    name: build_abstraction_framework
+    description: Describe common patterns in how governance concepts enforce boundaries.
+    name: analyze_security_and_permission_patterns
     nodes_depended_on:
-    - define_purpose_for_each_concept
-    - categorize_concepts
-    - validate_dependency_chain
-    - map_interactions
+    - identify_governance_related_concepts
     nodes_dependent_on:
-    - define_stochastic_strengths
-    - analyze_stochastic_impact
-    prompt: Generate a layered architecture diagram with high-level components, their
-      responsibilities, and communication patterns using pseudocode-like structure.
-  build_composite_model:
+    - produce_organized_reference_document
+    prompt: Using the governance-related concepts, describe three typical patterns
+      for how access and execution rights are managed in agent systems. Use one sentence
+      per pattern.
+  build_dependency_graph:
     agent: false
-    description: Integrate architectural and process aspects into holistic framework
-    name: build_composite_model
+    description: Create a visual-ready data structure representing how concepts relate
+      via dependencies.
+    name: build_dependency_graph
     nodes_depended_on:
-    - build_abstraction_framework
-    - formulate_best_practices
-    - craft_mitigation_strategies
-    nodes_dependent_on: []
-    prompt: Merge all technical components and governance rules into a comprehensive
-      mental model representation. Include visualizations of uncertainty boundaries
-      and deterministic safeguards in a hierarchical format.
-  categorize_concepts:
-    agent: false
-    description: Group concepts by functional domain
-    name: categorize_concepts
-    nodes_depended_on:
-    - list_core_concepts
+    - map_concept_interdependencies
     nodes_dependent_on:
-    - build_abstraction_framework
-    - identify_pitfalls
-    prompt: Categorize listed concepts into domains like execution management, state
-      handling, user interaction, etc. Format as a concept-to-domain mapping table.
-  craft_mitigation_strategies:
+    - produce_organized_reference_document
+    prompt: 'Convert the list of dependency pairs into a directed graph representation
+      using JSON format. Each node is a concept; each edge is a ''dependsOn'' relationship.
+      Output as a list of objects: { "node": "ConceptName", "dependsOn": ["ConceptB",
+      "ConceptC"] }.'
+  categorize_concepts_by_domain:
     agent: false
-    description: Create strategies to neutralize harmful variability
-    name: craft_mitigation_strategies
+    description: Group extracted concepts into logical domains such as architecture,
+      control, interaction, or knowledge.
+    name: categorize_concepts_by_domain
     nodes_depended_on:
-    - create_fallibility_profile
-    - identify_pitfalls
-    - define_engineering_guardrails
+    - extract_core_concepts
     nodes_dependent_on:
-    - formulate_best_practices
-    - build_composite_model
-    prompt: Develop techniques to manage error propagation, enforce cross-concept
-      consistency, and ensure auditability in the presence of stochastic behavior.
-      Include fallback protocols for critical decision points.
-  create_fallibility_profile:
+    - map_concept_interdependencies
+    - identify_governance_related_concepts
+    - identify_interaction_related_concepts
+    - identify_state_management_concepts
+    - identify_execution_control_concepts
+    prompt: 'Using the list of extracted concepts, assign each to one of the following
+      domains: Architecture, Control, Interaction, State Management, Execution, Integration,
+      or Governance. Output as a two-column mapping: Concept | Domain.'
+  compile_concept_glossary:
     agent: false
-    description: Characterize failure modes and recovery strategies
-    name: create_fallibility_profile
+    description: Assemble all definitions into a single structured glossary.
+    name: compile_concept_glossary
     nodes_depended_on:
-    - define_stochastic_strengths
-    - analyze_stochastic_impact
+    - define_individual_concept
     nodes_dependent_on:
-    - identify_pitfalls
-    - define_engineering_guardrails
-    prompt: Document common failure scenarios caused by stochastic behavior including
-      recovery patterns, backup mechanisms, and validation requirements for critical
-      operations.
-  define_engineering_guardrails:
+    - produce_organized_reference_document
+    prompt: 'Format all concept definitions into a markdown table with columns: Concept
+      | Definition. Sort alphabetically by concept name.'
+  define_individual_concept:
     agent: false
-    description: Establish deterministic constraints for safety
-    name: define_engineering_guardrails
+    description: Generate a concise definition for each extracted concept based on
+      common usage in agent systems.
+    name: define_individual_concept
     nodes_depended_on:
-    - build_abstraction_framework
-    - create_fallibility_profile
-    - identify_pitfalls
+    - extract_core_concepts
     nodes_dependent_on:
-    - craft_mitigation_strategies
-    - formulate_best_practices
-    prompt: Design hard boundaries and validation rules to limit stochastic behavior
-      in safety-critical components. Specify deterministic requirements for configuration,
-      execution, and output verification.
-  define_purpose_for_each_concept:
+    - compile_concept_glossary
+    prompt: For each concept in the extracted list, write a one-sentence, jargon-minimized
+      definition that captures its role in agent-based systems. Do not reference other
+      concepts unless necessary for clarity.
+  extract_core_concepts:
     agent: false
-    description: Describe the functional role of each core concept
-    name: define_purpose_for_each_concept
-    nodes_depended_on:
-    - list_core_concepts
-    nodes_dependent_on:
-    - build_abstraction_framework
-    - map_interactions
-    prompt: 'For each listed concept, define its primary function and purpose in the
-      abstraction layer. Format as a two-column table: Concept | Function.'
-  define_stochastic_strengths:
-    agent: false
-    description: Catalog emergent capabilities from probabilistic behavior
-    name: define_stochastic_strengths
-    nodes_depended_on:
-    - build_abstraction_framework
-    nodes_dependent_on:
-    - identify_pitfalls
-    - create_fallibility_profile
-    prompt: 'List unique advantages gained from stochastic systems in this architecture
-      (e.g., self-optimizing behavior, parallelism). Format as a three-column table:
-      Advantage | Mechanism | Example.'
-  formulate_best_practices:
-    agent: false
-    description: Generate usage guidelines combining architectural wisdom
-    name: formulate_best_practices
-    nodes_depended_on:
-    - define_stochastic_strengths
-    - craft_mitigation_strategies
-    - define_engineering_guardrails
-    nodes_dependent_on:
-    - build_composite_model
-    prompt: 'Create actionable rules for developers covering: configuration limits,
-      monitoring requirements, validation checkpoints, and recovery strategies that
-      balance flexibility with reliability.'
-  identify_dependencies:
-    agent: false
-    description: Map inter-concept dependencies
-    name: identify_dependencies
-    nodes_depended_on:
-    - list_core_concepts
-    - define_purpose_for_each_concept
-    nodes_dependent_on:
-    - validate_dependency_chain
-    - map_interactions
-    prompt: 'Create a dependency graph showing which concepts require which others
-      for operation. Format as a directed edge list with two columns: Source | Target.'
-  identify_pitfalls:
-    agent: false
-    description: Pinpoint areas of harmful uncertainty
-    name: identify_pitfalls
-    nodes_depended_on:
-    - analyze_stochastic_impact
-    - categorize_concepts
-    nodes_dependent_on:
-    - define_engineering_guardrails
-    - craft_mitigation_strategies
-    prompt: List detrimental effects where stochastic behavior conflicts with determinism
-      requirements (e.g., traceability loss, validation challenges). Focus on memory/state
-      management and cross-concept consistency.
-  list_core_concepts:
-    agent: false
-    description: Enumerate all core components from the provided problem statement
-    name: list_core_concepts
+    description: Identify and list all distinct concepts mentioned in the input statement
+      about the new programmable layer.
+    name: extract_core_concepts
     nodes_depended_on: []
     nodes_dependent_on:
-    - define_purpose_for_each_concept
-    - categorize_concepts
-    - identify_dependencies
-    prompt: 'List all core concepts mentioned in the problem statement: agents, subagents,
-      prompts, contexts, memory, modes, permissions, tools, plugins, skills, hooks,
-      MCP, LSP, slash commands, workflows, IDE integrations.'
-  map_interactions:
+    - categorize_concepts_by_domain
+    - define_individual_concept
+    prompt: From the input text, extract every distinct technical concept or term
+      related to agent systems. List them as standalone items without definitions
+      or grouping. Include agents, subagents, prompts, contexts, memory, modes, permissions,
+      tools, plugins, skills, hooks, MCP, LSP, slash commands, workflows, IDE integrations,
+      and any others explicitly mentioned.
+  highlight_fundamental_abstractions:
     agent: false
-    description: Define how concepts communicate signals/events
-    name: map_interactions
+    description: List the core pillars that form the foundation of the programmable
+      layer.
+    name: highlight_fundamental_abstractions
     nodes_depended_on:
-    - define_purpose_for_each_concept
-    - identify_dependencies
+    - identify_central_concepts
     nodes_dependent_on:
-    - build_abstraction_framework
-    - analyze_stochastic_impact
-    prompt: Document input/output interfaces between concepts using trigger-response
-      patterns. Include message types and execution modes (synchronous/asynchronous).
-  validate_dependency_chain:
+    - produce_organized_reference_document
+    prompt: Based on the top 5 most depended-upon concepts, identify the 3 most fundamental
+      abstractions that underpin the rest of the system. Output as a bulleted list
+      with a one-sentence justification per item.
+  identify_central_concepts:
     agent: false
-    description: Check for circular dependencies and unresolved references
-    name: validate_dependency_chain
+    description: Determine which concepts appear most frequently as dependencies,
+      indicating centrality.
+    name: identify_central_concepts
     nodes_depended_on:
-    - identify_dependencies
+    - map_concept_interdependencies
     nodes_dependent_on:
-    - build_abstraction_framework
-    prompt: Analyze the dependency graph for cycles or orphaned concepts. Report required
-      corrections to establish proper hierarchy.
+    - highlight_fundamental_abstractions
+    prompt: Analyze the dependency pairs to count how many times each concept is depended
+      upon. Rank the top 5 most depended-upon concepts. Output only the list with
+      counts.
+  identify_execution_control_concepts:
+    agent: false
+    description: Extract concepts that influence or direct the flow of agent execution.
+    name: identify_execution_control_concepts
+    nodes_depended_on:
+    - categorize_concepts_by_domain
+    nodes_dependent_on:
+    - map_agent_execution_decision_points
+    prompt: List all concepts that control or alter execution flow, such as workflows,
+      skills, tools, plugins, modes. Output as a plain list.
+  identify_governance_related_concepts:
+    agent: false
+    description: Isolate concepts related to access, control, and permissions.
+    name: identify_governance_related_concepts
+    nodes_depended_on:
+    - categorize_concepts_by_domain
+    nodes_dependent_on:
+    - analyze_security_and_permission_patterns
+    prompt: Extract all concepts categorized under Governance. Output as a comma-separated
+      list. These should include permissions, modes, MCP, and similar control mechanisms.
+  identify_interaction_related_concepts:
+    agent: false
+    description: Extract concepts involved in user or system-to-agent communication.
+    name: identify_interaction_related_concepts
+    nodes_depended_on:
+    - categorize_concepts_by_domain
+    nodes_dependent_on:
+    - model_user_agent_interaction_flows
+    prompt: List all concepts that enable or define interaction between users and
+      agents, such as slash commands, prompts, LSP, hooks. Output as a simple list.
+  identify_state_management_concepts:
+    agent: false
+    description: Isolate concepts that maintain or carry information across agent
+      operations.
+    name: identify_state_management_concepts
+    nodes_depended_on:
+    - categorize_concepts_by_domain
+    nodes_dependent_on:
+    - analyze_memory_and_context_lifecycles
+    prompt: List all concepts related to state persistence, such as memory, context,
+      sessions, or history. Output as a list.
+  map_agent_execution_decision_points:
+    agent: false
+    description: Define key decision points in agent execution workflows.
+    name: map_agent_execution_decision_points
+    nodes_depended_on:
+    - identify_execution_control_concepts
+    nodes_dependent_on:
+    - produce_organized_reference_document
+    prompt: Using the execution control concepts, identify five critical decision
+      points in an agent's operation (e.g., tool selection, mode switching). For each,
+      state the trigger and possible outcomes in one sentence.
+  map_concept_interdependencies:
+    agent: false
+    description: Determine how each concept relies on or influences other concepts
+      in the system.
+    name: map_concept_interdependencies
+    nodes_depended_on:
+    - categorize_concepts_by_domain
+    nodes_dependent_on:
+    - build_dependency_graph
+    - identify_central_concepts
+    prompt: 'For each concept, identify up to three other concepts it directly depends
+      on or enables. Represent as a list of directed pairs: (Concept A depends on
+      Concept B). Keep relationships unidirectional and based only on direct functional
+      dependencies.'
+  model_user_agent_interaction_flows:
+    agent: false
+    description: Define typical sequences of interaction between users and agents.
+    name: model_user_agent_interaction_flows
+    nodes_depended_on:
+    - identify_interaction_related_concepts
+    nodes_dependent_on:
+    - produce_organized_reference_document
+    prompt: Using the interaction-related concepts, describe three common workflows
+      for user-to-agent interaction (e.g., user issues slash command → agent parses
+      context → executes plugin). Format as numbered sequences with up to four steps
+      each.
+  produce_organized_reference_document:
+    agent: false
+    description: Assemble all outputs into a single, coherent reference document.
+    name: produce_organized_reference_document
+    nodes_depended_on:
+    - compile_concept_glossary
+    - build_dependency_graph
+    - highlight_fundamental_abstractions
+    - analyze_security_and_permission_patterns
+    - model_user_agent_interaction_flows
+    - analyze_memory_and_context_lifecycles
+    - map_agent_execution_decision_points
+    nodes_dependent_on: []
+    prompt: 'Combine all prior outputs into a single markdown document with the following
+      sections: 1. Concept Glossary, 2. Dependency Graph (as JSON), 3. Core Abstractions,
+      4. Governance Patterns, 5. Interaction Flows, 6. State Lifecycles, 7. Execution
+      Decision Points. Format clearly with headers and use code blocks where appropriate.'
