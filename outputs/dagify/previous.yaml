@@ -1,144 +1,145 @@
 dag_type: plain_text
-description: A workflow to gather market data, calculate implied volatility vs NAV
-  valuation for an equity portfolio, construct an overnight dynamic hedge using stocks,
-  ETFs, and futures, and prepare execution orders for the opening auction.
-name: overnight_dynamic_hedge_execution
+description: Constructs daily overnight dynamic hedges for equity portfolios using
+  financial data from stocks, ETFs, and futures based on implied valuation vs. NAV
+  comparisons, generating executable morning auction orders.
+name: overnight_dynamic_hedge_generation
 nodes:
-  aggregate_hedge_instructions:
+  aggregate_valuation_spreads:
     agent: false
-    description: Consolidate individual stock, ETF, and futures hedge requirements.
-    name: aggregate_hedge_instructions
+    description: Combine stock and ETF valuation gaps across the entire portfolio
+    name: aggregate_valuation_spreads
     nodes_depended_on:
-    - determine_hedge_ratio_stocks
-    - determine_hedge_ratio_etfs
-    - determine_hedge_ratio_futures
-    nodes_dependent_on: []
-    prompt: Compile the hedge orders for stocks, ETFs, and futures into a single consolidated
-      list. Ensure the total direction aligns with the implied vs NAV valuation gap.
-  calculate_portfolio_delta:
+    - compute_valuation_spread_stocks
+    - compute_valuation_spread_etfs
+    nodes_dependent_on:
+    - determine_hedge_ratios
+    prompt: Create portfolio-weighted aggregated valuation spreads. Calculate both
+      directional and total risk exposure metrics.
+  calculate_etf_nav:
     agent: false
-    description: Calculate the total delta exposure of the equity portfolio.
-    name: calculate_portfolio_delta
+    description: Compute actual fund NAV for all ETFs in portfolio
+    name: calculate_etf_nav
     nodes_depended_on:
-    - fetch_eod_stock_data
-    nodes_dependent_on: []
-    prompt: Calculate the aggregate delta exposure for the equity portfolio based
-      on current positions and closing prices.
-  compare_implied_vs_nav:
+    - fetch_etf_data
+    nodes_dependent_on:
+    - compute_valuation_spread_etfs
+    prompt: Calculate current NAV values for all ETFs by valuing underlying basket
+      components using latest futures and cash market prices.
+  calculate_hedge_position_sizes:
     agent: false
-    description: Determine the variance between implied market valuation and NAV.
-    name: compare_implied_vs_nav
+    description: Determine exact quantities to hedge for each instrument class
+    name: calculate_hedge_position_sizes
     nodes_depended_on:
-    - derive_implied_market_valuation
-    - fetch_nav_valuation
-    nodes_dependent_on: []
-    prompt: Compare the calculated implied market valuation against the reported NAV.
-      Calculate the absolute and percentage gap.
-  derive_implied_market_valuation:
+    - determine_hedge_ratios
+    - fetch_future_data
+    nodes_dependent_on:
+    - generate_trade_orders
+    prompt: Calculate precise position sizes for futures/ETFs needed to offset portfolio
+      valuation risks. Consider multipliers, leverage, and margin requirements.
+  calculate_implied_valuation_etfs:
     agent: false
-    description: Calculate the market-implied valuation of the portfolio based on
-      closing prices.
-    name: derive_implied_market_valuation
+    description: Determine forward-looking valuation expectations for ETFs
+    name: calculate_implied_valuation_etfs
     nodes_depended_on:
-    - fetch_eod_stock_data
-    nodes_dependent_on: []
-    prompt: Using the end-of-day stock data, calculate the total market value of the
-      equity portfolio holdings.
-  determine_hedge_ratio_etfs:
+    - fetch_etf_data
+    nodes_dependent_on:
+    - compute_valuation_spread_etfs
+    prompt: Estimate future NAVs for ETFs using time-weighted average pricing of underlying
+      constituents and dividend expectations.
+  calculate_implied_valuation_stocks:
     agent: false
-    description: Calculate the required notional and unit count for ETF hedges.
-    name: determine_hedge_ratio_etfs
+    description: Estimate implied equity valuations using forward-looking metrics
+    name: calculate_implied_valuation_stocks
     nodes_depended_on:
-    - compare_implied_vs_nav
-    - fetch_eod_etf_data
-    nodes_dependent_on: []
-    prompt: Based on the valuation gap and ETF market data, calculate the number of
-      ETF shares required to hedge the residual beta exposure of the portfolio.
-  determine_hedge_ratio_futures:
+    - fetch_stock_data
+    nodes_dependent_on:
+    - compute_valuation_spread_stocks
+    prompt: Using option pricing models and earnings forecasts, calculate forward-looking
+      valuations for each stock in the portfolio. Output should include delta to underlying.
+  compute_valuation_spread_etfs:
     agent: false
-    description: Calculate the required contract count for futures hedges.
-    name: determine_hedge_ratio_futures
+    description: Measure discrepancies between NAVs and implied fund values
+    name: compute_valuation_spread_etfs
     nodes_depended_on:
-    - fetch_eod_futures_data
-    - compare_implied_vs_nav
-    nodes_dependent_on: []
-    prompt: Based on the valuation gap and futures market data, calculate the number
-      of futures contracts required to hedge the systematic market risk.
-  determine_hedge_ratio_stocks:
+    - calculate_etf_nav
+    - calculate_implied_valuation_etfs
+    nodes_dependent_on:
+    - aggregate_valuation_spreads
+    prompt: Calculate dispersion between current and estimated future NAV values for
+      ETFs. Include basis point spread and expected convergence timeline.
+  compute_valuation_spread_stocks:
     agent: false
-    description: Calculate the required notional and unit count for stock hedges.
-    name: determine_hedge_ratio_stocks
+    description: Calculate the difference between actual and implied valuations for
+      stocks
+    name: compute_valuation_spread_stocks
     nodes_depended_on:
-    - compare_implied_vs_nav
-    - calculate_portfolio_delta
-    nodes_dependent_on: []
-    prompt: Based on the valuation gap and portfolio delta, calculate the specific
-      number of shares of individual stocks to sell or buy to neutralize the overnight
-      gap variance.
-  fetch_eod_etf_data:
+    - calculate_implied_valuation_stocks
+    - fetch_stock_data
+    nodes_dependent_on:
+    - aggregate_valuation_spreads
+    prompt: Compute the current vs. forward valuation gap for each stock. Express
+      as absolute dollar value and percentage of equity capital.
+  determine_hedge_ratios:
     agent: false
-    description: Retrieve end-of-day pricing and volume data for relevant ETF proxies.
-    name: fetch_eod_etf_data
+    description: Calculate optimal hedging multiples based on volatility and spread
+      analysis
+    name: determine_hedge_ratios
+    nodes_depended_on:
+    - aggregate_valuation_spreads
+    nodes_dependent_on:
+    - calculate_hedge_position_sizes
+    prompt: Set beta-adjusted hedge ratios for each instrument class considering time
+      decay, option risk, and execution costs in pre-open.
+  fetch_etf_data:
+    agent: false
+    description: Gather ETF price data, NAV values, and underlying holding weights
+    name: fetch_etf_data
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Retrieve the end-of-day market data for the ETFs designated as hedging
-      instruments. Include closing price, total volume, and implied volatility if
-      available.
-  fetch_eod_futures_data:
+    nodes_dependent_on:
+    - calculate_etf_nav
+    - calculate_implied_valuation_etfs
+    - compute_valuation_spread_etfs
+    prompt: Get current net asset values, tracking errors, and constituent breakdowns
+      for all relevant ETFs. Include both primary (ticker) and secondary (NAV) market
+      pricing.
+  fetch_future_data:
     agent: false
-    description: Retrieve end-of-day pricing and volume data for index futures used
-      for hedging.
-    name: fetch_eod_futures_data
+    description: Collect futures contract data including prices, multipliers, and
+      expiration timelines
+    name: fetch_future_data
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Retrieve the end-of-day market data for the relevant index futures contracts.
-      Include settlement price, open interest, and implied volatility from the options
-      chain.
-  fetch_eod_stock_data:
+    nodes_dependent_on:
+    - calculate_hedge_position_sizes
+    prompt: Extract specifications for all futures contracts that could be used for
+      hedging (SPX, NDX, VIX, etc.). Include implied volatility surfaces when available.
+  fetch_stock_data:
     agent: false
-    description: Retrieve end-of-day pricing and volume data for the current equity
-      portfolio holdings.
-    name: fetch_eod_stock_data
+    description: Retrieve real-time equity price data, historical volumes, and option
+      chain info for portfolio constituents
+    name: fetch_stock_data
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Retrieve the end-of-day market data for all stocks currently held in the
-      portfolio. Include closing price, total volume, and bid/ask spread.
-  fetch_nav_valuation:
+    nodes_dependent_on:
+    - calculate_implied_valuation_stocks
+    - compute_valuation_spread_stocks
+    prompt: Extract daily market data for all stocks in the target portfolio including
+      bid/ask spreads, last traded prices, and option chains. Format as structured
+      tabular data.
+  generate_trade_orders:
     agent: false
-    description: Retrieve the current Net Asset Value (NAV) of the portfolio.
-    name: fetch_nav_valuation
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Retrieve the calculated Net Asset Value (NAV) of the equity portfolio
-      as of the close of business.
-  format_opening_auction_orders:
-    agent: false
-    description: Format the hedge trades for execution at the morning opening auction.
-    name: format_opening_auction_orders
+    description: Create executable limit and market orders for morning auction
+    name: generate_trade_orders
     nodes_depended_on:
-    - aggregate_hedge_instructions
-    nodes_dependent_on: []
-    prompt: Convert the hedge instructions into specific order types suitable for
-      the opening auction (e.g., Market-On-Open or Limit-On-Open). Include ticker,
-      side (buy/sell), quantity, and order type.
-  transmit_execution_file:
+    - calculate_hedge_position_sizes
+    nodes_dependent_on:
+    - send_orders_for_execution
+    prompt: Format positions as ICE limit orders (with 3 tier price breaks) or NYSE
+      opening auction orders. Include time-in-force = day.
+  send_orders_for_execution:
     agent: false
-    description: Generate and send the final execution file to the trading system
-      or broker.
-    name: transmit_execution_file
+    description: Schedule and transmit orders to brokerage execution systems
+    name: send_orders_for_execution
     nodes_depended_on:
-    - format_opening_auction_orders
-    - validate_risk_limits
+    - generate_trade_orders
     nodes_dependent_on: []
-    prompt: Create the final execution file containing the approved order instructions
-      for the opening auction and prepare it for transmission to the Order Management
-      System.
-  validate_risk_limits:
-    agent: false
-    description: Ensure the proposed hedge trades adhere to risk management constraints.
-    name: validate_risk_limits
-    nodes_depended_on:
-    - aggregate_hedge_instructions
-    nodes_dependent_on: []
-    prompt: Check the proposed hedge orders against pre-defined risk limits (max notional,
-      max leverage per instrument). Flag any violations for review.
+    prompt: Route all orders through the proper broker APIs with market open time
+      = 9:29AM ET. Generate audit trail and order confirmation reports.
