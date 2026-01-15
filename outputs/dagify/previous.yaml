@@ -1,113 +1,191 @@
 dag_type: plain_text
-description: A workflow to ingest financial data, analyze an equity portfolio's implied
-  valuation vs NAV to construct an overnight dynamic hedge, and schedule trade execution
-  for the morning auction.
-name: dynamic_equity_hedge_workflow
+description: A workflow to organize and build a mental model for a new programmable
+  abstraction layer involving agents, subagents, contexts, memory, and related concepts
+  while addressing strengths and pitfalls of stochastic systems in engineering contexts.
+name: organize_programmable_abstraction_layer
 nodes:
-  calculate_hedge_ratios:
+  analyze_stochastic_impact:
     agent: false
-    description: Determine the required notional and contract counts for futures and
-      ETFs to neutralize market risk.
-    name: calculate_hedge_ratios
+    description: Quantify reliability risks across interface boundaries
+    name: analyze_stochastic_impact
     nodes_depended_on:
-    - calculate_portfolio_greeks
-    - fetch_market_data_etfs
-    - fetch_market_data_futures
-    nodes_dependent_on: []
-    prompt: Using the portfolio Delta and the current prices of ETFs and Futures,
-      calculate the precise number of contracts or shares required to hedge the portfolio
-      to neutral (zero delta). Prioritize liquidity in instrument selection.
-  calculate_nav_valuation:
+    - build_abstraction_framework
+    - map_interactions
+    nodes_dependent_on:
+    - create_fallibility_profile
+    - define_engineering_guardrails
+    prompt: Evaluate potential for outcome variability at each interface in the architecture.
+      Assign error probabilities and propagation paths to sensitive components.
+  build_abstraction_framework:
     agent: false
-    description: Determine the current Net Asset Value (NAV) and aggregate market
-      value of the portfolio.
-    name: calculate_nav_valuation
+    description: Construct architectural blueprint with implementation hierarchy
+    name: build_abstraction_framework
     nodes_depended_on:
-    - ingest_portfolio_holdings
-    - fetch_market_data_stocks
-    nodes_dependent_on: []
-    prompt: Calculate the total market value and the Net Asset Value (NAV) of the
-      current equity portfolio based on the latest closing prices.
-  calculate_portfolio_greeks:
+    - define_purpose_for_each_concept
+    - categorize_concepts
+    - validate_dependency_chain
+    - map_interactions
+    nodes_dependent_on:
+    - define_stochastic_strengths
+    - analyze_stochastic_impact
+    prompt: Generate a layered architecture diagram with high-level components, their
+      responsibilities, and communication patterns using pseudocode-like structure.
+  build_composite_model:
     agent: false
-    description: Compute the total delta, gamma, and vega exposure of the equity portfolio.
-    name: calculate_portfolio_greeks
+    description: Integrate architectural and process aspects into holistic framework
+    name: build_composite_model
     nodes_depended_on:
-    - ingest_portfolio_holdings
-    - fetch_market_data_stocks
+    - build_abstraction_framework
+    - formulate_best_practices
+    - craft_mitigation_strategies
     nodes_dependent_on: []
-    prompt: Calculate the total portfolio Delta, Gamma, and Vega based on the current
-      holdings and the latest market data (prices and implied volatilities). Provide
-      the net aggregate Greeks.
-  fetch_market_data_etfs:
+    prompt: Merge all technical components and governance rules into a comprehensive
+      mental model representation. Include visualizations of uncertainty boundaries
+      and deterministic safeguards in a hierarchical format.
+  categorize_concepts:
     agent: false
-    description: Collect real-time and closing market data for correlated ETFs.
-    name: fetch_market_data_etfs
+    description: Group concepts by functional domain
+    name: categorize_concepts
+    nodes_depended_on:
+    - list_core_concepts
+    nodes_dependent_on:
+    - build_abstraction_framework
+    - identify_pitfalls
+    prompt: Categorize listed concepts into domains like execution management, state
+      handling, user interaction, etc. Format as a concept-to-domain mapping table.
+  craft_mitigation_strategies:
+    agent: false
+    description: Create strategies to neutralize harmful variability
+    name: craft_mitigation_strategies
+    nodes_depended_on:
+    - create_fallibility_profile
+    - identify_pitfalls
+    - define_engineering_guardrails
+    nodes_dependent_on:
+    - formulate_best_practices
+    - build_composite_model
+    prompt: Develop techniques to manage error propagation, enforce cross-concept
+      consistency, and ensure auditability in the presence of stochastic behavior.
+      Include fallback protocols for critical decision points.
+  create_fallibility_profile:
+    agent: false
+    description: Characterize failure modes and recovery strategies
+    name: create_fallibility_profile
+    nodes_depended_on:
+    - define_stochastic_strengths
+    - analyze_stochastic_impact
+    nodes_dependent_on:
+    - identify_pitfalls
+    - define_engineering_guardrails
+    prompt: Document common failure scenarios caused by stochastic behavior including
+      recovery patterns, backup mechanisms, and validation requirements for critical
+      operations.
+  define_engineering_guardrails:
+    agent: false
+    description: Establish deterministic constraints for safety
+    name: define_engineering_guardrails
+    nodes_depended_on:
+    - build_abstraction_framework
+    - create_fallibility_profile
+    - identify_pitfalls
+    nodes_dependent_on:
+    - craft_mitigation_strategies
+    - formulate_best_practices
+    prompt: Design hard boundaries and validation rules to limit stochastic behavior
+      in safety-critical components. Specify deterministic requirements for configuration,
+      execution, and output verification.
+  define_purpose_for_each_concept:
+    agent: false
+    description: Describe the functional role of each core concept
+    name: define_purpose_for_each_concept
+    nodes_depended_on:
+    - list_core_concepts
+    nodes_dependent_on:
+    - build_abstraction_framework
+    - map_interactions
+    prompt: 'For each listed concept, define its primary function and purpose in the
+      abstraction layer. Format as a two-column table: Concept | Function.'
+  define_stochastic_strengths:
+    agent: false
+    description: Catalog emergent capabilities from probabilistic behavior
+    name: define_stochastic_strengths
+    nodes_depended_on:
+    - build_abstraction_framework
+    nodes_dependent_on:
+    - identify_pitfalls
+    - create_fallibility_profile
+    prompt: 'List unique advantages gained from stochastic systems in this architecture
+      (e.g., self-optimizing behavior, parallelism). Format as a three-column table:
+      Advantage | Mechanism | Example.'
+  formulate_best_practices:
+    agent: false
+    description: Generate usage guidelines combining architectural wisdom
+    name: formulate_best_practices
+    nodes_depended_on:
+    - define_stochastic_strengths
+    - craft_mitigation_strategies
+    - define_engineering_guardrails
+    nodes_dependent_on:
+    - build_composite_model
+    prompt: 'Create actionable rules for developers covering: configuration limits,
+      monitoring requirements, validation checkpoints, and recovery strategies that
+      balance flexibility with reliability.'
+  identify_dependencies:
+    agent: false
+    description: Map inter-concept dependencies
+    name: identify_dependencies
+    nodes_depended_on:
+    - list_core_concepts
+    - define_purpose_for_each_concept
+    nodes_dependent_on:
+    - validate_dependency_chain
+    - map_interactions
+    prompt: 'Create a dependency graph showing which concepts require which others
+      for operation. Format as a directed edge list with two columns: Source | Target.'
+  identify_pitfalls:
+    agent: false
+    description: Pinpoint areas of harmful uncertainty
+    name: identify_pitfalls
+    nodes_depended_on:
+    - analyze_stochastic_impact
+    - categorize_concepts
+    nodes_dependent_on:
+    - define_engineering_guardrails
+    - craft_mitigation_strategies
+    prompt: List detrimental effects where stochastic behavior conflicts with determinism
+      requirements (e.g., traceability loss, validation challenges). Focus on memory/state
+      management and cross-concept consistency.
+  list_core_concepts:
+    agent: false
+    description: Enumerate all core components from the provided problem statement
+    name: list_core_concepts
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Fetch market data (Last, Bid, Ask, Volume, IV) for a predefined list of
-      sector and broad market ETFs relevant to the portfolio (e.g., SPY, QQQ, IWM,
-      XLK, XLF).
-  fetch_market_data_futures:
+    nodes_dependent_on:
+    - define_purpose_for_each_concept
+    - categorize_concepts
+    - identify_dependencies
+    prompt: 'List all core concepts mentioned in the problem statement: agents, subagents,
+      prompts, contexts, memory, modes, permissions, tools, plugins, skills, hooks,
+      MCP, LSP, slash commands, workflows, IDE integrations.'
+  map_interactions:
     agent: false
-    description: Collect real-time and closing market data for index and volatility
-      futures.
-    name: fetch_market_data_futures
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Fetch market data and front-month contract specifications for relevant
-      index futures (e.g., ES, NQ, RTY) and volatility futures (e.g., VIX).
-  fetch_market_data_stocks:
-    agent: false
-    description: Collect real-time and closing market data for all portfolio stock
-      holdings.
-    name: fetch_market_data_stocks
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Using the provided list of portfolio tickers, fetch the latest market
-      data including Last Price, Bid, Ask, Volume, and Implied Volatility for each
-      stock.
-  generate_hedge_orders:
-    agent: false
-    description: Format the calculated hedge ratios into specific trade orders including
-      symbols, quantities, and sides.
-    name: generate_hedge_orders
+    description: Define how concepts communicate signals/events
+    name: map_interactions
     nodes_depended_on:
-    - calculate_hedge_ratios
-    nodes_dependent_on: []
-    prompt: 'Convert the hedge ratios into a list of trade orders. Each order must
-      specify: Symbol, Side (Buy/Sell), Quantity, and Order Type (Limit). Ensure the
-      total directional exposure offsets the portfolio.'
-  ingest_portfolio_holdings:
+    - define_purpose_for_each_concept
+    - identify_dependencies
+    nodes_dependent_on:
+    - build_abstraction_framework
+    - analyze_stochastic_impact
+    prompt: Document input/output interfaces between concepts using trigger-response
+      patterns. Include message types and execution modes (synchronous/asynchronous).
+  validate_dependency_chain:
     agent: false
-    description: Retrieve the current list of equity holdings and positions from the
-      portfolio database.
-    name: ingest_portfolio_holdings
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Retrieve the current equity portfolio composition from the internal source,
-      including ticker symbols, shares held, and average cost basis. Format as a list
-      of positions.
-  schedule_auction_trades:
-    agent: false
-    description: Create execution instructions to place the approved hedge trades
-      at the market open auction.
-    name: schedule_auction_trades
+    description: Check for circular dependencies and unresolved references
+    name: validate_dependency_chain
     nodes_depended_on:
-    - validate_risk_limits
-    nodes_dependent_on: []
-    prompt: Generate the execution instructions to submit the approved hedge orders
-      specifically for the opening auction. Instructions should include the exact
-      timing (e.g., 'At the Open') and any price collars.
-  validate_risk_limits:
-    agent: false
-    description: Ensure the proposed hedge trades adhere to predefined risk and leverage
-      constraints.
-    name: validate_risk_limits
-    nodes_depended_on:
-    - generate_hedge_orders
-    - fetch_market_data_futures
-    nodes_dependent_on: []
-    prompt: Check the generated hedge orders against risk limits (max leverage, margin
-      usage, max position size). Reject the set if it violates constraints, otherwise
-      approve.
+    - identify_dependencies
+    nodes_dependent_on:
+    - build_abstraction_framework
+    prompt: Analyze the dependency graph for cycles or orphaned concepts. Report required
+      corrections to establish proper hierarchy.
