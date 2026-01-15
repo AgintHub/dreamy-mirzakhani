@@ -1,116 +1,314 @@
 dag_type: plain_text
-description: A workflow to organize the new programmable abstraction layer concepts
-  (agents, subagents, tools, protocols, and engineering implications) into structured
-  taxonomies and mental models.
-name: organize_agent_abstraction_layer_concepts
+description: Creates a detailed hierarchical and data‑flow map of each concept in
+  the new programmable abstraction layer (agents, subagents, prompts, contexts, memory,
+  modes, permissions, tools, plugins, skills, hooks, MCP, LSP, slash commands, workflows,
+  IDE integrations) and builds a mental model of strengths and pitfalls when stochastic
+  entities are combined with traditional engineering layers.
+name: construct_programmable_abstraction_concept_map
 nodes:
-  assess_engineering_impact:
+  build_mental_model:
     agent: false
-    description: Analyze the clash between traditional engineering and AI attributes.
-    name: assess_engineering_impact
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Given the term 'good old fashioned engineering', interpret it as the baseline
-      for reliability and determinism. List the specific contrasts between this baseline
-      and the 'stochastic/fallible' nature of the new AI abstraction layer. Focus
-      on testing, debugging, and predictability. Output as a comparison list.
-  catalog_configuration_controls:
-    agent: false
-    description: Group parameters used to define agent behavior and operational boundaries.
-    name: catalog_configuration_controls
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Given the terms 'prompts', 'contexts', 'memory', 'modes', and 'permissions',
-      organize this list into a configuration control taxonomy. Group them by function
-      (e.g., Input Definition, State Management, Authorization). Output as a categorized
-      list.
-  categorize_agent_architectures:
-    agent: false
-    description: Classify the core concepts related to agents and subagents based
-      on hierarchy and functionality.
-    name: categorize_agent_architectures
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Given the terms 'agents' and 'subagents', organize them into a structural
-      taxonomy that defines their relationship and hierarchy (e.g., hierarchy level,
-      scope of control, interaction patterns). Output as a structured list.
-  define_stochastic_attributes:
-    agent: false
-    description: Classify the inherent non-deterministic properties of the AI layer.
-    name: define_stochastic_attributes
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Given the terms 'stochastic', 'fallible', 'unintelligible', and 'changing',
-      organize these into an 'Entity Attributes' taxonomy. Define each attribute in
-      the context of AI system behavior. Output as a structured definition list.
-  enumerate_extensibility_mechanisms:
-    agent: false
-    description: List and classify the methods by which agents interact with external
-      systems or augment capabilities.
-    name: enumerate_extensibility_mechanisms
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Given the terms 'tools', 'plugins', 'skills', and 'hooks', organize them
-      into an extensibility matrix. Classify them by type of integration (e.g., external
-      API vs. internal logic) and activation method. Output as a table or structured
-      list.
-  formulate_paradigm_shift_guidance:
-    agent: false
-    description: Create a summary of the mindset change required to master this layer.
-    name: formulate_paradigm_shift_guidance
+    description: Synthesize a comprehensive mental model that integrates all defined
+      concepts and outlines identified strengths and pitfalls.
+    name: build_mental_model
     nodes_depended_on:
-    - synthesize_execution_framework
-    - identify_mental_model_risks
+    - define_agents
+    - define_subagents
+    - define_prompts
+    - define_contexts
+    - define_memory
+    - define_modes
+    - define_permissions
+    - define_tools
+    - define_plugins
+    - define_skills
+    - define_hooks
+    - define_mcp
+    - define_lsp
+    - define_slash_commands
+    - define_workflows
+    - define_ide_integrations
+    - identify_strengths_and_pitfalls
     nodes_dependent_on: []
-    prompt: Combine the Execution Framework (the 'how') and the Mental Model Risks
-      (the 'what to watch for') to formulate a 'Paradigm Shift' summary. Outline the
-      necessary evolution from deterministic engineering to probabilistic orchestration.
-      Output as a strategic summary with bullet points.
-  identify_mental_model_risks:
+    prompt: Combine all concept definitions and the strengths/pitfalls list into a
+      unified mental model that explains how the programmable layer works as a whole.
+  combine_hierarchy_and_data_flow:
     agent: false
-    description: Derive specific pitfalls associated with adopting this new abstraction
-      layer.
-    name: identify_mental_model_risks
+    description: Merge the hierarchy and data‑flow representations into a unified
+      diagrammatic description.
+    name: combine_hierarchy_and_data_flow
     nodes_depended_on:
-    - define_stochastic_attributes
-    - assess_engineering_impact
+    - construct_hierarchy
+    - construct_data_flow
     nodes_dependent_on: []
-    prompt: Using the defined Entity Attributes and the Engineering Impact analysis,
-      generate a taxonomy of 'Mental Model Risks'. Categorize risks into operational
-      (e.g., unexpected behavior), cognitive (e.g., anthropomorphism), and structural
-      (e.g., integration brittleness). Output as a categorized risk list.
-  list_user_interaction_vectors:
+    prompt: Integrate the hierarchical structure and data‑flow description into a
+      single cohesive representation, highlighting both structural relationships and
+      information pathways.
+  construct_data_flow:
     agent: false
-    description: Identify the specific command and invocation mechanisms provided.
-    name: list_user_interaction_vectors
+    description: Map the data flow between concepts, showing how prompts, contexts,
+      memory, and other elements interact during operation.
+    name: construct_data_flow
+    nodes_depended_on:
+    - define_agents
+    - define_subagents
+    - define_prompts
+    - define_contexts
+    - define_memory
+    - define_modes
+    - define_permissions
+    - define_tools
+    - define_plugins
+    - define_skills
+    - define_hooks
+    - define_mcp
+    - define_lsp
+    - define_slash_commands
+    - define_workflows
+    - define_ide_integrations
+    nodes_dependent_on: []
+    prompt: 'Describe a data‑flow diagram that traces the movement of information:
+      from user input through prompts, context resolution, memory retrieval, agent
+      decision, tool/plugin invocation, and back to output, including any intermediate
+      transformations.'
+  construct_hierarchy:
+    agent: false
+    description: Construct a hierarchical representation (e.g., tree) of how the defined
+      concepts relate to each other, from agents down to tools and plugins.
+    name: construct_hierarchy
+    nodes_depended_on:
+    - define_agents
+    - define_subagents
+    - define_prompts
+    - define_contexts
+    - define_memory
+    - define_modes
+    - define_permissions
+    - define_tools
+    - define_plugins
+    - define_skills
+    - define_hooks
+    - define_mcp
+    - define_lsp
+    - define_slash_commands
+    - define_workflows
+    - define_ide_integrations
+    nodes_dependent_on: []
+    prompt: Create a hierarchical diagram description that places agents at the top,
+      nests subagents, and shows where prompts, contexts, memory, modes, permissions,
+      tools, plugins, skills, hooks, MCP, LSP, slash commands, workflows, and IDE
+      integrations fit within the structure.
+  define_agents:
+    agent: false
+    description: Define 'agents' within the programmable layer, highlighting their
+      role and key attributes.
+    name: define_agents
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Provide a concise definition of agents as they appear in the programmable
+      abstraction layer, describing their purpose, capabilities, and how they interact
+      with other components.
+  define_contexts:
+    agent: false
+    description: Describe the concept of 'contexts' within the programmable layer,
+      including how they influence prompts and agent behavior.
+    name: define_contexts
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Outline what contexts represent, how they provide background for agents
+      and prompts, and how they are managed in the abstraction.
+  define_engineering_layers:
+    agent: false
+    description: Provide a brief description of the traditional engineering layers
+      that the programmable layer sits atop.
+    name: define_engineering_layers
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: List the usual engineering layers (e.g., infrastructure, application code,
+      testing) and describe their role relative to the new programmable abstraction.
+  define_hooks:
+    agent: false
+    description: Explain 'hooks' as extension points for custom behavior in the programmability
+      stack.
+    name: define_hooks
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Define hooks, their purpose as callbacks or interception points, and how
+      developers can attach custom logic.
+  define_ide_integrations:
+    agent: false
+    description: Explain 'IDE integrations' that embed the programmable layer into
+      developer environments.
+    name: define_ide_integrations
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Summarize how the programmable abstraction can be integrated into IDEs,
+      what features are exposed, and typical interaction patterns.
+  define_lsp:
+    agent: false
+    description: Define 'LSP' (Language Server Protocol) within this context and its
+      role.
+    name: define_lsp
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Explain how LSP is used in the programmable layer, what services it offers
+      (e.g., diagnostics, completions), and how agents may leverage it.
+  define_mcp:
+    agent: false
+    description: Define 'MCP' (Multi‑Component Processor) within the programmable
+      layer, its purpose and connections.
+    name: define_mcp
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Provide a short description of MCP, what it orchestrates, and how it interacts
+      with agents, tools, and other components.
+  define_memory:
+    agent: false
+    description: Outline how 'memory' operates for agents and subagents, specifying
+      persistent and transient aspects.
+    name: define_memory
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Detail the memory model for agents/subagents, describing what data is
+      retained across interactions, what is temporary, and how it is accessed.
+  define_modes:
+    agent: false
+    description: Define 'modes' in the programmable layer, detailing possible operational
+      modes for agents.
+    name: define_modes
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Explain the notion of modes, give examples of different modes an agent
+      can run in (e.g., exploratory, deterministic), and how mode selection affects
+      behavior.
+  define_permissions:
+    agent: false
+    description: Explain the role of 'permissions' governing agents' actions and access.
+    name: define_permissions
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Define permissions as they apply to agents, subagents, and tools, describing
+      how they restrict or enable capabilities within the programmable layer.
+  define_plugins:
+    agent: false
+    description: Summarize what 'plugins' are, how they extend functionality, and
+      interaction with agents and tools.
+    name: define_plugins
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Describe plugins as extensible components, the way they hook into the
+      programmable layer, and what kinds of capabilities they add.
+  define_programmable_layer:
+    agent: false
+    description: Provide a concise overview of the new programmable layer of abstraction
+      that sits above traditional engineering layers, describing its purpose, scope,
+      and significance.
+    name: define_programmable_layer
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Given the term 'slash commands', categorize it under User Interaction
-      Vectors. Describe its role as a direct invocation trigger. Output as a single
-      descriptive entry.
-  map_protocols_and_interfaces:
+    prompt: Summarize the new programmable abstraction layer that augments the usual
+      engineering layers. Include its overall goal, where it sits in the stack, and
+      why it matters.
+  define_prompts:
     agent: false
-    description: Identify and describe the communication and integration standards
-      mentioned.
-    name: map_protocols_and_interfaces
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Given the terms 'MCP', 'LSP', and 'IDE integrations', classify them into
-      a protocols and interfaces taxonomy. Distinguish between inter-process communication,
-      language services, and environment integration. Output as a structured list.
-  synthesize_execution_framework:
-    agent: false
-    description: Combine architecture, controls, extensibility, and protocols into
-      a unified execution framework.
-    name: synthesize_execution_framework
+    description: Explain what 'prompts' are in this context, their purpose, and how
+      they interact with agents.
+    name: define_prompts
     nodes_depended_on:
-    - categorize_agent_architectures
-    - catalog_configuration_controls
-    - enumerate_extensibility_mechanisms
-    - map_protocols_and_interfaces
-    - list_user_interaction_vectors
+    - define_programmable_layer
     nodes_dependent_on: []
-    prompt: Synthesize the inputs from Architecture, Controls, Extensibility, Protocols,
-      and Interaction steps to create a unified 'Execution Framework' diagram. Show
-      how these components interact to run a specific task via workflows or slash
-      commands. Output as a text-based dependency graph.
+    prompt: Provide a brief description of prompts, their role in steering agent behavior,
+      and how they are structured within the programmable layer.
+  define_skills:
+    agent: false
+    description: Define 'skills' as capabilities agents can acquire or be assigned.
+    name: define_skills
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Explain skills, how they are modeled for agents, and how they influence
+      what an agent can do within the programmable abstraction.
+  define_slash_commands:
+    agent: false
+    description: Describe 'slash commands' and how they trigger actions within the
+      programmable layer.
+    name: define_slash_commands
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Outline the syntax and semantics of slash commands, how they map to agent
+      or tool invocations, and examples of usage.
+  define_stochastic_entities:
+    agent: false
+    description: Characterize 'fundamentally stochastic, fallible, unintelligible
+      and changing entities' referenced in the description.
+    name: define_stochastic_entities
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Define what is meant by stochastic, fallible, unintelligible, and changing
+      entities, giving examples and key properties.
+  define_subagents:
+    agent: false
+    description: Define 'subagents', explain their relationship to agents, and describe
+      their function within the programmable layer.
+    name: define_subagents
+    nodes_depended_on:
+    - define_agents
+    nodes_dependent_on: []
+    prompt: Explain what subagents are, how they are scoped under agents, and what
+      responsibilities they take on within the programmable abstraction.
+  define_tools:
+    agent: false
+    description: Briefly describe 'tools' that agents can invoke, and their integration
+      mechanisms.
+    name: define_tools
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Provide a concise overview of tools, their purpose, how agents call them,
+      and how results are returned to the agent.
+  define_workflows:
+    agent: false
+    description: Outline the structure of 'workflows' that orchestrate multiple agents,
+      subagents, and tools.
+    name: define_workflows
+    nodes_depended_on:
+    - define_programmable_layer
+    nodes_dependent_on: []
+    prompt: Provide a concise description of workflows, their sequencing, branching,
+      and how they coordinate agents, tools, and data flow.
+  identify_strengths_and_pitfalls:
+    agent: false
+    description: List strengths and pitfalls of integrating stochastic entities with
+      traditional engineering.
+    name: identify_strengths_and_pitfalls
+    nodes_depended_on:
+    - define_stochastic_entities
+    - define_engineering_layers
+    nodes_dependent_on: []
+    prompt: Enumerate the advantages (strengths) and disadvantages (pitfalls) that
+      arise when stochastic entities intermix with conventional engineering practices.
+  produce_final_output:
+    agent: false
+    description: Generate a final consolidated summary that includes the mental model,
+      hierarchical structure, and data‑flow map, presented in clear, organized text.
+    name: produce_final_output
+    nodes_depended_on:
+    - build_mental_model
+    - combine_hierarchy_and_data_flow
+    nodes_dependent_on: []
+    prompt: Produce a comprehensive written summary that combines the mental model,
+      the unified hierarchy/data‑flow diagram description, and the strengths/pitfalls
+      analysis. Format with headings for each section and bullet points where appropriate.
