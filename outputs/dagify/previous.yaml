@@ -1,671 +1,73 @@
-dag_type: spec
-description: Generated workflow from UI.
-name: basic_testing_workflow
+dag_type: plain_text
+description: A workflow for analyzing a stock using fundamental data
+name: analyze_stock
 nodes:
-  analyze_results:
+  analyze_industry_trends:
     agent: false
-    description: Analyze the table of test execution outcomes produced by `execute_tests`
-      and produce a concise list of key insights, categorizing failures and highlighting
-      recurring error patterns.
-    name: analyze_results
+    description: Examine the growth prospects, macroeconomic factors, and sectoral
+      drivers
+    name: analyze_industry_trends
     nodes_depended_on:
-    - execute_tests
+    - fetch_financial_statements
     nodes_dependent_on: []
-    output_structure:
-    - description: A markdown-formatted string containing bullet points that summarize
-        the most important findings from the test execution results.
-      key: analysis_bullet_points
-      type: str
-    prd:
-      conceptual_info: The `analyze_results` node consumes the execution status table
-        from its parent `execute_tests` node and extracts actionable insights. It
-        identifies overall failure rates, groups failures by type (e.g., assertion
-        failure, timeout, exception), and reports any error messages that recur across
-        multiple tests. The output is a human‑readable summary intended for report
-        generation and further process review.
-      docstring:
-        examples:
-        - lines:
-          - test_results = """
-          - Test Name | Status
-          - '--------- | ------'
-          - login_test | PASS
-          - payment_test | FAIL
-          - logout_test | PASS
-          - 'checkout_test | ERROR: Timeout"""'
-          - summary = analyze_results(test_results)
-          output: '• 4 tests executed: 2 passed, 1 failed, 1 error.
-
-            • Most common failure: `ERROR: Timeout` occurred in `checkout_test`.
-
-            • No assertion failures detected.
-
-            • Recommend investigating network stability for timeout issues.'
-        - lines:
-          - test_results = """
-          - Test Name | Status
-          - '--------- | ------'
-          - search_test | PASS
-          - filter_test | PASS"""
-          - summary = analyze_results(test_results)
-          output: '• 2 tests executed: 2 passed.
-
-            • No failures detected.
-
-            • All tests passed successfully.'
-        parameters:
-        - description: 'Markdown table string produced by `execute_tests` with columns
-            "Test Name" and "Status". Each row ends with a newline and status may
-            include a timestamp or detailed status string such as "PASS", "FAIL",
-            or "ERROR: ...".'
-          name: test_results_table
-          type: str
-        raises:
-        - description: Raised if `test_results_table` is empty or not in the expected
-            table format.
-          type: ValueError
-        - description: Raised if no failure entries are found but the user expects
-            a summary of issues.
-          type: RuntimeError
-        returns:
-          description: Markdown-formatted bullet points summarizing key findings,
-            including total tests, pass/fail counts, common failure types, and any
-            notable error patterns.
-          type: str
-        summary: Generate a concise bullet‑point summary of test execution results.
-    prompt: Summarize key findings from test execution including failure types and
-      error patterns. Present as bullet points with brief explanations.
-  create_test_cases:
+    prompt: Analyze the industry trends and outlook
+  calculate_key_ratios:
     agent: false
-    description: Develop specific test cases based on test scope
-    name: create_test_cases
+    description: Compute the debt-to-equity, current ratio, and interest coverage
+      ratio
+    name: calculate_key_ratios
     nodes_depended_on:
-    - define_test_scope
+    - gather_fundamental_data
     nodes_dependent_on: []
-    output_structure:
-    - description: Detailed descriptions of individual test cases, including test
-        steps, expected outcomes, and input parameters
-      key: test_cases
-      type: str
-    - description: Total number of test cases developed
-      key: test_case_count
-      type: int
-    prd:
-      conceptual_info: This node generates specific test cases based on the defined
-        test scope, including test steps, expected outcomes, and input parameters.
-      docstring:
-        examples:
-        - lines:
-          - test_scope = {
-          - '    ''objectives'': [''Test login functionality''],'
-          - '    ''criteria'': [''User can login successfully''],'
-          - '    ''boundaries'': [''Valid username and password''],'
-          - '    ''deliverables'': [''Test report''],'
-          - '    ''key_requirements'': [''Username and password fields''],'
-          - '    ''scope_summary'': ''Test login functionality'''
-          - '}'
-          - test_cases, test_case_count = create_test_cases(test_scope)
-          output: ('1. Enter valid username and password, 2. Click login button, 3.
-            Verify successful login', 3)
-        parameters:
-        - description: Test scope definition, including objectives, criteria, boundaries,
-            deliverables, key requirements, and scope summary.
-          name: test_scope
-          type: dict
-        raises:
-        - description: If the test scope is not properly defined or if the input parameters
-            are invalid.
-          type: ValueError
-        returns:
-          description: A tuple containing the test cases as a string and the total
-            number of test cases as an integer.
-          type: tuple
-        summary: Generates test cases based on the provided test scope.
-    prompt: Create test cases with test steps, expected outcomes, and input parameters.
-      Format as three distinct numbered examples.
-  define_test_scope:
+    prompt: Calculate key financial ratios of the company
+  create_report:
     agent: false
-    description: Define the scope and boundaries of the test process
-    name: define_test_scope
+    description: Compile a concise document highlighting key insights and analysis
+    name: create_report
+    nodes_depended_on:
+    - generate_recommendations
+    nodes_dependent_on: []
+    prompt: Create a report summarizing the findings and recommendations
+  evaluate_competition:
+    agent: false
+    description: Assess the financial and operational strengths and weaknesses of
+      competitors
+    name: evaluate_competition
+    nodes_depended_on:
+    - fetch_financial_statements
+    nodes_dependent_on: []
+    prompt: Evaluate the competition of the company
+  fetch_financial_statements:
+    agent: false
+    description: Obtain the income statement, balance sheet, and cash flow statement
+    name: fetch_financial_statements
+    nodes_depended_on:
+    - gather_fundamental_data
+    nodes_dependent_on: []
+    prompt: Fetch the historical financial statements of the company
+  gather_fundamental_data:
+    agent: false
+    description: Fetch the earnings, revenue, gross margins, operating margins, and
+      net income of the company
+    name: gather_fundamental_data
+    nodes_depended_on:
+    - retrieve_stock_symbol
+    nodes_dependent_on: []
+    prompt: Retrieve the fundamental data of the company
+  generate_recommendations:
+    agent: false
+    description: Offer buy, sell, or hold advice with supporting rationale
+    name: generate_recommendations
+    nodes_depended_on:
+    - calculate_key_ratios
+    - evaluate_competition
+    - analyze_industry_trends
+    nodes_dependent_on: []
+    prompt: Generate recommendations for the investor based on the analysis
+  retrieve_stock_symbol:
+    agent: false
+    description: Retrieve the stock symbol of the company
+    name: retrieve_stock_symbol
     nodes_depended_on: []
     nodes_dependent_on: []
-    output_structure:
-    - description: High-level objectives of the test scope
-      key: objectives
-      type: List[str]
-    - description: Acceptance criteria used to determine test success
-      key: criteria
-      type: List[str]
-    - description: Boundaries and limitations of the test scope
-      key: boundaries
-      type: List[str]
-    - description: Key deliverables produced within the test scope
-      key: deliverables
-      type: List[str]
-    - description: Key requirements that must be met by the test effort
-      key: key_requirements
-      type: List[str]
-    - description: Concise textual summary of the test scope
-      key: scope_summary
-      type: str
-    prd:
-      conceptual_info: The node establishes the overall boundaries and expectations
-        for a testing effort, producing a structured set of objectives, criteria,
-        constraints, deliverables, and requirements that guide downstream nodes such
-        as test case creation and data preparation.
-      docstring:
-        examples:
-        - lines:
-          - prompt = "Define the scope of the test including objectives, criteria,
-            and boundaries. List the key requirements and deliverables as bullet points."
-          - scope = define_test_scope(prompt)
-          output: "{\n  'objectives': ['Validate functional correctness', 'Assess\
-            \ performance under load'],\n  'criteria': ['All critical features pass\
-            \ 100% of tests', 'Response time < 200ms for 95th percentile'],\n  'boundaries':\
-            \ ['Test only the public API, not internal modules', 'No network dependency\
-            \ beyond localhost'],\n  'deliverables': ['Test plan document', 'Test\
-            \ case repository', 'Test data set'],\n  'key_requirements': ['Test data\
-            \ must cover all input edge cases', 'Test environment must match production\
-            \ configuration'],\n  'scope_summary': 'A concise statement summarizing\
-            \ the test focus and constraints.'\n}"
-        - lines:
-          - prompt = ""
-          - "try:\n    define_test_scope(prompt)\nexcept ValueError as e:\n    print(e)"
-          output: 'ValueError: Prompt text cannot be empty.'
-        parameters:
-        - description: User‑supplied prompt describing desired test scope elements.
-          name: prompt_text
-          type: str
-        raises:
-        - description: Raised if `prompt_text` is empty or does not contain any actionable
-            content.
-          type: ValueError
-        returns:
-          description: 'Dictionary containing six keys: ''objectives'', ''criteria'',
-            ''boundaries'', ''deliverables'', ''key_requirements'', and ''scope_summary''.
-            Each key maps to either a list of strings or a single string as specified
-            in the output structure.'
-          type: Dict[str, Union[List[str], str]]
-        summary: Generate a structured test scope definition based on a textual prompt.
-    prompt: Define the scope of the test including objectives, criteria, and boundaries.
-      List the key requirements and deliverables as bullet points.
-  develop_test_scripts:
-    agent: false
-    description: Create automated scripts for test execution
-    name: develop_test_scripts
-    nodes_depended_on:
-    - create_test_cases
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of script names developed for the test execution
-      key: script_names
-      type: List[str]
-    - description: List of purpose descriptions for each developed test script
-      key: purpose_descriptions
-      type: List[str]
-    - description: List of error handling details implemented in each test script
-      key: error_handling_details
-      type: List[str]
-    prd:
-      conceptual_info: This node is responsible for creating automated test scripts
-        based on predefined test cases, incorporating proper error handling mechanisms.
-      docstring:
-        examples:
-        - lines:
-          - 'test_cases = ''Test case 1: Verify login functionality'''
-          - test_scripts = develop_test_scripts(test_cases)
-          - print(test_scripts['script_names'])
-          output: '[''login_test.py'']'
-        - lines:
-          - 'test_cases = ''Test case 2: Check search functionality'''
-          - test_scripts = develop_test_scripts(test_cases)
-          - print(test_scripts['purpose_descriptions'])
-          output: '[''This script tests the search functionality of the application.'']'
-        parameters:
-        - description: Detailed descriptions of individual test cases.
-          name: test_cases
-          type: str
-        raises:
-        - description: If test_cases are not provided or are empty.
-          type: ValueError
-        returns:
-          description: A dictionary containing lists of script names, purpose descriptions,
-            and error handling details.
-          type: dict
-        summary: Develops test scripts from provided test cases with error handling.
-    prompt: Develop test scripts implementing three sample test cases with proper
-      error handling. Include script names and purpose descriptions.
-  execute_tests:
-    agent: false
-    description: Run the prepared test cases, capture the pass/fail status of each
-      test, and record the execution timestamp. The output is a concise table listing
-      each test name alongside its result.
-    name: execute_tests
-    nodes_depended_on:
-    - create_test_cases
-    - set_up_test_environment
-    - prepare_test_data
-    - develop_test_scripts
-    nodes_dependent_on: []
-    output_structure:
-    - description: A list of strings, each string representing a line of a markdown
-        table with columns 'Test Name' and 'Status' (including a timestamp column).
-      key: test_execution_table
-      type: List[str]
-    prd:
-      conceptual_info: The execute_tests node orchestrates the actual execution of
-        all defined test cases, ensuring that each test runs in the configured environment
-        with the appropriate data and scripts. It aggregates the results into a human‑readable
-        table for subsequent analysis.
-      docstring:
-        examples:
-        - lines:
-          - table = execute_tests(
-          - '    test_cases=''Test 1: ...\nTest 2: ...'','
-          - '    setup_status=''Completed'','
-          - '    data_quality_metrics=[0.99, 0.98],'
-          - '    script_names=[''test_login.py'', ''test_payment.py'']'
-          - )
-          - print('\n'.join(table))
-          output: Test Name | Status | Timestamp\n--- | --- | ---\nTest 1 | Pass |
-            2026-01-15T12:34:56Z\nTest 2 | Fail | 2026-01-15T12:34:56Z
-        - lines:
-          - execute_tests('', 'Failed', [0.97], ['test1.py'])
-          output: 'RuntimeError: Environment setup not completed.'
-        parameters:
-        - description: A string containing the detailed description of each test case
-            (as produced by create_test_cases).
-          name: test_cases
-          type: str
-        - description: Status of the environment setup (e.g., 'Completed').
-          name: setup_status
-          type: str
-        - description: Quality metrics of the prepared data to verify data integrity
-            before execution.
-          name: data_quality_metrics
-          type: List[float]
-        - description: Names of the test scripts to be executed.
-          name: script_names
-          type: List[str]
-        raises:
-        - description: If the environment setup status is not 'Completed' or if any
-            setup error is present.
-          type: RuntimeError
-        - description: If any of the input parameters are missing or of incorrect
-            type.
-          type: ValueError
-        returns:
-          description: A list of markdown table rows. The first row is the header
-            'Test Name | Status | Timestamp', followed by one row per test case with
-            the test name, pass/fail status, and the UTC timestamp of execution.
-          type: List[str]
-        summary: Execute all test cases and record their status in a table.
-    prompt: 'Execute all test cases and document execution status (pass/fail) with
-      timestamp. Format as a simple table: Test Name | Status.'
-  generate_test_report:
-    agent: false
-    description: Create documentation of test results
-    name: generate_test_report
-    nodes_depended_on:
-    - analyze_results
-    nodes_dependent_on: []
-    output_structure:
-    - description: Summary of test results
-      key: test_results_summary
-      type: str
-    - description: List of key metrics
-      key: key_metrics
-      type: List[str]
-    - description: Observations related to test results
-      key: observations
-      type: str
-    prd:
-      conceptual_info: The node aggregates the findings from analyze_results into
-        a human‑readable report that highlights overall success, key performance indicators,
-        and actionable observations.
-      docstring:
-        examples:
-        - lines:
-          - analysis_bullet_points = [
-          - '    ''- 10 test cases executed, 8 passed, 2 failed.'','
-          - '    ''- Failure type: AssertionError in TestLogin, occurred 2 times.'','
-          - '    ''- Error pattern: Timeout in API calls observed in 3 tests.'','
-          - '    ''- Performance: Average response time 250ms.'','
-          - '    ''- Coverage: Code coverage 85%.'','
-          - ']'
-          - summary, metrics, obs = generate_test_report(analysis_bullet_points)
-          - print(summary)
-          - print(metrics)
-          - print(obs)
-          output: '"Test Execution Summary:\n- 10 test cases executed, 8 passed, 2
-            failed.\n"\n["Total Tests: 10", "Pass Rate: 80%", "Fail Rate: 20%", "Avg
-            Response Time: 250ms", "Coverage: 85%"]\n"Observations:\n- AssertionErrors
-            indicate potential login logic issues.\n- Timeouts suggest network instability.\n-
-            Overall coverage acceptable but can be improved in authentication module."
-
-            '
-        - lines:
-          - analysis_bullet_points = [
-          - '    ''- No failures detected.'','
-          - '    ''- Performance within acceptable limits.'','
-          - '    ''- Code coverage 92%.'','
-          - ']'
-          - summary, metrics, obs = generate_test_report(analysis_bullet_points)
-          - print(summary)
-          - print(metrics)
-          - print(obs)
-          output: '"Test Execution Summary:\n- No failures detected.\n"\n["Total Tests:
-            0", "Pass Rate: 100%", "Coverage: 92%"]\n"Observations:\n- All tests passed
-            successfully.\n- Performance metrics meet thresholds."
-
-            '
-        parameters:
-        - description: Bullet‑point list produced by the analyze_results node, each
-            point describing a key finding (e.g., failures, error patterns, trends).
-          name: analysis_bullet_points
-          type: List[str]
-        raises:
-        - description: Raised if the input list is empty or contains non‑string items.
-          type: ValueError
-        returns:
-          description: A tuple containing the test results summary, a list of key
-            metrics, and a string of observations.
-          type: Tuple[str, List[str], str]
-        summary: Generate a concise, numbered test report from the analysis of test
-          execution results.
-    prompt: Format a concise test report with results summary, key metrics, and observations.
-      Use numbered sections for clarity.
-  identify_test_environment:
-    agent: false
-    description: Identify the environment where the test will be executed
-    name: identify_test_environment
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    output_structure:
-    - description: Hardware requirements for the test environment
-      key: hardware_requirements
-      type: str
-    - description: Software requirements for the test environment
-      key: software_requirements
-      type: str
-    - description: Configuration requirements for the test environment
-      key: configuration_requirements
-      type: str
-    - description: List of components required for the test environment
-      key: components_listed
-      type: List[str]
-    prd:
-      conceptual_info: The node gathers and organizes the specifications that define
-        the physical and virtual setup in which the test suite will run. This includes
-        tangible hardware, installed software, and any configuration settings that
-        must be in place. The output is a concise, machine‑readable summary suitable
-        for downstream nodes such as environment setup and configuration validation.
-      docstring:
-        examples:
-        - lines:
-          - '# Example 1: Standard workstation'
-          - hardware, software, config, comps = identify_test_environment()
-          - print(hardware)
-          - print(software)
-          - print(config)
-          - print(comps)
-          output: 'Hardware requirements for the test environment:\n- 4-core CPU (≥3.0
-            GHz)\n- 16 GB RAM\n- 500 GB SSD storage\n\nSoftware requirements for the
-            test environment:\n- Python 3.11 or newer\n- pip package manager\n- Git
-            2.30+\n\nConfiguration requirements for the test environment:\n- Network
-            access to test data repository\n- Environment variables: TEST_ENV=staging\n\nList
-            of components required for the test environment:\n[''CPU'', ''RAM'', ''SSD'',
-            ''Python'', ''pip'', ''Git'', ''Network Adapter'', ''Env Vars'']'
-        - lines:
-          - '# Example 2: Embedded device'
-          - hardware, software, config, comps = identify_test_environment()
-          - print(comps)
-          output: '[''ARM Cortex-A53 CPU'', ''4 GB DDR4'', ''256 MB Flash'', ''Linux
-            Kernel 5.10'', ''CMake 3.21'', ''Docker Engine'', ''Serial Port'', ''UART
-            Config'']'
-        parameters: []
-        raises:
-        - description: If mandatory requirement sections are missing or empty.
-          type: RuntimeError
-        returns:
-          description: 'A tuple containing: (hardware_requirements, software_requirements,
-            configuration_requirements, components_listed). Each string is a bulleted
-            description; the list contains component names.'
-          type: Tuple[str, str, str, List[str]]
-        summary: Identify the test execution environment by specifying hardware, software,
-          and configuration requirements, and listing all necessary components.
-    prompt: Specify the hardware, software, and configuration requirements for the
-      test environment. List components as bullet points.
-  prepare_test_data:
-    agent: false
-    description: Generate and organize test data required for test execution.
-    name: prepare_test_data
-    nodes_depended_on:
-    - define_test_scope
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of categories for the test data
-      key: test_data_categories
-      type: List[str]
-    - description: List of formats for the test data
-      key: data_formats
-      type: List[str]
-    - description: List of volume specifications for the test data
-      key: data_volume_specifications
-      type: List[int]
-    - description: Whether the test data is synthetic or sample data
-      key: synthetic_or_sample_data
-      type: bool
-    - description: List of quality metrics for the test data
-      key: data_quality_metrics
-      type: List[float]
-    prd:
-      conceptual_info: This node creates a structured set of test data that aligns
-        with the defined test scope. It enumerates categories, formats, and volume
-        requirements, indicates whether the data is synthetic or sourced, and provides
-        baseline quality metrics to ensure data integrity for subsequent test execution.
-      docstring:
-        examples:
-        - lines:
-          - 'result = prepare_test_data(
-
-            '
-          - '    test_scope_objectives=[''Validate data ingestion''],
-
-            '
-          - '    test_scope_criteria=[''All records must be unique''],
-
-            '
-          - '    test_scope_boundaries=[''Maximum 10,000 records''],
-
-            '
-          - '    test_scope_key_requirements=[''Include edge cases'']
-
-            '
-          - )
-          output: "{\n  \"test_data_categories\": [\"user_profiles\", \"transaction_logs\"\
-            ],\n  \"data_formats\": [\"JSON\", \"CSV\"],\n  \"data_volume_specifications\"\
-            : [1000, 5000],\n  \"synthetic_or_sample_data\": true,\n  \"data_quality_metrics\"\
-            : [0.98, 0.99]\n}"
-        - lines:
-          - 'result = prepare_test_data(
-
-            '
-          - '    test_scope_objectives=[''Stress test API''],
-
-            '
-          - '    test_scope_criteria=[''Latency < 200ms''],
-
-            '
-          - '    test_scope_boundaries=[''No external services''],
-
-            '
-          - '    test_scope_key_requirements=[''High volume'']
-
-            '
-          - )
-          output: "{\n  \"test_data_categories\": [\"api_requests\"],\n  \"data_formats\"\
-            : [\"JSON\"],\n  \"data_volume_specifications\": [200000],\n  \"synthetic_or_sample_data\"\
-            : true,\n  \"data_quality_metrics\": [0.99]\n}"
-        parameters:
-        - description: High-level objectives extracted from the define_test_scope
-            node.
-          name: test_scope_objectives
-          type: List[str]
-        - description: Acceptance criteria that the generated data must satisfy.
-          name: test_scope_criteria
-          type: List[str]
-        - description: Limitations or constraints affecting data generation.
-          name: test_scope_boundaries
-          type: List[str]
-        - description: Specific requirements for the test data set.
-          name: test_scope_key_requirements
-          type: List[str]
-        raises:
-        - description: If any required scope input is missing or empty.
-          type: ValueError
-        - description: If data generation fails due to resource constraints or unsupported
-            formats.
-          type: RuntimeError
-        returns:
-          description: Dictionary containing the generated test data specifications.
-          type: Dict[str, Any]
-        summary: Generate and organize test data according to the test scope.
-    prompt: Create synthetic or sample data meeting test requirements. Include data
-      categories, formats, and volume specifications as bullet points.
-  review_testing_process:
-    agent: false
-    description: Assess the overall testing methodology
-    name: review_testing_process
-    nodes_depended_on:
-    - generate_test_report
-    nodes_dependent_on: []
-    output_structure:
-    - description: Summary of testing effectiveness
-      key: testing_efficacy
-      type: str
-    - description: List of actionable recommendations for process improvements
-      key: process_improvements
-      type: str
-    - description: Measurements and metrics for testing quality control
-      key: quality_control_measurements
-      type: List[int]
-    - description: Rationale and supporting evidence for each recommendation
-      key: recommendations_rationale
-      type: str
-    prd:
-      conceptual_info: The review_testing_process node assesses the overall testing
-        methodology and provides recommendations for process improvements.
-      docstring:
-        examples:
-        - lines:
-          - test_report = {
-          - '  ''test_results_summary'': ''Test results summary'','
-          - '  ''key_metrics'': [''metric1'', ''metric2''],'
-          - '  ''observations'': ''Observations related to test results'''
-          - '}'
-          - review_testing_process(test_report)
-          output: "{\n                'testing_efficacy': 'Summary of testing effectiveness',\n\
-            \                'process_improvements': 'List of actionable recommendations\
-            \ for process improvements',\n                'quality_control_measurements':\
-            \ [1, 2, 3],\n                'recommendations_rationale': 'Rationale\
-            \ and supporting evidence for each recommendation'\n              }"
-        parameters:
-        - description: Test report generated by the generate_test_report node. It
-            should contain test results summary, key metrics, and observations.
-          name: test_report
-          type: dict
-        raises:
-        - description: If the input test report is invalid or incomplete.
-          type: ValueError
-        returns:
-          description: "A dictionary containing:\n              - testing_efficacy\
-            \ (str): Summary of testing effectiveness\n              - process_improvements\
-            \ (str): List of actionable recommendations for process improvements\n\
-            \              - quality_control_measurements (List[int]): Measurements\
-            \ and metrics for testing quality control\n              - recommendations_rationale\
-            \ (str): Rationale and supporting evidence for each recommendation"
-          type: dict
-        summary: Evaluates testing effectiveness and documents process improvements.
-    prompt: Evaluate testing effectiveness and document process improvements. List
-      three actionable recommendations in bullet format.
-  set_up_test_environment:
-    agent: false
-    description: Configure the test environment based on the specifications identified
-      in the parent node. This includes checking hardware and software prerequisites,
-      installing required packages, configuring environment variables, and validating
-      the setup. The node records each step, any errors that occurred, and provides
-      a summary of the final configuration.
-    name: set_up_test_environment
-    nodes_depended_on:
-    - identify_test_environment
-    nodes_dependent_on: []
-    output_structure:
-    - description: Status of the test environment setup (e.g., 'Completed', 'Failed',
-        'Partial').
-      key: setup_status
-      type: str
-    - description: List of setup steps performed with descriptions.
-      key: setup_steps
-      type: List[str]
-    - description: List of errors encountered during setup with descriptions.
-      key: setup_errors
-      type: List[str]
-    - description: Summary of the test environment configuration.
-      key: test_environment_configuration
-      type: str
-    prd:
-      conceptual_info: The node validates the test environment against the required
-        hardware, software, and configuration specifications provided by the identify_test_environment
-        node, installs or configures any missing components, and documents each step
-        and any issues encountered.
-      docstring:
-        examples:
-        - lines:
-          - setup = set_up_test_environment(
-          - '    hardware_requirements=''CPU > 4 cores, 16GB RAM'','
-          - '    software_requirements=''Python 3.10, pytest, Docker'','
-          - '    configuration_requirements=''Env vars: TEST_MODE=1'','
-          - '    components_listed=[''CPU'', ''RAM'', ''Python'', ''Docker'']'
-          - )
-          output: '{''setup_status'': ''Completed'', ''setup_steps'': [''Verified
-            CPU cores'', ''Installed Python 3.10'', ''Configured Docker'', ''Set environment
-            variables''], ''setup_errors'': [], ''test_environment_configuration'':
-            ''Python 3.10 + Docker + 16GB RAM, TEST_MODE=1''}'
-        - lines:
-          - setup = set_up_test_environment(
-          - '    hardware_requirements=''CPU > 8 cores'','
-          - '    software_requirements=''Java 17'','
-          - '    configuration_requirements='''','
-          - '    components_listed=[''CPU'', ''Java'']'
-          - )
-          output: '{''setup_status'': ''Partial'', ''setup_steps'': [''Verified CPU
-            cores''], ''setup_errors'': [''Java 17 not found, installation skipped''],
-            ''test_environment_configuration'': ''CPU > 8 cores, Java 17 installation
-            pending''}'
-        parameters:
-        - description: Hardware specifications required for the test environment.
-          name: hardware_requirements
-          type: str
-        - description: Software prerequisites required for the test environment.
-          name: software_requirements
-          type: str
-        - description: Configuration settings and parameters needed for the test environment.
-          name: configuration_requirements
-          type: str
-        - description: List of components identified as necessary for the test environment.
-          name: components_listed
-          type: List[str]
-        raises:
-        - description: If critical setup steps fail and the environment cannot be
-            initialized.
-          type: RuntimeError
-        - description: If input parameters are missing or malformed.
-          type: ValueError
-        returns:
-          description: A dictionary containing `setup_status`, `setup_steps`, `setup_errors`,
-            and `test_environment_configuration` keys.
-          type: dict
-        summary: Configure the test environment based on identified requirements.
-    prompt: Verify system requirements and install/configure necessary components
-      for the test environment. List completed setup steps as bullet points.
+    prompt: Provide the stock symbol of the company to be analyzed
