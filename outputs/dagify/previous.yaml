@@ -1,145 +1,113 @@
 dag_type: plain_text
-description: Constructs daily overnight dynamic hedges for equity portfolios using
-  financial data from stocks, ETFs, and futures based on implied valuation vs. NAV
-  comparisons, generating executable morning auction orders.
-name: overnight_dynamic_hedge_generation
+description: A workflow to ingest financial data, analyze an equity portfolio's implied
+  valuation vs NAV to construct an overnight dynamic hedge, and schedule trade execution
+  for the morning auction.
+name: dynamic_equity_hedge_workflow
 nodes:
-  aggregate_valuation_spreads:
+  calculate_hedge_ratios:
     agent: false
-    description: Combine stock and ETF valuation gaps across the entire portfolio
-    name: aggregate_valuation_spreads
+    description: Determine the required notional and contract counts for futures and
+      ETFs to neutralize market risk.
+    name: calculate_hedge_ratios
     nodes_depended_on:
-    - compute_valuation_spread_stocks
-    - compute_valuation_spread_etfs
-    nodes_dependent_on:
-    - determine_hedge_ratios
-    prompt: Create portfolio-weighted aggregated valuation spreads. Calculate both
-      directional and total risk exposure metrics.
-  calculate_etf_nav:
-    agent: false
-    description: Compute actual fund NAV for all ETFs in portfolio
-    name: calculate_etf_nav
-    nodes_depended_on:
-    - fetch_etf_data
-    nodes_dependent_on:
-    - compute_valuation_spread_etfs
-    prompt: Calculate current NAV values for all ETFs by valuing underlying basket
-      components using latest futures and cash market prices.
-  calculate_hedge_position_sizes:
-    agent: false
-    description: Determine exact quantities to hedge for each instrument class
-    name: calculate_hedge_position_sizes
-    nodes_depended_on:
-    - determine_hedge_ratios
-    - fetch_future_data
-    nodes_dependent_on:
-    - generate_trade_orders
-    prompt: Calculate precise position sizes for futures/ETFs needed to offset portfolio
-      valuation risks. Consider multipliers, leverage, and margin requirements.
-  calculate_implied_valuation_etfs:
-    agent: false
-    description: Determine forward-looking valuation expectations for ETFs
-    name: calculate_implied_valuation_etfs
-    nodes_depended_on:
-    - fetch_etf_data
-    nodes_dependent_on:
-    - compute_valuation_spread_etfs
-    prompt: Estimate future NAVs for ETFs using time-weighted average pricing of underlying
-      constituents and dividend expectations.
-  calculate_implied_valuation_stocks:
-    agent: false
-    description: Estimate implied equity valuations using forward-looking metrics
-    name: calculate_implied_valuation_stocks
-    nodes_depended_on:
-    - fetch_stock_data
-    nodes_dependent_on:
-    - compute_valuation_spread_stocks
-    prompt: Using option pricing models and earnings forecasts, calculate forward-looking
-      valuations for each stock in the portfolio. Output should include delta to underlying.
-  compute_valuation_spread_etfs:
-    agent: false
-    description: Measure discrepancies between NAVs and implied fund values
-    name: compute_valuation_spread_etfs
-    nodes_depended_on:
-    - calculate_etf_nav
-    - calculate_implied_valuation_etfs
-    nodes_dependent_on:
-    - aggregate_valuation_spreads
-    prompt: Calculate dispersion between current and estimated future NAV values for
-      ETFs. Include basis point spread and expected convergence timeline.
-  compute_valuation_spread_stocks:
-    agent: false
-    description: Calculate the difference between actual and implied valuations for
-      stocks
-    name: compute_valuation_spread_stocks
-    nodes_depended_on:
-    - calculate_implied_valuation_stocks
-    - fetch_stock_data
-    nodes_dependent_on:
-    - aggregate_valuation_spreads
-    prompt: Compute the current vs. forward valuation gap for each stock. Express
-      as absolute dollar value and percentage of equity capital.
-  determine_hedge_ratios:
-    agent: false
-    description: Calculate optimal hedging multiples based on volatility and spread
-      analysis
-    name: determine_hedge_ratios
-    nodes_depended_on:
-    - aggregate_valuation_spreads
-    nodes_dependent_on:
-    - calculate_hedge_position_sizes
-    prompt: Set beta-adjusted hedge ratios for each instrument class considering time
-      decay, option risk, and execution costs in pre-open.
-  fetch_etf_data:
-    agent: false
-    description: Gather ETF price data, NAV values, and underlying holding weights
-    name: fetch_etf_data
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - calculate_etf_nav
-    - calculate_implied_valuation_etfs
-    - compute_valuation_spread_etfs
-    prompt: Get current net asset values, tracking errors, and constituent breakdowns
-      for all relevant ETFs. Include both primary (ticker) and secondary (NAV) market
-      pricing.
-  fetch_future_data:
-    agent: false
-    description: Collect futures contract data including prices, multipliers, and
-      expiration timelines
-    name: fetch_future_data
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - calculate_hedge_position_sizes
-    prompt: Extract specifications for all futures contracts that could be used for
-      hedging (SPX, NDX, VIX, etc.). Include implied volatility surfaces when available.
-  fetch_stock_data:
-    agent: false
-    description: Retrieve real-time equity price data, historical volumes, and option
-      chain info for portfolio constituents
-    name: fetch_stock_data
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - calculate_implied_valuation_stocks
-    - compute_valuation_spread_stocks
-    prompt: Extract daily market data for all stocks in the target portfolio including
-      bid/ask spreads, last traded prices, and option chains. Format as structured
-      tabular data.
-  generate_trade_orders:
-    agent: false
-    description: Create executable limit and market orders for morning auction
-    name: generate_trade_orders
-    nodes_depended_on:
-    - calculate_hedge_position_sizes
-    nodes_dependent_on:
-    - send_orders_for_execution
-    prompt: Format positions as ICE limit orders (with 3 tier price breaks) or NYSE
-      opening auction orders. Include time-in-force = day.
-  send_orders_for_execution:
-    agent: false
-    description: Schedule and transmit orders to brokerage execution systems
-    name: send_orders_for_execution
-    nodes_depended_on:
-    - generate_trade_orders
+    - calculate_portfolio_greeks
+    - fetch_market_data_etfs
+    - fetch_market_data_futures
     nodes_dependent_on: []
-    prompt: Route all orders through the proper broker APIs with market open time
-      = 9:29AM ET. Generate audit trail and order confirmation reports.
+    prompt: Using the portfolio Delta and the current prices of ETFs and Futures,
+      calculate the precise number of contracts or shares required to hedge the portfolio
+      to neutral (zero delta). Prioritize liquidity in instrument selection.
+  calculate_nav_valuation:
+    agent: false
+    description: Determine the current Net Asset Value (NAV) and aggregate market
+      value of the portfolio.
+    name: calculate_nav_valuation
+    nodes_depended_on:
+    - ingest_portfolio_holdings
+    - fetch_market_data_stocks
+    nodes_dependent_on: []
+    prompt: Calculate the total market value and the Net Asset Value (NAV) of the
+      current equity portfolio based on the latest closing prices.
+  calculate_portfolio_greeks:
+    agent: false
+    description: Compute the total delta, gamma, and vega exposure of the equity portfolio.
+    name: calculate_portfolio_greeks
+    nodes_depended_on:
+    - ingest_portfolio_holdings
+    - fetch_market_data_stocks
+    nodes_dependent_on: []
+    prompt: Calculate the total portfolio Delta, Gamma, and Vega based on the current
+      holdings and the latest market data (prices and implied volatilities). Provide
+      the net aggregate Greeks.
+  fetch_market_data_etfs:
+    agent: false
+    description: Collect real-time and closing market data for correlated ETFs.
+    name: fetch_market_data_etfs
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Fetch market data (Last, Bid, Ask, Volume, IV) for a predefined list of
+      sector and broad market ETFs relevant to the portfolio (e.g., SPY, QQQ, IWM,
+      XLK, XLF).
+  fetch_market_data_futures:
+    agent: false
+    description: Collect real-time and closing market data for index and volatility
+      futures.
+    name: fetch_market_data_futures
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Fetch market data and front-month contract specifications for relevant
+      index futures (e.g., ES, NQ, RTY) and volatility futures (e.g., VIX).
+  fetch_market_data_stocks:
+    agent: false
+    description: Collect real-time and closing market data for all portfolio stock
+      holdings.
+    name: fetch_market_data_stocks
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Using the provided list of portfolio tickers, fetch the latest market
+      data including Last Price, Bid, Ask, Volume, and Implied Volatility for each
+      stock.
+  generate_hedge_orders:
+    agent: false
+    description: Format the calculated hedge ratios into specific trade orders including
+      symbols, quantities, and sides.
+    name: generate_hedge_orders
+    nodes_depended_on:
+    - calculate_hedge_ratios
+    nodes_dependent_on: []
+    prompt: 'Convert the hedge ratios into a list of trade orders. Each order must
+      specify: Symbol, Side (Buy/Sell), Quantity, and Order Type (Limit). Ensure the
+      total directional exposure offsets the portfolio.'
+  ingest_portfolio_holdings:
+    agent: false
+    description: Retrieve the current list of equity holdings and positions from the
+      portfolio database.
+    name: ingest_portfolio_holdings
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Retrieve the current equity portfolio composition from the internal source,
+      including ticker symbols, shares held, and average cost basis. Format as a list
+      of positions.
+  schedule_auction_trades:
+    agent: false
+    description: Create execution instructions to place the approved hedge trades
+      at the market open auction.
+    name: schedule_auction_trades
+    nodes_depended_on:
+    - validate_risk_limits
+    nodes_dependent_on: []
+    prompt: Generate the execution instructions to submit the approved hedge orders
+      specifically for the opening auction. Instructions should include the exact
+      timing (e.g., 'At the Open') and any price collars.
+  validate_risk_limits:
+    agent: false
+    description: Ensure the proposed hedge trades adhere to predefined risk and leverage
+      constraints.
+    name: validate_risk_limits
+    nodes_depended_on:
+    - generate_hedge_orders
+    - fetch_market_data_futures
+    nodes_dependent_on: []
+    prompt: Check the generated hedge orders against risk limits (max leverage, margin
+      usage, max position size). Reject the set if it violates constraints, otherwise
+      approve.
