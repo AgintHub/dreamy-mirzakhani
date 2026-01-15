@@ -1,659 +1,200 @@
 dag_type: plain_text
-description: Workflow to build a comprehensive mental model, strengths/weaknesses
-  matrix, interaction map, best‑practice guidelines, and integrated documentation
-  for the new programmable abstraction layer that includes agents, subagents, prompts,
-  contexts, memory, modes, permissions, tools, plugins, skills, hooks, MCP, LSP, slash
-  commands, workflows, and IDE integrations.
-name: master_programmable_abstraction_layer_mental_model
+description: A workflow for mastering a new programmable layer of abstraction involving
+  agents, subagents, and various tools.
+name: master_programmable_abstraction_layer
 nodes:
-  assemble_final_report:
+  build_stochastic_fallible_unintelligible_entity_model:
     agent: false
-    description: Combine all artefacts into a structured final report.
-    name: assemble_final_report
+    description: Build a model for stochastic, fallible, unintelligible, and changing
+      entities.
+    name: build_stochastic_fallible_unintelligible_entity_model
     nodes_depended_on:
-    - create_glossary
-    - create_strengths_weakness_matrix
-    - create_interaction_map
-    - compare_stochastic_vs_engineering
-    - draft_best_practices
-    - draft_integration_example
-    - draft_mental_model_diagram_description
+    - design_all_encompassing_mental_model
     nodes_dependent_on: []
-    prompt: 'Compose a comprehensive report that includes the following sections with
-      headings: 1) Glossary, 2) Strengths & Pitfalls Matrix, 3) Interaction Map, 4)
-      Stochastic vs Engineering Analysis, 5) Best‑Practice Guidelines, 6) Integration
-      Example, 7) Mental Model Diagram Description. Insert the exact content generated
-      in each respective step under its heading. Ensure consistent markdown formatting.'
-  compare_stochastic_vs_engineering:
+    prompt: Build and describe a model for stochastic, fallible, unintelligible, and
+      changing entities, including entity definition, behavior, and interaction mechanisms,
+      and explain how it will be integrated with the all-encompassing mental model.
+  design_all_encompassing_mental_model:
     agent: false
-    description: Analyze differences between stochastic behavior of programmable components
-      and deterministic engineering practices.
-    name: compare_stochastic_vs_engineering
+    description: Design an all-encompassing mental model for the new programmable
+      layer of abstraction.
+    name: design_all_encompassing_mental_model
     nodes_depended_on:
-    - create_strengths_weakness_matrix
-    - create_interaction_map
+    - research_ide_integration_mechanisms
     nodes_dependent_on: []
-    prompt: Based on the strengths/pitfalls matrix and the interaction map, write
-      a short essay (around 200 words) comparing the stochastic, fallible nature of
-      agents and related entities with traditional deterministic engineering. Highlight
-      implications for reliability, testing, and governance.
-  create_glossary:
+    prompt: Design and describe an all-encompassing mental model, including concepts,
+      relationships, and constraints, and explain how it will be used to understand
+      and navigate the new programmable layer of abstraction.
+  design_mode_selection_mechanism:
     agent: false
-    description: Combine all component definitions into a single glossary table.
-    name: create_glossary
+    description: Design a mechanism for selecting modes in the new programmable layer
+      of abstraction.
+    name: design_mode_selection_mechanism
     nodes_depended_on:
-    - define_agent
-    - define_subagent
-    - define_prompt
-    - define_context
-    - define_memory
-    - define_mode
-    - define_permission
-    - define_tool
-    - define_plugin
-    - define_skill
-    - define_hook
-    - define_mcp
-    - define_lsp
-    - define_slash_command
-    - define_workflow
-    - define_ide_integration
+    - implement_memory_management_mechanism
     nodes_dependent_on: []
-    prompt: 'Collect the definitions produced for each component and compile them
-      into a markdown table with two columns: Component | Definition. Preserve the
-      exact component names as headings.'
-  create_interaction_map:
+    prompt: Design and describe a mechanism for selecting modes, including mode definition,
+      selection criteria, and mode switching protocols, and explain how it will be
+      integrated with the memory management mechanism.
+  design_prompt_engineering_workflow:
     agent: false
-    description: Describe the interaction relationships among all components.
-    name: create_interaction_map
+    description: Design a workflow for engineering prompts for the new programmable
+      layer of abstraction.
+    name: design_prompt_engineering_workflow
     nodes_depended_on:
-    - define_agent
-    - define_subagent
-    - define_prompt
-    - define_context
-    - define_memory
-    - define_mode
-    - define_permission
-    - define_tool
-    - define_plugin
-    - define_skill
-    - define_hook
-    - define_mcp
-    - define_lsp
-    - define_slash_command
-    - define_workflow
-    - define_ide_integration
+    - identify_key_concepts
     nodes_dependent_on: []
-    prompt: Write a textual diagram that shows how each component interacts with the
-      others in the programmable abstraction layer. Use arrows (->) to indicate direction
-      of data or control flow, e.g., "Agent -> Subagent", "Prompt -> Context", etc.
-      Include brief annotations where helpful.
-  create_strengths_weakness_matrix:
+    prompt: Design a workflow for engineering prompts, including prompt definition,
+      testing, and refinement, and describe the tools and techniques required for
+      each step.
+  design_skill_development_framework:
     agent: false
-    description: Construct a markdown matrix summarizing strengths and pitfalls for
-      each component.
-    name: create_strengths_weakness_matrix
+    description: Design a framework for developing skills in the new programmable
+      layer of abstraction.
+    name: design_skill_development_framework
     nodes_depended_on:
-    - list_strengths_agent
-    - list_strengths_subagent
-    - list_strengths_prompt
-    - list_strengths_context
-    - list_strengths_memory
-    - list_strengths_mode
-    - list_strengths_permission
-    - list_strengths_tool
-    - list_strengths_plugin
-    - list_strengths_skill
-    - list_strengths_hook
-    - list_strengths_mcp
-    - list_strengths_lsp
-    - list_strengths_slash_command
-    - list_strengths_workflow
-    - list_strengths_ide_integration
-    - list_pitfalls_agent
-    - list_pitfalls_subagent
-    - list_pitfalls_prompt
-    - list_pitfalls_context
-    - list_pitfalls_memory
-    - list_pitfalls_mode
-    - list_pitfalls_permission
-    - list_pitfalls_tool
-    - list_pitfalls_plugin
-    - list_pitfalls_skill
-    - list_pitfalls_hook
-    - list_pitfalls_mcp
-    - list_pitfalls_lsp
-    - list_pitfalls_slash_command
-    - list_pitfalls_workflow
-    - list_pitfalls_ide_integration
+    - research_tool_and_plugin_integration
     nodes_dependent_on: []
-    prompt: 'Using the strengths and pitfalls lists for every component, create a
-      markdown table with columns: Component, Strengths, Pitfalls. Fill each row with
-      the bullet points generated earlier.'
-  define_agent:
+    prompt: Design and describe a framework for developing skills, including skill
+      definition, skill acquisition, and skill refinement mechanisms, and explain
+      how it will be integrated with the tool and plugin integration mechanism.
+  design_slash_command_system:
     agent: false
-    description: Provide a concise definition of an agent within the programmable
-      abstraction layer.
-    name: define_agent
+    description: Design a system for slash commands in the new programmable layer
+      of abstraction.
+    name: design_slash_command_system
     nodes_depended_on:
-    - enumerate_abstraction_components
+    - research_mcp_and_lsp_integration
     nodes_dependent_on: []
-    prompt: Based on the component list, write a two‑sentence definition of an agent
-      that explains its purpose, typical responsibilities, and how it interacts with
-      other components.
-  define_context:
+    prompt: Design and describe a system for slash commands, including command definition,
+      parsing, and execution mechanisms, and explain how it will be integrated with
+      the MCP and LSP integration mechanism.
+  develop_context_management_system:
     agent: false
-    description: Provide a concise definition of context within the programmable abstraction
-      layer.
-    name: define_context
+    description: Develop a system for managing context in the new programmable layer
+      of abstraction.
+    name: develop_context_management_system
     nodes_depended_on:
-    - enumerate_abstraction_components
+    - investigate_subagent_integration
     nodes_dependent_on: []
-    prompt: Define context in two sentences, explaining how it supplies background
-      information or state that influences agent behavior.
-  define_hook:
+    prompt: Develop and describe a system for managing context, including context
+      representation, updating, and retrieval, and explain how it will be integrated
+      with the overall architecture.
+  identify_key_concepts:
     agent: false
-    description: Provide a concise definition of a hook within the programmable abstraction
-      layer.
-    name: define_hook
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define a hook in two sentences, detailing how it provides a callback point
-      for inserting custom logic during agent execution.
-  define_ide_integration:
-    agent: false
-    description: Provide a concise definition of IDE integration within the programmable
-      abstraction layer.
-    name: define_ide_integration
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define IDE integration in two sentences, describing how agents and related
-      components are embedded into an development environment for interactive usage.
-  define_lsp:
-    agent: false
-    description: Provide a concise definition of LSP (language server protocol) within
-      the programmable abstraction layer.
-    name: define_lsp
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define LSP in two sentences, describing its role in providing language
-      features (e.g., completion, diagnostics) to IDEs via agents.
-  define_mcp:
-    agent: false
-    description: Provide a concise definition of MCP (multi‑component protocol) within
-      the programmable abstraction layer.
-    name: define_mcp
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define MCP in two sentences, explaining how it coordinates communication
-      between multiple agents or services.
-  define_memory:
-    agent: false
-    description: Provide a concise definition of memory within the programmable abstraction
-      layer.
-    name: define_memory
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define memory in two sentences, describing persistent or transient data
-      that agents can read from or write to across interactions.
-  define_mode:
-    agent: false
-    description: Provide a concise definition of mode within the programmable abstraction
-      layer.
-    name: define_mode
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define mode in two sentences, indicating how it switches an agent’s operating
-      parameters such as creativity, verbosity, or safety level.
-  define_permission:
-    agent: false
-    description: Provide a concise definition of permission within the programmable
-      abstraction layer.
-    name: define_permission
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define permission in two sentences, covering how it governs what actions
-      an agent or tool may perform on resources.
-  define_plugin:
-    agent: false
-    description: Provide a concise definition of a plugin within the programmable
-      abstraction layer.
-    name: define_plugin
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define a plugin in two sentences, explaining how it extends or modifies
-      agent behavior through a modular attachment.
-  define_prompt:
-    agent: false
-    description: Provide a concise definition of a prompt within the programmable
-      abstraction layer.
-    name: define_prompt
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define a prompt in two sentences, covering its role as the textual or
-      structured instruction that drives an agent or subagent.
-  define_skill:
-    agent: false
-    description: Provide a concise definition of a skill within the programmable abstraction
-      layer.
-    name: define_skill
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define a skill in two sentences, describing a reusable capability that
-      an agent can apply across tasks.
-  define_slash_command:
-    agent: false
-    description: Provide a concise definition of a slash command within the programmable
-      abstraction layer.
-    name: define_slash_command
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define a slash command in two sentences, covering its use as a textual
-      trigger typed in an IDE or chat environment to invoke an agent action.
-  define_subagent:
-    agent: false
-    description: Provide a concise definition of a subagent within the programmable
-      abstraction layer.
-    name: define_subagent
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Write a two‑sentence definition of a subagent, describing how it differs
-      from a top‑level agent and how it may be invoked or orchestrated.
-  define_tool:
-    agent: false
-    description: Provide a concise definition of a tool within the programmable abstraction
-      layer.
-    name: define_tool
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define a tool in two sentences, describing an external capability (e.g.,
-      API, script) that an agent can invoke to perform a function.
-  define_workflow:
-    agent: false
-    description: Provide a concise definition of a workflow within the programmable
-      abstraction layer.
-    name: define_workflow
-    nodes_depended_on:
-    - enumerate_abstraction_components
-    nodes_dependent_on: []
-    prompt: Define a workflow in two sentences, outlining how a sequence of agent
-      and tool steps is orchestrated to achieve a goal.
-  draft_best_practices:
-    agent: false
-    description: Generate a concise set of best‑practice guidelines for designing
-      and managing the programmable abstraction layer.
-    name: draft_best_practices
-    nodes_depended_on:
-    - create_strengths_weakness_matrix
-    - create_interaction_map
-    - compare_stochastic_vs_engineering
-    nodes_dependent_on: []
-    prompt: Using the strengths, pitfalls, interaction patterns, and stochastic‑vs‑engineering
-      analysis, produce up to ten bullet‑point best‑practice recommendations for safely
-      designing, integrating, and operating these programmable abstractions.
-  draft_integration_example:
-    agent: false
-    description: Provide a concrete example workflow that ties together several components
-      in a realistic scenario.
-    name: draft_integration_example
-    nodes_depended_on:
-    - draft_best_practices
-    - create_interaction_map
-    nodes_dependent_on: []
-    prompt: Write a short example (3‑4 sentences) of a workflow that starts with a
-      slash command in an IDE, triggers an agent, which delegates to a subagent, invokes
-      a tool through a plugin via a hook, and updates memory and context. Highlight
-      each component’s role.
-  draft_mental_model_diagram_description:
-    agent: false
-    description: Outline a textual description of a visual mental model diagram for
-      the entire programmable abstraction layer.
-    name: draft_mental_model_diagram_description
-    nodes_depended_on:
-    - create_interaction_map
-    - draft_best_practices
-    nodes_dependent_on: []
-    prompt: Provide a textual description suitable for drawing a diagram that captures
-      all major components, their relationships, data flow, and control flow in the
-      programmable abstraction layer. Include suggestions for layout (e.g., layers,
-      groups) and labeling.
-  enumerate_abstraction_components:
-    agent: false
-    description: List all distinct programmable abstraction components that form the
-      new layer.
-    name: enumerate_abstraction_components
+    description: List the key concepts related to the new programmable layer of abstraction.
+    name: identify_key_concepts
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: 'List each distinct component of the new programmable abstraction layer,
-      including: agents, subagents, prompts, contexts, memory, modes, permissions,
-      tools, plugins, skills, hooks, MCP, LSP, slash commands, workflows, and IDE
-      integrations. Return as a bullet list with the exact component names.'
-  list_pitfalls_agent:
+    prompt: Identify and list the key concepts related to the new programmable layer
+      of abstraction, such as agents, subagents, prompts, contexts, memory, modes,
+      permissions, tools, plugins, skills, hooks, MCP, LSP, slash commands, workflows,
+      and IDE integrations.
+  implement_memory_management_mechanism:
     agent: false
-    description: Identify three common pitfalls of an agent in this abstraction layer.
-    name: list_pitfalls_agent
+    description: Implement a mechanism for managing memory in the new programmable
+      layer of abstraction.
+    name: implement_memory_management_mechanism
     nodes_depended_on:
-    - define_agent
+    - develop_context_management_system
     nodes_dependent_on: []
-    prompt: Using the agent definition, list three pitfalls or limitations of agents,
-      such as unpredictability, resource usage, and interpretability challenges. Provide
-      bullet points.
-  list_pitfalls_context:
+    prompt: Implement and describe a mechanism for managing memory, including memory
+      allocation, deallocation, and protection, and explain how it will be integrated
+      with the context management system.
+  integrate_with_engineering_practices:
     agent: false
-    description: Identify three common pitfalls of context in this abstraction layer.
-    name: list_pitfalls_context
+    description: Integrate the new programmable layer of abstraction with good old-fashioned
+      engineering practices.
+    name: integrate_with_engineering_practices
     nodes_depended_on:
-    - define_context
+    - build_stochastic_fallible_unintelligible_entity_model
     nodes_dependent_on: []
-    prompt: Using the context definition, enumerate three pitfalls of context, including
-      stale information, overload, and leakage across sessions. Bullet format.
-  list_pitfalls_hook:
+    prompt: Integrate and describe the integration of the new programmable layer of
+      abstraction with good old-fashioned engineering practices, including design
+      patterns, testing methodologies, and deployment strategies, and explain how
+      they will be used to ensure the reliability and maintainability of the system.
+  investigate_hook_management_systems:
     agent: false
-    description: Identify three common pitfalls of a hook in this abstraction layer.
-    name: list_pitfalls_hook
+    description: Investigate hook management systems for the new programmable layer
+      of abstraction.
+    name: investigate_hook_management_systems
     nodes_depended_on:
-    - define_hook
+    - design_skill_development_framework
     nodes_dependent_on: []
-    prompt: Based on the hook definition, list three pitfalls of hooks, including
-      improper ordering, side‑effects, and debugging difficulty. Provide bullet points.
-  list_pitfalls_ide_integration:
+    prompt: Investigate and describe hook management systems, including hook registration,
+      invocation, and removal mechanisms, and explain how they will be integrated
+      with the skill development framework.
+  investigate_permission_management_systems:
     agent: false
-    description: Identify three common pitfalls of IDE integration in this abstraction
-      layer.
-    name: list_pitfalls_ide_integration
+    description: Investigate permission management systems for the new programmable
+      layer of abstraction.
+    name: investigate_permission_management_systems
     nodes_depended_on:
-    - define_ide_integration
+    - design_mode_selection_mechanism
     nodes_dependent_on: []
-    prompt: From the IDE integration definition, enumerate three pitfalls of integrating
-      agents into IDEs, such as UI clutter, latency, and security boundaries. Bullet
-      format.
-  list_pitfalls_lsp:
+    prompt: Investigate and describe permission management systems, including access
+      control models, permission assignment, and revocation mechanisms, and explain
+      how they will be integrated with the mode selection mechanism.
+  investigate_subagent_integration:
     agent: false
-    description: Identify three common pitfalls of LSP in this abstraction layer.
-    name: list_pitfalls_lsp
+    description: Investigate how subagents can be integrated into the overall architecture.
+    name: investigate_subagent_integration
     nodes_depended_on:
-    - define_lsp
+    - research_agent_architectures
     nodes_dependent_on: []
-    prompt: From the LSP definition, list three pitfalls of the language server protocol,
-      including version incompatibility, performance impact, and limited language
-      coverage. Bullet format.
-  list_pitfalls_mcp:
+    prompt: Investigate and describe how subagents can be integrated into the overall
+      architecture, including communication protocols, data sharing, and coordination
+      mechanisms.
+  investigate_workflow_management_systems:
     agent: false
-    description: Identify three common pitfalls of MCP in this abstraction layer.
-    name: list_pitfalls_mcp
+    description: Investigate workflow management systems for the new programmable
+      layer of abstraction.
+    name: investigate_workflow_management_systems
     nodes_depended_on:
-    - define_mcp
+    - design_slash_command_system
     nodes_dependent_on: []
-    prompt: Using the MCP definition, enumerate three pitfalls of the multi‑component
-      protocol, such as coordination complexity, latency, and failure cascades. Bullet
-      points.
-  list_pitfalls_memory:
+    prompt: Investigate and describe workflow management systems, including workflow
+      definition, execution, and monitoring mechanisms, and explain how they will
+      be integrated with the slash command system.
+  research_agent_architectures:
     agent: false
-    description: Identify three common pitfalls of memory in this abstraction layer.
-    name: list_pitfalls_memory
+    description: Research different agent architectures and their applications.
+    name: research_agent_architectures
     nodes_depended_on:
-    - define_memory
+    - identify_key_concepts
     nodes_dependent_on: []
-    prompt: Based on the memory definition, list three pitfalls of memory, such as
-      retention bias, privacy concerns, and storage cost. Bullet points.
-  list_pitfalls_mode:
+    prompt: Research and summarize different agent architectures, such as hierarchical,
+      flat, or hybrid architectures, and their applications in various domains.
+  research_ide_integration_mechanisms:
     agent: false
-    description: Identify three common pitfalls of mode in this abstraction layer.
-    name: list_pitfalls_mode
+    description: Research IDE integration mechanisms for the new programmable layer
+      of abstraction.
+    name: research_ide_integration_mechanisms
     nodes_depended_on:
-    - define_mode
+    - investigate_workflow_management_systems
     nodes_dependent_on: []
-    prompt: From the mode definition, enumerate three pitfalls of operating modes,
-      highlighting misconfiguration risk, mode switching latency, and unexpected behavior.
-      Bullet points.
-  list_pitfalls_permission:
+    prompt: Research and describe IDE integration mechanisms, including editor plugins,
+      debugger integration, and project management mechanisms, and explain how they
+      will be integrated with the workflow management system.
+  research_mcp_and_lsp_integration:
     agent: false
-    description: Identify three common pitfalls of permission in this abstraction
-      layer.
-    name: list_pitfalls_permission
+    description: Research MCP and LSP integration for the new programmable layer of
+      abstraction.
+    name: research_mcp_and_lsp_integration
     nodes_depended_on:
-    - define_permission
+    - investigate_hook_management_systems
     nodes_dependent_on: []
-    prompt: Using the permission definition, list three pitfalls of permission controls,
-      such as over‑restriction, complexity, and audit difficulty. Provide bullet points.
-  list_pitfalls_plugin:
+    prompt: Research and describe MCP and LSP integration, including protocol definition,
+      message passing, and service discovery mechanisms, and explain how they will
+      be integrated with the hook management system.
+  research_tool_and_plugin_integration:
     agent: false
-    description: Identify three common pitfalls of a plugin in this abstraction layer.
-    name: list_pitfalls_plugin
+    description: Research tool and plugin integration for the new programmable layer
+      of abstraction.
+    name: research_tool_and_plugin_integration
     nodes_depended_on:
-    - define_plugin
+    - investigate_permission_management_systems
     nodes_dependent_on: []
-    prompt: Using the plugin definition, list three pitfalls of plugins, including
-      compatibility issues, maintenance burden, and performance overhead. Bullet points.
-  list_pitfalls_prompt:
-    agent: false
-    description: Identify three common pitfalls of a prompt in this abstraction layer.
-    name: list_pitfalls_prompt
-    nodes_depended_on:
-    - define_prompt
-    nodes_dependent_on: []
-    prompt: From the prompt definition, list three pitfalls of prompts, such as ambiguity,
-      prompt injection, and over‑specification. Provide bullet points.
-  list_pitfalls_skill:
-    agent: false
-    description: Identify three common pitfalls of a skill in this abstraction layer.
-    name: list_pitfalls_skill
-    nodes_depended_on:
-    - define_skill
-    nodes_dependent_on: []
-    prompt: From the skill definition, enumerate three pitfalls of skills, such as
-      over‑specialization, brittleness, and training data bias. Bullet list.
-  list_pitfalls_slash_command:
-    agent: false
-    description: Identify three common pitfalls of a slash command in this abstraction
-      layer.
-    name: list_pitfalls_slash_command
-    nodes_depended_on:
-    - define_slash_command
-    nodes_dependent_on: []
-    prompt: Based on the slash command definition, enumerate three pitfalls of slash
-      commands, such as discoverability limits, accidental triggering, and parsing
-      errors. Bullet points.
-  list_pitfalls_subagent:
-    agent: false
-    description: Identify three common pitfalls of a subagent in this abstraction
-      layer.
-    name: list_pitfalls_subagent
-    nodes_depended_on:
-    - define_subagent
-    nodes_dependent_on: []
-    prompt: Based on the subagent definition, enumerate three pitfalls of subagents,
-      such as coordination overhead, debugging difficulty, and nested failure propagation.
-      Bullet points.
-  list_pitfalls_tool:
-    agent: false
-    description: Identify three common pitfalls of a tool in this abstraction layer.
-    name: list_pitfalls_tool
-    nodes_depended_on:
-    - define_tool
-    nodes_dependent_on: []
-    prompt: Based on the tool definition, enumerate three pitfalls of tools, such
-      as dependency management, security exposure, and version drift. Bullet format.
-  list_pitfalls_workflow:
-    agent: false
-    description: Identify three common pitfalls of a workflow in this abstraction
-      layer.
-    name: list_pitfalls_workflow
-    nodes_depended_on:
-    - define_workflow
-    nodes_dependent_on: []
-    prompt: Using the workflow definition, list three pitfalls of workflows, focusing
-      on rigidity, monitoring difficulty, and error propagation. Bullet points.
-  list_strengths_agent:
-    agent: false
-    description: Identify three primary strengths of an agent in this abstraction
-      layer.
-    name: list_strengths_agent
-    nodes_depended_on:
-    - define_agent
-    nodes_dependent_on: []
-    prompt: Using the definition of an agent provided earlier, enumerate three key
-      strengths of agents within the programmable abstraction layer. List each strength
-      as a bullet point.
-  list_strengths_context:
-    agent: false
-    description: Identify three primary strengths of context in this abstraction layer.
-    name: list_strengths_context
-    nodes_depended_on:
-    - define_context
-    nodes_dependent_on: []
-    prompt: Based on the context definition, enumerate three strengths of context,
-      emphasizing how it guides relevance, disambiguation, and continuity. Bullet
-      format.
-  list_strengths_hook:
-    agent: false
-    description: Identify three primary strengths of a hook in this abstraction layer.
-    name: list_strengths_hook
-    nodes_depended_on:
-    - define_hook
-    nodes_dependent_on: []
-    prompt: Based on the hook definition, list three strengths of hooks, such as event‑driven
-      extensibility, interception, and workflow injection. Provide bullet points.
-  list_strengths_ide_integration:
-    agent: false
-    description: Identify three primary strengths of IDE integration in this abstraction
-      layer.
-    name: list_strengths_ide_integration
-    nodes_depended_on:
-    - define_ide_integration
-    nodes_dependent_on: []
-    prompt: From the IDE integration definition, enumerate three strengths of IDE
-      integration, focusing on developer productivity, interactive feedback, and seamless
-      tool access. Bullet list.
-  list_strengths_lsp:
-    agent: false
-    description: Identify three primary strengths of LSP in this abstraction layer.
-    name: list_strengths_lsp
-    nodes_depended_on:
-    - define_lsp
-    nodes_dependent_on: []
-    prompt: From the LSP definition, list three strengths of the language server protocol,
-      such as language‑agnostic tooling, real‑time feedback, and IDE integration.
-      Use bullet points.
-  list_strengths_mcp:
-    agent: false
-    description: Identify three primary strengths of MCP in this abstraction layer.
-    name: list_strengths_mcp
-    nodes_depended_on:
-    - define_mcp
-    nodes_dependent_on: []
-    prompt: Using the MCP definition, enumerate three strengths of the multi‑component
-      protocol, focusing on coordination, scalability, and fault tolerance. Bullet
-      format.
-  list_strengths_memory:
-    agent: false
-    description: Identify three primary strengths of memory in this abstraction layer.
-    name: list_strengths_memory
-    nodes_depended_on:
-    - define_memory
-    nodes_dependent_on: []
-    prompt: From the memory definition, list three strengths of memory, such as state
-      persistence, learning over time, and user personalization. Use bullet points.
-  list_strengths_mode:
-    agent: false
-    description: Identify three primary strengths of mode in this abstraction layer.
-    name: list_strengths_mode
-    nodes_depended_on:
-    - define_mode
-    nodes_dependent_on: []
-    prompt: Using the mode definition, enumerate three strengths of operating modes,
-      highlighting flexibility, safety tuning, and performance control. Bullet points.
-  list_strengths_permission:
-    agent: false
-    description: Identify three primary strengths of permission in this abstraction
-      layer.
-    name: list_strengths_permission
-    nodes_depended_on:
-    - define_permission
-    nodes_dependent_on: []
-    prompt: Based on the permission definition, list three strengths of permission
-      controls, such as security, compliance, and scope limitation. Bullet format.
-  list_strengths_plugin:
-    agent: false
-    description: Identify three primary strengths of a plugin in this abstraction
-      layer.
-    name: list_strengths_plugin
-    nodes_depended_on:
-    - define_plugin
-    nodes_dependent_on: []
-    prompt: From the plugin definition, list three strengths of plugins, such as modularity,
-      customizability, and dynamic loading. Bullet points.
-  list_strengths_prompt:
-    agent: false
-    description: Identify three primary strengths of a prompt in this abstraction
-      layer.
-    name: list_strengths_prompt
-    nodes_depended_on:
-    - define_prompt
-    nodes_dependent_on: []
-    prompt: Using the prompt definition, list three strengths of prompts, such as
-      clarity, controllability, and expressiveness. Provide bullet points.
-  list_strengths_skill:
-    agent: false
-    description: Identify three primary strengths of a skill in this abstraction layer.
-    name: list_strengths_skill
-    nodes_depended_on:
-    - define_skill
-    nodes_dependent_on: []
-    prompt: Using the skill definition, enumerate three strengths of skills, emphasizing
-      reusability, expertise encapsulation, and rapid task execution. Bullet list.
-  list_strengths_slash_command:
-    agent: false
-    description: Identify three primary strengths of a slash command in this abstraction
-      layer.
-    name: list_strengths_slash_command
-    nodes_depended_on:
-    - define_slash_command
-    nodes_dependent_on: []
-    prompt: Based on the slash command definition, enumerate three strengths of slash
-      commands, highlighting immediacy, discoverability, and low‑friction invocation.
-      Bullet points.
-  list_strengths_subagent:
-    agent: false
-    description: Identify three primary strengths of a subagent in this abstraction
-      layer.
-    name: list_strengths_subagent
-    nodes_depended_on:
-    - define_subagent
-    nodes_dependent_on: []
-    prompt: Based on the subagent definition, list three important strengths of subagents,
-      focusing on aspects such as specialization, delegation, and modular reuse. Use
-      bullet points.
-  list_strengths_tool:
-    agent: false
-    description: Identify three primary strengths of a tool in this abstraction layer.
-    name: list_strengths_tool
-    nodes_depended_on:
-    - define_tool
-    nodes_dependent_on: []
-    prompt: Using the tool definition, enumerate three strengths of tools, focusing
-      on extensibility, specialized functionality, and integration ease. Provide bullet
-      points.
-  list_strengths_workflow:
-    agent: false
-    description: Identify three primary strengths of a workflow in this abstraction
-      layer.
-    name: list_strengths_workflow
-    nodes_depended_on:
-    - define_workflow
-    nodes_dependent_on: []
-    prompt: Using the workflow definition, list three strengths of workflows, such
-      as orchestration, repeatability, and visibility. Bullet format.
+    prompt: Research and describe tool and plugin integration, including tool and
+      plugin registration, discovery, and invocation mechanisms, and explain how they
+      will be integrated with the permission management system.
