@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A fundamental workflow for executing a test process, including test scoping,
-  preparation, execution, and result analysis.
+dag_type: typed
+description: Generated workflow from UI.
 name: basic_testing_workflow
 nodes:
   analyze_results:
@@ -9,8 +8,7 @@ nodes:
     name: analyze_results
     nodes_depended_on:
     - execute_tests
-    nodes_dependent_on:
-    - generate_test_report
+    nodes_dependent_on: []
     prompt: Summarize key findings from test execution including failure types and
       error patterns. Present as bullet points with brief explanations.
   create_test_cases:
@@ -19,9 +17,15 @@ nodes:
     name: create_test_cases
     nodes_depended_on:
     - define_test_scope
-    nodes_dependent_on:
-    - develop_test_scripts
-    - execute_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Detailed descriptions of individual test cases, including test
+        steps, expected outcomes, and input parameters
+      key: test_cases
+      type: str
+    - description: Total number of test cases developed
+      key: test_case_count
+      type: int
     prompt: Create test cases with test steps, expected outcomes, and input parameters.
       Format as three distinct numbered examples.
   define_test_scope:
@@ -29,9 +33,26 @@ nodes:
     description: Define the scope and boundaries of the test process
     name: define_test_scope
     nodes_depended_on: []
-    nodes_dependent_on:
-    - create_test_cases
-    - prepare_test_data
+    nodes_dependent_on: []
+    output_structure:
+    - description: High-level objectives of the test scope
+      key: objectives
+      type: List[str]
+    - description: Acceptance criteria used to determine test success
+      key: criteria
+      type: List[str]
+    - description: Boundaries and limitations of the test scope
+      key: boundaries
+      type: List[str]
+    - description: Key deliverables produced within the test scope
+      key: deliverables
+      type: List[str]
+    - description: Key requirements that must be met by the test effort
+      key: key_requirements
+      type: List[str]
+    - description: Concise textual summary of the test scope
+      key: scope_summary
+      type: str
     prompt: Define the scope of the test including objectives, criteria, and boundaries.
       List the key requirements and deliverables as bullet points.
   develop_test_scripts:
@@ -40,8 +61,17 @@ nodes:
     name: develop_test_scripts
     nodes_depended_on:
     - create_test_cases
-    nodes_dependent_on:
-    - execute_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of script names developed for the test execution
+      key: script_names
+      type: List[str]
+    - description: List of purpose descriptions for each developed test script
+      key: purpose_descriptions
+      type: List[str]
+    - description: List of error handling details implemented in each test script
+      key: error_handling_details
+      type: List[str]
     prompt: Develop test scripts implementing three sample test cases with proper
       error handling. Include script names and purpose descriptions.
   execute_tests:
@@ -53,8 +83,7 @@ nodes:
     - set_up_test_environment
     - prepare_test_data
     - develop_test_scripts
-    nodes_dependent_on:
-    - analyze_results
+    nodes_dependent_on: []
     prompt: 'Execute all test cases and document execution status (pass/fail) with
       timestamp. Format as a simple table: Test Name | Status.'
   generate_test_report:
@@ -63,8 +92,17 @@ nodes:
     name: generate_test_report
     nodes_depended_on:
     - analyze_results
-    nodes_dependent_on:
-    - review_testing_process
+    nodes_dependent_on: []
+    output_structure:
+    - description: Summary of test results
+      key: test_results_summary
+      type: str
+    - description: List of key metrics
+      key: key_metrics
+      type: List[str]
+    - description: Observations related to test results
+      key: observations
+      type: str
     prompt: Format a concise test report with results summary, key metrics, and observations.
       Use numbered sections for clarity.
   identify_test_environment:
@@ -72,8 +110,20 @@ nodes:
     description: Identify the environment where the test will be executed
     name: identify_test_environment
     nodes_depended_on: []
-    nodes_dependent_on:
-    - set_up_test_environment
+    nodes_dependent_on: []
+    output_structure:
+    - description: Hardware requirements for the test environment
+      key: hardware_requirements
+      type: str
+    - description: Software requirements for the test environment
+      key: software_requirements
+      type: str
+    - description: Configuration requirements for the test environment
+      key: configuration_requirements
+      type: str
+    - description: List of components required for the test environment
+      key: components_listed
+      type: List[str]
     prompt: Specify the hardware, software, and configuration requirements for the
       test environment. List components as bullet points.
   prepare_test_data:
@@ -82,8 +132,23 @@ nodes:
     name: prepare_test_data
     nodes_depended_on:
     - define_test_scope
-    nodes_dependent_on:
-    - execute_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of categories for the test data
+      key: test_data_categories
+      type: List[str]
+    - description: List of formats for the test data
+      key: data_formats
+      type: List[str]
+    - description: List of volume specifications for the test data
+      key: data_volume_specifications
+      type: List[int]
+    - description: Whether the test data is synthetic or sample data
+      key: synthetic_or_sample_data
+      type: bool
+    - description: List of quality metrics for the test data
+      key: data_quality_metrics
+      type: List[float]
     prompt: Create synthetic or sample data meeting test requirements. Include data
       categories, formats, and volume specifications as bullet points.
   review_testing_process:
@@ -93,6 +158,19 @@ nodes:
     nodes_depended_on:
     - generate_test_report
     nodes_dependent_on: []
+    output_structure:
+    - description: Summary of testing effectiveness
+      key: testing_efficacy
+      type: str
+    - description: List of actionable recommendations for process improvements
+      key: process_improvements
+      type: str
+    - description: Measurements and metrics for testing quality control
+      key: quality_control_measurements
+      type: List[int]
+    - description: Rationale and supporting evidence for each recommendation
+      key: recommendations_rationale
+      type: str
     prompt: Evaluate testing effectiveness and document process improvements. List
       three actionable recommendations in bullet format.
   set_up_test_environment:
@@ -101,7 +179,20 @@ nodes:
     name: set_up_test_environment
     nodes_depended_on:
     - identify_test_environment
-    nodes_dependent_on:
-    - execute_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Status of the test environment setup (e.g. 'Completed', 'Failed',
+        'Partial')
+      key: setup_status
+      type: str
+    - description: List of setup steps performed with descriptions
+      key: setup_steps
+      type: List[str]
+    - description: List of errors encountered during setup with descriptions
+      key: setup_errors
+      type: List[str]
+    - description: Summary of the test environment configuration
+      key: test_environment_configuration
+      type: str
     prompt: Verify system requirements and install/configure necessary components
       for the test environment. List completed setup steps as bullet points.
