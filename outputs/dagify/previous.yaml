@@ -1,4 +1,4 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: software_testing_workflow
 nodes:
@@ -13,17 +13,32 @@ nodes:
     - description: List of issues found during integration test analysis
       key: issues_found
       type: List[str]
-    - description: List of severity levels for each issue found (e.g., high, medium,
-        low)
+    - description: List of severity levels for each issue found
       key: issue_severity_levels
       type: List[str]
-    - description: List of metrics collected during integration test analysis (e.g.,
-        execution time, error rate)
+    - description: List of metrics collected during integration test analysis
       key: metrics_collected
       type: List[str]
     - description: Mapping of errors found to their corresponding source service contracts
       key: error_mapping
       type: str
+    prd:
+      conceptual_info: Evaluate integration test results to identify interface mismatches
+        and timing issues, and map errors to source service contracts.
+      docstring:
+        examples:
+        - lines:
+          - result = analyze_integration_test_results(execute_integration_tests())
+          output: '{''issues_found'': [''issue1'', ''issue2''], ''issue_severity_levels'':
+            [''high'', ''medium''], ''metrics_collected'': [''execution_time'', ''error_rate''],
+            ''error_mapping'': {''error1'': ''contract1'', ''error2'': ''contract2''}}'
+        parameters: []
+        raises: []
+        returns:
+          description: Dictionary containing issues found, issue severity levels,
+            collected metrics, and error mapping.
+          type: dict
+        summary: Analyze integration test results to identify issues and map errors.
     prompt: Identify interface mismatches and timing issues from test logs. Map errors
       to source service contracts.
   analyze_requirements:
@@ -40,6 +55,42 @@ nodes:
     - description: Total number of extracted testable requirements
       key: requirements_count
       type: int
+    prd:
+      conceptual_info: The analyze_requirements node consumes requirements documentation
+        and outputs a structured list of testable acceptance criteria to seed downstream
+        test case design and environment setup activities.
+      docstring:
+        examples:
+        - lines:
+          - 'analyze_requirements("The system shall provide authentication. Acceptance
+            criteria: 1) Users can login with valid credentials. 2) The system shall
+            display an error message for invalid credentials. 3) Passwords must be
+            at least 8 characters.")'
+          output: (['Users can login with valid credentials', 'The system shall display
+            an error message for invalid credentials', 'Passwords must be at least
+            8 characters'], 3)
+        - lines:
+          - 'analyze_requirements("System shall support password reset. Acceptance
+            criteria: 1) User can reset password using email link. 2) Reset tokens
+            expire after 15 minutes.")'
+          output: (['User can reset password using email link', 'Reset tokens expire
+            after 15 minutes'], 2)
+        parameters:
+        - description: Natural language documentation of system requirements and acceptance
+            criteria.
+          name: requirements_doc
+          type: str
+        raises:
+        - description: If requirements_doc is empty or None.
+          type: ValueError
+        - description: If requirements_doc is not a string.
+          type: TypeError
+        returns:
+          description: A tuple containing the list of extracted testable requirements
+            and their total count.
+          type: Tuple[List[str], int]
+        summary: Extract and return testable acceptance criteria from a requirements
+          document.
     prompt: Review software requirements and specifications to identify testable components.
       List all acceptance criteria in bullet form.
   analyze_ui_test_results:
@@ -58,10 +109,10 @@ nodes:
       type: str
     - description: List of severity issues for user experience
       key: severity_issues
-      type: List[str]
+      type: str
     - description: Description of each issue categorized
       key: issue_description
-      type: List[str]
+      type: str
     - description: Total count of issues found in user interface
       key: total_issues_count
       type: int
@@ -70,7 +121,39 @@ nodes:
       type: bool
     - description: List of categories for user experience impact
       key: ux_impact_categories
-      type: List[str]
+      type: str
+    prd:
+      conceptual_info: This node validates frontend interface functionality by analyzing
+        visual validation results and interaction logs.
+      docstring:
+        examples:
+        - lines:
+          - test_outcomes = ['pass', 'fail']
+          - test_execution_time = [1.0, 2.0]
+          - analyze_ui_test_results(test_outcomes, test_execution_time)
+          output: '({"visual_validation_results": ''OK'', "interaction_logs": ''No
+            issues found'', "severity_issues": [], "issue_description": [], "total_issues_count":
+            0, "validity_status": True, "ux_impact_categories": []})'
+        - lines:
+          - test_outcomes = ['fail', 'fail']
+          - test_execution_time = [1.0, 2.0]
+          - analyze_ui_test_results(test_outcomes, test_execution_time)
+          output: '({"visual_validation_results": ''Error'', "interaction_logs": ''Issues
+            found'', "severity_issues": [''critical''], "issue_description": [''description
+            of issue''], "total_issues_count": 2, "validity_status": False, "ux_impact_categories":
+            [''category'']})'
+        parameters: []
+        raises:
+        - description: If the input test results or interaction logs are not in the
+            correct format.
+          type: TypeError
+        returns:
+          description: Returns a tuple containing the visual validation results, interaction
+            logs, severity issues, issue descriptions, total issues count, validity
+            status, and UX impact categories.
+          type: output_structure -> (str, str, list, list, int, bool, list)
+        summary: This node audits visual validation results and interaction logs to
+          categorize issues by severity and UX impact.
     prompt: Audit visual validation results and interaction logs. Categorize issues
       by severity and UX impact.
   analyze_unit_test_results:
@@ -102,6 +185,60 @@ nodes:
     - description: List of error messages encountered during testing
       key: error_messages
       type: List[str]
+    prd:
+      conceptual_info: Calculates code coverage and classifies failures from unit
+        test results
+      docstring:
+        examples:
+        - lines:
+          - test_results = [TestResult(pass=True), TestResult(pass=False), TestResult(pass=True)]
+          - code_coverage, test_count, failure_count, critical_failure_count, error_count,
+            error_messages = analyze_unit_test_results(test_results)
+          output: '
+
+            >>> code_coverage = 0.8
+
+            >>> test_count = 3
+
+            >>> failure_count = 1
+
+            >>> critical_failure_count = 1
+
+            >>> error_count = 0
+
+            >>> error_messages = ["Error Message"]'
+        - lines:
+          - test_results = [TestResult(pass=True), TestResult(pass=False), TestResult(pass=False)]
+          - code_coverage, test_count, failure_count, critical_failure_count, error_count,
+            error_messages = analyze_unit_test_results(test_results)
+          output: '
+
+            >>> code_coverage = 0.7
+
+            >>> test_count = 3
+
+            >>> failure_count = 2
+
+            >>> critical_failure_count = 2
+
+            >>> error_count = 0
+
+            >>> error_messages = ["Error Message", "Error Message"]'
+        parameters:
+        - description: List of test result objects containing pass/fail status, stack
+            trace, and test duration
+          name: test_results
+          type: List[TestResult]
+        raises:
+        - description: If input test results are not a list of TestResult objects
+          type: TypeError
+        returns:
+          description: Output structure containing test results, code coverage, test
+            count, failure count, critical failure count, error count, and error messages
+          type: StructuredOutput
+        summary: This function takes in unit test results and calculates code coverage,
+          classifies failures as defects or false positives, and ranks criticality
+          of issues.
     prompt: Calculate code coverage metrics and classify failures as defects or false
       positives. Rank criticality of issues.
   compile_test_summary:
@@ -145,6 +282,23 @@ nodes:
     - description: List of data validation scenarios for backend services
       key: data_validation_scenarios
       type: List[str]
+    prd:
+      conceptual_info: Develops API/service-level test scenarios for backend services.
+      docstring:
+        examples:
+        - lines:
+          - backend_test_cases = design_test_cases_backend(analyze_requirements)
+          output: '{''test_cases'': [''test case 1'', ''test case 2''], ''error_conditions'':
+            [''condition 1'', ''condition 2''], ''data_validation_scenarios'': [''scenario
+            1'', ''scenario 2'']}'
+        parameters: []
+        raises: []
+        returns:
+          description: Dictionary containing test cases, error conditions, and data
+            validation scenarios.
+          type: dict
+        summary: Develops API/service-level test scenarios for backend services based
+          on requirements.
     prompt: Create 15-20 test cases for backend services, including error conditions
       and data validation scenarios.
   design_test_cases_frontend:
@@ -164,6 +318,50 @@ nodes:
     - description: List of visual validation results
       key: visual_validation_results
       type: List[str]
+    prd:
+      conceptual_info: Generate UI/UX test scenarios for frontend components based
+        on requirements.
+      docstring:
+        examples:
+        - lines:
+          - requirements = ['Requirement 1', 'Requirement 2']
+          - test_cases, ui_interactions, visual_validation_results = design_test_cases_frontend(requirements)
+          - print(test_cases)
+          - print(ui_interactions)
+          - print(visual_validation_results)
+          output: '[''Test Case 1'', ''Test Case 2'', ..., ''Test Case 10'']
+
+            [''Interaction 1'', ''Interaction 2'', ..., ''Interaction 10'']
+
+            [''Validation Result 1'', ''Validation Result 2'', ..., ''Validation Result
+            10'']'
+        - lines:
+          - requirements = ['Requirement 1', 'Requirement 2', 'Requirement 3', 'Requirement
+            4', 'Requirement 5', 'Requirement 6', 'Requirement 7', 'Requirement 8',
+            'Requirement 9', 'Requirement 10', 'Requirement 11', 'Requirement 12',
+            'Requirement 13', 'Requirement 14', 'Requirement 15']
+          - test_cases, ui_interactions, visual_validation_results = design_test_cases_frontend(requirements)
+          - print(test_cases)
+          - print(ui_interactions)
+          - print(visual_validation_results)
+          output: '[''Test Case 1'', ''Test Case 2'', ..., ''Test Case 15'']
+
+            [''Interaction 1'', ''Interaction 2'', ..., ''Interaction 15'']
+
+            [''Validation Result 1'', ''Validation Result 2'', ..., ''Validation Result
+            15'']'
+        parameters:
+        - description: List of extracted requirements
+          name: requirements
+          type: List[str]
+        raises:
+        - description: If requirements are not in the correct format
+          type: TypeError
+        returns:
+          description: List of generated test cases, UI interactions, and visual validation
+            results
+          type: Tuple[List[str], List[str], List[str]]
+        summary: Generate UI/UX test scenarios for frontend components based on requirements.
     prompt: Generate 10-15 test cases for frontend interfaces based on extracted requirements.
       Focus only on UI interactions and visual validation.
   execute_integration_tests:
@@ -208,6 +406,29 @@ nodes:
     - description: List of time taken to complete each test
       key: test_execution_time
       type: List[float]
+    prd:
+      conceptual_info: Perform interface automation testing by executing recorded
+        frontend test scenarios and capturing visual diffs and interaction logs.
+      docstring:
+        examples:
+        - lines:
+          - test_outcomes, test_execution_time = execute_ui_tests(setup_test_environment.output_structure,
+            design_test_cases_frontend.output_structure)
+          output: '[''pass'', ''fail'', ''pass''], [0.5, 0.7, 0.3]'
+        - lines:
+          - test_outcomes, test_execution_time = execute_ui_tests(setup_test_environment.output_structure,
+            design_test_cases_frontend.output_structure)
+          output: '[''pass'', ''pass'', ''fail''], [0.2, 0.4, 0.6]'
+        parameters: []
+        raises:
+        - description: If there is an issue with the recorded test scenarios or the
+            test environment
+          type: ValueError
+        returns:
+          description: List of test outcomes (pass or fail)
+          type: List[str]
+        summary: Automate frontend testing by executing recorded test scenarios and
+          capturing visual diffs and interaction logs.
     prompt: Automate frontend test execution using recorded scenarios. Capture visual
       diffs and interaction logs.
   execute_unit_tests:
@@ -231,6 +452,48 @@ nodes:
     - description: Code coverage percentage
       key: test_coverage_percentage
       type: float
+    prd:
+      conceptual_info: Execute unit tests against codebase to validate individual
+        components and determine code coverage.
+      docstring:
+        examples:
+        - lines:
+          - test_framework = 'unittest'
+          - test_cases = ['test_case_1', 'test_case_2', 'test_case_3']
+          - test_environment = setup_test_environment.get_test_environment_configuration()
+          - execute_unit_tests.run_unit_tests(test_framework, test_cases, test_environment)
+          output: "\n                Passing test cases: 2, failed test cases: 1,\
+            \ test result details: ['Passed Test Case 1', 'Failed Test Case 2', 'Passed\
+            \ Test Case 3'],\n                Code coverage percentage: 85.0"
+        - lines:
+          - test_framework = 'pytest'
+          - test_cases = ['test_case_1', 'test_case_2', 'test_case_3']
+          - test_environment = setup_test_environment.get_test_environment_configuration()
+          - execute_unit_tests.run_unit_tests(test_framework, test_cases, test_environment)
+          output: "\n                Passing test cases: 2, failed test cases: 1,\
+            \ test result details: ['Passed Test Case 1', 'Failed Test Case 2', 'Passed\
+            \ Test Case 3'],\n                Code coverage percentage: 85.0"
+        parameters:
+        - description: Name of the test framework being used (e.g., unittest, pytest)
+          name: test_framework
+          type: str
+        - description: List of test cases to run (e.g., as generated by design_test_cases_backend)
+          name: test_cases
+          type: List[str]
+        - description: Configuration details of the testing environment (as prepared
+            by setup_test_environment)
+          name: test_environment
+          type: str
+        raises:
+        - description: If the unit test execution fails or the test framework is not
+            properly configured.
+          type: ValueError
+        returns:
+          description: Returns the number of tests that passed, failed, a list of
+            detailed test result strings with stack traces, and code coverage percentage.
+          type: Tuple[int, int, List[str], float]
+        summary: Run unit tests against codebase and generate a detailed pass/fail
+          report with stack traces.
     prompt: Execute unit tests against codebase using provided test framework. Generate
       detailed pass/fail report with stack traces.
   retest_fixed_defects:
@@ -244,13 +507,31 @@ nodes:
     - description: List of defect tickets created after retesting
       key: defect_tickets
       type: List[str]
-    - description: Status of each retested test case (e.g. passed, failed, blocked)
+    - description: Status of each retested test case
       key: test_case_statuses
       type: List[str]
     - description: Summary of regression test outcomes, including any failed cases
         and their corresponding fixes
       key: regression_test_outcomes
       type: str
+    prd:
+      conceptual_info: Verify resolution of previously reported issues by re-running
+        failing test cases and validating fixes.
+      docstring:
+        examples:
+        - lines:
+          - 'track_defects_result = {''defect_tickets'': [''ticket1''], ''test_case_statuses'':
+            [''passed''], ''regression_test_outcomes'': ''summary''}'
+          - result = retest_fixed_defects(track_defects_result)
+          output: '{''defect_tickets'': [''ticket1''], ''test_case_statuses'': [''passed''],
+            ''regression_test_outcomes'': ''summary''}'
+        parameters: []
+        raises: []
+        returns:
+          description: A dictionary containing defect tickets, test case statuses,
+            and regression test outcomes
+          type: dict[str, List[str] or str]
+        summary: Verify resolution of previously reported issues
     prompt: Re-run failing test cases from defect reports and validate fixes. Document
       regression test outcomes.
   setup_test_environment:
@@ -270,6 +551,32 @@ nodes:
     - description: Manifest file specifying dependencies
       key: dependencies_manifest
       type: str
+    prd:
+      conceptual_info: Sets up the testing infrastructure and dependencies required
+        for testing.
+      docstring:
+        examples:
+        - lines:
+          - 'analyze_requirements_output = {''testable_requirements'': [''requirement1'',
+            ''requirement2''], ''requirements_count'': 2}'
+          - setup_test_environment(analyze_requirements_output)
+          output: '{''test_environment_configuration'': ''config_details'', ''test_data_specification'':
+            ''data_specification'', ''dependencies_manifest'': ''dependencies_manifest''}'
+        parameters:
+        - description: Output from the analyze_requirements node containing testable
+            requirements and requirements count.
+          name: analyze_requirements_output
+          type: dict
+        raises:
+        - description: If required dependencies cannot be resolved or if test environment
+            configuration is invalid.
+          type: ValueError
+        returns:
+          description: A dictionary containing the test environment configuration,
+            test data specification, and dependencies manifest.
+          type: dict
+        summary: Configures the test environment with required tools, mock services,
+          and test data.
     prompt: Configure test environment with required tools, mock services, and test
       data. Specify dependencies in a configuration manifest.
   track_defects:
@@ -281,5 +588,6 @@ nodes:
     - analyze_integration_test_results
     - analyze_ui_test_results
     nodes_dependent_on: []
+    output_structure: []
     prompt: Create defect tickets with repro steps, expected/actual results, and priority
       classifications. Attach relevant logs/screenshots.
