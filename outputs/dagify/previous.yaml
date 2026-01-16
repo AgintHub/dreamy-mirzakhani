@@ -1,300 +1,74 @@
 dag_type: plain_text
-description: A detailed, concurrent workflow for comprehensive testing of a software
-  application, covering planning, environment setup, test execution, defect tracking,
-  and final reporting.
+description: A plan to test something
 name: test_workflow
 nodes:
-  analyze_requirements:
+  analyze_results:
     agent: false
-    description: Interpret functional and non-functional requirements for testable
-      criteria
-    name: analyze_requirements
+    description: Use the findings to inform future actions, adjustments, or improvements
+    name: analyze_results
+    nodes_depended_on:
+    - execute_test
+    nodes_dependent_on: []
+    prompt: Analyze and interpret the results of the test, identifying successes and
+      areas for improvement
+  assess_current_capabilities:
+    agent: false
+    description: Determine what resources and assets can be leveraged to achieve the
+      goal
+    name: assess_current_capabilities
     nodes_depended_on: []
     nodes_dependent_on:
-    - define_test_strategy
-    - identify_test_risks
-    prompt: Analyze technical specifications to identify measurable acceptance criteria.
-      List interface contracts, error conditions, and performance thresholds.
-  configure_test_tools:
+    - identify_what_to_test
+    prompt: Evaluate the current capabilities and limitations relevant to the test
+      goal
+  define_test_parameters:
     agent: false
-    description: Set up automation framework and monitoring tools
-    name: configure_test_tools
+    description: Establish clear boundaries and expectations for the testing process
+    name: define_test_parameters
     nodes_depended_on:
-    - setup_test_environment
-    nodes_dependent_on:
-    - execute_performance_tests
-    - execute_security_tests
-    prompt: Configure scripting environment, set up log analyzers, and define monitoring
-      thresholds for 3 critical metrics.
-  define_test_entry_criteria:
-    agent: false
-    description: Specify readiness metrics for test execution initiation
-    name: define_test_entry_criteria
-    nodes_depended_on:
-    - identify_test_risks
-    nodes_dependent_on:
-    - execute_regression_tests
-    prompt: Define 3-5 measurable conditions (e.g., 100% requirements traced to test
-      cases) that must be met before testing.
-  define_test_scope:
-    agent: false
-    description: Specify boundaries of test execution
-    name: define_test_scope
-    nodes_depended_on:
-    - define_test_strategy
-    nodes_dependent_on:
-    - setup_test_environment
-    - design_test_cases
-    prompt: List features to be tested, excluded components, and assumptions about
-      external systems.
-  define_test_strategy:
-    agent: false
-    description: Establish high-level testing approach and methodology
-    name: define_test_strategy
-    nodes_depended_on:
-    - analyze_requirements
-    nodes_dependent_on:
-    - plan_regression_coverage
-    - define_test_scope
-    prompt: Create testing strategy outlining levels of testing, tools, entry/exit
-      criteria, and defect classification rules.
-  design_test_cases:
-    agent: false
-    description: Create detailed test procedures for functional requirements
-    name: design_test_cases
-    nodes_depended_on:
-    - define_test_scope
-    - analyze_requirements
-    nodes_dependent_on:
-    - execute_functional_tests
-    - verify_test_case_accuracy
-    prompt: Write 3-4 test steps per business rule with precondition states and verification
-      methods.
-  execute_functional_tests:
-    agent: false
-    description: Run test cases against core business functionality
-    name: execute_functional_tests
-    nodes_depended_on:
-    - design_test_cases
-    - prepare_test_data
-    nodes_dependent_on:
-    - record_defects
-    - generate_functional_report
-    prompt: Execute 300+ test cases grouped by priority (critical, normal, low), logging
-      pass/fail status.
-  execute_performance_tests:
-    agent: false
-    description: Stress-test response times and resource utilization
-    name: execute_performance_tests
-    nodes_depended_on:
-    - configure_test_tools
-    - prepare_test_data
-    nodes_dependent_on:
-    - record_performance_issues
-    - generate_performance_report
-    prompt: Simulate 20-50 concurrent users with peak/minimum scenarios for 6 critical
-      business flows.
-  execute_regression_tests:
-    agent: false
-    description: Validate consistency of unchanged code paths
-    name: execute_regression_tests
-    nodes_depended_on:
-    - plan_regression_coverage
-    - define_test_entry_criteria
-    nodes_dependent_on:
-    - record_regression_defects
-    - verify_regression_coverage
-    prompt: Run 150+ test cases across all recent code modules, focusing on integration
-      boundaries.
-  execute_security_tests:
-    agent: false
-    description: Validate access controls and vulnerability mitigation
-    name: execute_security_tests
-    nodes_depended_on:
-    - setup_test_environment
-    - define_test_scope
-    nodes_dependent_on:
-    - record_security_violations
-    - generate_security_report
-    prompt: Run penetration tests for 5 common OWASP vulnerabilities and verify authorization
-      rules.
-  finalize_test_report:
-    agent: false
-    description: Produce consolidated test summary for stakeholders
-    name: finalize_test_report
-    nodes_depended_on:
-    - verify_regression_coverage
-    - generate_defect_impact_analysis
-    - generate_functional_report
-    - generate_performance_report
-    - generate_security_report
-    - verify_test_case_accuracy
+    - gather_information
     nodes_dependent_on: []
-    prompt: 'Create executive summary including: 1. Test coverage 2. Critical defect
-      impact 3. Performance gaps 4. Security risks 5. Test environment metrics (6-8
-      pages max).'
-  generate_defect_impact_analysis:
+    prompt: Determine the parameters, scope, and constraints of the test
+  document_and_share_findings:
     agent: false
-    description: Assess business impact of critical defects
-    name: generate_defect_impact_analysis
+    description: Communicate the insights, successes, and recommendations to relevant
+      stakeholders
+    name: document_and_share_findings
     nodes_depended_on:
-    - reproduce_critical_defects
-    nodes_dependent_on:
-    - finalize_test_report
-    prompt: Map each defect to customer business operations and estimate operational
-      risk.
-  generate_functional_report:
+    - analyze_results
+    nodes_dependent_on: []
+    prompt: Record and share the outcomes and insights gained from the test
+  execute_test:
     agent: false
-    description: Compile functional test results summary
-    name: generate_functional_report
+    description: Ensure that the test is executed fairly, thoroughly, and accurately
+    name: execute_test
     nodes_depended_on:
-    - execute_functional_tests
+    - define_test_parameters
     nodes_dependent_on:
-    - finalize_test_report
-    prompt: 'Create summary showing: total tests, pass/fail ratio, critical defect
-      count, and timeline.'
-  generate_performance_report:
+    - assess_current_capabilities
+    - research_existing_solutions
+    prompt: Conduct the test according to the defined parameters and expectations
+  gather_information:
     agent: false
-    description: Create performance metrics summary
-    name: generate_performance_report
+    description: Collect necessary data and materials to inform and guide the decision-making
+      process
+    name: gather_information
     nodes_depended_on:
-    - record_performance_issues
-    nodes_dependent_on:
-    - finalize_test_report
-    prompt: Chart response time distribution, resource utilization, and throughput
-      for 5 core flows.
-  generate_security_report:
+    - research_existing_solutions
+    nodes_dependent_on: []
+    prompt: Gather any relevant information, resources, or expertise
+  identify_what_to_test:
     agent: false
-    description: Compile security test findings summary
-    name: generate_security_report
-    nodes_depended_on:
-    - record_security_violations
-    nodes_dependent_on:
-    - finalize_test_report
-    prompt: List all successfully exploited vulnerabilities with proof-of-concept
-      details.
-  generate_test_data:
+    description: Determine the objective of the test
+    name: identify_what_to_test
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: What would you like to test?
+  research_existing_solutions:
     agent: false
-    description: Create synthetic test data for scenario execution
-    name: generate_test_data
-    nodes_depended_on:
-    - define_test_scope
+    description: Investigate whether others have already found a suitable solution
+    name: research_existing_solutions
+    nodes_depended_on: []
     nodes_dependent_on:
-    - execute_functional_tests
-    prompt: Generate 50 valid and 30 invalid data sets for each module with data type
-      constraints included.
-  identify_test_risks:
-    agent: false
-    description: Assess testing risks based on requirements and project constraints
-    name: identify_test_risks
-    nodes_depended_on:
-    - analyze_requirements
-    nodes_dependent_on:
-    - define_test_entry_criteria
-    prompt: List 5-8 testing risks with potential impact levels (high/medium/low)
-      and mitigation approaches.
-  plan_regression_coverage:
-    agent: false
-    description: Map application modules to regression test suites
-    name: plan_regression_coverage
-    nodes_depended_on:
-    - define_test_strategy
-    nodes_dependent_on:
-    - execute_regression_tests
-    - verify_regression_coverage
-    prompt: 'Create a coverage table with columns: Module ID | Test Case ID | Expected
-      Outcome | Risk Category.'
-  prepare_test_data:
-    agent: false
-    description: Assemble datasets with required data states
-    name: prepare_test_data
-    nodes_depended_on:
-    - generate_test_data
-    - setup_test_environment
-    nodes_dependent_on:
-    - execute_regression_tests
-    - execute_performance_tests
-    prompt: Organize data into 20 baseline states with 5 variations each for testing
-      edge conditions.
-  record_defects:
-    agent: false
-    description: Log functional defect details for tracking
-    name: record_defects
-    nodes_depended_on:
-    - execute_functional_tests
-    nodes_dependent_on:
-    - reproduce_critical_defects
-    - generate_critical_defect_report
-    prompt: Document defects with step-by-step reproduction, captured logs, and expected/actual
-      states.
-  record_performance_issues:
-    agent: false
-    description: Log performance bottlenecks and resource anomalies
-    name: record_performance_issues
-    nodes_depended_on:
-    - execute_performance_tests
-    nodes_dependent_on:
-    - generate_performance_report
-    prompt: Document any transaction >2000ms or memory leaks exceeding 100MB per 10,000
-      transactions.
-  record_regression_defects:
-    agent: false
-    description: Track regression test failures with root cause analysis
-    name: record_regression_defects
-    nodes_depended_on:
-    - execute_regression_tests
-    nodes_dependent_on:
-    - finalize_test_report
-    prompt: Classify defects by severity (showstopper, major, minor) and link to code
-      modules.
-  record_security_violations:
-    agent: false
-    description: Identify and document security test failures
-    name: record_security_violations
-    nodes_depended_on:
-    - execute_security_tests
-    nodes_dependent_on:
-    - generate_security_report
-    prompt: Document each failed authentication attempt, SQL injection point, and
-      XSS vulnerability.
-  reproduce_critical_defects:
-    agent: false
-    description: Validate defect reproduction with minimal test steps
-    name: reproduce_critical_defects
-    nodes_depended_on:
-    - record_defects
-    nodes_dependent_on:
-    - generate_defect_impact_analysis
-    prompt: Confirm each critical defect can be reproduced in ≤3 steps with consistent
-      outcome.
-  setup_test_environment:
-    agent: false
-    description: Provision execution infrastructure and dependencies
-    name: setup_test_environment
-    nodes_depended_on:
-    - define_test_scope
-    nodes_dependent_on:
-    - configure_test_tools
-    - prepare_test_data
-    prompt: Document hardware/software requirements, network topology, and data volume
-      needed for testing.
-  verify_regression_coverage:
-    agent: false
-    description: Confirm regression test suite sufficiency
-    name: verify_regression_coverage
-    nodes_depended_on:
-    - execute_regression_tests
-    nodes_dependent_on:
-    - finalize_test_report
-    prompt: 'Compare test coverage metrics to requirements: missing coverage is ≤5%
-      of modules.'
-  verify_test_case_accuracy:
-    agent: false
-    description: Confirm test case alignment with requirements
-    name: verify_test_case_accuracy
-    nodes_depended_on:
-    - design_test_cases
-    nodes_dependent_on:
-    - finalize_test_report
-    prompt: Verify 100% traceability of test cases to business requirements with no
-      orphaned cases.
+    - identify_what_to_test
+    prompt: Research any existing solutions or alternatives to the goal at hand
