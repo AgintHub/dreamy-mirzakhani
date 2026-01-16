@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A workflow for planning, creating, executing, and reporting on a generic
-  software test.
+dag_type: typed
+description: Generated workflow from UI.
 name: generic_test_workflow
 nodes:
   analyze_failures:
@@ -10,6 +9,16 @@ nodes:
     nodes_depended_on:
     - capture_test_results
     nodes_dependent_on: []
+    output_structure:
+    - description: Identifier of the failed test case
+      key: test_id
+      type: str
+    - description: Concise hypothesis explaining why the test failed
+      key: root_cause_hypothesis
+      type: str
+    - description: Suggested action or change to resolve the failure
+      key: fix_suggestion
+      type: str
     prompt: For each failed test case, provide a concise root cause hypothesis and
       suggest potential fixes.
   capture_test_results:
@@ -18,9 +27,29 @@ nodes:
     name: capture_test_results
     nodes_depended_on:
     - execute_test_cases
-    nodes_dependent_on:
-    - analyze_failures
-    - report_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of test case IDs
+      key: test_case_ids
+      type: List[str]
+    - description: List of pass/fail status for each test case
+      key: pass_fail_status
+      type: List[bool]
+    - description: List of execution times for each test case
+      key: execution_times
+      type: List[float]
+    - description: List of failure details for each failed test case
+      key: failure_details
+      type: List[str]
+    - description: Total number of tests executed
+      key: total_tests
+      type: int
+    - description: Total number of tests passed
+      key: total_passed
+      type: int
+    - description: Total number of tests failed
+      key: total_failed
+      type: int
     prompt: Collect all test execution data, including pass/fail status, execution
       time, and any failure details.
   create_test_cases:
@@ -30,9 +59,26 @@ nodes:
     nodes_depended_on:
     - define_test_objectives
     - identify_test_scope
-    nodes_dependent_on:
-    - execute_test_cases
-    - report_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of unique test case IDs
+      key: test_case_ids
+      type: List[str]
+    - description: List of short titles for each test case
+      key: test_case_titles
+      type: List[str]
+    - description: List of preconditions for each test case
+      key: preconditions
+      type: List[str]
+    - description: List of steps for each test case
+      key: test_steps
+      type: List[str]
+    - description: List of expected results for each test case
+      key: expected_results
+      type: List[str]
+    - description: List of priority levels for each test case
+      key: priority_levels
+      type: List[int]
     prompt: Generate a list of test case IDs with short titles, preconditions, steps,
       expected results, and priority.
   define_test_objectives:
@@ -40,9 +86,12 @@ nodes:
     description: Establish the main goals that the test suite should achieve.
     name: define_test_objectives
     nodes_depended_on: []
-    nodes_dependent_on:
-    - identify_test_scope
-    - create_test_cases
+    nodes_dependent_on: []
+    output_structure:
+    - description: A list of concise bullet points describing the primary objectives
+        of the test suite.
+      key: test_objectives
+      type: List[str]
     prompt: List the primary objectives of the test in concise bullet points (e.g.,
       verify functionality, performance, security).
   execute_test_cases:
@@ -52,8 +101,38 @@ nodes:
     nodes_depended_on:
     - create_test_cases
     - prepare_test_environment
-    nodes_dependent_on:
-    - capture_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier of the test case
+      key: test_case_id
+      type: str
+    - description: Short title of the test case
+      key: title
+      type: str
+    - description: Preconditions required before executing the test case
+      key: preconditions
+      type: str
+    - description: Steps executed during the test case
+      key: steps
+      type: str
+    - description: Expected results for the test case
+      key: expected_results
+      type: str
+    - description: Priority level of the test case (e.g., 1-5)
+      key: priority
+      type: int
+    - description: Whether the test case passed or failed
+      key: passed
+      type: bool
+    - description: Reason for failure if the test case failed
+      key: failure_reason
+      type: str
+    - description: Captured error logs or console output
+      key: error_logs
+      type: str
+    - description: Path or URL to the screenshot taken during failure
+      key: screenshot
+      type: str
     prompt: Run each test case in the order given, record whether it passed or failed,
       and capture any error logs or screenshots.
   identify_test_scope:
@@ -62,9 +141,22 @@ nodes:
     name: identify_test_scope
     nodes_depended_on:
     - define_test_objectives
-    nodes_dependent_on:
-    - create_test_cases
-    - prepare_test_environment
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of feature names that will be included in the test scope.
+      key: scope_features
+      type: List[str]
+    - description: List of module or component identifiers that fall within the test
+        scope.
+      key: scope_modules
+      type: List[str]
+    - description: List of high-level user flow identifiers that are covered by the
+        tests.
+      key: scope_user_flows
+      type: List[str]
+    - description: List of boundary or edge case conditions that the tests will exercise.
+      key: scope_boundary_conditions
+      type: List[str]
     prompt: 'Based on the test objectives, specify the scope: features, modules, user
       flows, and boundary conditions to be covered.'
   prepare_test_environment:
@@ -73,8 +165,23 @@ nodes:
     name: prepare_test_environment
     nodes_depended_on:
     - identify_test_scope
-    nodes_dependent_on:
-    - execute_test_cases
+    nodes_dependent_on: []
+    output_structure:
+    - description: Checklist of required hardware components
+      key: hardware_requirements
+      type: List[str]
+    - description: Checklist of required software components and versions
+      key: software_requirements
+      type: List[str]
+    - description: Checklist of steps to prepare test data
+      key: data_setup_steps
+      type: List[str]
+    - description: Checklist of configuration settings to apply
+      key: configuration_steps
+      type: List[str]
+    - description: Whether the environment is fully prepared for test execution
+      key: environment_ready
+      type: bool
     prompt: Outline the required environment setup steps, including hardware, software,
       data, and configuration. List each item as a checklist.
   report_test_results:
@@ -84,5 +191,21 @@ nodes:
     nodes_depended_on:
     - capture_test_results
     nodes_dependent_on: []
+    output_structure:
+    - description: Total number of tests executed
+      key: total_tests
+      type: int
+    - description: Number of tests that passed
+      key: passed_tests
+      type: int
+    - description: Number of tests that failed
+      key: failed_tests
+      type: int
+    - description: Pass rate as a percentage (0 to 100)
+      key: pass_rate
+      type: float
+    - description: High-level observations of the test results
+      key: observations
+      type: str
     prompt: 'Summarize the test outcomes in a report: total tests, passes, failures,
       pass rate, and high‑level observations.'
