@@ -1,5 +1,0 @@
-dag_type: typed
-description: Executes the ping operation which sends an ICMP echo request packet to
-  a specified IP address and waits for a response.
-name: ping_workflow
-nodes: {}

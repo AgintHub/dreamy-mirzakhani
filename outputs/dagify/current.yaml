@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A concurrent step-by-step plan for software testing covering test case
-  design, execution, result analysis, defect handling, and reporting.
+dag_type: typed
+description: Generated workflow from UI.
 name: software_testing_workflow
 nodes:
   analyze_integration_test_results:
@@ -10,6 +9,21 @@ nodes:
     nodes_depended_on:
     - execute_integration_tests
     nodes_dependent_on: []
+    output_structure:
+    - description: List of issues found during integration test analysis
+      key: issues_found
+      type: List[str]
+    - description: List of severity levels for each issue found (e.g., high, medium,
+        low)
+      key: issue_severity_levels
+      type: List[str]
+    - description: List of metrics collected during integration test analysis (e.g.,
+        execution time, error rate)
+      key: metrics_collected
+      type: List[str]
+    - description: Mapping of errors found to their corresponding source service contracts
+      key: error_mapping
+      type: str
     prompt: Identify interface mismatches and timing issues from test logs. Map errors
       to source service contracts.
   analyze_requirements:
@@ -18,15 +32,45 @@ nodes:
     name: analyze_requirements
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: List of testable requirements / acceptance criteria extracted from
+        documentation
+      key: testable_requirements
+      type: List[str]
+    - description: Total number of extracted testable requirements
+      key: requirements_count
+      type: int
     prompt: Review software requirements and specifications to identify testable components.
       List all acceptance criteria in bullet form.
   analyze_ui_test_results:
     agent: false
-    description: Validate frontend interface functionality
+    description: validate frontend interface functionality
     name: analyze_ui_test_results
     nodes_depended_on:
     - execute_ui_tests
     nodes_dependent_on: []
+    output_structure:
+    - description: Description of visual validation results
+      key: visual_validation_results
+      type: str
+    - description: Description of interaction logs
+      key: interaction_logs
+      type: str
+    - description: List of severity issues for user experience
+      key: severity_issues
+      type: List[str]
+    - description: Description of each issue categorized
+      key: issue_description
+      type: List[str]
+    - description: Total count of issues found in user interface
+      key: total_issues_count
+      type: int
+    - description: Validity status of interface functionality
+      key: validity_status
+      type: bool
+    - description: List of categories for user experience impact
+      key: ux_impact_categories
+      type: List[str]
     prompt: Audit visual validation results and interaction logs. Categorize issues
       by severity and UX impact.
   analyze_unit_test_results:
@@ -36,6 +80,28 @@ nodes:
     nodes_depended_on:
     - execute_unit_tests
     nodes_dependent_on: []
+    output_structure:
+    - description: List of test result indicators (pass/fail)
+      key: test_results
+      type: List[bool]
+    - description: Overall code coverage percentage
+      key: code_coverage
+      type: float
+    - description: Total number of unit tests executed
+      key: test_count
+      type: int
+    - description: Number of unit tests that failed
+      key: failure_count
+      type: int
+    - description: Number of critical unit test failures
+      key: critical_failure_count
+      type: int
+    - description: Number of unit tests that encountered errors
+      key: error_count
+      type: int
+    - description: List of error messages encountered during testing
+      key: error_messages
+      type: List[str]
     prompt: Calculate code coverage metrics and classify failures as defects or false
       positives. Rank criticality of issues.
   compile_test_summary:
@@ -47,6 +113,19 @@ nodes:
     - analyze_integration_test_results
     - analyze_ui_test_results
     nodes_dependent_on: []
+    output_structure:
+    - description: List of identified risk areas
+      key: risk_areas
+      type: str
+    - description: List of confidence levels for each testing component
+      key: confidence_levels
+      type: List[float]
+    - description: Summary of defect patterns identified during testing
+      key: defect_patterns
+      type: str
+    - description: Summary of overall test results
+      key: test_results_summary
+      type: str
     prompt: Consolidate test results, metrics, and defect patterns into single assessment
       report. Highlight risk areas and confidence levels.
   design_test_cases_backend:
@@ -56,6 +135,16 @@ nodes:
     nodes_depended_on:
     - analyze_requirements
     nodes_dependent_on: []
+    output_structure:
+    - description: List of test cases for backend services
+      key: test_cases
+      type: List[str]
+    - description: List of error conditions for backend services
+      key: error_conditions
+      type: List[str]
+    - description: List of data validation scenarios for backend services
+      key: data_validation_scenarios
+      type: List[str]
     prompt: Create 15-20 test cases for backend services, including error conditions
       and data validation scenarios.
   design_test_cases_frontend:
@@ -65,6 +154,16 @@ nodes:
     nodes_depended_on:
     - analyze_requirements
     nodes_dependent_on: []
+    output_structure:
+    - description: List of generated test cases
+      key: test_cases
+      type: List[str]
+    - description: List of interactions covered in the test cases
+      key: ui_interactions
+      type: List[str]
+    - description: List of visual validation results
+      key: visual_validation_results
+      type: List[str]
     prompt: Generate 10-15 test cases for frontend interfaces based on extracted requirements.
       Focus only on UI interactions and visual validation.
   execute_integration_tests:
@@ -75,6 +174,23 @@ nodes:
     - setup_test_environment
     - design_test_cases_backend
     nodes_dependent_on: []
+    output_structure:
+    - description: Logs of test execution, including request and response flows, error
+        conditions, and any other relevant information.
+      key: test_results_logs
+      type: str
+    - description: Record of all requests and responses made during the integration
+        test, including input parameters, headers, and response bodies.
+      key: request_response_flows
+      type: List[str]
+    - description: Whether the integration test was successful or encountered any
+        errors.
+      key: integration_test_status
+      type: bool
+    - description: List of error conditions encountered during the integration test,
+        with severity level (0-100)
+      key: error_conditions
+      type: float
     prompt: Run integration tests between services/APIs using scenario-based inputs.
       Log request/response flows and error conditions.
   execute_ui_tests:
@@ -85,16 +201,36 @@ nodes:
     - setup_test_environment
     - design_test_cases_frontend
     nodes_dependent_on: []
+    output_structure:
+    - description: List of test outcomes (pass or fail)
+      key: test_outcomes
+      type: List[str]
+    - description: List of time taken to complete each test
+      key: test_execution_time
+      type: List[float]
     prompt: Automate frontend test execution using recorded scenarios. Capture visual
       diffs and interaction logs.
   execute_unit_tests:
     agent: false
-    description: Run module-level unit tests
+    description: Run module-level unit tests.
     name: execute_unit_tests
     nodes_depended_on:
     - setup_test_environment
     - design_test_cases_backend
     nodes_dependent_on: []
+    output_structure:
+    - description: Number of tests that passed
+      key: test_pass_count
+      type: int
+    - description: Number of tests that failed
+      key: test_fail_count
+      type: int
+    - description: List of detailed test result strings with stack traces
+      key: test_result_details
+      type: List[str]
+    - description: Code coverage percentage
+      key: test_coverage_percentage
+      type: float
     prompt: Execute unit tests against codebase using provided test framework. Generate
       detailed pass/fail report with stack traces.
   retest_fixed_defects:
@@ -104,6 +240,17 @@ nodes:
     nodes_depended_on:
     - track_defects
     nodes_dependent_on: []
+    output_structure:
+    - description: List of defect tickets created after retesting
+      key: defect_tickets
+      type: List[str]
+    - description: Status of each retested test case (e.g. passed, failed, blocked)
+      key: test_case_statuses
+      type: List[str]
+    - description: Summary of regression test outcomes, including any failed cases
+        and their corresponding fixes
+      key: regression_test_outcomes
+      type: str
     prompt: Re-run failing test cases from defect reports and validate fixes. Document
       regression test outcomes.
   setup_test_environment:
@@ -113,6 +260,16 @@ nodes:
     nodes_depended_on:
     - analyze_requirements
     nodes_dependent_on: []
+    output_structure:
+    - description: Configuration details of the testing environment
+      key: test_environment_configuration
+      type: str
+    - description: Details about the test data
+      key: test_data_specification
+      type: str
+    - description: Manifest file specifying dependencies
+      key: dependencies_manifest
+      type: str
     prompt: Configure test environment with required tools, mock services, and test
       data. Specify dependencies in a configuration manifest.
   track_defects:
