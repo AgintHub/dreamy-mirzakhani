@@ -1,43 +1,87 @@
 dag_type: plain_text
-description: A minimal workflow that verifies the literal string 'test' by checking
-  its type, comparing its value, and producing a pass/fail result.
+description: A basic testing workflow to execute and verify test cases, ensuring results
+  are documented and analyzed.
 name: simple_test_workflow
 nodes:
-  check_type:
+  define_test_case_1:
     agent: false
-    description: Confirm the input is a string.
-    name: check_type
-    nodes_depended_on:
-    - provide_input
-    nodes_dependent_on:
-    - generate_output
-    prompt: Verify that the input is of type string. If it is not, produce an error
-      message.
-  compare_value:
-    agent: false
-    description: Compare the input string to the expected value.
-    name: compare_value
-    nodes_depended_on:
-    - provide_input
-    nodes_dependent_on:
-    - generate_output
-    prompt: Compare the input string to the literal 'test'. Return true if they match,
-      false otherwise.
-  generate_output:
-    agent: false
-    description: Produce the final pass/fail result.
-    name: generate_output
-    nodes_depended_on:
-    - check_type
-    - compare_value
-    nodes_dependent_on: []
-    prompt: If the comparison result is true, output 'PASS'; otherwise output 'FAIL'.
-  provide_input:
-    agent: false
-    description: Provide the test input string.
-    name: provide_input
+    description: Create a specific test case with defined inputs and expected outcomes
+    name: define_test_case_1
     nodes_depended_on: []
     nodes_dependent_on:
-    - check_type
-    - compare_value
-    prompt: Return the string 'test' as the input for this workflow.
+    - execute_test_case_1
+    prompt: 'Define a test case including: 1) input data 2) expected output 3) success
+      criteria. Keep it focused and specific.'
+  define_test_case_2:
+    agent: false
+    description: Create a second specific test case with defined inputs and expected
+      outcomes
+    name: define_test_case_2
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - execute_test_case_2
+    prompt: 'Define a distinct test case including: 1) input data 2) expected output
+      3) success criteria. Must differ from test case 1.'
+  execute_test_case_1:
+    agent: false
+    description: Run the first defined test case in the prepared environment
+    name: execute_test_case_1
+    nodes_depended_on:
+    - define_test_case_1
+    - setup_test_environment
+    nodes_dependent_on:
+    - verify_test_results_1
+    prompt: Execute the first test case using the defined inputs in the prepared environment.
+      Record all actual outputs and behaviors.
+  execute_test_case_2:
+    agent: false
+    description: Run the second defined test case in the prepared environment
+    name: execute_test_case_2
+    nodes_depended_on:
+    - define_test_case_2
+    - setup_test_environment
+    nodes_dependent_on:
+    - verify_test_results_2
+    prompt: Execute the second test case using the defined inputs in the prepared
+      environment. Record all actual outputs and behaviors.
+  generate_test_report:
+    agent: false
+    description: Create documentation summarizing all test execution and verification
+      results
+    name: generate_test_report
+    nodes_depended_on:
+    - verify_test_results_1
+    - verify_test_results_2
+    nodes_dependent_on: []
+    prompt: 'Compile a summary report showing: 1) each test case name 2) inputs tested
+      3) pass/fail status 4) key verification notes'
+  setup_test_environment:
+    agent: false
+    description: Prepare prerequisite environment or resources required for testing
+    name: setup_test_environment
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - execute_test_case_1
+    - execute_test_case_2
+    prompt: Describe all environment setup steps including tools, configurations,
+      and dependencies required to run these test cases.
+  verify_test_results_1:
+    agent: false
+    description: Validate the first test's actual outputs against expected outcomes
+    name: verify_test_results_1
+    nodes_depended_on:
+    - execute_test_case_1
+    nodes_dependent_on:
+    - generate_test_report
+    prompt: Compare recorded test outputs against expected results from the test case
+      definition. Note any discrepancies.
+  verify_test_results_2:
+    agent: false
+    description: Validate the second test's actual outputs against expected outcomes
+    name: verify_test_results_2
+    nodes_depended_on:
+    - execute_test_case_2
+    nodes_dependent_on:
+    - generate_test_report
+    prompt: Compare recorded test outputs against expected results from the second
+      test case definition. Note any discrepancies.
