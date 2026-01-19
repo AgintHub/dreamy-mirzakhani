@@ -1,35 +1,48 @@
 dag_type: plain_text
-description: A workflow for testing
+description: A concise workflow that defines a single test case, executes it, validates
+  the outcome, and reports the result.
 name: test_workflow
 nodes:
-  evaluate_test:
+  define_test_case:
     agent: false
-    description: Assess the test results
-    name: evaluate_test
-    nodes_depended_on:
+    description: Generates a JSON definition of the test case.
+    name: define_test_case
+    nodes_depended_on: []
+    nodes_dependent_on:
     - run_test
-    nodes_dependent_on: []
-    prompt: Analyze the test outcome
-  report_test:
+    prompt: 'Create a simple test case definition. Specify the function to test, the
+      input parameters, and the expected output. Present the definition in a JSON
+      object with keys: function_name, inputs, expected_output.'
+  report_result:
     agent: false
-    description: Report the test findings
-    name: report_test
+    description: Produces a final human‑readable test report.
+    name: report_result
     nodes_depended_on:
-    - evaluate_test
+    - validate_result
     nodes_dependent_on: []
-    prompt: Document and communicate the test results
+    prompt: Summarize the test outcome. Output a plain text report that states whether
+      the test passed, the function tested, the inputs used, and any failure details
+      if applicable.
   run_test:
     agent: false
-    description: Execute the test
+    description: Executes the function under test with the given inputs.
     name: run_test
     nodes_depended_on:
-    - start_test
-    nodes_dependent_on: []
-    prompt: Perform the test
-  start_test:
+    - define_test_case
+    nodes_dependent_on:
+    - validate_result
+    prompt: 'Using the test case JSON from the previous step, execute the specified
+      function with the provided inputs. Capture the actual output and return it in
+      a JSON object with keys: actual_output. Assume the function is available in
+      the execution environment.'
+  validate_result:
     agent: false
-    description: Initiate the test process
-    name: start_test
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Begin testing
+    description: Checks if the test passed and records details.
+    name: validate_result
+    nodes_depended_on:
+    - run_test
+    nodes_dependent_on:
+    - report_result
+    prompt: 'Compare the actual_output from the previous step with the expected_output
+      from the test case definition. Return a JSON object with keys: passed (boolean),
+      details (string explaining mismatch if any).'
