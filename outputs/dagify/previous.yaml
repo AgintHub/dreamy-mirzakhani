@@ -1,13 +1,262 @@
 dag_type: plain_text
-description: A simple workflow that defines the elemental step(s) required to perform
-  a generic test operation.
-name: test_execution_plan
+description: A parallelizable, atomic execution plan to build a rocket from design
+  to launch, covering structural, propulsion, avionics, and systems integration with
+  strict dependency management.
+name: build_rocket
 nodes:
-  perform_test_operation:
+  assemble_engine:
     agent: false
-    description: Execute a fundamental test operation as requested.
-    name: perform_test_operation
+    description: Combine propulsion system components
+    name: assemble_engine
+    nodes_depended_on:
+    - test_engine_combustion
+    - test_fuel_pumping_system
+    - manufacture_engine_components
+    nodes_dependent_on:
+    - test_propulsion_integration
+    prompt: Integrate all engine components according to engineering drawings. Include
+      electrical and mechanical alignment verification.
+  assemble_fuel_system:
+    agent: false
+    description: Install and connect fuel delivery infrastructure
+    name: assemble_fuel_system
+    nodes_depended_on:
+    - test_fuel_storage
+    nodes_dependent_on:
+    - assemble_rocket
+    prompt: Connect fuel tanks to propulsion system using specified plumbing architecture.
+      Include leak verification protocol.
+  assemble_rocket:
+    agent: false
+    description: Final integration of all systems
+    name: assemble_rocket
+    nodes_depended_on:
+    - assemble_rocket_structure
+    - assemble_fuel_system
+    - test_propulsion_integration
+    - test_avionics_integration
+    nodes_dependent_on:
+    - final_system_verification
+    prompt: Merge propulsion, fuel, avionics, and structural systems. Verify electrical,
+      mechanical, and data connectivity.
+  assemble_rocket_structure:
+    agent: false
+    description: Integrate primary components into vertical structure
+    name: assemble_rocket_structure
+    nodes_depended_on:
+    - manufacture_structural_components
+    - assemble_engine
+    nodes_dependent_on:
+    - assemble_rocket
+    prompt: Stack and integrate body sections with propulsion system. Verify alignment
+      and structural integrity.
+  calculate_structural_tolerances:
+    agent: false
+    description: Perform stress/strain analysis for material selection
+    name: calculate_structural_tolerances
+    nodes_depended_on:
+    - design_rocket_parameters
+    nodes_dependent_on:
+    - design_fuel_tanks
+    prompt: 'Calculate maximum tolerances for body sections under expected loads.
+      Include safety factors and failure thresholds in a numerical table. Format:
+      Load Scenario | Safety Factor | Tolerance Values.'
+  create_engineering_drawings:
+    agent: false
+    description: Generate detailed CAD blueprints
+    name: create_engineering_drawings
+    nodes_depended_on:
+    - design_rocket_parameters
+    nodes_dependent_on:
+    - manufacture_structural_components
+    - manufacture_fuel_tanks
+    prompt: Produce engineering-grade 3D CAD drawings for all rocket components. Include
+      tolerances, assembly instructions, and material specifications in ISO-standard
+      format.
+  design_avionics_hardware:
+    agent: false
+    description: Specify flight control hardware
+    name: design_avionics_hardware
+    nodes_depended_on:
+    - design_rocket_parameters
+    nodes_dependent_on:
+    - develop_flight_software
+    - test_avionics_integration
+    prompt: Define sensor array requirements (gyroscopes, accelerometers, GPS) and
+      on-board computer specifications for navigation and guidance systems.
+  design_engine_combustion_chamber:
+    agent: false
+    description: Engine combustion chamber specifications
+    name: design_engine_combustion_chamber
+    nodes_depended_on:
+    - select_propulsion_type
+    nodes_dependent_on:
+    - test_engine_combustion
+    prompt: Define combustion chamber pressure parameters, material selection, cooling
+      system design, and ignition requirements.
+  design_engine_fuel_pumps:
+    agent: false
+    description: Engine fuel delivery system design
+    name: design_engine_fuel_pumps
+    nodes_depended_on:
+    - select_propulsion_type
+    nodes_dependent_on:
+    - test_fuel_pumping_system
+    prompt: Specify fuel pump pressure, flow rate, and materials. Include backup pump
+      failure mode analysis.
+  design_fuel_tanks:
+    agent: false
+    description: Specify fuel tank geometry and material requirements
+    name: design_fuel_tanks
+    nodes_depended_on:
+    - calculate_structural_tolerances
+    - design_rocket_parameters
+    nodes_dependent_on:
+    - manufacture_fuel_tanks
+    - test_fuel_storage
+    prompt: Detail fuel tank construction parameters including shape optimization,
+      wall thickness, and material selection (e.g., carbon fiber reinforced polymer
+      vs titanium alloy).
+  design_rocket_parameters:
+    agent: false
+    description: Define basic rocket parameters as the foundational specification
+    name: design_rocket_parameters
     nodes_depended_on: []
+    nodes_dependent_on:
+    - create_engineering_drawings
+    - calculate_structural_tolerances
+    prompt: Generate a detailed specification document including rocket height, diameter,
+      payload capacity, and mission profile. Format as a technical specification table
+      with key parameters.
+  develop_flight_software:
+    agent: false
+    description: Create flight control algorithms
+    name: develop_flight_software
+    nodes_depended_on:
+    - design_avionics_hardware
+    nodes_dependent_on:
+    - simulate_flight_path
+    prompt: Implement trajectory control algorithms with adaptive tuning for ascent,
+      staging, and re-entry. Include closed-loop feedback system design.
+  document_launch_readiness:
+    agent: false
+    description: Generate final certification documentation
+    name: document_launch_readiness
+    nodes_depended_on:
+    - final_system_verification
     nodes_dependent_on: []
-    prompt: Perform the requested test operation and provide the direct output or
-      result of the test.
+    prompt: Compile final inspection reports and regulatory approvals. Format as formal
+      certification document with signatures.
+  final_system_verification:
+    agent: false
+    description: Conduct complete pre-launch validation
+    name: final_system_verification
+    nodes_depended_on:
+    - assemble_rocket
+    nodes_dependent_on:
+    - document_launch_readiness
+    prompt: Run 72-hour stability tests. Verify system redundancy, sensor telemetry,
+      and thrust vectoring capabilities.
+  manufacture_engine_components:
+    agent: false
+    description: Produce propulsion system parts
+    name: manufacture_engine_components
+    nodes_depended_on:
+    - design_engine_combustion_chamber
+    - design_engine_fuel_pumps
+    nodes_dependent_on:
+    - assemble_engine
+    prompt: Fabricate nozzle, igniters, and combustion chamber components to specified
+      tolerances. Include material stress testing.
+  manufacture_fuel_tanks:
+    agent: false
+    description: Produce fuel containment system
+    name: manufacture_fuel_tanks
+    nodes_depended_on:
+    - create_engineering_drawings
+    - design_fuel_tanks
+    nodes_dependent_on:
+    - test_fuel_storage
+    prompt: Fabricate fuel tanks with specified tolerances. Include weld integrity
+      testing and pressure test requirements.
+  manufacture_structural_components:
+    agent: false
+    description: Produce rocket body structure
+    name: manufacture_structural_components
+    nodes_depended_on:
+    - create_engineering_drawings
+    nodes_dependent_on:
+    - assemble_rocket_structure
+    prompt: Fabricate primary structural components using the specified materials.
+      Include quality inspection requirements at each fabrication stage.
+  select_propulsion_type:
+    agent: false
+    description: Determine rocket engine architecture
+    name: select_propulsion_type
+    nodes_depended_on:
+    - design_rocket_parameters
+    nodes_dependent_on:
+    - design_engine_combustion_chamber
+    - design_engine_fuel_pumps
+    prompt: Choose between liquid, solid, or hybrid propulsion system. Provide technical
+      justification and compatibility analysis with mission profile.
+  simulate_flight_path:
+    agent: false
+    description: Create aerodynamic profiles
+    name: simulate_flight_path
+    nodes_depended_on:
+    - develop_flight_software
+    nodes_dependent_on:
+    - assemble_rocket
+    prompt: Run computational fluid dynamics (CFD) simulations for ascent, staging,
+      and re-entry scenarios. Generate stabilization parameter profiles.
+  test_avionics_integration:
+    agent: false
+    description: Validate flight control functionality
+    name: test_avionics_integration
+    nodes_depended_on:
+    - design_avionics_hardware
+    nodes_dependent_on:
+    - assemble_rocket
+    prompt: Test all sensor arrays and computer systems under simulated launch conditions.
+      Verify sensor telemetry logging capability.
+  test_engine_combustion:
+    agent: false
+    description: Validate combustion chamber performance
+    name: test_engine_combustion
+    nodes_depended_on:
+    - design_engine_combustion_chamber
+    nodes_dependent_on:
+    - assemble_engine
+    prompt: Conduct hot-fire tests with staged pressure increases. Monitor for material
+      warping and temperature profile deviations.
+  test_fuel_pumping_system:
+    agent: false
+    description: Validate fuel delivery system
+    name: test_fuel_pumping_system
+    nodes_depended_on:
+    - design_engine_fuel_pumps
+    nodes_dependent_on:
+    - assemble_engine
+    prompt: Test fuel pump flow rates and pressure maintenance at expected operational
+      speeds. Verify redundant pump functionality.
+  test_fuel_storage:
+    agent: false
+    description: Validate fuel tank performance
+    name: test_fuel_storage
+    nodes_depended_on:
+    - manufacture_fuel_tanks
+    nodes_dependent_on:
+    - assemble_fuel_system
+    prompt: Perform pressure and leakage tests under maximum load conditions. Document
+      all stress thresholds and failure modes.
+  test_propulsion_integration:
+    agent: false
+    description: Validate complete engine system
+    name: test_propulsion_integration
+    nodes_depended_on:
+    - assemble_engine
+    nodes_dependent_on:
+    - assemble_rocket
+    prompt: Perform full-duration hot-fire test at operational pressures. Monitor
+      nozzle expansion ratios and thrust stability.
