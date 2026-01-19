@@ -4,21 +4,21 @@ name: build_hedge_fund
 nodes:
   choose_investment_strategy:
     agent: false
-    description: Identifies the high‑level investment strategy.
+    description: Identifies the high-level investment strategy.
     name: choose_investment_strategy
     nodes_depended_on:
     - clarify_fund_objectives
     nodes_dependent_on: []
     output_structure:
-    - description: Name of the chosen investment strategy category
-      key: chosen_strategy
+    - description: The chosen hedge-fund strategy category
+      key: strategy_category
       type: str
-    - description: Reasoning behind choosing this strategy category
+    - description: A one-sentence justification for the chosen strategy category
       key: justification
       type: str
-    prompt: Select one primary hedge‑fund strategy category (e.g., long/short equity,
+    prompt: Select one primary hedge-fund strategy category (e.g., long/short equity,
       global macro, systematic statistical arbitrage) that best serves the objectives.
-      Provide a one‑sentence justification.
+      Provide a one-sentence justification.
   choose_legal_entity_type:
     agent: false
     description: Selects the legal entity form for the fund.
@@ -26,21 +26,45 @@ nodes:
     nodes_depended_on:
     - select_jurisdiction
     nodes_dependent_on: []
+    output_structure:
+    - description: The selected legal vehicle structure for the fund.
+      key: legal_vehicle
+      type: str
+    - description: The jurisdiction where the chosen legal vehicle structure will
+        be applied.
+      key: jurisdiction
+      type: str
+    - description: A brief one-sentence explanation justifying the chosen legal vehicle
+        structure.
+      key: rationale
+      type: str
     prompt: Specify the legal vehicle structure appropriate for the chosen jurisdiction
-      (e.g., LP, LLC, SICAV). Provide a brief one‑sentence explanation.
+      (e.g., LP, LLC, SICAV). Provide a brief one-sentence explanation.
   clarify_fund_objectives:
     agent: false
-    description: Produces a bullet‑list of the fund’s primary business objectives.
+    description: Produces a bullet-list of the fund’s primary business objectives.
     name: clarify_fund_objectives
     nodes_depended_on: []
     nodes_dependent_on: []
     output_structure:
-    - description: List of the fund's primary business objectives
-      key: objectives
+    - description: investment purpose
+      key: investment_purpose
+      type: str
+    - description: target return profile
+      key: target_return_profile
+      type: str
+    - description: competitive advantage
+      key: competitive_advantage
+      type: str
+    - description: long-term vision
+      key: long_term_vision
+      type: str
+    - description: list of bullet points
+      key: bullet_points
       type: List[str]
     prompt: List the core objectives of the hedge fund in up to eight concise bullet
       points. Cover investment purpose, target return profile, competitive advantage,
-      and long‑term vision. Do not include any strategy or structural details.
+      and long-term vision. Do not include any strategy or structural details.
   compile_pitch_deck_outline:
     agent: false
     description: Provides the structure for fundraising presentation materials.
@@ -53,40 +77,6 @@ nodes:
     - draft_fee_structure
     - design_risk_management_framework
     nodes_dependent_on: []
-    output_structure:
-    - description: List of 10-slide outline titles
-      key: outline_titles
-      type: List[str]
-    - description: Description of the fund's objectives
-      key: objectives
-      type: str
-    - description: Description of the investment strategy
-      key: strategy
-      type: str
-    - description: Description of the investment team
-      key: team
-      type: str
-    - description: Description of the fund's competitive advantage
-      key: edge
-      type: str
-    - description: Description of the risk management framework
-      key: risk_controls
-      type: str
-    - description: Description of the fee structure
-      key: fees
-      type: str
-    - description: Description of the target returns
-      key: target_returns
-      type: str
-    - description: Description of the market opportunity
-      key: market_opportunity
-      type: str
-    - description: Description of the service providers
-      key: service_providers
-      type: str
-    - description: Description of the timeline
-      key: timeline
-      type: str
     prompt: Create a 10-slide outline (titles only) for an investor pitch deck covering
       objectives, strategy, team, edge, risk controls, fees, target returns, market
       opportunity, service providers, and timeline.
@@ -98,9 +88,11 @@ nodes:
     - draft_operations_workflow
     nodes_dependent_on: []
     output_structure:
-    - description: List of essential full-time roles needed at launch, along with
-        their one-line responsibilities
-      key: full_time_roles
+    - description: List of up to eight essential full-time roles needed at launch
+      key: roles
+      type: List[str]
+    - description: List of one-line responsibilities for each role
+      key: responsibilities
       type: List[str]
     prompt: Identify up to eight essential full-time roles needed at launch (e.g.,
       Portfolio Manager, Quant Analyst, Risk Manager, Compliance Officer, Operations
@@ -114,15 +106,10 @@ nodes:
     - choose_investment_strategy
     nodes_dependent_on: []
     output_structure:
-    - description: List of tradable asset classes or instruments
-      key: asset_classes
+    - description: A list of the specific asset classes or financial instruments the
+        fund's strategy will trade.
+      key: asset_classes_instruments
       type: List[str]
-    - description: Number of asset classes or instruments listed
-      key: num_asset_classes
-      type: int
-    - description: Maximum amounts to be invested in each asset class or instrument
-      key: max_investment_amounts
-      type: List[float]
     prompt: List up to ten specific asset classes or instruments the strategy will
       trade (e.g., US large‑cap equities, Euro‑dollar futures, credit default swaps).
       Keep the list concise.
@@ -134,22 +121,21 @@ nodes:
     - clarify_fund_objectives
     nodes_dependent_on: []
     output_structure:
-    - description: The type of ideal investor for the fund (e.g., family offices,
-        pension funds, high-net-worth individuals)
-      key: investor_type
+    - description: Type of investor (e.g., family offices, pension funds, high-net-worth
+        individuals)
+      key: investment_type
       type: str
-    - description: The typical investment amount for the ideal investor
+    - description: Typical ticket size for the fund
       key: ticket_size
-      type: int
-    - description: The level of risk the ideal investor is willing to take (e.g.,
-        low, medium, high)
+      type: float
+    - description: Risk tolerance of the investor (e.g., low-risk, moderate-risk,
+        high-risk)
       key: risk_tolerance
       type: str
-    - description: The ideal investor's preference for liquidity (e.g., low, medium,
-        high)
+    - description: Liquidity preference of the investor (e.g., liquid, illiquid)
       key: liquidity_preference
       type: str
-    - description: The geographic area where the ideal investor focuses their investments
+    - description: Geographic focus of the investor (e.g., global, regional)
       key: geographic_focus
       type: str
     prompt: Describe the ideal investor type for the fund (e.g., family offices, pension
@@ -163,11 +149,17 @@ nodes:
     - draft_operations_workflow
     nodes_dependent_on: []
     output_structure:
-    - description: List of technology components required for each operation step
-      key: technology_components
-      type: List[str]
-    - description: List of operation steps identified in the workflow
+    - description: Operation step (e.g., idea generation, order creation)
+      key: ops_step
+      type: str
+    - description: Technology component required to support the operation step
+      key: tech_component
+      type: str
+    - description: List of operation steps
       key: operation_steps
+      type: List[str]
+    - description: List of technology components required
+      key: tech_components
       type: List[str]
     prompt: 'List the technology components required for each operation step identified
       in the workflow (e.g., OMS, EMS, risk engine, data warehouse). Present as a
@@ -182,9 +174,13 @@ nodes:
     - design_risk_management_framework
     nodes_dependent_on: []
     output_structure:
-    - description: Compliance policy table generated from regulatory requirements
-      key: compliance_policy_table
-      type: str
+    - description: List of regulatory requirements
+      key: regulatory_requirements
+      type: List[str]
+    - description: List of internal policies and procedures linked to each regulatory
+        requirement
+      key: internal_policies_procedures
+      type: List[str]
     prompt: 'Create a compliance checklist linking each regulatory requirement to
       an internal policy or procedure. Present as a two-column table: Requirement
       | Policy/Procedure.'
@@ -196,10 +192,24 @@ nodes:
     - set_performance_and_risk_targets
     nodes_dependent_on: []
     output_structure:
-    - description: List of core risk controls aligned with the performance and risk
-        targets
-      key: risk_controls
-      type: List[str]
+    - description: First core risk control
+      key: risk_control_1
+      type: str
+    - description: Second core risk control
+      key: risk_control_2
+      type: str
+    - description: Third core risk control
+      key: risk_control_3
+      type: str
+    - description: Fourth core risk control
+      key: risk_control_4
+      type: str
+    - description: Fifth core risk control
+      key: risk_control_5
+      type: str
+    - description: Sixth core risk control
+      key: risk_control_6
+      type: str
     prompt: Provide 5-6 core risk controls aligned with the performance and risk targets
       (e.g., position limits, VaR caps, stop-loss levels, liquidity thresholds). Use
       bullet points.
@@ -214,16 +224,19 @@ nodes:
     - compile_pitch_deck_outline
     nodes_dependent_on: []
     output_structure:
-    - description: 'Launch timeline with monthly milestones as a table: Month | Milestone'
-      key: launch_timeline
-      type: List[str]
-    - description: List of monthly milestones
+    - description: Phase of the fund launch
+      key: launch_phase
+      type: str
+    - description: List of monthly milestones for the fund launch
       key: milestones
       type: List[str]
-    - description: 12‑month launch timeline table
-      key: timeline_table
+    - description: Starting month of the fund launch timeline
+      key: start_month
+      type: int
+    - description: Starting date of the fund launch timeline in YYYY-MM-DD format
+      key: start_date
       type: str
-    prompt: 'Construct a 12‑month launch timeline with monthly milestones (e.g., legal
+    prompt: 'Construct a 12-month launch timeline with monthly milestones (e.g., legal
       formation, regulatory filings, service provider contracts, tech deployment,
       capital raise, first trade). Present as a table: Month | Milestone.'
   draft_fee_structure:
@@ -235,17 +248,20 @@ nodes:
     - estimate_setup_and_operating_costs
     nodes_dependent_on: []
     output_structure:
-    - description: Percentage of assets under management charged as management fee
-      key: management_fee_percentage
+    - description: Management fee percentage
+      key: management_fee
       type: float
-    - description: Percentage of assets generated in profit as performance fee
-      key: performance_fee_percentage
+    - description: Performance fee percentage
+      key: performance_fee
       type: float
-    - description: Minimum return level required before performance fee is charged
+    - description: Hurdle rate (if applicable)
       key: hurdle_rate
       type: float
-    - description: Summary of proposed management and performance fee structure
-      key: fee_summary
+    - description: Explanation for cost recovery
+      key: cost_recovery
+      type: str
+    - description: Explanation for market competitiveness
+      key: market_competitiveness
       type: str
     prompt: Propose management and performance fee percentages that balance cost recovery
       with market competitiveness. Include any hurdle rate if appropriate. Summarize
@@ -260,15 +276,29 @@ nodes:
     - design_risk_management_framework
     nodes_dependent_on: []
     output_structure:
-    - description: Description of the end-to-end daily trade lifecycle
-      key: daily_trade_lifecycle
+    - description: Description of the idea generation process
+      key: idea_generation
       type: str
-    - description: List of primary responsible parties for each step in the daily
-        trade lifecycle
-      key: responsible_parties
-      type: List[str]
-    - description: List of trade operational steps with descriptions
-      key: trade_operational_steps
+    - description: Description of the order creation process
+      key: order_creation
+      type: str
+    - description: Description of the execution process
+      key: execution
+      type: str
+    - description: Description of the confirmation process
+      key: confirmation
+      type: str
+    - description: Description of the settlement process
+      key: settlement
+      type: str
+    - description: Description of the reconciliation process
+      key: reconciliation
+      type: str
+    - description: Primary responsible party for each process
+      key: responsible_party
+      type: str
+    - description: List of workflow steps in the daily trade lifecycle
+      key: workflow_steps
       type: List[str]
     prompt: 'Sketch the end-to-end daily trade lifecycle: idea generation → order
       creation → execution → confirmation → settlement → reconciliation. For each
@@ -282,18 +312,16 @@ nodes:
     - list_service_providers
     nodes_dependent_on: []
     output_structure:
-    - description: List of service provider categories
+    - description: List of service provider categories (e.g., prime broker, fund administrator)
       key: service_provider_categories
       type: List[str]
-    - description: List of internal overhead categories
+    - description: List of internal overhead categories (e.g., office, tech, staffing)
       key: internal_overhead_categories
       type: List[str]
-    - description: List of cost items
-      key: cost_items
-      type: List[str]
-    - description: List of estimated costs
+    - description: Two-column table of estimated costs (USD) for each service provider
+        category and internal overhead category
       key: estimated_costs
-      type: List[float]
+      type: List[int]
     prompt: 'Provide an approximate annual cost (USD) for each listed service provider
       category and for internal overhead (office, tech, staffing). Show as a two-column
       table: Cost Item | Estimated USD.'
@@ -305,13 +333,11 @@ nodes:
     - choose_legal_entity_type
     nodes_dependent_on: []
     output_structure:
-    - description: List of regulatory filings or registrations required for the selected
-        entity and jurisdiction.
-      key: regulatory Filings
+    - description: List of regulatory filings
+      key: regulatory_filings
       type: List[str]
-    - description: List of governing authorities responsible for the regulatory filings
-        or registrations.
-      key: governing Authorities
+    - description: List of governing authorities
+      key: governing_authorities
       type: List[str]
     prompt: List the principal regulatory filings or registrations required for the
       selected entity and jurisdiction (e.g., SEC Form ADV, FCA Registration). Include
@@ -324,8 +350,9 @@ nodes:
     - select_jurisdiction
     nodes_dependent_on: []
     output_structure:
-    - description: List of mandatory third-party service providers.
-      key: service_providers
+    - description: List of service provider categories (e.g., prime broker, fund administrator,
+        auditor)
+      key: provider_types
       type: List[str]
     prompt: 'Create a checklist of mandatory third-party service providers: prime
       broker, fund administrator, auditor, legal counsel, compliance consultant, and
@@ -339,28 +366,6 @@ nodes:
     - compile_pitch_deck_outline
     - develop_timeline_and_milestones
     nodes_dependent_on: []
-    output_structure:
-    - description: Concise executive summary of the fund plan
-      key: executive_summary
-      type: str
-    - description: Fund strategic approach covering strategy, structure, and risk
-      key: fund_strategic_approach
-      type: str
-    - description: Operational plan covering operations, fees, cost model, and compliance
-      key: operational_plan
-      type: str
-    - description: Hiring plan covering staffing and hiring
-      key: hiring_plan
-      type: str
-    - description: Technology stack covering technology and IT infrastructure
-      key: technology_stack
-      type: str
-    - description: Launch timeline with monthly milestones
-      key: timeline
-      type: str
-    - description: Compiled fundraising deck
-      key: fundraising_deck
-      type: str
     prompt: Synthesize all prior outputs into a concise executive summary (≤400 words)
       covering strategy, structure, risk, operations, fees, cost model, compliance,
       hiring, technology, timeline, and fundraising materials. Use bullet points or
@@ -373,20 +378,15 @@ nodes:
     - clarify_fund_objectives
     nodes_dependent_on: []
     output_structure:
-    - description: The name of the selected jurisdiction (e.g., Cayman, Delaware,
-        Luxembourg)
-      key: jurisdiction_name
+    - description: The chosen jurisdiction for the fund's domicile
+      key: chosen_jurisdiction
       type: str
-    - description: List of two advantages of the chosen jurisdiction
+    - description: Two advantages of the chosen jurisdiction
       key: advantages
       type: List[str]
-    - description: List of two disadvantages of the chosen jurisdiction
+    - description: Two disadvantages of the chosen jurisdiction
       key: disadvantages
       type: List[str]
-    - description: A brief explanation of why the chosen jurisdiction best aligns
-        with the stated objectives
-      key: rationale
-      type: str
     prompt: Choose a domicile for the fund (e.g., Cayman, Delaware, Luxembourg) that
       best aligns with the stated objectives. Provide two advantages and two disadvantages
       of the chosen jurisdiction.
@@ -398,16 +398,16 @@ nodes:
     - choose_investment_strategy
     nodes_dependent_on: []
     output_structure:
-    - description: Annual gross return target
+    - description: Target annual gross return
       key: annual_gross_return
       type: float
-    - description: Annual volatility target
+    - description: Target annual volatility
       key: annual_volatility
       type: float
-    - description: Sharpe ratio target
-      key: sharpe_ratio
+    - description: Target Sharpe ratio
+      key: Sharpe_ratio
       type: float
-    - description: Maximum drawdown target
+    - description: Maximum target drawdown
       key: maximum_drawdown
       type: float
     prompt: Define quantitative targets for annual gross return, annual volatility,
