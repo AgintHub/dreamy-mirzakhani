@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A basic testing workflow to execute and verify test cases, ensuring results
-  are documented and analyzed.
+dag_type: typed
+description: Generated workflow from UI.
 name: simple_test_workflow
 nodes:
   define_test_case_1:
@@ -8,8 +7,17 @@ nodes:
     description: Create a specific test case with defined inputs and expected outcomes
     name: define_test_case_1
     nodes_depended_on: []
-    nodes_dependent_on:
-    - execute_test_case_1
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of input data items
+      key: input_data
+      type: List[str]
+    - description: List of expected output values
+      key: expected_output
+      type: List[int]
+    - description: Whether the test case meets the success criteria
+      key: success_criteria
+      type: bool
     prompt: 'Define a test case including: 1) input data 2) expected output 3) success
       criteria. Keep it focused and specific.'
   define_test_case_2:
@@ -18,8 +26,17 @@ nodes:
       outcomes
     name: define_test_case_2
     nodes_depended_on: []
-    nodes_dependent_on:
-    - execute_test_case_2
+    nodes_dependent_on: []
+    output_structure:
+    - description: Name of the test case
+      key: test_case_name
+      type: str
+    - description: Input values or data for the test case
+      key: input_data
+      type: List[str]
+    - description: Expected output based on the test case inputs
+      key: expected_output
+      type: str
     prompt: 'Define a distinct test case including: 1) input data 2) expected output
       3) success criteria. Must differ from test case 1.'
   execute_test_case_1:
@@ -29,8 +46,17 @@ nodes:
     nodes_depended_on:
     - define_test_case_1
     - setup_test_environment
-    nodes_dependent_on:
-    - verify_test_results_1
+    nodes_dependent_on: []
+    output_structure:
+    - description: Result of the test case execution
+      key: test_case_result
+      type: str
+    - description: Actual outputs of the test case
+      key: actual_outputs
+      type: List[str]
+    - description: Record of the behaviours observed during the test case
+      key: behavioural_results
+      type: List[str]
     prompt: Execute the first test case using the defined inputs in the prepared environment.
       Record all actual outputs and behaviors.
   execute_test_case_2:
@@ -40,8 +66,23 @@ nodes:
     nodes_depended_on:
     - define_test_case_2
     - setup_test_environment
-    nodes_dependent_on:
-    - verify_test_results_2
+    nodes_dependent_on: []
+    output_structure:
+    - description: Name of the test case executed
+      key: test_case_name
+      type: str
+    - description: List of inputs used for the test case
+      key: inputs_tested
+      type: str
+    - description: Recorded actual outputs from the test case execution
+      key: actual_outputs
+      type: str
+    - description: Whether the test case passed or failed
+      key: pass_fail_status
+      type: bool
+    - description: Notes from the verifier regarding the test case results
+      key: verifier_notes
+      type: str
     prompt: Execute the second test case using the defined inputs in the prepared
       environment. Record all actual outputs and behaviors.
   generate_test_report:
@@ -53,6 +94,25 @@ nodes:
     - verify_test_results_1
     - verify_test_results_2
     nodes_dependent_on: []
+    output_structure:
+    - description: Name of the test case
+      key: test_case_name
+      type: str
+    - description: Input data used in the test case
+      key: input_data
+      type: str
+    - description: Expected output of the test case
+      key: expected_output
+      type: str
+    - description: Actual output of the test case
+      key: actual_output
+      type: str
+    - description: Pass or fail status of the test case
+      key: pass_fail_status
+      type: str
+    - description: Key verification notes for the test case
+      key: key_verification_notes
+      type: str
     prompt: 'Compile a summary report showing: 1) each test case name 2) inputs tested
       3) pass/fail status 4) key verification notes'
   setup_test_environment:
@@ -60,9 +120,17 @@ nodes:
     description: Prepare prerequisite environment or resources required for testing
     name: setup_test_environment
     nodes_depended_on: []
-    nodes_dependent_on:
-    - execute_test_case_1
-    - execute_test_case_2
+    nodes_dependent_on: []
+    output_structure:
+    - description: The environment setup description
+      key: setup_description
+      type: str
+    - description: A list of environment setup steps
+      key: setup_steps
+      type: List[str]
+    - description: A list of dependencies required for the environment
+      key: dependencies
+      type: List[str]
     prompt: Describe all environment setup steps including tools, configurations,
       and dependencies required to run these test cases.
   verify_test_results_1:
@@ -71,8 +139,16 @@ nodes:
     name: verify_test_results_1
     nodes_depended_on:
     - execute_test_case_1
-    nodes_dependent_on:
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of discrepancy descriptions found during validation. Empty
+        if no discrepancies.
+      key: discrepancies
+      type: List[str]
+    - description: Indicates whether the test results matched the expected outcomes
+        without discrepancies.
+      key: test_passed
+      type: bool
     prompt: Compare recorded test outputs against expected results from the test case
       definition. Note any discrepancies.
   verify_test_results_2:
@@ -81,7 +157,22 @@ nodes:
     name: verify_test_results_2
     nodes_depended_on:
     - execute_test_case_2
-    nodes_dependent_on:
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: Name of the test case
+      key: test_case_name
+      type: str
+    - description: List of actual outputs obtained
+      key: actual_outputs
+      type: List[str]
+    - description: List of expected outputs from the test case definition
+      key: expected_outputs
+      type: List[str]
+    - description: List of discrepancies found between actual and expected outputs
+      key: discrepancies
+      type: List[str]
+    - description: Whether the test case passed or not
+      key: pass_status
+      type: bool
     prompt: Compare recorded test outputs against expected results from the second
       test case definition. Note any discrepancies.
