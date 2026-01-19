@@ -1,92 +1,80 @@
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class ClarifyFundObjectivesOutput(BaseModel):
     """Pydantic model for clarify_fund_objectives node outputs."""
-    investment_objectives: List[str] = (
-        Field(..., description="A list of up to eight bullet points outlining the hedge fund's primary business objectives, covering investment purpose, risk/reward expectations, and target market differentiation.")
-    )
+    investment_purpose: str = Field(..., description="Investment purpose")
+    target_return_profile: str = Field(..., description="Target return profile")
+    competitive_advantage: str = Field(..., description="Competitive advantage")
+    long_term_vision: str = Field(..., description="Long-term vision")
+    other_objectives: str = Field(..., description="Other fund objectives")
 
 
 class SelectJurisdictionOutput(BaseModel):
     """Pydantic model for select_jurisdiction node outputs."""
-    jurisdiction_name: str = (
-        Field(..., description="The chosen fund domicile name")
+    chosen_jurisdiction: str = (
+        Field(..., description="The selected jurisdiction for the fund (e.g., Cayman, Delaware, Luxembourg).")
+    )
+    advantages: str = (
+        Field(..., description="A list containing two advantages of the chosen jurisdiction.")
+    )
+    disadvantages: str = (
+        Field(..., description="A list containing two disadvantages of the chosen jurisdiction.")
     )
     rationale: str = (
-        Field(..., description="One sentence explanation for selecting this jurisdiction")
-    )
-    pros: List[str] = (
-        Field(..., description="Two key advantages of the chosen jurisdiction")
-    )
-    cons: List[str] = (
-        Field(..., description="Two key disadvantages or challenges of the chosen jurisdiction")
+        Field(..., description="The reasoning behind selecting this jurisdiction, including strategic, regulatory, and operational factors.")
     )
 
 
 def select_jurisdiction(clarify_fund_objectives_input: ClarifyFundObjectivesOutput, **kwargs) -> SelectJurisdictionOutput:
     """
-    Chooses a fund domicile and returns a rationale, pros, and cons based on
-    investment objectives.
+    Selects a suitable jurisdiction for the hedge fund based on fund objectives
+    and strategic considerations.
 
     Parameters
     ----------
-    investment_objectives : List[str]
-        A list of up to eight bullet points outlining the hedge fund's
-        primary business objectives, covering investment purpose,
-        risk/reward expectations, and target market differentiation.
+    clarify_fund_objectives : dict
+        The output dictionary from the clarify_fund_objectives node
+        containing core fund objectives.
 
     Returns
     -------
-    Dict[str, Any]
-        A dictionary containing the chosen jurisdiction name, a one‑sentence
-        rationale, two pros, and two cons.
+    dict
+        A dictionary with the selected jurisdiction, its advantages,
+        disadvantages, and accompanying rationale.
 
     Raises
     ------
     ValueError
-        If `investment_objectives` is empty or None.
+        Raised if fund objectives are insufficiently specified or missing
+        necessary details for jurisdiction analysis.
 
     Examples
     --------
-    >>> investment_objectives = [
-    ...     "Generate high risk‑adjusted returns via long/short equity",
-    ...     "Maintain volatility below 12%",
-    ...     "Target institutional investors in North America"
-    >>> ]
-    >>> result = select_jurisdiction(investment_objectives)
-    {
-      "jurisdiction_name": "Cayman Islands",
-      "rationale": "The Cayman Islands provide a flexible regulatory environment
-    and tax neutrality that align with the fund's high‑return, low‑volatility
-    strategy.",
-      "pros": ["Tax‑free jurisdiction", "Well‑established legal framework for
-    funds"],
-      "cons": ["Limited investor protection compared to EU jurisdictions",
-    "Higher compliance costs for certain regulatory filings"]
-    }
+    >>> select_jurisdiction({'investment_purpose': 'Capital growth',
+    'target_return_profile': '8-12%', 'competitive_advantage': 'Tax efficiency',
+    'long_term_vision': 'Global expansion', 'other_objectives': 'Liquidity
+    flexibility'})
+    {'chosen_jurisdiction': 'Cayman', 'advantages': ['Tax neutrality', 'Flexible
+    fund structuring'], 'disadvantages': ['Less investor transparency',
+    'Perceived regulatory laxity'], 'rationale': 'Cayman aligns with objectives
+    due to tax benefits and flexible legal frameworks suited for offshore
+    structures.'}
 
-    >>> investment_objectives = [
-    ...     "Focus on global macro opportunities",
-    ...     "Cap volatility at 15%",
-    ...     "Target both institutional and accredited retail investors"
-    >>> ]
-    >>> result = select_jurisdiction(investment_objectives)
-    {
-      "jurisdiction_name": "Delaware, USA",
-      "rationale": "Delaware offers a mature legal system and favorable
-    corporate law for global macro funds seeking a U.S. presence.",
-      "pros": ["Strong legal precedent", "Ease of accessing U.S. capital
-    markets"],
-      "cons": ["U.S. corporate tax implications", "Mandatory SEC reporting
-    requirements"]
-    }
+    >>> select_jurisdiction({'investment_purpose': 'Stable income',
+    'target_return_profile': '6-10%', 'competitive_advantage': 'Robust
+    regulation', 'long_term_vision': 'Regional focus', 'other_objectives':
+    'Liquidity retention'})
+    {'chosen_jurisdiction': 'Delaware', 'advantages': ['Solid legal precedent',
+    'Familiar regulatory environment'], 'disadvantages': ['Taxation on fund
+    offshore', 'Less favorable for non-US investors'], 'rationale': 'Delaware is
+    chosen for its well-established legal system and familiarity in US-based
+    funds.'}
 
     """
     return SelectJurisdictionOutput(
-        jurisdiction_name="",
+        chosen_jurisdiction="",
+        advantages="",
+        disadvantages="",
         rationale="",
-        pros=[],
-        cons=[],
     )

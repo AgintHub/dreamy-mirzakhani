@@ -1,65 +1,46 @@
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class ChooseInvestmentStrategyOutput(BaseModel):
     """Pydantic model for choose_investment_strategy node outputs."""
-    chosen_strategy: str = (
-        Field(..., description="The specific hedge fund strategy selected from the predefined categories")
+    chosen_investment_strategy: str = (
+        Field(..., description="The chosen high-level investment strategy")
     )
-    alignment_explanation: str = (
-        Field(..., description="A one-sentence explanation of how the chosen strategy supports the fund's objectives")
+    justification: str = (
+        Field(..., description="A one-sentence justification for the chosen investment strategy")
     )
 
 
 class DefineAssetUniverseOutput(BaseModel):
     """Pydantic model for define_asset_universe node outputs."""
-    asset_classes: List[str] = (
-        Field(..., description="List of specific asset classes/instruments that will constitute the investable universe")
-    )
-    number_of_assets: int = (
-        Field(..., description="Number of asset classes listed")
+    asset_classes_instruments: str = (
+        Field(..., description="A list of specific asset classes or instruments that the strategy will trade, with a maximum of ten entries.")
     )
 
 
 def define_asset_universe(choose_investment_strategy_input: ChooseInvestmentStrategyOutput, **kwargs) -> DefineAssetUniverseOutput:
     """
-    Generate a list of tradable asset classes for the hedge fund’s investable
-    universe.
+    Enumerate asset classes or instruments for the chosen investment strategy.
 
     Parameters
     ----------
-    chosen_strategy : str
-        The specific hedge fund strategy selected from the predefined
-        categories (e.g., long/short equity, market neutral, global macro,
-        event-driven, arbitrage).
+    chosen_investment_strategy : str
+        The chosen high-level investment strategy
 
     Returns
     -------
-    Dict[str, Union[List[str], int]]
-        A dictionary containing two keys:  - ``asset_classes``: a list of
-        specific asset classes/instruments that will constitute the
-        investable universe. - ``number_of_assets``: an integer representing
-        the count of asset classes listed.
-
-    Raises
-    ------
-    ValueError
-        If ``chosen_strategy`` is empty or not one of the supported strategy
-        categories.
+    LIST_STR
+        A list of specific asset classes or instruments that the strategy
+        will trade, with a maximum of ten entries.
 
     Examples
     --------
-    >>> define_asset_universe(chosen_strategy='long/short equity')
-    {'asset_classes': ['US Equities', 'EU Equities', 'Emerging Market Equities',
-    'US Equity Options', 'EU Equity Options'], 'number_of_assets': 5}
-
-    >>> define_asset_universe(chosen_strategy='global macro')
-    {'asset_classes': ['US Treasuries', 'Eurodollar Futures', 'Gold Futures',
-    'USD/JPY FX', 'Commodities Futures'], 'number_of_assets': 5}
+    >>> chosen_investment_strategy = 'Long-Short Equity'
+    >>> asset_classes_instruments =
+    define_asset_universe(chosen_investment_strategy)
+    ['US large-cap equities', 'Euro-dollar futures', 'credit default swaps']
 
     """
     return DefineAssetUniverseOutput(
-        asset_classes=[],
-        number_of_assets=0,
+        asset_classes_instruments="",
     )

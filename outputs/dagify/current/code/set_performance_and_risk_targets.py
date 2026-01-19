@@ -3,68 +3,96 @@ from pydantic import BaseModel, Field
 
 class ChooseInvestmentStrategyOutput(BaseModel):
     """Pydantic model for choose_investment_strategy node outputs."""
-    chosen_strategy: str = (
-        Field(..., description="The specific hedge fund strategy selected from the predefined categories")
+    chosen_investment_strategy: str = (
+        Field(..., description="The chosen high-level investment strategy")
     )
-    alignment_explanation: str = (
-        Field(..., description="A one-sentence explanation of how the chosen strategy supports the fund's objectives")
+    justification: str = (
+        Field(..., description="A one-sentence justification for the chosen investment strategy")
     )
 
 
 class SetPerformanceAndRiskTargetsOutput(BaseModel):
     """Pydantic model for set_performance_and_risk_targets node outputs."""
-    annual_gross_return_target: float = (
-        Field(..., description="Target annual gross return expressed as a decimal (e.g., 0.12 for 12%)")
+    annual_gross_return: float = (
+        Field(..., description="Target annual gross return for the chosen strategy")
     )
-    volatility_limit_pct: float = (
-        Field(..., description="Maximum acceptable annual volatility expressed as a percentage (e.g., 15 for 15%)")
+    annual_volatility: float = (
+        Field(..., description="Target annual volatility for the chosen strategy")
     )
-    sharpe_ratio_goal: float = (
-        Field(..., description="Desired Sharpe ratio target for the fund")
+    Sharpe_ratio: float = (
+        Field(..., description="Target Sharpe ratio for the chosen strategy")
     )
-    max_drawdown_pct: float = (
-        Field(..., description="Maximum acceptable peak\u2011to\u2011trough drawdown expressed as a percentage (e.g., 20 for 20%)")
+    maximum_drawdown: float = (
+        Field(..., description="Target maximum drawdown for the strategy")
+    )
+    performance_targets: float = (
+        Field(..., description="A list of key performance metric targets for the strategy")
+    )
+    risk_targets: float = (
+        Field(..., description="A list of risk metric targets for the strategy")
     )
 
 
 def set_performance_and_risk_targets(choose_investment_strategy_input: ChooseInvestmentStrategyOutput, **kwargs) -> SetPerformanceAndRiskTargetsOutput:
     """
-    Generate quantitative performance and risk targets for a hedge fund based on
-    its investment strategy.
+    Defines numerical performance and risk targets for the hedge fund strategy,
+    outputting key metrics such as expected return, volatility, Sharpe ratio,
+    and max drawdown.
 
     Parameters
     ----------
-    chosen_strategy : str
-        The hedge fund strategy selected in the `choose_investment_strategy`
-        node.
+    annual_gross_return : float
+        The targeted annual gross return for the strategy, expressed as a
+        percentage.
+    annual_volatility : float
+        The targeted annual volatility (standard deviation) of returns,
+        expressed as a percentage.
+    Sharpe_ratio : float
+        The desired Sharpe ratio, representing risk-adjusted return.
+    maximum_drawdown : float
+        The maximum allowable peak-to-trough loss during the investment
+        period, expressed as a percentage.
 
     Returns
     -------
     dict
-        A dictionary containing four float fields:
-        `annual_gross_return_target`, `volatility_limit_pct`,
-        `sharpe_ratio_goal`, and `max_drawdown_pct`.
+        A dictionary containing all defined performance and risk metrics,
+        including targets.
 
     Raises
     ------
     ValueError
-        If `chosen_strategy` is not one of the supported strategy
-        categories.
+        If any of the inputs are out of realistic range or improperly
+        specified.
 
     Examples
     --------
-    >>> targets = set_performance_and_risk_targets('long/short equity')
-    >>> print(targets['annual_gross_return_target'])
-    0.12
+    >>> set_performance_and_risk_targets(
+    ...     annual_gross_return=15.0,
+    ...     annual_volatility=10.0,
+    ...     Sharpe_ratio=1.5,
+    ...     maximum_drawdown=20.0
+    >>> )
+    {'annual_gross_return': 15.0, 'annual_volatility': 10.0, 'Sharpe_ratio':
+    1.5, 'maximum_drawdown': 20.0, 'performance_targets': [15.0],
+    'risk_targets': [10.0, 1.5, 20.0]}
 
-    >>> targets = set_performance_and_risk_targets('global macro')
-    >>> print(targets['volatility_limit_pct'])
-    20.0
+    >>> set_performance_and_risk_targets(
+    ...     annual_gross_return=8.0,
+    ...     annual_volatility=12.0,
+    ...     Sharpe_ratio=0.8,
+    ...     maximum_drawdown=30.0
+    >>> )
+    {'annual_gross_return': 8.0, 'annual_volatility': 12.0, 'Sharpe_ratio': 0.8,
+    'maximum_drawdown': 30.0, 'performance_targets': [8.0], 'risk_targets':
+    [12.0, 0.8, 30.0]}
 
     """
     return SetPerformanceAndRiskTargetsOutput(
-        annual_gross_return_target=0.0,
-        volatility_limit_pct=0.0,
-        sharpe_ratio_goal=0.0,
-        max_drawdown_pct=0.0,
+        annual_gross_return=0.0,
+        annual_volatility=0.0,
+        Sharpe_ratio=0.0,
+        maximum_drawdown=0.0,
+        performance_targets=0.0,
+        risk_targets=0.0,
     )

@@ -1,36 +1,30 @@
 # design_compliance_program PRD
 
 ## Description
-Create regulatory compliance framework
+Creates the quantitative and qualitative risk control architecture.
 
 
 ## Conceptual Info
 
-This node creates a regulatory compliance framework by mapping regulatory requirements to internal policies and controls.
+Generates the risk control architecture aligned with regulations and risk targets.
 
 ## Docstring
 
 ### Summary
-Designs a compliance program by mapping regulatory requirements to internal policies and controls.
-
-### Parameters
-
-- **regulatory_requirements** (List[str]): List of regulatory requirements identified for the fund (output from identify_regulatory_requirements node)
-- **risk_controls** (List[str]): List of quantitative risk controls implemented (output from design_risk_management_framework node)
+Creates the risk control architecture by implementing core risk controls and systems.
 
 ### Returns
 
-dict: {regulations: List of regulatory requirements, policies_controls: List of corresponding internal policies or controls, entry_count: Total number of regulatory-policy/control entries}
+{risk_control_1: str, risk_control_2: str, risk_control_3: str, risk_control_4: str, risk_control_5: str, risk_control_6: str}: The implemented risk control architecture as a dictionary with keys: risk_control_1, risk_control_2, risk_control_3, risk_control_4, risk_control_5, risk_control_6, corresponding to the implemented risk controls.
 
 ### Raises
 
-- ValueError: If the number of regulatory-policy/control entries is not between 7 and 10
+- RuntimeError: If any required risk control or system is not implemented.
 
 ### Examples
 
 ```python
->>> regulatory_requirements = ['SEC Form CFA', 'EFIS', 'AIFM']
->>> risk_controls = ['VaR limits', 'position size caps']
->>> design_compliance_program(regulatory_requirements, risk_controls)
-{'regulations': ['SEC Form CFA', 'EFIS', 'AIFM'], 'policies_controls': ['Internal Policy 1', 'Internal Policy 2'], 'entry_count': 7}
+>>> risk_controls = design_risk_management_framework(set_performance_and_risk_targets()).values
+>>> print(risk_controls)
+{'risk_control_1': 'position limits', 'risk_control_2': 'VaR caps', 'risk_control_3': 'stop-loss levels', 'risk_control_4': 'liquidity thresholds'}
 ```

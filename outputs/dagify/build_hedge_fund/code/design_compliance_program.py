@@ -4,75 +4,91 @@ from typing import List
 
 class IdentifyRegulatoryRequirementsOutput(BaseModel):
     """Pydantic model for identify_regulatory_requirements node outputs."""
-    legal_entity_type: str = (
-        Field(..., description="The legal entity type selected for the fund (e.g., LP, LLC, SICAV).")
+    regulatory_requirements: List[str] = (
+        Field(..., description="List of principal regulatory filings or registrations required for the selected entity and jurisdiction.")
     )
-    regulatory_filings: str = (
-        Field(..., description="A list of 6 to 8 required regulatory filings or registrations applicable to the selected entity and jurisdiction.")
+    regulatory_authorities: List[str] = (
+        Field(..., description="List of governing authorities overseeing the filings and registrations.")
     )
 
 
 class DesignRiskManagementFrameworkOutput(BaseModel):
     """Pydantic model for design_risk_management_framework node outputs."""
-    control_name: List[str] = (
-        Field(..., description="Names of the quantitative risk controls implemented")
+    risk_control_1: str = (
+        Field(..., description="First risk control (e.g., position limits)")
     )
-    control_limit: List[float] = (
-        Field(..., description="Numerical limit or threshold associated with each control (e.g., VaR in % of AUM, position size cap in % of portfolio)")
+    risk_control_2: str = (
+        Field(..., description="Second risk control (e.g., VaR caps)")
+    )
+    risk_control_3: str = (
+        Field(..., description="Third risk control (e.g., stop-loss levels)")
+    )
+    risk_control_4: str = (
+        Field(..., description="Fourth risk control (e.g., liquidity thresholds)")
+    )
+    risk_control_5: str = (
+        Field(..., description="Fifth risk control (optional)")
+    )
+    risk_control_6: str = (
+        Field(..., description="Sixth risk control (optional)")
     )
 
 
 class DesignComplianceProgramOutput(BaseModel):
     """Pydantic model for design_compliance_program node outputs."""
-    regulations: List[str] = (
-        Field(..., description="List of regulatory requirements identified for the fund")
+    risk_control_1: str = (
+        Field(..., description="First risk control (e.g., position limits)")
     )
-    policies_controls: List[str] = (
-        Field(..., description="List of corresponding internal policies or controls mapped to each regulatory requirement")
+    risk_control_2: str = (
+        Field(..., description="Second risk control (e.g., VaR caps)")
     )
-    entry_count: int = (
-        Field(..., description="Total number of regulatory-policy/control entries created (should be between 7 and 10)")
+    risk_control_3: str = (
+        Field(..., description="Third risk control (e.g., stop-loss levels)")
+    )
+    risk_control_4: str = (
+        Field(..., description="Fourth risk control (e.g., liquidity thresholds)")
+    )
+    risk_control_5: str = (
+        Field(..., description="Fifth risk control (optional)")
+    )
+    risk_control_6: str = (
+        Field(..., description="Sixth risk control (optional)")
     )
 
 
 def design_compliance_program(identify_regulatory_requirements_input: IdentifyRegulatoryRequirementsOutput, design_risk_management_framework_input: DesignRiskManagementFrameworkOutput, **kwargs) -> DesignComplianceProgramOutput:
     """
-    Designs a compliance program by mapping regulatory requirements to internal
-    policies and controls.
-
-    Parameters
-    ----------
-    regulatory_requirements : List[str]
-        List of regulatory requirements identified for the fund (output from
-        identify_regulatory_requirements node)
-    risk_controls : List[str]
-        List of quantitative risk controls implemented (output from
-        design_risk_management_framework node)
+    Creates the risk control architecture by implementing core risk controls and
+    systems.
 
     Returns
     -------
-    dict
-        {regulations: List of regulatory requirements, policies_controls:
-        List of corresponding internal policies or controls, entry_count:
-        Total number of regulatory-policy/control entries}
+    {risk_control_1: str, risk_control_2: str, risk_control_3: str, risk_control_4: str, risk_control_5: str, risk_control_6: str}
+        The implemented risk control architecture as a dictionary with keys:
+        risk_control_1, risk_control_2, risk_control_3, risk_control_4,
+        risk_control_5, risk_control_6, corresponding to the implemented
+        risk controls.
 
     Raises
     ------
-    ValueError
-        If the number of regulatory-policy/control entries is not between 7
-        and 10
+    RuntimeError
+        If any required risk control or system is not implemented.
 
     Examples
     --------
-    >>> regulatory_requirements = ['SEC Form CFA', 'EFIS', 'AIFM']
-    >>> risk_controls = ['VaR limits', 'position size caps']
-    >>> design_compliance_program(regulatory_requirements, risk_controls)
-    {'regulations': ['SEC Form CFA', 'EFIS', 'AIFM'], 'policies_controls':
-    ['Internal Policy 1', 'Internal Policy 2'], 'entry_count': 7}
+    >>> risk_controls =
+    design_risk_management_framework(set_performance_and_risk_targets()).values
+    >>> print(risk_controls)
+    {'risk_control_1': 'position limits', 'risk_control_2': 'VaR caps',
+    'risk_control_3': 'stop-loss levels', 'risk_control_4': 'liquidity
+    thresholds'}
 
     """
     return DesignComplianceProgramOutput(
-        regulations=[],
-        policies_controls=[],
-        entry_count=0,
+        risk_control_1="",
+        risk_control_2="",
+        risk_control_3="",
+        risk_control_4="",
+        risk_control_5="",
+        risk_control_6="",
     )

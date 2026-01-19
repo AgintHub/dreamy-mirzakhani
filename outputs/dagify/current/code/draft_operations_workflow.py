@@ -4,106 +4,90 @@ from typing import List
 
 class DefineAssetUniverseOutput(BaseModel):
     """Pydantic model for define_asset_universe node outputs."""
-    asset_classes: List[str] = (
-        Field(..., description="List of specific asset classes/instruments that will constitute the investable universe")
-    )
-    number_of_assets: int = (
-        Field(..., description="Number of asset classes listed")
+    asset_classes_instruments: str = (
+        Field(..., description="A list of specific asset classes or instruments that the strategy will trade, with a maximum of ten entries.")
     )
 
 
 class ListServiceProvidersOutput(BaseModel):
     """Pydantic model for list_service_providers node outputs."""
-    service_provider_categories: List[str] = (
-        Field(..., description="List of mandatory service provider categories required for the hedge fund setup")
+    provider_categories: str = (
+        Field(..., description="List of provider categories such as prime broker, fund administrator, auditor, legal counsel, compliance consultant, and custodian.")
+    )
+    num_providers: int = (
+        Field(..., description="Number of service providers in each listed category.")
     )
 
 
 class DesignRiskManagementFrameworkOutput(BaseModel):
     """Pydantic model for design_risk_management_framework node outputs."""
-    control_name: List[str] = (
-        Field(..., description="Names of the quantitative risk controls implemented")
+    risk_control_1: str = (
+        Field(..., description="First risk control (e.g., position limits)")
     )
-    control_limit: List[float] = (
-        Field(..., description="Numerical limit or threshold associated with each control (e.g., VaR in % of AUM, position size cap in % of portfolio)")
+    risk_control_2: str = (
+        Field(..., description="Second risk control (e.g., VaR caps)")
+    )
+    risk_control_3: str = (
+        Field(..., description="Third risk control (e.g., stop-loss levels)")
+    )
+    risk_control_4: str = (
+        Field(..., description="Fourth risk control (e.g., liquidity thresholds)")
+    )
+    risk_control_5: str = (
+        Field(..., description="Fifth risk control (optional)")
+    )
+    risk_control_6: str = (
+        Field(..., description="Sixth risk control (optional)")
     )
 
 
 class DraftOperationsWorkflowOutput(BaseModel):
     """Pydantic model for draft_operations_workflow node outputs."""
-    step_sequence: List[str] = (
-        Field(..., description="Ordered list of trade lifecycle steps.")
+    tradelifecycle_steps: List[str] = (
+        Field(..., description="Sequence of daily trade lifecycle steps from idea generation to reconciliation.")
     )
-    responsible_party: List[str] = (
-        Field(..., description="Primary responsible party for each corresponding step.")
-    )
-    asset_classes: List[str] = (
-        Field(..., description="List of asset classes/instruments in the investable universe.")
-    )
-    risk_controls: List[str] = (
-        Field(..., description="Quantitative risk controls applied to the workflow.")
-    )
-    service_providers: List[str] = (
-        Field(..., description="Mandatory third\u2011party service provider categories required for execution.")
+    responsible_parties: List[str] = (
+        Field(..., description="Primary responsible parties (internal team or external providers) for each trade lifecycle step.")
     )
 
 
 def draft_operations_workflow(define_asset_universe_input: DefineAssetUniverseOutput, list_service_providers_input: ListServiceProvidersOutput, design_risk_management_framework_input: DesignRiskManagementFrameworkOutput, **kwargs) -> DraftOperationsWorkflowOutput:
     """
-    Generate a structured trade‑lifecycle workflow table for a hedge fund.
+    Maps and outlines the end-to-end daily trading and post-trade workflow,
+    specifying operational steps and responsible entities.
 
     Parameters
     ----------
-    asset_classes : List[str]
-        Asset classes/instruments that will constitute the investable
-        universe, as returned by the `define_asset_universe` node.
-    service_provider_categories : List[str]
-        Mandatory third‑party service provider categories required for the
-        fund, as returned by the `list_service_providers` node.
-    risk_controls : List[Tuple[str, float]]
-        Quantitative risk controls with their thresholds, as returned by the
-        `design_risk_management_framework` node. Each tuple contains a
-        control name and its numeric limit.
+    define_asset_universe : list of str
+        Predefined list of tradable assets and instruments used to inform
+        operational procedures.
+    list_service_providers : list of str
+        Identifies external service providers involved in trade lifecycle
+        steps.
+    design_risk_management_framework : list of str
+        Framework outlining risk controls influencing operational workflows.
 
     Returns
     -------
-    Dict[str, List[str]]
-        A dictionary containing five keys: `step_sequence`,
-        `responsible_party`, `asset_classes`, `risk_controls`, and
-        `service_providers`. Each value is a list of strings ordered to
-        match the trade lifecycle.
+    dict
+        Dictionary with 'tradelifecycle_steps' (list of trade steps) and
+        'responsible_parties' (respective responsible entities).
 
     Raises
     ------
     ValueError
-        If any of the input lists are empty or have mismatched lengths.
-    TypeError
-        If an input is not of the expected type.
+        If required dependencies are missing or contain invalid data.
 
     Examples
     --------
-    >>> asset_classes = ["US Equities", "Emerging Markets Bonds", "Commodities
-    Futures"],
-    >>> service_provider_categories = ["Prime Broker", "Custodian", "Compliance
-    Consultant"],
-    >>> risk_controls = [("VaR Limit", 2.5), ("Position Size Cap", 5.0),
-    ("Liquidity Threshold", 3.0)]
-    >>> workflow = draft_operations_workflow(asset_classes,
-    service_provider_categories, risk_controls)
-    >>> print(workflow["step_sequence"])
-    ["Idea Generation", "Idea Screening", "Research", "Trade Decision", "Order
-    Entry", "Execution", "Post‑Trade Processing", "Performance Reporting"]
-
-    >>> print(workflow["responsible_party"])
-    ["Research Analyst", "Senior Analyst", "Portfolio Manager", "Head of
-    Trading", "Trading Desk", "Execution Team", "Post‑Trade Analyst",
-    "Performance Analyst"]
+    >>> draft_operations_workflow()
+    {tradelifecycle_steps: [Idea Generation, Order Creation, Execution,
+    Confirmation, Settlement, Reconciliation], responsible_parties: [Internal
+    Research Team, Trading Desk, Broker Provider, Clearinghouse, Internal
+    Operations, Compliance and Risk Team]}
 
     """
     return DraftOperationsWorkflowOutput(
-        step_sequence=[],
-        responsible_party=[],
-        asset_classes=[],
-        risk_controls=[],
-        service_providers=[],
+        tradelifecycle_steps=[],
+        responsible_parties=[],
     )

@@ -1,58 +1,54 @@
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class ClarifyFundObjectivesOutput(BaseModel):
     """Pydantic model for clarify_fund_objectives node outputs."""
-    investment_objectives: List[str] = (
-        Field(..., description="A list of up to eight bullet points outlining the hedge fund's primary business objectives, covering investment purpose, risk/reward expectations, and target market differentiation.")
-    )
+    investment_purpose: str = Field(..., description="Investment purpose")
+    target_return_profile: str = Field(..., description="Target return profile")
+    competitive_advantage: str = Field(..., description="Competitive advantage")
+    long_term_vision: str = Field(..., description="Long-term vision")
+    other_objectives: str = Field(..., description="Other fund objectives")
 
 
 class ChooseInvestmentStrategyOutput(BaseModel):
     """Pydantic model for choose_investment_strategy node outputs."""
-    chosen_strategy: str = (
-        Field(..., description="The specific hedge fund strategy selected from the predefined categories")
+    chosen_investment_strategy: str = (
+        Field(..., description="The chosen high-level investment strategy")
     )
-    alignment_explanation: str = (
-        Field(..., description="A one-sentence explanation of how the chosen strategy supports the fund's objectives")
+    justification: str = (
+        Field(..., description="A one-sentence justification for the chosen investment strategy")
     )
 
 
 def choose_investment_strategy(clarify_fund_objectives_input: ClarifyFundObjectivesOutput, **kwargs) -> ChooseInvestmentStrategyOutput:
     """
-    Selects a hedge fund strategy and explains its alignment with fund
+    Selects a primary hedge-fund strategy category that best serves the
     objectives.
 
     Parameters
     ----------
-    investment_objectives : List[str]
-        List of fund objectives defined in the clarify_fund_objectives node
+    fund_objectives : dict
+        Output from 'clarify_fund_objectives' node containing primary
+        business objectives.
 
     Returns
     -------
-    {chosen_strategy: str, alignment_explanation: str}
-        A dictionary containing the chosen strategy and its alignment
-        explanation
-
-    Raises
-    ------
-    ValueError
-        If the chosen strategy is not one of the predefined categories
+    dict
+        A dictionary containing the 'chosen_investment_strategy' and
+        'justification' values.
 
     Examples
     --------
-    >>> investment_objectives = ['generate alpha', 'manage risk']
-    >>> chosen_strategy = 'long/short equity'
-    >>> alignment_explanation = 'The long/short equity strategy aligns with the
-    objectives by generating alpha through stock selection and managing risk
-    through hedging'
-    {'chosen_strategy': 'long/short equity', 'alignment_explanation': 'The
-    long/short equity strategy aligns with the objectives by generating alpha
-    through stock selection and managing risk through hedging'}
+    >>> fund_objectives = {'investment_purpose': 'Capital appreciation',
+    'target_return_profile': 'Above market', 'competitive_advantage': 'Active
+    management', 'long_term_vision': 'Long-term growth'}"
+    "chosen_investment_strategy, justification =
+    choose_investment_strategy(fund_objectives)
+    {'chosen_investment_strategy': 'Activemanagement', 'justification': 'To
+    capture above-market returns through active management'}
 
     """
     return ChooseInvestmentStrategyOutput(
-        chosen_strategy="",
-        alignment_explanation="",
+        chosen_investment_strategy="",
+        justification="",
     )

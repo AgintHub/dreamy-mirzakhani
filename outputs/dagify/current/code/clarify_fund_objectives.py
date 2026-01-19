@@ -1,52 +1,46 @@
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class ClarifyFundObjectivesOutput(BaseModel):
     """Pydantic model for clarify_fund_objectives node outputs."""
-    investment_objectives: List[str] = (
-        Field(..., description="A list of up to eight bullet points outlining the hedge fund's primary business objectives, covering investment purpose, risk/reward expectations, and target market differentiation.")
-    )
+    investment_purpose: str = Field(..., description="Investment purpose")
+    target_return_profile: str = Field(..., description="Target return profile")
+    competitive_advantage: str = Field(..., description="Competitive advantage")
+    long_term_vision: str = Field(..., description="Long-term vision")
+    other_objectives: str = Field(..., description="Other fund objectives")
 
 
 def clarify_fund_objectives(general_input: str, **kwargs) -> ClarifyFundObjectivesOutput:
     """
-    Generate a list of up to eight bullet points that capture the hedge fund’s
-    investment purpose, risk/reward expectations, and target market
-    differentiation.
-
-    Parameters
-    ----------
-    prompt : str
-        Instruction string that specifies the maximum number of bullets and
-        the focus areas (investment purpose, risk/reward, target market).
+    clarify_fund_objectives
 
     Returns
     -------
-    List[str]
-        A list of bullet‑point strings, each describing a distinct business
-        or investment objective.
-
-    Raises
-    ------
-    ValueError
-        Raised if the input prompt is empty or does not contain a clear
-        instruction.
+    dict[str, str]
+        fund objectives
 
     Examples
     --------
-    >>> output = clarify_fund_objectives(prompt)
-    >>> print(output)
-    ["Generate alpha through a diversified long/short equity strategy.",
-    "Maintain portfolio volatility below 15% annualized.", "Deliver 20% gross
-    annual returns to institutional investors.", "Differentiate by leveraging
-    proprietary quantitative models."]
+    >>> result = clarify_fund_objectives()
+    >>> print(result)
+    {'investment_purpose': 'Generate absolute returns', 'target_return_profile':
+    'High returns with moderate risk', 'competitive_advantage': 'Active risk
+    management', 'long_term_vision': 'Achieve long-term capital appreciation',
+    'other_objectives': 'Grow AUM and increase investor base'}
 
-    >>> output = clarify_fund_objectives(prompt)
-    >>> print(len(output))
-    4
+    >>> result = clarify_fund_objectives()
+    >>> print(result)
+    {'investment_purpose': 'Maximize return on investment',
+    'target_return_profile': 'High returns with high risk',
+    'competitive_advantage': 'Active risk management',
+        'long_term_vision': 'Achieve long-term capital growth',
+    'other_objectives': 'Grow AUM and increase investor base'}
 
     """
     return ClarifyFundObjectivesOutput(
-        investment_objectives=[],
+        investment_purpose="",
+        target_return_profile="",
+        competitive_advantage="",
+        long_term_vision="",
+        other_objectives="",
     )

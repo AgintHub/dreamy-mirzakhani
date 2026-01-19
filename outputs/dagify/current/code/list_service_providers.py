@@ -1,59 +1,60 @@
 from pydantic import BaseModel, Field
-from typing import List
 
 
-class ChooseLegalEntityTypeOutput(BaseModel):
-    """Pydantic model for choose_legal_entity_type node outputs."""
-    legal_entity_type: str = (
-        Field(..., description="The chosen legal entity type (e.g., LP, LLC, SICAV)")
+class SelectJurisdictionOutput(BaseModel):
+    """Pydantic model for select_jurisdiction node outputs."""
+    chosen_jurisdiction: str = (
+        Field(..., description="The selected jurisdiction for the fund (e.g., Cayman, Delaware, Luxembourg).")
+    )
+    advantages: str = (
+        Field(..., description="A list containing two advantages of the chosen jurisdiction.")
+    )
+    disadvantages: str = (
+        Field(..., description="A list containing two disadvantages of the chosen jurisdiction.")
     )
     rationale: str = (
-        Field(..., description="One-sentence explanation of why this structure suits the strategic goals")
+        Field(..., description="The reasoning behind selecting this jurisdiction, including strategic, regulatory, and operational factors.")
     )
 
 
 class ListServiceProvidersOutput(BaseModel):
     """Pydantic model for list_service_providers node outputs."""
-    service_provider_categories: List[str] = (
-        Field(..., description="List of mandatory service provider categories required for the hedge fund setup")
+    provider_categories: str = (
+        Field(..., description="List of provider categories such as prime broker, fund administrator, auditor, legal counsel, compliance consultant, and custodian.")
+    )
+    num_providers: int = (
+        Field(..., description="Number of service providers in each listed category.")
     )
 
 
-def list_service_providers(choose_legal_entity_type_input: ChooseLegalEntityTypeOutput, **kwargs) -> ListServiceProvidersOutput:
+def list_service_providers(select_jurisdiction_input: SelectJurisdictionOutput, **kwargs) -> ListServiceProvidersOutput:
     """
-    Generate a fixed list of service provider categories needed to launch a
-    hedge fund.
+    Creates a list of mandatory third-party service provider categories for
+    hedge fund setup and operation.
 
     Parameters
     ----------
-    legal_entity_type : str
-        The legal entity type chosen for the fund (e.g., LP, LLC, SICAV).
+    jurisdiction : str
+        The legal jurisdiction selected for the fund, influencing the
+        service provider landscape.
 
     Returns
     -------
     dict
-        Dictionary containing a single key `service_provider_categories`
-        mapped to a list of strings.
+        A dictionary containing provider categories and their counts.
 
     Raises
     ------
     ValueError
-        If `legal_entity_type` is empty or not one of the supported types
-        (LP, LLC, SICAV).
+        If jurisdiction input is invalid or not provided.
 
     Examples
     --------
-    >>> list_service_providers('LP')
-    {'service_provider_categories': ['Prime Broker', 'Custodian', 'Compliance
-    Consultant', 'Transfer Agent', 'Fund Administrator', 'Legal Counsel', 'Audit
-    Firm', 'IT Service Provider']}
-
-    >>> list_service_providers('LLC')
-    {'service_provider_categories': ['Prime Broker', 'Custodian', 'Compliance
-    Consultant', 'Transfer Agent', 'Fund Administrator', 'Legal Counsel', 'Audit
-    Firm', 'IT Service Provider']}
+    >>> list_service_providers('Cayman')
+    {
 
     """
     return ListServiceProvidersOutput(
-        service_provider_categories=[],
+        provider_categories="",
+        num_providers=0,
     )

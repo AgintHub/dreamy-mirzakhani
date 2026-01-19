@@ -1,58 +1,38 @@
 # select_jurisdiction PRD
 
 ## Description
-Determine optimal fund registration location
+Determines the legal domicile and rationale for the fund based on its objectives and strategic considerations.
 
 
 ## Conceptual Info
 
-Selects the most suitable domicile for the hedge fund based on its business objectives, providing concise justification and a balanced view of benefits and drawbacks.
+This node evaluates and selects an optimal legal domicile for the hedge fund, justified by strategic analysis and jurisdictional pros and cons.
 
 ## Docstring
 
 ### Summary
-Chooses a fund domicile and returns a rationale, pros, and cons based on investment objectives.
+Selects a suitable jurisdiction for the hedge fund based on fund objectives and strategic considerations.
 
 ### Parameters
 
-- **investment_objectives** (List[str]): A list of up to eight bullet points outlining the hedge fund's primary business objectives, covering investment purpose, risk/reward expectations, and target market differentiation.
+- **clarify_fund_objectives** (dict): The output dictionary from the clarify_fund_objectives node containing core fund objectives.
 
 ### Returns
 
-Dict[str, Any]: A dictionary containing the chosen jurisdiction name, a one‑sentence rationale, two pros, and two cons.
+dict: A dictionary with the selected jurisdiction, its advantages, disadvantages, and accompanying rationale.
 
 ### Raises
 
-- ValueError: If `investment_objectives` is empty or None.
+- ValueError: Raised if fund objectives are insufficiently specified or missing necessary details for jurisdiction analysis.
 
 ### Examples
 
 ```python
->>> investment_objectives = [
-...     "Generate high risk‑adjusted returns via long/short equity",
-...     "Maintain volatility below 12%",
-...     "Target institutional investors in North America"
->>> ]
->>> result = select_jurisdiction(investment_objectives)
-{
-  "jurisdiction_name": "Cayman Islands",
-  "rationale": "The Cayman Islands provide a flexible regulatory environment and tax neutrality that align with the fund's high‑return, low‑volatility strategy.",
-  "pros": ["Tax‑free jurisdiction", "Well‑established legal framework for funds"],
-  "cons": ["Limited investor protection compared to EU jurisdictions", "Higher compliance costs for certain regulatory filings"]
-}
+>>> select_jurisdiction({'investment_purpose': 'Capital growth', 'target_return_profile': '8-12%', 'competitive_advantage': 'Tax efficiency', 'long_term_vision': 'Global expansion', 'other_objectives': 'Liquidity flexibility'})
+{'chosen_jurisdiction': 'Cayman', 'advantages': ['Tax neutrality', 'Flexible fund structuring'], 'disadvantages': ['Less investor transparency', 'Perceived regulatory laxity'], 'rationale': 'Cayman aligns with objectives due to tax benefits and flexible legal frameworks suited for offshore structures.'}
 ```
 
 ```python
->>> investment_objectives = [
-...     "Focus on global macro opportunities",
-...     "Cap volatility at 15%",
-...     "Target both institutional and accredited retail investors"
->>> ]
->>> result = select_jurisdiction(investment_objectives)
-{
-  "jurisdiction_name": "Delaware, USA",
-  "rationale": "Delaware offers a mature legal system and favorable corporate law for global macro funds seeking a U.S. presence.",
-  "pros": ["Strong legal precedent", "Ease of accessing U.S. capital markets"],
-  "cons": ["U.S. corporate tax implications", "Mandatory SEC reporting requirements"]
-}
+>>> select_jurisdiction({'investment_purpose': 'Stable income', 'target_return_profile': '6-10%', 'competitive_advantage': 'Robust regulation', 'long_term_vision': 'Regional focus', 'other_objectives': 'Liquidity retention'})
+{'chosen_jurisdiction': 'Delaware', 'advantages': ['Solid legal precedent', 'Familiar regulatory environment'], 'disadvantages': ['Taxation on fund offshore', 'Less favorable for non-US investors'], 'rationale': 'Delaware is chosen for its well-established legal system and familiarity in US-based funds.'}
 ```
