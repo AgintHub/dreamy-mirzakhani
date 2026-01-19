@@ -1,191 +1,184 @@
 dag_type: plain_text
-description: Creates a complete, concurrent execution plan for launching a hedge fund
-  that trades every asset class in every global market, routes each class to its own
-  trading system, and enforces firm‑wide risk and compliance controls.
+description: A highly concurrent workflow that creates a multistrategy hedge fund
+  trading all asset classes in global markets, provisions a dedicated trading system
+  for each asset class, and implements firm‑wide risk and compliance management.
 name: multistrategy_hedge_fund_build
 nodes:
-  assemble_launch_timeline:
+  assemble_operations_workflow:
     agent: false
-    description: Create a month‑by‑month schedule of milestones from planning through
-      go‑live.
-    name: assemble_launch_timeline
+    description: Defines the holistic trade lifecycle across all asset classes.
+    name: assemble_operations_workflow
     nodes_depended_on:
-    - draft_operations_workflow
-    - select_technology_stack
-    - create_hiring_plan
-    - compile_service_provider_checklist
-    - identify_regulatory_jurisdictions
+    - instantiate_trading_systems
+    - enumerate_service_providers
     nodes_dependent_on: []
-    prompt: 'Present a table with columns: Month | Milestone (e.g., "Finalize legal
-      entity", "Onboard prime broker", "Deploy data lake", "Run end‑to‑end simulation").
-      Include 12 months.'
-  build_integration_blueprint:
+    prompt: 'Map the end‑to‑end daily operational flow: idea → algo → order → execution
+      → clearing → settlement → reconciliation → reporting. For each step, assign
+      the responsible internal role or external provider.'
+  build_firmwide_risk_engine:
     agent: false
-    description: Define how each per‑asset trading system will connect to the shared
-      data layer and risk/compliance engines.
-    name: build_integration_blueprint
+    description: Constructs the technology component that enforces firm‑wide risk
+      controls across all systems.
+    name: build_firmwide_risk_engine
     nodes_depended_on:
-    - specify_per_asset_trading_systems
-    - define_data_architecture
-    - design_firmwide_risk_framework
-    - design_firmwide_compliance_program
+    - draft_firmwide_risk_policy
+    - instantiate_trading_systems
     nodes_dependent_on: []
-    prompt: 'Provide a textual diagram that shows, for a generic asset class, the
-      flow: MarketData → DataLake → SignalEngine → RiskEngine (pre‑trade) → OrderRouter
-      → Execution → Post‑Trade Risk → Compliance → Settlement.'
-  clarify_fund_mission:
+    prompt: Design a centralized risk engine that aggregates real‑time exposures from
+      all asset‑class trading systems, computes portfolio VaR, stress‑test results,
+      and enforces the firm‑wide limits. List required inputs, core calculations,
+      and output alerts.
+  choose_fund_legal_structure:
     agent: false
-    description: State the high‑level mission, profit objective, and competitive edge
-      of the multistrategy fund.
-    name: clarify_fund_mission
+    description: Decides the legal entity type for the fund.
+    name: choose_fund_legal_structure
+    nodes_depended_on:
+    - define_fund_mission
+    nodes_dependent_on: []
+    prompt: Select a legal vehicle (LP, LLC, SICAV, etc.) appropriate for a multistrategy,
+      global hedge fund and give a one‑sentence justification.
+  create_fund_governance_chart:
+    agent: false
+    description: Establishes the internal governance structure.
+    name: create_fund_governance_chart
+    nodes_depended_on:
+    - choose_fund_legal_structure
+    - select_fund_jurisdiction
+    nodes_dependent_on: []
+    prompt: Produce a simple governance chart listing the General Partner, Investment
+      Committee, Risk Committee, Compliance Officer, and Chief Technology Officer
+      with one‑line duties each.
+  define_fund_mission:
+    agent: false
+    description: Establishes the overarching purpose and guiding principles of the
+      fund.
+    name: define_fund_mission
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Write a concise bullet list (max 6 items) describing the fund’s mission,
-      target return profile, and why a truly multi‑asset, global approach is a competitive
-      advantage.
-  compile_service_provider_checklist:
+    prompt: State the core mission of the hedge fund in three concise bullet points,
+      covering investment ambition, market scope, and risk philosophy.
+  design_trading_system_template:
     agent: false
-    description: List all external service providers (prime broker, admin, auditor,
-      legal, CI, cloud) needed for launch.
-    name: compile_service_provider_checklist
-    nodes_depended_on:
-    - identify_regulatory_jurisdictions
-    nodes_dependent_on: []
-    prompt: 'Create a checklist with columns: ProviderType | RecommendedVendor | PrimaryRole.
-      Include exactly the categories needed for a multi‑asset global fund.'
-  create_hiring_plan:
-    agent: false
-    description: Determine the core internal roles required to run the fund and support
-      each system.
-    name: create_hiring_plan
-    nodes_depended_on:
-    - draft_operations_workflow
-    - select_technology_stack
-    nodes_dependent_on: []
-    prompt: List positions (e.g., Head of Quantitative Strategies, Asset‑Class Leads,
-      Risk Manager, Compliance Officer, DevOps Lead, Data Engineer) with a one‑sentence
-      responsibility each.
-  define_data_architecture:
-    agent: false
-    description: Specify the unified data lake and messaging layer that will feed
-      all per‑asset trading systems and the risk/compliance engines.
-    name: define_data_architecture
-    nodes_depended_on:
-    - specify_per_asset_trading_systems
-    - design_firmwide_risk_framework
-    - design_firmwide_compliance_program
-    nodes_dependent_on: []
-    prompt: Describe the data ingestion pipeline (market data, reference data, execution
-      reports) and storage format (e.g., Parquet on cloud object store). Include a
-      diagram‑style text outline of topics, schemas, and access controls.
-  define_global_markets:
-    agent: false
-    description: Identify the geographic markets (regions/exchanges) for each asset
-      class.
-    name: define_global_markets
+    description: Specifies the reusable blueprint for each asset‑class trading system.
+    name: design_trading_system_template
     nodes_depended_on:
     - list_target_asset_classes
     nodes_dependent_on: []
-    prompt: 'For every asset class listed, produce a comma‑separated list of the major
-      markets where it will be traded (e.g., Equities → NYSE, LSE, TSE). Output one
-      line per asset class in the format "AssetClass: Market1, Market2, …".'
-  design_firmwide_compliance_program:
+    prompt: 'Define a generic architecture for a trading system (data ingestion, signal
+      generation, order management, execution, post‑trade) that can be instantiated
+      for any asset class. Present as a 2‑column table: Component | Description.'
+  draft_capital_raising_plan:
     agent: false
-    description: Create a compliance checklist that satisfies the regulatory regimes
-      of every jurisdiction and asset class.
-    name: design_firmwide_compliance_program
+    description: Plans the fundraising strategy.
+    name: draft_capital_raising_plan
     nodes_depended_on:
-    - clarify_fund_mission
+    - define_fund_mission
+    - list_target_asset_classes
+    - select_fund_jurisdiction
     nodes_dependent_on: []
-    prompt: List compliance requirements grouped by type (e.g., Reporting, Position
-      Limits, Market Abuse, Data Retention). Provide a one‑line description of the
-      internal policy needed for each requirement.
-  design_firmwide_risk_framework:
+    prompt: Outline a three‑phase capital raise (seed, strategic, open‑ended) with
+      target amounts, ideal investor types, and key milestones.
+  draft_firmwide_compliance_policy:
     agent: false
-    description: Outline the firm‑wide risk policies, limits, and measurement methodology
-      that apply across all asset classes.
-    name: design_firmwide_risk_framework
+    description: Establishes a global compliance framework.
+    name: draft_firmwide_compliance_policy
     nodes_depended_on:
-    - clarify_fund_mission
+    - choose_fund_legal_structure
+    - select_fund_jurisdiction
     nodes_dependent_on: []
-    prompt: Produce a bullet list of risk controls (e.g., aggregate VaR cap, liquidity
-      stress limits, cross‑asset concentration caps, leverage ceiling). Include the
-      metric, calculation frequency, and escalation procedure for each.
-  draft_operations_workflow:
+    prompt: Produce a compliance checklist mapping key regulatory obligations (e.g.,
+      SEC, FCA, MAS) to internal controls. List each obligation and the corresponding
+      control.
+  draft_firmwide_risk_policy:
     agent: false
-    description: Map the end‑to‑end trade lifecycle common to all asset classes, highlighting
-      where firm‑wide risk checks intervene.
-    name: draft_operations_workflow
+    description: Creates the top‑level risk governance document.
+    name: draft_firmwide_risk_policy
     nodes_depended_on:
-    - specify_per_asset_trading_systems
-    - design_firmwide_risk_framework
+    - define_fund_mission
     nodes_dependent_on: []
-    prompt: List each step in order (Idea → Signal → Order → Execution → Confirmation
-      → Settlement → Reconciliation) and annotate which step triggers the firm‑wide
-      risk engine and which triggers compliance verification.
-  identify_regulatory_jurisdictions:
+    prompt: Write a concise firm‑wide risk policy covering VaR limits, stress‑test
+      frequency, liquidity buffers, and position concentration rules. Use bullet points
+      only.
+  enumerate_service_providers:
     agent: false
-    description: Enumerate the regulatory bodies and registrations required for each
-      market and asset class.
-    name: identify_regulatory_jurisdictions
+    description: Defines external service provider categories needed for operations.
+    name: enumerate_service_providers
     nodes_depended_on:
-    - define_global_markets
+    - choose_fund_legal_structure
     nodes_dependent_on: []
-    prompt: 'For every market in the list, output a line "Market: Regulator(s) – Required
-      Registration(s)". Use only regulator names and registration titles.'
+    prompt: Create a checklist of mandatory third‑party providers (prime broker, custodian,
+      fund administrator, auditor, legal counsel, compliance consultant, technology
+      vendor). Output only provider type names.
+  instantiate_trading_systems:
+    agent: false
+    description: Creates a dedicated trading system for each asset class.
+    name: instantiate_trading_systems
+    nodes_depended_on:
+    - design_trading_system_template
+    - list_target_asset_classes
+    - specify_global_markets
+    nodes_dependent_on: []
+    prompt: 'For each asset class code from the asset list, generate a concrete trading
+      system specification by filling the generic template. Include market‑specific
+      data sources and execution venues. Output a table: Asset Class | System Spec
+      (brief).'
+  integrate_compliance_monitoring:
+    agent: false
+    description: Implements firm‑wide compliance checks integrated with each trading
+      system.
+    name: integrate_compliance_monitoring
+    nodes_depended_on:
+    - draft_firmwide_compliance_policy
+    - instantiate_trading_systems
+    nodes_dependent_on: []
+    prompt: Create a compliance monitoring module that consumes trade and position
+      data from each asset‑class system and checks against the compliance checklist.
+      Provide a list of automated checks and escalation procedures.
   list_target_asset_classes:
     agent: false
-    description: Enumerate all asset classes the fund will trade.
+    description: Creates the master list of tradable asset classes.
     name: list_target_asset_classes
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Provide a flat list of asset‑class identifiers the fund will actively
-      trade (e.g., Equities, Fixed Income, FX, Commodities, Crypto, Derivatives, Real
-      Estate, Private Credit). No description, just the names.
+    prompt: List every asset class the fund will trade (e.g., equities, fixed income,
+      FX, commodities, derivatives, crypto) and assign a short code for each.
   produce_final_fund_blueprint:
     agent: false
-    description: Synthesize all previous outputs into a single executive summary document.
+    description: Generates the complete launch document for the multistrategy hedge
+      fund.
     name: produce_final_fund_blueprint
     nodes_depended_on:
-    - clarify_fund_mission
-    - list_target_asset_classes
-    - define_global_markets
-    - specify_per_asset_trading_systems
-    - design_firmwide_risk_framework
-    - design_firmwide_compliance_program
-    - define_data_architecture
-    - select_technology_stack
-    - draft_operations_workflow
-    - identify_regulatory_jurisdictions
-    - compile_service_provider_checklist
-    - create_hiring_plan
-    - build_integration_blueprint
-    - assemble_launch_timeline
+    - choose_fund_legal_structure
+    - select_fund_jurisdiction
+    - enumerate_service_providers
+    - draft_firmwide_risk_policy
+    - draft_firmwide_compliance_policy
+    - instantiate_trading_systems
+    - build_firmwide_risk_engine
+    - integrate_compliance_monitoring
+    - assemble_operations_workflow
+    - create_fund_governance_chart
+    - draft_capital_raising_plan
     nodes_dependent_on: []
-    prompt: Write an executive summary (≤400 words) that briefly describes the fund
-      mission, asset‑class coverage, per‑asset system design, firm‑wide risk & compliance
-      approach, technology stack, key service providers, staffing, regulatory footprint,
-      integration model, and launch timeline.
-  select_technology_stack:
+    prompt: Synthesize all prior outputs into a concise executive blueprint (≤500
+      words) covering strategy, legal structure, asset coverage, technology stack,
+      risk/compliance architecture, operations, governance, and capital plan. Use
+      headings and bullet points where appropriate.
+  select_fund_jurisdiction:
     agent: false
-    description: Choose the core technology components (cloud provider, container
-      orchestration, messaging, DB, CI/CD) that support all systems.
-    name: select_technology_stack
+    description: Chooses the jurisdiction for registration.
+    name: select_fund_jurisdiction
     nodes_depended_on:
-    - define_data_architecture
+    - define_fund_mission
     nodes_dependent_on: []
-    prompt: 'Provide a 2‑column table: Component | Selected Tool (e.g., CloudProvider
-      | AWS, Orchestrator | Kubernetes, Messaging | Kafka, TimeSeriesDB | InfluxDB).
-      Keep the list to essential components only.'
-  specify_per_asset_trading_systems:
+    prompt: Pick the optimal domicile (Cayman, Delaware, Luxembourg, etc.) for the
+      fund and list two regulatory pros and two cons.
+  specify_global_markets:
     agent: false
-    description: Define the functional specification for the dedicated trading system
-      of each asset class.
-    name: specify_per_asset_trading_systems
-    nodes_depended_on:
-    - list_target_asset_classes
-    - define_global_markets
+    description: Maps asset classes to the global markets they will be traded in.
+    name: specify_global_markets
+    nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: 'Create a table with columns: AssetClass | CoreModules (e.g., SignalEngine,
-      OrderRouter, MarketDataFeed) | PreferredTechnologyStack. Fill one row per asset
-      class. Keep each cell concise.'
+    prompt: Identify all geographic markets (e.g., US, EU, APAC, LATAM) the fund will
+      have access to, associating each market with the relevant asset classes from
+      the previous step.
