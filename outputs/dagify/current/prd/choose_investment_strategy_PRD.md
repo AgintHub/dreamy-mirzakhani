@@ -1,35 +1,30 @@
 # choose_investment_strategy PRD
 
 ## Description
-Select primary investment approach and strategy classification
+Chooses a high-level investment strategy
 
 
 ## Conceptual Info
 
-This node selects a primary investment strategy and explains its alignment with the fund's objectives.
+Chooses a high-level investment strategy based on the objectives of the fund.
 
 ## Docstring
 
 ### Summary
-Selects a hedge fund strategy and explains its alignment with fund objectives.
+Selects a primary hedge-fund strategy category that best serves the objectives.
 
 ### Parameters
 
-- **investment_objectives** (List[str]): List of fund objectives defined in the clarify_fund_objectives node
+- **fund_objectives** (dict): Output from 'clarify_fund_objectives' node containing primary business objectives.
 
 ### Returns
 
-{chosen_strategy: str, alignment_explanation: str}: A dictionary containing the chosen strategy and its alignment explanation
-
-### Raises
-
-- ValueError: If the chosen strategy is not one of the predefined categories
+dict: A dictionary containing the 'chosen_investment_strategy' and 'justification' values.
 
 ### Examples
 
 ```python
->>> investment_objectives = ['generate alpha', 'manage risk']
->>> chosen_strategy = 'long/short equity'
->>> alignment_explanation = 'The long/short equity strategy aligns with the objectives by generating alpha through stock selection and managing risk through hedging'
-{'chosen_strategy': 'long/short equity', 'alignment_explanation': 'The long/short equity strategy aligns with the objectives by generating alpha through stock selection and managing risk through hedging'}
+>>> fund_objectives = {'investment_purpose': 'Capital appreciation', 'target_return_profile': 'Above market', 'competitive_advantage': 'Active management', 'long_term_vision': 'Long-term growth'}"
+                "chosen_investment_strategy, justification = choose_investment_strategy(fund_objectives)
+{'chosen_investment_strategy': 'Activemanagement', 'justification': 'To capture above-market returns through active management'}
 ```

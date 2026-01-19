@@ -1,38 +1,46 @@
 # create_hiring_plan PRD
 
 ## Description
-Determine staffing requirements
+Determines initial staffing requirements.
 
 
 ## Conceptual Info
 
-This node is responsible for determining the staffing requirements for a hedge fund by identifying essential FTE roles and their core responsibilities.
+Creates a list of essential roles required for launching the fund with detailed responsibilities.
 
 ## Docstring
 
 ### Summary
-Creates a hiring plan by identifying essential FTE roles and their core responsibilities based on the operations workflow gaps.
+Determine initial staffing requirements based on drafted operations workflow.
 
 ### Parameters
 
-- **operations_workflow** (dict): Output from the draft_operations_workflow node
-- **governance_structure** (dict): Output from the outline_governance_structure node
+- **tradelifecycle_steps** (List[str]): List of daily trade lifecycle steps from drafted operations workflow.
 
 ### Returns
 
-dict: A dictionary containing the essential roles, core responsibilities, and the total number of roles
+dict: A dictionary containing 'roles_needed' and 'count_roles'.
 
 ### Raises
 
-- ValueError: If the input operations workflow or governance structure is invalid
+- ValueError: If 'tradelifecycle_steps' is empty.
 
 ### Examples
 
 ```python
->>> operations_workflow = {'step_sequence': ['idea generation', 'order entry', 'execution'],
-...                       'responsible_party': ['investment team', 'trader', 'execution team']}
->>> governance_structure = {'roles': ['GP', 'CIO', 'CFO'], 'duties': ['overall strategy', 'investment decisions', 'financial management']}
->>> hiring_plan = create_hiring_plan(operations_workflow, governance_structure)
->>> print(hiring_plan)
-{'essential_roles': ['investment analyst', 'trader', 'execution specialist', 'compliance officer', 'risk manager', 'financial controller', 'operations manager', 'technology specialist'], 'core_responsibilities': ['research and analysis', 'trade execution', 'trade settlement', 'regulatory compliance', 'risk monitoring', 'financial reporting', 'operations management', 'technology support'], 'role_count': 8}
+>>> create_hiring_plan(tradelifecycle_steps=['Idea generation', 'Order creation', 'Execution', 'Confirmation', 'Settlement', 'Reconciliation'])
+
+role_needed = roles_needed
+count_roles = count_roles
+print(role_needed)
+print(count_roles)
+```
+
+```python
+>>> create_hiring_plan(tradelifecycle_steps=['Idea generation', 'Order creation', 'Execution', 'Confirmation', 'Settlement', 'Reconciliation', 'Market Analysis'])
+
+role_needed = roles_needed
+count_roles = count_roles
+print(role_needed)
+print(count_roles)
 ```

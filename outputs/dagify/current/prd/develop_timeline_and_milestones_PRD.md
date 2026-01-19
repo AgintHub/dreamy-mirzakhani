@@ -1,62 +1,40 @@
 # develop_timeline_and_milestones PRD
 
 ## Description
-Create implementation schedule
+Creates a phased schedule leading to fund launch.
 
 
 ## Conceptual Info
 
-This node orchestrates a 12‑month operational timeline, mapping key milestones—regulatory filing, provider onboarding, capital raise, technology rollout, and launch—onto sequential calendar months. It synthesizes information from the pitch‑deck outline, fee structure, cost estimates, and hiring plan to produce a coherent schedule that aligns with the fund’s launch cadence.
+This node develops a phased schedule leading to fund launch, which is critical for the successful deployment of the hedge fund.
 
 ## Docstring
 
 ### Summary
-Generate a 12‑month implementation roadmap based on prerequisite inputs.
+This function constructs a 12-month launch timeline with monthly milestones.
 
 ### Parameters
 
-- **slide_titles** (List[str]): Ordered list of slide titles from the pitch deck outline.
-- **management_fee_percent** (float): Management fee percentage from the fee structure.
-- **performance_fee_percent** (float): Performance fee percentage from the fee structure.
-- **service_provider_cost_usd** (float): Annual cost of service providers.
-- **technology_systems_cost_usd** (float): Annual cost of technology systems.
-- **office_human_infrastructure_cost_usd** (float): Annual cost of office and human infrastructure.
-- **essential_roles** (List[str]): List of essential FTE roles from the hiring plan.
-- **core_responsibilities** (List[str]): Core responsibilities for each essential role.
-- **role_count** (int): Total number of essential FTE roles.
+- **inputs** (dict): A dictionary containing 'draft_operations_workflow', 'define_technology_stack', 'create_hiring_plan', and 'compile_pitch_deck_outline' outputs.
 
 ### Returns
 
-Dict[str, List[Union[int, str]]]: A dictionary with keys 'month_numbers', 'milestone_names', and 'milestone_descriptions', each mapping to a list of 12 items.
+dict: A dictionary containing 'timeline_months' and 'milestones', representing a phased schedule leading to fund launch.
 
 ### Raises
 
-- ValueError: If any input list is empty or has mismatched lengths.
-- TypeError: If inputs are not of the expected types.
+- ValueError: If inputs are missing required outputs.
 
 ### Examples
 
 ```python
->>> timeline = develop_timeline_and_milestones(
-
-...     slide_titles=["Objective", "Strategy", "Investor Profile", "Risk Controls", "Fee Model", "Operations", "Governance", "Capital Raise", "Tech Deployment", "Launch"],
-
-...     management_fee_percent=1.5,
-
-...     performance_fee_percent=20.0,
-
-...     service_provider_cost_usd=300000.0,
-
-...     technology_systems_cost_usd=250000.0,
-
-...     office_human_infrastructure_cost_usd=400000.0,
-
-...     essential_roles=["Portfolio Manager", "Compliance Officer", "Operations Lead"],
-
-...     core_responsibilities=["Lead strategy", "Ensure regulatory compliance", "Oversee day‑to‑day ops"],
-
-...     role_count=3
-
->>> )
-{\n  "month_numbers": [1,2,3,4,5,6,7,8,9,10,11,12],\n  "milestone_names": ["Regulatory Filing","Provider Onboarding","Capital Raise","Tech Deployment","Launch","", "", "", "", "", "", ""],\n  "milestone_descriptions": ["File SEC Form 13D with advisors", "Engage prime broker and custodian", "Secure $10M AUM", "Deploy OMS and risk engine", "Go live", "", "", "", "", "", "", ""]}
+>>> from datetime import datetime
+>>> from tabulate import tabulate
+>>> from typing import Dict, List, Union
+>>> def develop_timeline_and_milestones(inputs: Dict) -> Dict:
+...     timeline_months = inputs['draft_operations_workflow']['timeline_months'] + inputs['define_technology_stack']['timeline_months']
+...     milestones = [f"Legal Formation" for _ in range(3)] + [f"Regulatory Filings" for _ in range(2)] + [f"Service Provider Contracts" for _ in range(2)] + [f"Tech Deployment" for _ in range(2)] + [f"Capital Raise" for _ in range(1)] + [f"First Trade" for _ in range(1)]
+...     return {'timeline_months': timeline_months, 'milestones': milestones}
+>>> result = develop_timeline_and_milestones({'draft_operations_workflow': {'timeline_months': [1, 2, 3]}, 'define_technology_stack': {'timeline_months': [4, 5, 6]}})
+{'timeline_months': [1, 2, 3, 4, 5, 6], 'milestones': ['Legal Formation', 'Legal Formation', 'Legal Formation', 'Regulatory Filings', 'Regulatory Filings', 'Service Provider Contracts', 'Service Provider Contracts', 'Tech Deployment', 'Tech Deployment', 'Capital Raise', 'First Trade']}
 ```

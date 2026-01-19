@@ -1,71 +1,41 @@
 # draft_fee_structure PRD
 
 ## Description
-Define fee model parameters
+Sets the fund's fee schedule by defining management fees, performance fees, hurdle rate, and fee payment structures to optimize revenue while remaining competitive.
 
 
 ## Conceptual Info
 
-The draft_fee_structure node calculates the fee schedule for a hedge fund, translating strategic targets and cost assumptions into concrete percentage figures for management and performance fees, optionally incorporating a hurdle rate.
+This node establishes the fund's fee schedule, balancing revenue needs with market competitiveness by setting management and performance fee percentages, incorporating hurdle rates if applicable, and detailing the payment structures.
 
 ## Docstring
 
 ### Summary
-Generate a fee model based on target returns, risk limits, and operating cost estimates.
+Define the management and performance fee percentages, hurdle rate, and fee structures for the fund, considering market standards and internal cost recovery goals.
 
 ### Parameters
 
-- **annual_gross_return_target** (float): Target annual gross return expressed as a decimal (e.g., 0.12 for 12%).
-- **volatility_limit_pct** (float): Maximum acceptable annual volatility in percent.
-- **sharpe_ratio_goal** (float): Desired Sharpe ratio target for the fund.
-- **max_drawdown_pct** (float): Maximum acceptable peak‑to‑trough drawdown in percent.
-- **service_provider_cost_usd** (float): Estimated annual cost for all service providers.
-- **technology_systems_cost_usd** (float): Estimated annual cost for all required technology systems.
-- **office_human_infrastructure_cost_usd** (float): Estimated annual cost for office space, hardware, and human infrastructure.
+- **set_performance_and_risk_targets** (dict): Outputs from the parent node defining risk and performance targets, influencing fee structure decisions.
+- **estimate_setup_and_operating_costs** (dict): Outputs from the parent node estimating annual setup and operating costs that need to be covered by fund fees.
 
 ### Returns
 
-dict: A dictionary containing fee percentages and a brief commentary.
+dict: A dictionary containing the 'management_fees', 'performance_fees', 'hurdle_rate', and 'fee_schedules' as string descriptions of the fee arrangements.
 
 ### Raises
 
-- ValueError: If any numeric input is negative or missing.
-- TypeError: If inputs are not of expected numeric types.
+- ValueError: If fee components are missing or ill-formatted, indicating incomplete or inconsistent inputs.
 
 ### Examples
 
 ```python
->>> draft_fee_structure(
-...     annual_gross_return_target=0.15,
-...     volatility_limit_pct=10,
-...     sharpe_ratio_goal=1.5,
-...     max_drawdown_pct=15,
-...     service_provider_cost_usd=400000,
-...     technology_systems_cost_usd=200000,
-...     office_human_infrastructure_cost_usd=300000)
->>> )
-{
-  "management_fee_percent": 1.5,
-  "performance_fee_percent": 20.0,
-  "hurdle_rate_percent": 5.0,
-  "fee_commentary": "A 1.5% AUM management fee and 20% performance fee above a 5% hurdle aligns with the 15% return target and cost structure."
-}
+>>> draft_fee_structure()
+>>> # Management fees: '2%', Performance fees: '20%', Hurdle rate: '5%', Payment structure: 'Standard tiered fees'
+{'management_fees': '2%', 'performance_fees': '20%', 'hurdle_rate': '5%', 'fee_schedules': 'Standard tiered fees'}
 ```
 
 ```python
->>> draft_fee_structure(
-...     annual_gross_return_target=0.10,
-...     volatility_limit_pct=12,
-...     sharpe_ratio_goal=1.0,
-...     max_drawdown_pct=20,
-...     service_provider_cost_usd=250000,
-...     technology_systems_cost_usd=150000,
-...     office_human_infrastructure_cost_usd=200000)
->>> )
-{
-  "management_fee_percent": 1.25,
-  "performance_fee_percent": 15.0,
-  "hurdle_rate_percent": 0.0,
-  "fee_commentary": "A 1.25% AUM fee and 15% performance fee with no hurdle accommodate the 10% return target and operating costs."
-}
+>>> draft_fee_structure()
+>>> # Management fees: '1.5%', Performance fees: '15%', Hurdle rate: 'None', Payment structure: 'High-water mark with clawback'
+{'management_fees': '1.5%', 'performance_fees': '15%', 'hurdle_rate': 'None', 'fee_schedules': 'High-water mark with clawback'}
 ```

@@ -1,45 +1,35 @@
 # draft_operations_workflow PRD
 
 ## Description
-Map operational processes
+Maps core trade and post-trade operational steps, outlining each stage in the trade lifecycle and assigning responsibility to internal teams or external service providers.
 
 
 ## Conceptual Info
 
-This node compiles a detailed, step‑by‑step operational workflow for a hedge fund, aligning each phase of the trade lifecycle with its primary owner, the asset universe, the risk controls that govern the process, and the essential external service providers needed for execution. The output is a concise, structured representation that can be consumed by downstream staffing, technology, and compliance modules.
+This node details the sequence of core operational steps involved in executing a trade on a daily basis, including responsible parties at each stage.
 
 ## Docstring
 
 ### Summary
-Generate a structured trade‑lifecycle workflow table for a hedge fund.
+Maps and outlines the end-to-end daily trading and post-trade workflow, specifying operational steps and responsible entities.
 
 ### Parameters
 
-- **asset_classes** (List[str]): Asset classes/instruments that will constitute the investable universe, as returned by the `define_asset_universe` node.
-- **service_provider_categories** (List[str]): Mandatory third‑party service provider categories required for the fund, as returned by the `list_service_providers` node.
-- **risk_controls** (List[Tuple[str, float]]): Quantitative risk controls with their thresholds, as returned by the `design_risk_management_framework` node. Each tuple contains a control name and its numeric limit.
+- **define_asset_universe** (list of str): Predefined list of tradable assets and instruments used to inform operational procedures.
+- **list_service_providers** (list of str): Identifies external service providers involved in trade lifecycle steps.
+- **design_risk_management_framework** (list of str): Framework outlining risk controls influencing operational workflows.
 
 ### Returns
 
-Dict[str, List[str]]: A dictionary containing five keys: `step_sequence`, `responsible_party`, `asset_classes`, `risk_controls`, and `service_providers`. Each value is a list of strings ordered to match the trade lifecycle.
+dict: Dictionary with 'tradelifecycle_steps' (list of trade steps) and 'responsible_parties' (respective responsible entities).
 
 ### Raises
 
-- ValueError: If any of the input lists are empty or have mismatched lengths.
-- TypeError: If an input is not of the expected type.
+- ValueError: If required dependencies are missing or contain invalid data.
 
 ### Examples
 
 ```python
->>> asset_classes = ["US Equities", "Emerging Markets Bonds", "Commodities Futures"],
->>> service_provider_categories = ["Prime Broker", "Custodian", "Compliance Consultant"],
->>> risk_controls = [("VaR Limit", 2.5), ("Position Size Cap", 5.0), ("Liquidity Threshold", 3.0)]
->>> workflow = draft_operations_workflow(asset_classes, service_provider_categories, risk_controls)
->>> print(workflow["step_sequence"])
-["Idea Generation", "Idea Screening", "Research", "Trade Decision", "Order Entry", "Execution", "Post‑Trade Processing", "Performance Reporting"]
-```
-
-```python
->>> print(workflow["responsible_party"])
-["Research Analyst", "Senior Analyst", "Portfolio Manager", "Head of Trading", "Trading Desk", "Execution Team", "Post‑Trade Analyst", "Performance Analyst"]
+>>> draft_operations_workflow()
+{tradelifecycle_steps: [Idea Generation, Order Creation, Execution, Confirmation, Settlement, Reconciliation], responsible_parties: [Internal Research Team, Trading Desk, Broker Provider, Clearinghouse, Internal Operations, Compliance and Risk Team]}
 ```

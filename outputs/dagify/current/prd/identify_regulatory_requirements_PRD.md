@@ -1,42 +1,39 @@
 # identify_regulatory_requirements PRD
 
 ## Description
-Lists mandatory compliance obligations for a hedge fund based on the chosen legal entity and jurisdiction.
+This node outputs the key regulatory filings and registrations necessary for the specified legal entity and jurisdiction, based on the entity type selected earlier. It helps ensure compliance with relevant regulatory frameworks by identifying mandatory submissions and overseeing authorities.
 
 
 ## Conceptual Info
 
-This node gathers the regulatory filing requirements that must be met by the hedge fund once its legal structure is chosen. The output is a concise, jurisdiction‑specific checklist that downstream compliance and governance modules can map to internal controls.
+This node determines the key regulatory obligations for a fund based on its legal structure and jurisdiction, facilitating compliance planning.
 
 ## Docstring
 
 ### Summary
-Generate a list of mandatory regulatory filings for the selected legal entity and jurisdiction.
+Returns the regulatory filings and authorities required for the specified legal entity type and jurisdiction.
 
 ### Parameters
 
-- **legal_entity_type** (str): The legal entity type chosen for the hedge fund (e.g., LP, LLC, SICAV).
+- **entity_type** (str): The selected legal entity type for the fund, such as LP, LLC, SICAV.
+- **jurisdiction** (str): The jurisdiction where the fund is established, e.g., Delaware, Cayman, Luxembourg.
 
 ### Returns
 
-Dict[str, Any]: A dictionary containing the legal entity type and a list of required regulatory filings.
+Dict[str, List[str]]: A dictionary containing two lists: regulatory requirements and overseeing authorities.
 
 ### Raises
 
-- ValueError: Raised if the input legal_entity_type is not one of the supported types (LP, LLC, SICAV).
-- LookupError: Raised when the jurisdiction‑specific filing data for the given entity type cannot be retrieved.
+- ValueError: Raised if the entity type or jurisdiction is invalid or unsupported.
 
 ### Examples
 
 ```python
->>> output = identify_regulatory_requirements('LLC')
->>> print(output['legal_entity_type'])
->>> print(output['regulatory_filings'])
-"LLC\n[\n  'SEC Form 13D',\n  'SEC Form 13G',\n  'EFIS Filing',\n  'AIFM Registration',\n  'FCA FCA 21',\n  'HMRC Fund Registration',\n  'EU UCITS Directive',\n  'FINRA 24-13'\n]"
+>>> identify_regulatory_requirements('LP', 'Delaware')
+{regulatory_requirements: [Form D Filing, State Business License], regulatory_authorities: [SEC, Delaware Division of Corporations]}
 ```
 
 ```python
->>> output = identify_regulatory_requirements('SICAV')
->>> print(output['regulatory_filings'])
-"[\n  'Luxembourg AIFMD Registration',\n  'Luxembourg Fund Law Filing',\n  'EU UCITS Directive',\n  'FCA FCA 21',\n  'SEC Form N-1A',\n  'SEC Form 13D',\n  'EFIS Filing',\n  'HMRC Fund Registration'\n]"
+>>> identify_regulatory_requirements('SICAV', 'Luxembourg')
+{regulatory_requirements: [LuxSE Authorization, COMEX Registration], regulatory_authorities: [Luxembourg Financial Supervisory Authority, Luxembourg Stock Exchange]}
 ```

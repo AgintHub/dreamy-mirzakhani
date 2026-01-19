@@ -1,40 +1,33 @@
 # clarify_fund_objectives PRD
 
 ## Description
-Define the core business and investment objectives for the hedge fund
+Produces a bullet-list of the fund's primary business objectives.
 
 
 ## Conceptual Info
 
-Generates a concise, bullet‑point list of the hedge fund’s core business and investment objectives, providing a clear foundation for strategy selection, legal structuring, investor targeting, and jurisdiction choice.
+Clarify the primary business objectives of a hedge fund, including investment purpose, target return profile, competitive advantage, and long-term vision.
 
 ## Docstring
 
 ### Summary
-Generate a list of up to eight bullet points that capture the hedge fund’s investment purpose, risk/reward expectations, and target market differentiation.
-
-### Parameters
-
-- **prompt** (str): Instruction string that specifies the maximum number of bullets and the focus areas (investment purpose, risk/reward, target market).
+clarify_fund_objectives
 
 ### Returns
 
-List[str]: A list of bullet‑point strings, each describing a distinct business or investment objective.
-
-### Raises
-
-- ValueError: Raised if the input prompt is empty or does not contain a clear instruction.
+dict[str, str]: fund objectives
 
 ### Examples
 
 ```python
->>> output = clarify_fund_objectives(prompt)
->>> print(output)
-["Generate alpha through a diversified long/short equity strategy.", "Maintain portfolio volatility below 15% annualized.", "Deliver 20% gross annual returns to institutional investors.", "Differentiate by leveraging proprietary quantitative models."]
+>>> result = clarify_fund_objectives()
+>>> print(result)
+{'investment_purpose': 'Generate absolute returns', 'target_return_profile': 'High returns with moderate risk', 'competitive_advantage': 'Active risk management', 'long_term_vision': 'Achieve long-term capital appreciation', 'other_objectives': 'Grow AUM and increase investor base'}
 ```
 
 ```python
->>> output = clarify_fund_objectives(prompt)
->>> print(len(output))
-4
+>>> result = clarify_fund_objectives()
+>>> print(result)
+{'investment_purpose': 'Maximize return on investment', 'target_return_profile': 'High returns with high risk', 'competitive_advantage': 'Active risk management',
+    'long_term_vision': 'Achieve long-term capital growth', 'other_objectives': 'Grow AUM and increase investor base'}
 ```

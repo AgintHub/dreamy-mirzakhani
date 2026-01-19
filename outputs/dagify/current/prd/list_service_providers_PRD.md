@@ -1,38 +1,33 @@
 # list_service_providers PRD
 
 ## Description
-Identify required third‑party vendors
+Identifies required external service providers for establishing and operating a hedge fund, focusing on key categories necessary for compliance and functionality.
 
 
 ## Conceptual Info
 
-Collects a concise list of external vendor categories indispensable for a hedge fund’s operation, ensuring subsequent nodes receive a standardized taxonomy for cost estimation and workflow mapping.
+This node generates a list of essential external service provider categories required to operate a hedge fund, based on jurisdictional and operational needs.
 
 ## Docstring
 
 ### Summary
-Generate a fixed list of service provider categories needed to launch a hedge fund.
+Creates a list of mandatory third-party service provider categories for hedge fund setup and operation.
 
 ### Parameters
 
-- **legal_entity_type** (str): The legal entity type chosen for the fund (e.g., LP, LLC, SICAV).
+- **jurisdiction** (str): The legal jurisdiction selected for the fund, influencing the service provider landscape.
 
 ### Returns
 
-dict: Dictionary containing a single key `service_provider_categories` mapped to a list of strings.
+dict: A dictionary containing provider categories and their counts.
 
 ### Raises
 
-- ValueError: If `legal_entity_type` is empty or not one of the supported types (LP, LLC, SICAV).
+- ValueError: If jurisdiction input is invalid or not provided.
 
 ### Examples
 
 ```python
->>> list_service_providers('LP')
-{'service_provider_categories': ['Prime Broker', 'Custodian', 'Compliance Consultant', 'Transfer Agent', 'Fund Administrator', 'Legal Counsel', 'Audit Firm', 'IT Service Provider']}
-```
-
-```python
->>> list_service_providers('LLC')
-{'service_provider_categories': ['Prime Broker', 'Custodian', 'Compliance Consultant', 'Transfer Agent', 'Fund Administrator', 'Legal Counsel', 'Audit Firm', 'IT Service Provider']}
+>>> list_service_providers('Cayman')
+{
 ```
