@@ -1,184 +1,713 @@
 dag_type: plain_text
-description: A highly concurrent workflow that creates a multistrategy hedge fund
-  trading all asset classes in global markets, provisions a dedicated trading system
-  for each asset class, and implements firm‑wide risk and compliance management.
-name: multistrategy_hedge_fund_build
+description: A fully decomposed, highly concurrent workflow that generates alpha,
+  builds and rebalances portfolios, creates and executes orders for every major asset
+  class, and then performs firm‑wide risk and compliance management before routing
+  trades to the dedicated trading system per class.
+name: multistrategy_hedge_fund_global_trade_workflow
 nodes:
-  assemble_operations_workflow:
+  aggregate_risk_metrics:
     agent: false
-    description: Defines the holistic trade lifecycle across all asset classes.
-    name: assemble_operations_workflow
+    description: Consolidate position data across all asset classes and compute firm‑wide
+      risk statistics.
+    name: aggregate_risk_metrics
     nodes_depended_on:
-    - instantiate_trading_systems
-    - enumerate_service_providers
-    nodes_dependent_on: []
-    prompt: 'Map the end‑to‑end daily operational flow: idea → algo → order → execution
-      → clearing → settlement → reconciliation → reporting. For each step, assign
-      the responsible internal role or external provider.'
-  build_firmwide_risk_engine:
+    - capture_trade_confirmations_equities
+    - capture_trade_confirmations_fixedincome
+    - capture_trade_confirmations_fx
+    - capture_trade_confirmations_commodities
+    - capture_trade_confirmations_rates
+    - capture_trade_confirmations_crypto
+    - capture_trade_confirmations_emergingmarkets
+    - capture_trade_confirmations_realestate
+    - capture_trade_confirmations_derivatives
+    nodes_dependent_on:
+    - perform_firmwide_risk_checks
+    - perform_firmwide_compliance_checks
+    prompt: Combine all trade records, calculate net exposure, VaR, stress‑test results,
+      liquidity metrics, and generate a consolidated risk dashboard.
+  build_portfolio_commodities:
     agent: false
-    description: Constructs the technology component that enforces firm‑wide risk
-      controls across all systems.
-    name: build_firmwide_risk_engine
+    description: Translate commodities alpha into target positions.
+    name: build_portfolio_commodities
     nodes_depended_on:
-    - draft_firmwide_risk_policy
-    - instantiate_trading_systems
-    nodes_dependent_on: []
-    prompt: Design a centralized risk engine that aggregates real‑time exposures from
-      all asset‑class trading systems, computes portfolio VaR, stress‑test results,
-      and enforces the firm‑wide limits. List required inputs, core calculations,
-      and output alerts.
-  choose_fund_legal_structure:
+    - generate_alpha_commodities
+    nodes_dependent_on:
+    - rebalance_portfolio_commodities
+    prompt: Produce a commodities allocation respecting commodity‑group caps.
+  build_portfolio_crypto:
     agent: false
-    description: Decides the legal entity type for the fund.
-    name: choose_fund_legal_structure
+    description: Translate crypto alpha into target holdings.
+    name: build_portfolio_crypto
     nodes_depended_on:
-    - define_fund_mission
-    nodes_dependent_on: []
-    prompt: Select a legal vehicle (LP, LLC, SICAV, etc.) appropriate for a multistrategy,
-      global hedge fund and give a one‑sentence justification.
-  create_fund_governance_chart:
+    - generate_alpha_crypto
+    nodes_dependent_on:
+    - rebalance_portfolio_crypto
+    prompt: Generate crypto allocations meeting exposure caps and custody limits.
+  build_portfolio_derivatives:
     agent: false
-    description: Establishes the internal governance structure.
-    name: create_fund_governance_chart
+    description: Translate derivatives alpha into target option/structured exposures.
+    name: build_portfolio_derivatives
     nodes_depended_on:
-    - choose_fund_legal_structure
-    - select_fund_jurisdiction
-    nodes_dependent_on: []
-    prompt: Produce a simple governance chart listing the General Partner, Investment
-      Committee, Risk Committee, Compliance Officer, and Chief Technology Officer
-      with one‑line duties each.
-  define_fund_mission:
+    - generate_alpha_derivatives
+    nodes_dependent_on:
+    - rebalance_portfolio_derivatives
+    prompt: Generate a list of option contracts with desired Greeks, respecting delta
+      and vega limits.
+  build_portfolio_emergingmarkets:
     agent: false
-    description: Establishes the overarching purpose and guiding principles of the
-      fund.
-    name: define_fund_mission
+    description: Translate EM alpha into target weights.
+    name: build_portfolio_emergingmarkets
+    nodes_depended_on:
+    - generate_alpha_emergingmarkets
+    nodes_dependent_on:
+    - rebalance_portfolio_emergingmarkets
+    prompt: Create an EM portfolio respecting sovereign risk limits and sector caps.
+  build_portfolio_equities:
+    agent: false
+    description: Translate equity alpha into target weights respecting constraints.
+    name: build_portfolio_equities
+    nodes_depended_on:
+    - generate_alpha_equities
+    nodes_dependent_on:
+    - rebalance_portfolio_equities
+    prompt: Optimize the equity portfolio to meet risk limits, sector caps, and liquidity
+      constraints, outputting target percentages.
+  build_portfolio_fixedincome:
+    agent: false
+    description: Translate fixed‑income alpha into target allocations.
+    name: build_portfolio_fixedincome
+    nodes_depended_on:
+    - generate_alpha_fixedincome
+    nodes_dependent_on:
+    - rebalance_portfolio_fixedincome
+    prompt: Create a fixed‑income allocation that satisfies duration, rating, and
+      concentration limits.
+  build_portfolio_fx:
+    agent: false
+    description: Translate FX alpha into target currency exposures.
+    name: build_portfolio_fx
+    nodes_depended_on:
+    - generate_alpha_fx
+    nodes_dependent_on:
+    - rebalance_portfolio_fx
+    prompt: Generate a currency overlay matrix meeting net‑currency limits.
+  build_portfolio_rates:
+    agent: false
+    description: Translate rates alpha into target curve positions.
+    name: build_portfolio_rates
+    nodes_depended_on:
+    - generate_alpha_rates
+    nodes_dependent_on:
+    - rebalance_portfolio_rates
+    prompt: Output desired positions across the rate curve under volatility and liquidity
+      constraints.
+  build_portfolio_realestate:
+    agent: false
+    description: Translate real‑estate alpha into target holdings.
+    name: build_portfolio_realestate
+    nodes_depended_on:
+    - generate_alpha_realestate
+    nodes_dependent_on:
+    - rebalance_portfolio_realestate
+    prompt: Produce a RE allocation meeting geographic and property‑type limits.
+  capture_trade_confirmations_commodities:
+    agent: false
+    description: Collect trade confirmations for commodity executions.
+    name: capture_trade_confirmations_commodities
+    nodes_depended_on:
+    - execute_orders_commodities
+    nodes_dependent_on:
+    - update_positions_commodities
+    - aggregate_risk_metrics
+    prompt: Gather fill information for each commodity trade and standardize it.
+  capture_trade_confirmations_crypto:
+    agent: false
+    description: Collect trade confirmations for crypto executions.
+    name: capture_trade_confirmations_crypto
+    nodes_depended_on:
+    - execute_orders_crypto
+    nodes_dependent_on:
+    - update_positions_crypto
+    - aggregate_risk_metrics
+    prompt: Obtain fill data for each crypto trade and produce a standardized record.
+  capture_trade_confirmations_derivatives:
+    agent: false
+    description: Collect trade confirmations for derivatives executions.
+    name: capture_trade_confirmations_derivatives
+    nodes_depended_on:
+    - execute_orders_derivatives
+    nodes_dependent_on:
+    - update_positions_derivatives
+    - aggregate_risk_metrics
+    prompt: Obtain execution data for each option/future trade and produce a standardized
+      record.
+  capture_trade_confirmations_emergingmarkets:
+    agent: false
+    description: Collect trade confirmations for EM executions.
+    name: capture_trade_confirmations_emergingmarkets
+    nodes_depended_on:
+    - execute_orders_emergingmarkets
+    nodes_dependent_on:
+    - update_positions_emergingmarkets
+    - aggregate_risk_metrics
+    prompt: Gather execution confirmations for each EM trade and standardize them.
+  capture_trade_confirmations_equities:
+    agent: false
+    description: Collect trade confirmations for equity executions.
+    name: capture_trade_confirmations_equities
+    nodes_depended_on:
+    - execute_orders_equities
+    nodes_dependent_on:
+    - update_positions_equities
+    - aggregate_risk_metrics
+    prompt: Gather execution confirmations (price, quantity, timestamp) for each equity
+      trade and format as a standardized trade record.
+  capture_trade_confirmations_fixedincome:
+    agent: false
+    description: Collect trade confirmations for fixed‑income executions.
+    name: capture_trade_confirmations_fixedincome
+    nodes_depended_on:
+    - execute_orders_fixedincome
+    nodes_dependent_on:
+    - update_positions_fixedincome
+    - aggregate_risk_metrics
+    prompt: Retrieve fill details for each bond/future trade and produce a standardized
+      record.
+  capture_trade_confirmations_fx:
+    agent: false
+    description: Collect trade confirmations for FX executions.
+    name: capture_trade_confirmations_fx
+    nodes_depended_on:
+    - execute_orders_fx
+    nodes_dependent_on:
+    - update_positions_fx
+    - aggregate_risk_metrics
+    prompt: Obtain execution data for each FX trade and format as a trade record.
+  capture_trade_confirmations_rates:
+    agent: false
+    description: Collect trade confirmations for rates executions.
+    name: capture_trade_confirmations_rates
+    nodes_depended_on:
+    - execute_orders_rates
+    nodes_dependent_on:
+    - update_positions_rates
+    - aggregate_risk_metrics
+    prompt: Retrieve execution details for each rates trade and format accordingly.
+  capture_trade_confirmations_realestate:
+    agent: false
+    description: Collect trade confirmations for RE executions.
+    name: capture_trade_confirmations_realestate
+    nodes_depended_on:
+    - execute_orders_realestate
+    nodes_dependent_on:
+    - update_positions_realestate
+    - aggregate_risk_metrics
+    prompt: Retrieve fill details for each REIT trade and format as a trade record.
+  create_orders_commodities:
+    agent: false
+    description: Transform commodity trade list into OMS order messages.
+    name: create_orders_commodities
+    nodes_depended_on:
+    - rebalance_portfolio_commodities
+    nodes_dependent_on:
+    - execute_orders_commodities
+    prompt: Produce order entries for each commodity future/physical including contract
+      month, side, and qty.
+  create_orders_crypto:
+    agent: false
+    description: Transform crypto trade list into OMS order messages.
+    name: create_orders_crypto
+    nodes_depended_on:
+    - rebalance_portfolio_crypto
+    nodes_dependent_on:
+    - execute_orders_crypto
+    prompt: Generate orders for each crypto asset including exchange, side, and amount.
+  create_orders_derivatives:
+    agent: false
+    description: Transform derivatives trade list into OMS order messages.
+    name: create_orders_derivatives
+    nodes_depended_on:
+    - rebalance_portfolio_derivatives
+    nodes_dependent_on:
+    - execute_orders_derivatives
+    prompt: Create option/futures order objects specifying underlying, strike, expiry,
+      side, and qty.
+  create_orders_emergingmarkets:
+    agent: false
+    description: Transform EM trade list into OMS order messages.
+    name: create_orders_emergingmarkets
+    nodes_depended_on:
+    - rebalance_portfolio_emergingmarkets
+    nodes_dependent_on:
+    - execute_orders_emergingmarkets
+    prompt: Create order entries for each EM security with identifier, side, and qty.
+  create_orders_equities:
+    agent: false
+    description: Transform equity trade list into OMS order messages.
+    name: create_orders_equities
+    nodes_depended_on:
+    - rebalance_portfolio_equities
+    nodes_dependent_on:
+    - execute_orders_equities
+    prompt: Convert each equity trade (ticker, side, qty) into the standard order
+      format required by the equity OMS.
+  create_orders_fixedincome:
+    agent: false
+    description: Transform fixed‑income trade list into OMS order messages.
+    name: create_orders_fixedincome
+    nodes_depended_on:
+    - rebalance_portfolio_fixedincome
+    nodes_dependent_on:
+    - execute_orders_fixedincome
+    prompt: Generate order objects for each bond/future trade including ISIN, side,
+      qty, and settlement details.
+  create_orders_fx:
+    agent: false
+    description: Transform FX trade list into OMS order messages.
+    name: create_orders_fx
+    nodes_depended_on:
+    - rebalance_portfolio_fx
+    nodes_dependent_on:
+    - execute_orders_fx
+    prompt: Create order structures for each currency pair trade with notional, spot/forward
+      flag, and execution venue.
+  create_orders_rates:
+    agent: false
+    description: Transform rates trade list into OMS order messages.
+    name: create_orders_rates
+    nodes_depended_on:
+    - rebalance_portfolio_rates
+    nodes_dependent_on:
+    - execute_orders_rates
+    prompt: Create orders for swaps, futures, or FRAs with tenor, direction, and notional.
+  create_orders_realestate:
+    agent: false
+    description: Transform RE trade list into OMS order messages.
+    name: create_orders_realestate
+    nodes_depended_on:
+    - rebalance_portfolio_realestate
+    nodes_dependent_on:
+    - execute_orders_realestate
+    prompt: Generate orders for REIT purchases/sales with ticker, side, and qty.
+  define_asset_classes:
+    agent: false
+    description: List all asset classes that the fund will trade.
+    name: define_asset_classes
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: State the core mission of the hedge fund in three concise bullet points,
-      covering investment ambition, market scope, and risk philosophy.
-  design_trading_system_template:
+    nodes_dependent_on:
+    - gather_strategies_per_class
+    prompt: 'Produce a bullet list of the asset classes to be covered: Equities, Fixed
+      Income, Foreign Exchange, Commodities, Rates, Crypto, Emerging Markets, Real
+      Estate, Derivatives.'
+  execute_orders_commodities:
     agent: false
-    description: Specifies the reusable blueprint for each asset‑class trading system.
-    name: design_trading_system_template
+    description: Send commodity orders to the commodity trading system and capture
+      execution reports.
+    name: execute_orders_commodities
     nodes_depended_on:
-    - list_target_asset_classes
-    nodes_dependent_on: []
-    prompt: 'Define a generic architecture for a trading system (data ingestion, signal
-      generation, order management, execution, post‑trade) that can be instantiated
-      for any asset class. Present as a 2‑column table: Component | Description.'
-  draft_capital_raising_plan:
+    - create_orders_commodities
+    nodes_dependent_on:
+    - capture_trade_confirmations_commodities
+    prompt: Submit each commodity order to the commodity EMS, record fill details.
+  execute_orders_crypto:
     agent: false
-    description: Plans the fundraising strategy.
-    name: draft_capital_raising_plan
+    description: Send crypto orders to the crypto trading system and capture execution
+      reports.
+    name: execute_orders_crypto
     nodes_depended_on:
-    - define_fund_mission
-    - list_target_asset_classes
-    - select_fund_jurisdiction
-    nodes_dependent_on: []
-    prompt: Outline a three‑phase capital raise (seed, strategic, open‑ended) with
-      target amounts, ideal investor types, and key milestones.
-  draft_firmwide_compliance_policy:
+    - create_orders_crypto
+    nodes_dependent_on:
+    - capture_trade_confirmations_crypto
+    prompt: Submit crypto orders to the designated exchange gateway, record fill data.
+  execute_orders_derivatives:
     agent: false
-    description: Establishes a global compliance framework.
-    name: draft_firmwide_compliance_policy
+    description: Send derivatives orders to the derivatives trading system and capture
+      execution reports.
+    name: execute_orders_derivatives
     nodes_depended_on:
-    - choose_fund_legal_structure
-    - select_fund_jurisdiction
-    nodes_dependent_on: []
-    prompt: Produce a compliance checklist mapping key regulatory obligations (e.g.,
-      SEC, FCA, MAS) to internal controls. List each obligation and the corresponding
-      control.
-  draft_firmwide_risk_policy:
+    - create_orders_derivatives
+    nodes_dependent_on:
+    - capture_trade_confirmations_derivatives
+    prompt: Route option/future orders to the derivatives EMS, capture fill data.
+  execute_orders_emergingmarkets:
     agent: false
-    description: Creates the top‑level risk governance document.
-    name: draft_firmwide_risk_policy
+    description: Send EM orders to the EM trading system and capture execution reports.
+    name: execute_orders_emergingmarkets
     nodes_depended_on:
-    - define_fund_mission
-    nodes_dependent_on: []
-    prompt: Write a concise firm‑wide risk policy covering VaR limits, stress‑test
-      frequency, liquidity buffers, and position concentration rules. Use bullet points
-      only.
-  enumerate_service_providers:
+    - create_orders_emergingmarkets
+    nodes_dependent_on:
+    - capture_trade_confirmations_emergingmarkets
+    prompt: Execute each EM trade via the EM EMS, capture fills.
+  execute_orders_equities:
     agent: false
-    description: Defines external service provider categories needed for operations.
-    name: enumerate_service_providers
+    description: Send equity orders to the dedicated equity trading system and capture
+      execution reports.
+    name: execute_orders_equities
     nodes_depended_on:
-    - choose_fund_legal_structure
-    nodes_dependent_on: []
-    prompt: Create a checklist of mandatory third‑party providers (prime broker, custodian,
-      fund administrator, auditor, legal counsel, compliance consultant, technology
-      vendor). Output only provider type names.
-  instantiate_trading_systems:
+    - create_orders_equities
+    nodes_dependent_on:
+    - capture_trade_confirmations_equities
+    prompt: Submit each equity order to the equity EMS, wait for execution fill, and
+      record price, qty, timestamp.
+  execute_orders_fixedincome:
     agent: false
-    description: Creates a dedicated trading system for each asset class.
-    name: instantiate_trading_systems
+    description: Send fixed‑income orders to the fixed‑income trading system and capture
+      execution reports.
+    name: execute_orders_fixedincome
     nodes_depended_on:
-    - design_trading_system_template
-    - list_target_asset_classes
-    - specify_global_markets
-    nodes_dependent_on: []
-    prompt: 'For each asset class code from the asset list, generate a concrete trading
-      system specification by filling the generic template. Include market‑specific
-      data sources and execution venues. Output a table: Asset Class | System Spec
-      (brief).'
-  integrate_compliance_monitoring:
+    - create_orders_fixedincome
+    nodes_dependent_on:
+    - capture_trade_confirmations_fixedincome
+    prompt: Route each bond/future order to the FI EMS, record fill details.
+  execute_orders_fx:
     agent: false
-    description: Implements firm‑wide compliance checks integrated with each trading
-      system.
-    name: integrate_compliance_monitoring
+    description: Send FX orders to the FX trading system and capture execution reports.
+    name: execute_orders_fx
     nodes_depended_on:
-    - draft_firmwide_compliance_policy
-    - instantiate_trading_systems
-    nodes_dependent_on: []
-    prompt: Create a compliance monitoring module that consumes trade and position
-      data from each asset‑class system and checks against the compliance checklist.
-      Provide a list of automated checks and escalation procedures.
-  list_target_asset_classes:
+    - create_orders_fx
+    nodes_dependent_on:
+    - capture_trade_confirmations_fx
+    prompt: Submit FX orders to the FX EMS, capture execution price, amount, and timestamp.
+  execute_orders_rates:
     agent: false
-    description: Creates the master list of tradable asset classes.
-    name: list_target_asset_classes
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: List every asset class the fund will trade (e.g., equities, fixed income,
-      FX, commodities, derivatives, crypto) and assign a short code for each.
-  produce_final_fund_blueprint:
-    agent: false
-    description: Generates the complete launch document for the multistrategy hedge
-      fund.
-    name: produce_final_fund_blueprint
+    description: Send rates orders to the rates trading system and capture execution
+      reports.
+    name: execute_orders_rates
     nodes_depended_on:
-    - choose_fund_legal_structure
-    - select_fund_jurisdiction
-    - enumerate_service_providers
-    - draft_firmwide_risk_policy
-    - draft_firmwide_compliance_policy
-    - instantiate_trading_systems
-    - build_firmwide_risk_engine
-    - integrate_compliance_monitoring
-    - assemble_operations_workflow
-    - create_fund_governance_chart
-    - draft_capital_raising_plan
-    nodes_dependent_on: []
-    prompt: Synthesize all prior outputs into a concise executive blueprint (≤500
-      words) covering strategy, legal structure, asset coverage, technology stack,
-      risk/compliance architecture, operations, governance, and capital plan. Use
-      headings and bullet points where appropriate.
-  select_fund_jurisdiction:
+    - create_orders_rates
+    nodes_dependent_on:
+    - capture_trade_confirmations_rates
+    prompt: Route swap/future orders to the rates EMS, capture execution information.
+  execute_orders_realestate:
     agent: false
-    description: Chooses the jurisdiction for registration.
-    name: select_fund_jurisdiction
+    description: Send RE orders to the RE trading system and capture execution reports.
+    name: execute_orders_realestate
     nodes_depended_on:
-    - define_fund_mission
-    nodes_dependent_on: []
-    prompt: Pick the optimal domicile (Cayman, Delaware, Luxembourg, etc.) for the
-      fund and list two regulatory pros and two cons.
-  specify_global_markets:
+    - create_orders_realestate
+    nodes_dependent_on:
+    - capture_trade_confirmations_realestate
+    prompt: Submit REIT orders to the RE EMS, record execution details.
+  gather_strategies_per_class:
     agent: false
-    description: Maps asset classes to the global markets they will be traded in.
-    name: specify_global_markets
-    nodes_depended_on: []
+    description: Identify the investment strategies that will feed each asset class
+      and assign a portfolio manager.
+    name: gather_strategies_per_class
+    nodes_depended_on:
+    - define_asset_classes
+    nodes_dependent_on:
+    - generate_alpha_equities
+    - generate_alpha_fixedincome
+    - generate_alpha_fx
+    - generate_alpha_commodities
+    - generate_alpha_rates
+    - generate_alpha_crypto
+    - generate_alpha_emergingmarkets
+    - generate_alpha_realestate
+    - generate_alpha_derivatives
+    prompt: For each asset class, list the active strategies (e.g., statistical arbitrage,
+      macro, long/short) and the name of the responsible portfolio manager.
+  generate_alpha_commodities:
+    agent: false
+    description: Produce commodities alpha signals.
+    name: generate_alpha_commodities
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_commodities
+    prompt: List commodity futures/physicals with expected price moves and allocation
+      suggestions.
+  generate_alpha_crypto:
+    agent: false
+    description: Produce crypto alpha signals.
+    name: generate_alpha_crypto
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_crypto
+    prompt: Output expected returns for major crypto assets and suggested position
+      sizes.
+  generate_alpha_derivatives:
+    agent: false
+    description: Produce derivatives (options/structured) alpha signals.
+    name: generate_alpha_derivatives
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_derivatives
+    prompt: List option strategies, strikes, expiries, and expected volatility‑adjusted
+      returns.
+  generate_alpha_emergingmarkets:
+    agent: false
+    description: Produce emerging‑market equity/sovereign alpha signals.
+    name: generate_alpha_emergingmarkets
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_emergingmarkets
+    prompt: Yield a list of EM securities with forecast returns and risk metrics.
+  generate_alpha_equities:
+    agent: false
+    description: Produce equity alpha signals from the assigned strategies.
+    name: generate_alpha_equities
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_equities
+    prompt: Run the equity models and output a ranked list of securities with expected
+      excess returns and confidence scores.
+  generate_alpha_fixedincome:
+    agent: false
+    description: Produce fixed‑income alpha signals.
+    name: generate_alpha_fixedincome
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_fixedincome
+    prompt: Generate expected return forecasts for bonds, credit spreads, and rates
+      along with suggested positions.
+  generate_alpha_fx:
+    agent: false
+    description: Produce FX alpha signals.
+    name: generate_alpha_fx
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_fx
+    prompt: Output currency pair forecasts, carry expectations and suggested notional
+      sizes.
+  generate_alpha_rates:
+    agent: false
+    description: Produce rates (interest‑rate) alpha signals.
+    name: generate_alpha_rates
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_rates
+    prompt: Provide curve positioning ideas, duration adjustments, and notional amounts.
+  generate_alpha_realestate:
+    agent: false
+    description: Produce real‑estate alpha signals.
+    name: generate_alpha_realestate
+    nodes_depended_on:
+    - gather_strategies_per_class
+    nodes_dependent_on:
+    - build_portfolio_realestate
+    prompt: Provide REITs or direct property exposure ideas with expected cash‑flow
+      upside.
+  generate_daily_reports:
+    agent: false
+    description: Produce end‑of‑day summary reports for portfolio managers, risk committee,
+      and regulators.
+    name: generate_daily_reports
+    nodes_depended_on:
+    - log_trade_flow
     nodes_dependent_on: []
-    prompt: Identify all geographic markets (e.g., US, EU, APAC, LATAM) the fund will
-      have access to, associating each market with the relevant asset classes from
-      the previous step.
+    prompt: 'Create three reports: (1) Portfolio Manager Daily P&L and Position Update
+      per asset class, (2) Risk Committee Risk Dashboard, (3) Compliance Summary.
+      Format as PDF summaries.'
+  log_trade_flow:
+    agent: false
+    description: Persist all trade, execution, risk, and compliance records to audit‑grade
+      logs.
+    name: log_trade_flow
+    nodes_depended_on:
+    - route_orders_to_trading_systems
+    nodes_dependent_on:
+    - generate_daily_reports
+    prompt: Write each trade‑level record, risk metric, and compliance outcome to
+      the central audit database with timestamps and identifiers.
+  perform_firmwide_compliance_checks:
+    agent: false
+    description: Run compliance rules across all trade and risk data at the firm level.
+    name: perform_firmwide_compliance_checks
+    nodes_depended_on:
+    - aggregate_risk_metrics
+    - perform_firmwide_risk_checks
+    nodes_dependent_on:
+    - route_orders_to_trading_systems
+    prompt: Execute compliance validation (regulatory, best‑execution, position limits,
+      prohibited instruments) using the aggregated data and produce a compliance clearance
+      report.
+  perform_firmwide_risk_checks:
+    agent: false
+    description: Validate that aggregated risk metrics stay within pre‑defined limits.
+    name: perform_firmwide_risk_checks
+    nodes_depended_on:
+    - aggregate_risk_metrics
+    nodes_dependent_on:
+    - perform_firmwide_compliance_checks
+    prompt: Compare each aggregated risk statistic (e.g., total VaR, max drawdown,
+      sector caps) against firm‑wide limits and flag breaches.
+  rebalance_portfolio_commodities:
+    agent: false
+    description: Calculate commodity trade list for rebalancing.
+    name: rebalance_portfolio_commodities
+    nodes_depended_on:
+    - build_portfolio_commodities
+    nodes_dependent_on:
+    - create_orders_commodities
+    prompt: Provide futures or physical trade quantities to reach target commodity
+      allocations.
+  rebalance_portfolio_crypto:
+    agent: false
+    description: Calculate crypto trade list for rebalancing.
+    name: rebalance_portfolio_crypto
+    nodes_depended_on:
+    - build_portfolio_crypto
+    nodes_dependent_on:
+    - create_orders_crypto
+    prompt: Provide buy/sell amounts for each crypto asset to meet target allocation.
+  rebalance_portfolio_derivatives:
+    agent: false
+    description: Calculate options/futures trade list for derivatives rebalancing.
+    name: rebalance_portfolio_derivatives
+    nodes_depended_on:
+    - build_portfolio_derivatives
+    nodes_dependent_on:
+    - create_orders_derivatives
+    prompt: Provide a list of option contracts, strikes, expiries and quantities required
+      to achieve target Greeks.
+  rebalance_portfolio_emergingmarkets:
+    agent: false
+    description: Calculate trade list for EM portfolio.
+    name: rebalance_portfolio_emergingmarkets
+    nodes_depended_on:
+    - build_portfolio_emergingmarkets
+    nodes_dependent_on:
+    - create_orders_emergingmarkets
+    prompt: Generate trade instructions for EM securities needed to reach target weights.
+  rebalance_portfolio_equities:
+    agent: false
+    description: Calculate trade list to move from current to target equity weights.
+    name: rebalance_portfolio_equities
+    nodes_depended_on:
+    - build_portfolio_equities
+    nodes_dependent_on:
+    - create_orders_equities
+    prompt: Compare current equity holdings to target weights and output a trade list
+      (buy/sell quantities) that achieves the target within rounding tolerances.
+  rebalance_portfolio_fixedincome:
+    agent: false
+    description: Calculate trade list for fixed‑income portfolio.
+    name: rebalance_portfolio_fixedincome
+    nodes_depended_on:
+    - build_portfolio_fixedincome
+    nodes_dependent_on:
+    - create_orders_fixedincome
+    prompt: Generate a buy/sell list of bonds or futures to align actual positions
+      with targets.
+  rebalance_portfolio_fx:
+    agent: false
+    description: Calculate FX trade list to achieve target currency exposure.
+    name: rebalance_portfolio_fx
+    nodes_depended_on:
+    - build_portfolio_fx
+    nodes_dependent_on:
+    - create_orders_fx
+    prompt: Output spot/forward trade sizes needed to hit the target currency matrix.
+  rebalance_portfolio_rates:
+    agent: false
+    description: Calculate trade list for rates exposure.
+    name: rebalance_portfolio_rates
+    nodes_depended_on:
+    - build_portfolio_rates
+    nodes_dependent_on:
+    - create_orders_rates
+    prompt: Output the necessary swaps, futures, or FRAs to align with target curve
+      positions.
+  rebalance_portfolio_realestate:
+    agent: false
+    description: Calculate RE trade list for rebalancing.
+    name: rebalance_portfolio_realestate
+    nodes_depended_on:
+    - build_portfolio_realestate
+    nodes_dependent_on:
+    - create_orders_realestate
+    prompt: Output purchase/sale actions for REITs or direct property exposures to
+      meet targets.
+  route_orders_to_trading_systems:
+    agent: false
+    description: Send cleared order batches to the designated single trading system
+      for each asset class.
+    name: route_orders_to_trading_systems
+    nodes_depended_on:
+    - perform_firmwide_compliance_checks
+    nodes_dependent_on:
+    - log_trade_flow
+    prompt: For each asset class, bundle the approved orders and forward them to its
+      dedicated trading system (e.g., EquityTS, FITS, FXTS, CommTS, RateTS, CryptoTS,
+      EMTS, REITS, DerivTS).
+  update_positions_commodities:
+    agent: false
+    description: Update the commodities position book with confirmed trades.
+    name: update_positions_commodities
+    nodes_depended_on:
+    - capture_trade_confirmations_commodities
+    nodes_dependent_on: []
+    prompt: Add commodity trade fills to the current commodity inventory.
+  update_positions_crypto:
+    agent: false
+    description: Update the crypto position book with confirmed trades.
+    name: update_positions_crypto
+    nodes_depended_on:
+    - capture_trade_confirmations_crypto
+    nodes_dependent_on: []
+    prompt: Integrate crypto trade fills into the crypto holdings snapshot.
+  update_positions_derivatives:
+    agent: false
+    description: Update the derivatives position book with confirmed trades.
+    name: update_positions_derivatives
+    nodes_depended_on:
+    - capture_trade_confirmations_derivatives
+    nodes_dependent_on: []
+    prompt: Apply option/future fill data to the derivatives exposure ledger.
+  update_positions_emergingmarkets:
+    agent: false
+    description: Update the EM position book with confirmed trades.
+    name: update_positions_emergingmarkets
+    nodes_depended_on:
+    - capture_trade_confirmations_emergingmarkets
+    nodes_dependent_on: []
+    prompt: Add EM trade fills to the EM portfolio holdings.
+  update_positions_equities:
+    agent: false
+    description: Update the equity position book with confirmed trades.
+    name: update_positions_equities
+    nodes_depended_on:
+    - capture_trade_confirmations_equities
+    nodes_dependent_on: []
+    prompt: Apply each equity trade record to the current holdings, producing an updated
+      position snapshot.
+  update_positions_fixedincome:
+    agent: false
+    description: Update the fixed‑income position book with confirmed trades.
+    name: update_positions_fixedincome
+    nodes_depended_on:
+    - capture_trade_confirmations_fixedincome
+    nodes_dependent_on: []
+    prompt: Apply bond/future trade records to existing holdings and generate an updated
+      FI position view.
+  update_positions_fx:
+    agent: false
+    description: Update the FX position book with confirmed trades.
+    name: update_positions_fx
+    nodes_depended_on:
+    - capture_trade_confirmations_fx
+    nodes_dependent_on: []
+    prompt: Incorporate each FX trade into the net currency exposure matrix.
+  update_positions_rates:
+    agent: false
+    description: Update the rates position book with confirmed trades.
+    name: update_positions_rates
+    nodes_depended_on:
+    - capture_trade_confirmations_rates
+    nodes_dependent_on: []
+    prompt: Apply swap/future fills to the rates exposure ledger.
+  update_positions_realestate:
+    agent: false
+    description: Update the RE position book with confirmed trades.
+    name: update_positions_realestate
+    nodes_depended_on:
+    - capture_trade_confirmations_realestate
+    nodes_dependent_on: []
+    prompt: Incorporate REIT trade fills into the RE holdings record.
