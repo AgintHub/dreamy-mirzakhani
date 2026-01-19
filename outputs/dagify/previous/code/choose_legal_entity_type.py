@@ -1,66 +1,62 @@
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class SelectJurisdictionOutput(BaseModel):
     """Pydantic model for select_jurisdiction node outputs."""
-    jurisdiction_name: str = (
-        Field(..., description="The chosen fund domicile name")
+    chosen_jurisdiction: str = (
+        Field(..., description="The selected jurisdiction for the fund (e.g., Cayman, Delaware, Luxembourg).")
+    )
+    advantages: str = (
+        Field(..., description="A list containing two advantages of the chosen jurisdiction.")
+    )
+    disadvantages: str = (
+        Field(..., description="A list containing two disadvantages of the chosen jurisdiction.")
     )
     rationale: str = (
-        Field(..., description="One sentence explanation for selecting this jurisdiction")
-    )
-    pros: List[str] = (
-        Field(..., description="Two key advantages of the chosen jurisdiction")
-    )
-    cons: List[str] = (
-        Field(..., description="Two key disadvantages or challenges of the chosen jurisdiction")
+        Field(..., description="The reasoning behind selecting this jurisdiction, including strategic, regulatory, and operational factors.")
     )
 
 
 class ChooseLegalEntityTypeOutput(BaseModel):
     """Pydantic model for choose_legal_entity_type node outputs."""
-    legal_entity_type: str = (
-        Field(..., description="The chosen legal entity type (e.g., LP, LLC, SICAV)")
+    selected_entity_type: str = (
+        Field(..., description="The selected legal vehicle structure for the fund's chosen jurisdiction.")
     )
-    rationale: str = (
-        Field(..., description="One-sentence explanation of why this structure suits the strategic goals")
+    entity_type_rationale: str = (
+        Field(..., description="A brief one-sentence explanation for the selected legal vehicle structure.")
     )
 
 
 def choose_legal_entity_type(select_jurisdiction_input: SelectJurisdictionOutput, **kwargs) -> ChooseLegalEntityTypeOutput:
     """
-    Executes the selection of a legal entity type based on the chosen
-    jurisdiction and provides a rationale for the choice.
+    Selects the legal entity form for the fund based on the selected
+    jurisdiction.
 
     Parameters
     ----------
-    jurisdiction_name : str
-        The name of the jurisdiction selected in the previous node.
-    rationale_for_jurisdiction : str
-        The rationale provided for choosing the jurisdiction.
+    selected_jurisdiction : str
+        The legal jurisdiction selected by the fund.
 
     Returns
     -------
-    dict
-        A dictionary containing the chosen legal entity type and the
-        rationale for the selection.
+    dict[str, str]
+        A dictionary containing the selected legal vehicle structure and its
+        brief explanation.
 
     Raises
     ------
     ValueError
-        If the jurisdiction name or rationale is empty.
+        If the input jurisdiction is invalid or unsupported.
 
     Examples
     --------
-    >>> choose_legal_entity_type(jurisdiction_name='Cayman Islands',
-    rationale_for_jurisdiction='Tax efficiency and minimal regulatory
-    oversight.')
-    {'legal_entity_type': 'LP', 'rationale': 'LP structure is suitable for the
-    Cayman Islands due to its flexibility and tax benefits.'}
+    >>> selected_jurisdiction = 'Cayman'
+    >>> chosen_entity = choose_legal_entity_type(selected_jurisdiction)
+    >>> print(chosen_entity)
+    {"selected_entity_type": 'LP', "entity_type_rationale": 'brief explanation'}
 
     """
     return ChooseLegalEntityTypeOutput(
-        legal_entity_type="",
-        rationale="",
+        selected_entity_type="",
+        entity_type_rationale="",
     )

@@ -22,7 +22,6 @@ from code.draft_operations_workflow import draft_operations_workflow
 from code.estimate_setup_and_operating_costs import estimate_setup_and_operating_costs
 from code.identify_regulatory_requirements import identify_regulatory_requirements
 from code.list_service_providers import list_service_providers
-from code.outline_governance_structure import outline_governance_structure
 from code.produce_final_fund_plan_summary import produce_final_fund_plan_summary
 from code.select_jurisdiction import select_jurisdiction
 from code.set_performance_and_risk_targets import set_performance_and_risk_targets
@@ -63,7 +62,6 @@ draft_operations_workflow_async = make_async(draft_operations_workflow)
 estimate_setup_and_operating_costs_async = make_async(estimate_setup_and_operating_costs)
 identify_regulatory_requirements_async = make_async(identify_regulatory_requirements)
 list_service_providers_async = make_async(list_service_providers)
-outline_governance_structure_async = make_async(outline_governance_structure)
 produce_final_fund_plan_summary_async = make_async(produce_final_fund_plan_summary)
 select_jurisdiction_async = make_async(select_jurisdiction)
 set_performance_and_risk_targets_async = make_async(set_performance_and_risk_targets)
@@ -88,11 +86,7 @@ async def run_workflow(user_input: str) -> Dict[str, Any]:
     # Run level 0 nodes in parallel
     results['clarify_fund_objectives'] = await run_clarify_fund_objectives()
 
-    # Level 1: define_investor_profile, choose_investment_strategy, select_jurisdiction
-    async def run_define_investor_profile():
-        # Call the async version of define_investor_profile with results from dependencies
-        return await define_investor_profile_async(results['clarify_fund_objectives'])
-
+    # Level 1: choose_investment_strategy, select_jurisdiction, define_investor_profile
     async def run_choose_investment_strategy():
         # Call the async version of choose_investment_strategy with results from dependencies
         return await choose_investment_strategy_async(results['clarify_fund_objectives'])
@@ -101,17 +95,17 @@ async def run_workflow(user_input: str) -> Dict[str, Any]:
         # Call the async version of select_jurisdiction with results from dependencies
         return await select_jurisdiction_async(results['clarify_fund_objectives'])
 
+    async def run_define_investor_profile():
+        # Call the async version of define_investor_profile with results from dependencies
+        return await define_investor_profile_async(results['clarify_fund_objectives'])
+
     # Run level 1 nodes in parallel
-    level_1_results = await asyncio.gather(run_define_investor_profile(), run_choose_investment_strategy(), run_select_jurisdiction())
-    results['define_investor_profile'] = level_1_results[0]
-    results['choose_investment_strategy'] = level_1_results[1]
-    results['select_jurisdiction'] = level_1_results[2]
+    level_1_results = await asyncio.gather(run_choose_investment_strategy(), run_select_jurisdiction(), run_define_investor_profile())
+    results['choose_investment_strategy'] = level_1_results[0]
+    results['select_jurisdiction'] = level_1_results[1]
+    results['define_investor_profile'] = level_1_results[2]
 
-    # Level 2: set_performance_and_risk_targets, define_asset_universe, choose_legal_entity_type
-    async def run_set_performance_and_risk_targets():
-        # Call the async version of set_performance_and_risk_targets with results from dependencies
-        return await set_performance_and_risk_targets_async(results['choose_investment_strategy'])
-
+    # Level 2: define_asset_universe, choose_legal_entity_type, list_service_providers, set_performance_and_risk_targets
     async def run_define_asset_universe():
         # Call the async version of define_asset_universe with results from dependencies
         return await define_asset_universe_async(results['choose_investment_strategy'])
@@ -120,37 +114,41 @@ async def run_workflow(user_input: str) -> Dict[str, Any]:
         # Call the async version of choose_legal_entity_type with results from dependencies
         return await choose_legal_entity_type_async(results['select_jurisdiction'])
 
-    # Run level 2 nodes in parallel
-    level_2_results = await asyncio.gather(run_set_performance_and_risk_targets(), run_define_asset_universe(), run_choose_legal_entity_type())
-    results['set_performance_and_risk_targets'] = level_2_results[0]
-    results['define_asset_universe'] = level_2_results[1]
-    results['choose_legal_entity_type'] = level_2_results[2]
+    async def run_list_service_providers():
+        # Call the async version of list_service_providers with results from dependencies
+        return await list_service_providers_async(results['select_jurisdiction'])
 
-    # Level 3: identify_regulatory_requirements, design_risk_management_framework, outline_governance_structure, list_service_providers
+    async def run_set_performance_and_risk_targets():
+        # Call the async version of set_performance_and_risk_targets with results from dependencies
+        return await set_performance_and_risk_targets_async(results['choose_investment_strategy'])
+
+    # Run level 2 nodes in parallel
+    level_2_results = await asyncio.gather(run_define_asset_universe(), run_choose_legal_entity_type(), run_list_service_providers(), run_set_performance_and_risk_targets())
+    results['define_asset_universe'] = level_2_results[0]
+    results['choose_legal_entity_type'] = level_2_results[1]
+    results['list_service_providers'] = level_2_results[2]
+    results['set_performance_and_risk_targets'] = level_2_results[3]
+
+    # Level 3: identify_regulatory_requirements, estimate_setup_and_operating_costs, design_risk_management_framework
     async def run_identify_regulatory_requirements():
         # Call the async version of identify_regulatory_requirements with results from dependencies
         return await identify_regulatory_requirements_async(results['choose_legal_entity_type'])
 
+    async def run_estimate_setup_and_operating_costs():
+        # Call the async version of estimate_setup_and_operating_costs with results from dependencies
+        return await estimate_setup_and_operating_costs_async(results['list_service_providers'])
+
     async def run_design_risk_management_framework():
         # Call the async version of design_risk_management_framework with results from dependencies
-        return await design_risk_management_framework_async(results['choose_investment_strategy'], results['set_performance_and_risk_targets'])
-
-    async def run_outline_governance_structure():
-        # Call the async version of outline_governance_structure with results from dependencies
-        return await outline_governance_structure_async(results['choose_legal_entity_type'])
-
-    async def run_list_service_providers():
-        # Call the async version of list_service_providers with results from dependencies
-        return await list_service_providers_async(results['choose_legal_entity_type'])
+        return await design_risk_management_framework_async(results['set_performance_and_risk_targets'])
 
     # Run level 3 nodes in parallel
-    level_3_results = await asyncio.gather(run_identify_regulatory_requirements(), run_design_risk_management_framework(), run_outline_governance_structure(), run_list_service_providers())
+    level_3_results = await asyncio.gather(run_identify_regulatory_requirements(), run_estimate_setup_and_operating_costs(), run_design_risk_management_framework())
     results['identify_regulatory_requirements'] = level_3_results[0]
-    results['design_risk_management_framework'] = level_3_results[1]
-    results['outline_governance_structure'] = level_3_results[2]
-    results['list_service_providers'] = level_3_results[3]
+    results['estimate_setup_and_operating_costs'] = level_3_results[1]
+    results['design_risk_management_framework'] = level_3_results[2]
 
-    # Level 4: design_compliance_program, draft_operations_workflow
+    # Level 4: design_compliance_program, draft_operations_workflow, draft_fee_structure
     async def run_design_compliance_program():
         # Call the async version of design_compliance_program with results from dependencies
         return await design_compliance_program_async(results['identify_regulatory_requirements'], results['design_risk_management_framework'])
@@ -159,63 +157,49 @@ async def run_workflow(user_input: str) -> Dict[str, Any]:
         # Call the async version of draft_operations_workflow with results from dependencies
         return await draft_operations_workflow_async(results['define_asset_universe'], results['list_service_providers'], results['design_risk_management_framework'])
 
-    # Run level 4 nodes in parallel
-    level_4_results = await asyncio.gather(run_design_compliance_program(), run_draft_operations_workflow())
-    results['design_compliance_program'] = level_4_results[0]
-    results['draft_operations_workflow'] = level_4_results[1]
-
-    # Level 5: define_technology_stack, create_hiring_plan
-    async def run_define_technology_stack():
-        # Call the async version of define_technology_stack with results from dependencies
-        return await define_technology_stack_async(results['draft_operations_workflow'])
-
-    async def run_create_hiring_plan():
-        # Call the async version of create_hiring_plan with results from dependencies
-        return await create_hiring_plan_async(results['draft_operations_workflow'], results['outline_governance_structure'])
-
-    # Run level 5 nodes in parallel
-    level_5_results = await asyncio.gather(run_define_technology_stack(), run_create_hiring_plan())
-    results['define_technology_stack'] = level_5_results[0]
-    results['create_hiring_plan'] = level_5_results[1]
-
-    # Level 6: estimate_setup_and_operating_costs
-    async def run_estimate_setup_and_operating_costs():
-        # Call the async version of estimate_setup_and_operating_costs with results from dependencies
-        return await estimate_setup_and_operating_costs_async(results['define_technology_stack'], results['list_service_providers'])
-
-    # Run level 6 nodes in parallel
-    results['estimate_setup_and_operating_costs'] = await run_estimate_setup_and_operating_costs()
-
-    # Level 7: draft_fee_structure
     async def run_draft_fee_structure():
         # Call the async version of draft_fee_structure with results from dependencies
         return await draft_fee_structure_async(results['set_performance_and_risk_targets'], results['estimate_setup_and_operating_costs'])
 
-    # Run level 7 nodes in parallel
-    results['draft_fee_structure'] = await run_draft_fee_structure()
+    # Run level 4 nodes in parallel
+    level_4_results = await asyncio.gather(run_design_compliance_program(), run_draft_operations_workflow(), run_draft_fee_structure())
+    results['design_compliance_program'] = level_4_results[0]
+    results['draft_operations_workflow'] = level_4_results[1]
+    results['draft_fee_structure'] = level_4_results[2]
 
-    # Level 8: compile_pitch_deck_outline
+    # Level 5: compile_pitch_deck_outline, create_hiring_plan, define_technology_stack
     async def run_compile_pitch_deck_outline():
         # Call the async version of compile_pitch_deck_outline with results from dependencies
-        return await compile_pitch_deck_outline_async(results['clarify_fund_objectives'], results['define_investor_profile'], results['choose_investment_strategy'], results['set_performance_and_risk_targets'], results['draft_fee_structure'], results['design_risk_management_framework'], results['outline_governance_structure'])
+        return await compile_pitch_deck_outline_async(results['clarify_fund_objectives'], results['define_investor_profile'], results['choose_investment_strategy'], results['set_performance_and_risk_targets'], results['draft_fee_structure'], results['design_risk_management_framework'])
 
-    # Run level 8 nodes in parallel
-    results['compile_pitch_deck_outline'] = await run_compile_pitch_deck_outline()
+    async def run_create_hiring_plan():
+        # Call the async version of create_hiring_plan with results from dependencies
+        return await create_hiring_plan_async(results['draft_operations_workflow'])
 
-    # Level 9: develop_timeline_and_milestones
+    async def run_define_technology_stack():
+        # Call the async version of define_technology_stack with results from dependencies
+        return await define_technology_stack_async(results['draft_operations_workflow'])
+
+    # Run level 5 nodes in parallel
+    level_5_results = await asyncio.gather(run_compile_pitch_deck_outline(), run_create_hiring_plan(), run_define_technology_stack())
+    results['compile_pitch_deck_outline'] = level_5_results[0]
+    results['create_hiring_plan'] = level_5_results[1]
+    results['define_technology_stack'] = level_5_results[2]
+
+    # Level 6: develop_timeline_and_milestones
     async def run_develop_timeline_and_milestones():
         # Call the async version of develop_timeline_and_milestones with results from dependencies
-        return await develop_timeline_and_milestones_async(results['compile_pitch_deck_outline'], results['draft_fee_structure'], results['estimate_setup_and_operating_costs'], results['create_hiring_plan'])
+        return await develop_timeline_and_milestones_async(results['draft_operations_workflow'], results['define_technology_stack'], results['create_hiring_plan'], results['compile_pitch_deck_outline'])
 
-    # Run level 9 nodes in parallel
+    # Run level 6 nodes in parallel
     results['develop_timeline_and_milestones'] = await run_develop_timeline_and_milestones()
 
-    # Level 10: produce_final_fund_plan_summary
+    # Level 7: produce_final_fund_plan_summary
     async def run_produce_final_fund_plan_summary():
         # Call the async version of produce_final_fund_plan_summary with results from dependencies
-        return await produce_final_fund_plan_summary_async(results['develop_timeline_and_milestones'], results['compile_pitch_deck_outline'], results['design_compliance_program'])
+        return await produce_final_fund_plan_summary_async(results['design_compliance_program'], results['compile_pitch_deck_outline'], results['develop_timeline_and_milestones'])
 
-    # Run level 10 nodes in parallel
+    # Run level 7 nodes in parallel
     results['produce_final_fund_plan_summary'] = await run_produce_final_fund_plan_summary()
 
     # Return all results

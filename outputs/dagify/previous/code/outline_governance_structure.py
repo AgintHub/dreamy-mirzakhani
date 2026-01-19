@@ -5,20 +5,28 @@ from typing import List
 class ChooseLegalEntityTypeOutput(BaseModel):
     """Pydantic model for choose_legal_entity_type node outputs."""
     legal_entity_type: str = (
-        Field(..., description="The chosen legal entity type (e.g., LP, LLC, SICAV)")
+        Field(..., description = (
+            "The chosen legal entity type (e.g., LP, LLC, SICAV)")
+        )
     )
     rationale: str = (
-        Field(..., description="One-sentence explanation of why this structure suits the strategic goals")
+        Field(..., description = (
+            "One-sentence explanation of why this structure suits the strategic goals")
+        )
     )
 
 
 class OutlineGovernanceStructureOutput(BaseModel):
     """Pydantic model for outline_governance_structure node outputs."""
     roles: List[str] = (
-        Field(..., description="List of the five leadership roles defined for the fund")
+        Field(..., description = (
+            "List of the five leadership roles defined for the fund")
+        )
     )
     duties: List[str] = (
-        Field(..., description="One-sentence duty description corresponding to each role in the same order as the roles list")
+        Field(..., description = (
+            "One-sentence duty description corresponding to each role in the same order as the roles list")
+        )
     )
 
 

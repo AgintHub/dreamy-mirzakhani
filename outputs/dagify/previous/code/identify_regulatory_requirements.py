@@ -1,69 +1,64 @@
 from pydantic import BaseModel, Field
+from typing import List
 
 
 class ChooseLegalEntityTypeOutput(BaseModel):
     """Pydantic model for choose_legal_entity_type node outputs."""
-    legal_entity_type: str = (
-        Field(..., description="The chosen legal entity type (e.g., LP, LLC, SICAV)")
+    selected_entity_type: str = (
+        Field(..., description="The selected legal vehicle structure for the fund's chosen jurisdiction.")
     )
-    rationale: str = (
-        Field(..., description="One-sentence explanation of why this structure suits the strategic goals")
+    entity_type_rationale: str = (
+        Field(..., description="A brief one-sentence explanation for the selected legal vehicle structure.")
     )
 
 
 class IdentifyRegulatoryRequirementsOutput(BaseModel):
     """Pydantic model for identify_regulatory_requirements node outputs."""
-    legal_entity_type: str = (
-        Field(..., description="The legal entity type selected for the fund (e.g., LP, LLC, SICAV).")
+    regulatory_requirements: List[str] = (
+        Field(..., description="List of principal regulatory filings or registrations required for the selected entity and jurisdiction.")
     )
-    regulatory_filings: str = (
-        Field(..., description="A list of 6 to 8 required regulatory filings or registrations applicable to the selected entity and jurisdiction.")
+    regulatory_authorities: List[str] = (
+        Field(..., description="List of governing authorities overseeing the filings and registrations.")
     )
 
 
 def identify_regulatory_requirements(choose_legal_entity_type_input: ChooseLegalEntityTypeOutput, **kwargs) -> IdentifyRegulatoryRequirementsOutput:
     """
-    Generate a list of mandatory regulatory filings for the selected legal
-    entity and jurisdiction.
+    Returns the regulatory filings and authorities required for the specified
+    legal entity type and jurisdiction.
 
     Parameters
     ----------
-    legal_entity_type : str
-        The legal entity type chosen for the hedge fund (e.g., LP, LLC,
-        SICAV).
+    entity_type : str
+        The selected legal entity type for the fund, such as LP, LLC, SICAV.
+    jurisdiction : str
+        The jurisdiction where the fund is established, e.g., Delaware,
+        Cayman, Luxembourg.
 
     Returns
     -------
-    Dict[str, Any]
-        A dictionary containing the legal entity type and a list of required
-        regulatory filings.
+    Dict[str, List[str]]
+        A dictionary containing two lists: regulatory requirements and
+        overseeing authorities.
 
     Raises
     ------
     ValueError
-        Raised if the input legal_entity_type is not one of the supported
-        types (LP, LLC, SICAV).
-    LookupError
-        Raised when the jurisdiction‑specific filing data for the given
-        entity type cannot be retrieved.
+        Raised if the entity type or jurisdiction is invalid or unsupported.
 
     Examples
     --------
-    >>> output = identify_regulatory_requirements('LLC')
-    >>> print(output['legal_entity_type'])
-    >>> print(output['regulatory_filings'])
-    "LLC\n[\n  'SEC Form 13D',\n  'SEC Form 13G',\n  'EFIS Filing',\n  'AIFM
-    Registration',\n  'FCA FCA 21',\n  'HMRC Fund Registration',\n  'EU UCITS
-    Directive',\n  'FINRA 24-13'\n]"
+    >>> identify_regulatory_requirements('LP', 'Delaware')
+    {regulatory_requirements: [Form D Filing, State Business License],
+    regulatory_authorities: [SEC, Delaware Division of Corporations]}
 
-    >>> output = identify_regulatory_requirements('SICAV')
-    >>> print(output['regulatory_filings'])
-    "[\n  'Luxembourg AIFMD Registration',\n  'Luxembourg Fund Law Filing',\n
-    'EU UCITS Directive',\n  'FCA FCA 21',\n  'SEC Form N-1A',\n  'SEC Form
-    13D',\n  'EFIS Filing',\n  'HMRC Fund Registration'\n]"
+    >>> identify_regulatory_requirements('SICAV', 'Luxembourg')
+    {regulatory_requirements: [LuxSE Authorization, COMEX Registration],
+    regulatory_authorities: [Luxembourg Financial Supervisory Authority,
+    Luxembourg Stock Exchange]}
 
     """
     return IdentifyRegulatoryRequirementsOutput(
-        legal_entity_type="",
-        regulatory_filings="",
+        regulatory_requirements=[],
+        regulatory_authorities=[],
     )
