@@ -18,6 +18,46 @@ nodes:
     - description: Whether the test case meets the success criteria
       key: success_criteria
       type: bool
+    prd:
+      conceptual_info: A specific test case with defined inputs and expected outcomes
+        is created.
+      docstring:
+        examples:
+        - lines:
+          - "\n                input_data = ['test1', 'test2', 'test3']\n        \
+            \        expected_output = [1, 2, 3]\n                success_criteria\
+            \ = True\n                "
+          - test_case_definition = define_test_case_1(input_data=input_data, expected_output=expected_output,
+            success_criteria=success_criteria)
+          output: '{\''input_data\'': \[''test1'', ''test2'', ''test3''\], \''expected_output\'':
+            [1, 2, 3], \''success_criteria\'': True}'
+        - lines:
+          - "\n                input_data = []\n                expected_output =\
+            \ []\n                success_criteria = False\n                "
+          - test_case_definition = define_test_case_1(input_data=input_data, expected_output=expected_output,
+            success_criteria=success_criteria)
+          output: '{\''input_data\'': [], \''expected_output\'': [], \''success_criteria\'':
+            False}'
+        parameters:
+        - description: List of input data items
+          name: input_data
+          type: List[str]
+        - description: List of expected output values
+          name: expected_output
+          type: List[int]
+        - description: Whether the test case meets the success criteria
+          name: success_criteria
+          type: bool
+        raises:
+        - description: If input_data is empty.
+          type: ValueError
+        returns:
+          description: A dictionary containing the defined test case's input, expected
+            output, and success criteria
+          type: '{''input_data'': List[str], ''expected_output'': List[int], ''success_criteria'':
+            bool}'
+        summary: Define a test case with input data, expected output, and success
+          criteria.
     prompt: 'Define a test case including: 1) input data 2) expected output 3) success
       criteria. Keep it focused and specific.'
   define_test_case_2:
@@ -33,10 +73,39 @@ nodes:
       type: str
     - description: Input values or data for the test case
       key: input_data
-      type: List[str]
+      type: str
     - description: Expected output based on the test case inputs
       key: expected_output
       type: str
+    prd:
+      conceptual_info: Define a specific test case with defined inputs and expected
+        outcomes, differing from test case 1.
+      docstring:
+        examples:
+        - lines:
+          - 'define_test_case_2({''test_case_name'': ''TestCase2'', ''input_data'':
+            [''input1'', ''input2''], ''expected_output'': ''output1''})'
+          output: '{"test_case_name": "TestCase2", "input_data": [''input1'', ''input2''],
+            "expected_output": "output1"}'
+        - lines:
+          - 'define_test_case_2({''test_case_name'': ''TestCase3'', ''input_data'':
+            [''input3'', ''input4''], ''expected_output'': ''output2''})'
+          output: '{"test_case_name": "TestCase3", "input_data": [''input3'', ''input4''],
+            "expected_output": "output2"}'
+        parameters:
+        - description: Dictionary containing input data and expected output for the
+            test case
+          name: test_case_inputs
+          type: dict
+        raises:
+        - description: If inputs are missing or invalid
+          type: ValueError
+        returns:
+          description: Dictionary containing the defined test case, {'test_case_name',
+            'input_data', 'expected_output'}
+          type: dict
+        summary: Define a specific test case with defined inputs and expected outcomes,
+          differing from test case 1.
     prompt: 'Define a distinct test case including: 1) input data 2) expected output
       3) success criteria. Must differ from test case 1.'
   execute_test_case_1:
@@ -83,6 +152,34 @@ nodes:
     - description: Notes from the verifier regarding the test case results
       key: verifier_notes
       type: str
+    prd:
+      conceptual_info: This node runs the second test case in the prepared environment,
+        recording actual outputs and behaviors.
+      docstring:
+        examples:
+        - lines:
+          - inputs_tested = 'test_input_1, test_input_2'
+          - actual_outputs = execute_test_case_2(inputs_tested)
+          - print(actual_outputs)
+          output: '{"test_case_name": ''test_case_2'', ''inputs_tested'': ''test_input_1,
+            test_input_2'', ''actual_outputs'': ''expected_output'', ''pass_fail_status'':
+            True, ''verifier_notes'': ''Test passed''}'
+        - lines:
+          - inputs_tested = 'test_input_3, test_input_4'
+          - actual_outputs = execute_test_case_2(inputs_tested)
+          - print(actual_outputs)
+          output: '{"test_case_name": ''test_case_2'', ''inputs_tested'': ''test_input_3,
+            test_input_4'', ''actual_outputs'': ''expected_output'', ''pass_fail_status'':
+            False, ''verifier_notes'': ''Test failed''}'
+        parameters: []
+        raises:
+        - description: If the test case inputs are invalid
+          type: ValueError
+        returns:
+          description: Dict with keys 'test_case_name', 'inputs_tested', 'actual_outputs',
+            'pass_fail_status', and 'verifier_notes'
+          type: dict
+        summary: Run the second test case in the prepared environment.
     prompt: Execute the second test case using the defined inputs in the prepared
       environment. Record all actual outputs and behaviors.
   generate_test_report:
@@ -113,6 +210,51 @@ nodes:
     - description: Key verification notes for the test case
       key: key_verification_notes
       type: str
+    prd:
+      conceptual_info: This node is responsible for creating a summary report that
+        contains information about test case execution and verification results.
+      docstring:
+        examples:
+        - lines:
+          - 'generate_test_report(test_case_1_results={''passed'': True, ''data'':
+            {''input'': ''123'', ''expected'': ''456''}}, test_case_2_results={''passed'':
+            False, ''data'': {''input'': ''789'', ''expected'': ''101''}})'
+          - 'print(generate_test_report(test_case_1_results={''passed'': True, ''data'':
+            {''input'': ''123'', ''expected'': ''456''}}, test_case_2_results={''passed'':
+            False, ''data'': {''input'': ''789'', ''expected'': ''101''}}))'
+          - '{'
+          output: '{''test_case_name'': ''Case1'', ''input_data'': ''123'', ''expected_output'':
+            ''456'', ''actual_output'': ''456'', ''pass_fail_status'': ''pass'', ''key_verification_notes'':
+            ''no notes''}'
+        - lines:
+          - 'generate_test_report(test_case_1_results={''passed'': False, ''data'':
+            {''input'': ''123'', ''expected'': ''456''}}, test_case_2_results={''passed'':
+            False, ''data'': {''input'': ''789'', ''expected'': ''101''}})'
+          - 'print(generate_test_report(test_case_1_results={''passed'': False, ''data'':
+            {''input'': ''123'', ''expected'': ''456''}}, test_case_2_results={''passed'':
+            False, ''data'': {''input'': ''789'', ''expected'': ''101''}}))'
+          - '{'
+          output: '{''test_case_name'': ''Case1'', ''input_data'': ''123'', ''expected_output'':
+            ''456'', ''actual_output'': ''abc'', ''pass_fail_status'': ''fail'', ''key_verification_notes'':
+            ''notes''}'
+        parameters:
+        - description: Results of the first test case
+          name: test_case_1_results
+          type: dict
+        - description: Results of the second test case
+          name: test_case_2_results
+          type: dict
+        raises:
+        - description: Raised if input results are invalid
+          type: ValueError
+        returns:
+          description: "\n              A dictionary containing information about\
+            \ each test case, including:\n              - test_case_name\n       \
+            \       - input_data\n              - expected_output\n              -\
+            \ actual_output\n              - pass_fail_status\n              - key_verification_notes\n\
+            \            "
+          type: dict
+        summary: Create a summary report of test execution and verification results
     prompt: 'Compile a summary report showing: 1) each test case name 2) inputs tested
       3) pass/fail status 4) key verification notes'
   setup_test_environment:
@@ -144,11 +286,38 @@ nodes:
     - description: List of discrepancy descriptions found during validation. Empty
         if no discrepancies.
       key: discrepancies
-      type: List[str]
+      type: str
     - description: Indicates whether the test results matched the expected outcomes
         without discrepancies.
       key: test_passed
       type: bool
+    prd:
+      conceptual_info: Validates test case results against expected outcomes.
+      docstring:
+        examples:
+        - lines:
+          - 'test_case_result = {''actual_outputs'': [''output1'', ''output2''], ''test_case_result'':
+            ''pass''}'
+          - discrepancies, test_passed = verify_test_results_1(test_case_result)
+          output: 'discrepancies: [], test_passed: True'
+        - lines:
+          - 'test_case_result = {''actual_outputs'': [''output1'', ''output2''], ''test_case_result'':
+            ''fail''}'
+          - discrepancies, test_passed = verify_test_results_1(test_case_result)
+          output: 'discrepancies: [''Actual output does not match expected output'']'
+        parameters:
+        - description: Output from the execute_test_case_1 node, including actual
+            outputs and test results.
+          name: test_case_result
+          type: dict
+        raises:
+        - description: Raised if the test case result is invalid or missing.
+          type: ValueError
+        returns:
+          description: A dictionary containing the results of the validation, including
+            any discrepancies found and whether the test passed.
+          type: Dict[str, Any]
+        summary: Validate the first test's actual outputs against expected outcomes.
     prompt: Compare recorded test outputs against expected results from the test case
       definition. Note any discrepancies.
   verify_test_results_2:
@@ -174,5 +343,41 @@ nodes:
     - description: Whether the test case passed or not
       key: pass_status
       type: bool
+    prd:
+      conceptual_info: This node validates the second test's actual outputs against
+        expected outcomes and returns a pass status based on the comparison.
+      docstring:
+        examples:
+        - lines:
+          - actual_outputs = ['output1', 'output2', 'output3']
+          - expected_outputs = ['output1', 'output2', 'output3']
+          - verify_test_results_2(actual_outputs, expected_outputs)
+          output: '{''test_case_name'': ''test_case_name'', ''actual_outputs'': [''output1'',
+            ''output2'', ''output3''], ''expected_outputs'': [''output1'', ''output2'',
+            ''output3''], ''discrepancies'': [], ''pass_status'': True}'
+        - lines:
+          - actual_outputs = ['output1', 'output2', 'output4']
+          - expected_outputs = ['output1', 'output2', 'output3']
+          - verify_test_results_2(actual_outputs, expected_outputs)
+          output: '{''test_case_name'': ''test_case_name'', ''actual_outputs'': [''output1'',
+            ''output2'', ''output4''], ''expected_outputs'': [''output1'', ''output2'',
+            ''output3''], ''discrepancies'': [''output4 does not match expected output
+            3''], ''pass_status'': False}'
+        parameters:
+        - description: List of actual outputs obtained from the second test case execution
+          name: actual_outputs
+          type: List[str]
+        - description: List of expected outputs from the second test case definition
+          name: expected_outputs
+          type: List[str]
+        raises:
+        - description: If the actual outputs and expected outputs have different lengths
+          type: ValueError
+        returns:
+          description: A dictionary with the test case name, actual outputs, expected
+            outputs, discrepancies, and pass status.
+          type: Dict[str, object]
+        summary: Verify test results against expected outcomes for the second test
+          case.
     prompt: Compare recorded test outputs against expected results from the second
       test case definition. Note any discrepancies.
