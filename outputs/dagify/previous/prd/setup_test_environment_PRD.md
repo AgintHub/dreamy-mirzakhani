@@ -6,28 +6,21 @@ Prepare testing infrastructure and dependencies
 
 ## Conceptual Info
 
-This node prepares the testing infrastructure and dependencies required for executing tests.
+Prepare the testing infrastructure and dependencies by listing the required hardware/software specs, test data sets, and mock services.
 
 ## Docstring
 
 ### Summary
-Prepares the test environment by determining necessary hardware and software specifications, test data sets, and mock services.
-
-### Parameters
-
-- **test_scope** (dict): Test scope parameters from the plan_test_scope node, including test objectives, core functionality requirements, edge case requirements, and performance requirements.
+Prepare the testing environment based on the plan test scope.
 
 ### Returns
 
-dict: A dictionary containing hardware specifications, software specifications, test data sets, mock services, and environment status.
-
-### Raises
-
-- Exception: If there is an issue determining the environment requirements.
+dict: A dictionary containing the environment requirements and status.
 
 ### Examples
 
 ```python
->>> setup_test_environment(plan_test_scope=["Test Objective 1", "Test Objective 2"])
-{'hardware_specs': ['Spec 1', 'Spec 2'], 'software_specs': ['Spec 3', 'Spec 4'], 'test_data_sets': ['Data Set 1', 'Data Set 2'], 'mock_services': ['Service 1', 'Service 2'], 'environment_status': True}
+>>> setup_test_environment(plan_test_scope)
+>>> print(setup_test_environment(plan_test_scope)['environment_status'])
+True
 ```
