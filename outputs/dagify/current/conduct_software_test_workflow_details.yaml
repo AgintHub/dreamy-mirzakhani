@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A concurrent, parallelized workflow for executing a comprehensive software
-  testing cycle across multiple test types, ensuring defect identification and validation
+dag_type: typed
+description: Generated workflow from UI.
 name: conduct_software_test_workflow
 nodes:
   analyze_integration_test_results:
@@ -9,8 +8,21 @@ nodes:
     name: analyze_integration_test_results
     nodes_depended_on:
     - run_integration_tests
-    nodes_dependent_on:
-    - report_defects
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of interface failure descriptions, each detailing the component
+        pair, data exchange issues, and contract violations if any.
+      key: interface_failures
+      type: List[str]
+    - description: List of component pairs involved in failures.
+      key: component_pairs
+      type: List[str]
+    - description: List of data exchange problems identified during testing.
+      key: data_exchange_issues
+      type: List[str]
+    - description: List of descriptions of contract violations if any occurred.
+      key: contract_violations
+      type: List[str]
     prompt: 'List interface failures with: 1) Component pair, 2) Data exchange issues,
       3) Contract violation details (if applicable).'
   analyze_regression_test_results:
@@ -19,8 +31,20 @@ nodes:
     name: analyze_regression_test_results
     nodes_depended_on:
     - run_regression_tests
-    nodes_dependent_on:
-    - report_defects
+    nodes_dependent_on: []
+    output_structure:
+    - description: Name of the feature with regression anomalies
+      key: feature_name
+      type: str
+    - description: Description of the before/after state comparison of the regressions
+      key: before_after_state_comparison
+      type: str
+    - description: Estimated impact severity of the regression as an integer value
+      key: impact_severity_estimation
+      type: int
+    - description: Summary of the regression issues encountered
+      key: regression_summary
+      type: str
     prompt: 'List all regression anomalies with: 1) Feature name, 2) Before/after
       state comparison, 3) Impact severity estimation.'
   analyze_unit_test_results:
@@ -29,8 +53,26 @@ nodes:
     name: analyze_unit_test_results
     nodes_depended_on:
     - run_unit_tests
-    nodes_dependent_on:
-    - report_defects
+    nodes_dependent_on: []
+    output_structure:
+    - description: The name of the test case that failed
+      key: test_case_name
+      type: str
+    - description: The actual output of the test case that failed
+      key: actual_output
+      type: str
+    - description: A suggested root cause of the failure from an implementation perspective
+      key: suggested_root_cause
+      type: str
+    - description: The type of test that failed
+      key: test_type
+      type: str
+    - description: A list of test cases that passed
+      key: passed_tests
+      type: List[str]
+    - description: A list of test cases that failed
+      key: failed_tests
+      type: List[str]
     prompt: 'List all test failues with: 1) Test case name, 2) Actual output, 3) Suggested
       root cause from implementation perspective.'
   design_integration_test_cases:
@@ -39,8 +81,20 @@ nodes:
     name: design_integration_test_cases
     nodes_depended_on:
     - plan_test_scope
-    nodes_dependent_on:
-    - run_integration_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of component pairs for integration test cases
+      key: component_pairs
+      type: List[str]
+    - description: List of data flow paths for integration test cases
+      key: data_flow_paths
+      type: List[str]
+    - description: List of dependency validations for integration test cases
+      key: dependency_validations
+      type: List[str]
+    - description: List of integration test scenarios
+      key: integration_test_scenarios
+      type: List[str]
     prompt: 'Generate 4-6 integration test scenarios with: 1) Component pairs, 2)
       Data flow paths, 3) Dependency validations.'
   design_regression_test_cases:
@@ -49,8 +103,18 @@ nodes:
     name: design_regression_test_cases
     nodes_depended_on:
     - plan_test_scope
-    nodes_dependent_on:
-    - run_regression_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of high-risk features targeted by regression test scenarios
+      key: high_risk_features
+      type: List[str]
+    - description: Setup instructions for each regression test scenario
+      key: precondition_setup
+      type: List[str]
+    - description: Description of expected state preservation for each regression
+        test scenario
+      key: expected_state_preservation
+      type: List[str]
     prompt: Generate 3-5 regression test scenarios targeting high-risk features with
       1) Precondition setup, 2) Expected state preservation.
   design_unit_test_cases:
@@ -59,8 +123,17 @@ nodes:
     name: design_unit_test_cases
     nodes_depended_on:
     - plan_test_scope
-    nodes_dependent_on:
-    - run_unit_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the test case
+      key: test_id
+      type: str
+    - description: List of input parameters required for the test case
+      key: input_parameters
+      type: List[str]
+    - description: Expected output values for the test case
+      key: expected_output
+      type: List[str]
     prompt: 'Generate 5-8 unit test case templates with: 1) Test ID, 2) Input parameters,
       3) Expected output, focusing on core functional components.'
   generate_test_report:
@@ -69,8 +142,23 @@ nodes:
     name: generate_test_report
     nodes_depended_on:
     - report_defects
-    nodes_dependent_on:
-    - sign_off_test_cycle
+    nodes_dependent_on: []
+    output_structure:
+    - description: Total number of tests executed
+      key: total_tests_executed
+      type: int
+    - description: Number of tests that passed
+      key: pass_count
+      type: int
+    - description: Number of tests that failed
+      key: fail_count
+      type: int
+    - description: Defect density metric
+      key: defect_density
+      type: float
+    - description: Risk assessment rating (1-10)
+      key: risk_assessment_rating
+      type: int
     prompt: 'Produce test summary with metrics: total tests executed, pass/fail counts,
       defect density, and risk assessment rating (1-10).'
   plan_test_scope:
@@ -78,10 +166,20 @@ nodes:
     description: Define test objectives and coverage requirements
     name: plan_test_scope
     nodes_depended_on: []
-    nodes_dependent_on:
-    - design_unit_test_cases
-    - design_integration_test_cases
-    - design_regression_test_cases
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of high-level test objectives
+      key: test_objectives
+      type: List[str]
+    - description: List of core functionality requirements
+      key: core_functionality_requirements
+      type: List[str]
+    - description: List of edge case requirements
+      key: edge_case_requirements
+      type: List[str]
+    - description: List of performance requirements
+      key: performance_requirements
+      type: List[str]
     prompt: List 3-5 high-level test objectives for the software under test. Include
       core functionality, edge cases, and performance requirements in bullet points.
   report_defects:
@@ -92,8 +190,23 @@ nodes:
     - analyze_unit_test_results
     - analyze_integration_test_results
     - analyze_regression_test_results
-    nodes_dependent_on:
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: Type of test (unit/integration/regression)
+      key: test_type
+      type: str
+    - description: Component information (if applicable)
+      key: component_info
+      type: str
+    - description: Description of the defect
+      key: description
+      type: str
+    - description: Severity level of the defect (e.g. high, medium, low)
+      key: severity
+      type: str
+    - description: Steps to reproduce the defect
+      key: reproduction_steps
+      type: str
     prompt: 'Create defect summary table with columns: Test Type | Component | Description
       | Severity | Reproduction Steps.'
   run_integration_tests:
@@ -103,8 +216,17 @@ nodes:
     nodes_depended_on:
     - design_integration_test_cases
     - setup_test_environment
-    nodes_dependent_on:
-    - analyze_integration_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Logs of communication during each test scenario
+      key: communication_logs
+      type: List[str]
+    - description: Validation outcomes for each interface per test step
+      key: interface_validation_results
+      type: List[str]
+    - description: Identifiers for each executed test scenario
+      key: test_scenario_ids
+      type: List[str]
     prompt: 'Execute integration test scenarios and document: 1) Communication logs,
       2) Interface validation outcomes per test step.'
   run_regression_tests:
@@ -114,19 +236,37 @@ nodes:
     nodes_depended_on:
     - design_regression_test_cases
     - setup_test_environment
-    nodes_dependent_on:
-    - analyze_regression_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of baseline vs actual results
+      key: baseline_vs_actual_results
+      type: List[str]
+    - description: List of state drift indicators
+      key: state_drift_indicators
+      type: List[str]
+    - description: List of performance metrics
+      key: performance_metrics
+      type: List[str]
     prompt: 'Execute regression scenarios and record: 1) Baseline vs actual results,
       2) State drift indicators, 3) Performance metrics.'
   run_unit_tests:
     agent: false
-    description: Execute module-level test cases
+    description: Execute module-level test cases.
     name: run_unit_tests
     nodes_depended_on:
     - design_unit_test_cases
     - setup_test_environment
-    nodes_dependent_on:
-    - analyze_unit_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Pass/fail status of each test case
+      key: test_execution_status
+      type: bool
+    - description: Difference between actual and expected output of each test case
+      key: actual_output_vs_expected_output
+      type: str
+    - description: Timestamps for each test execution
+      key: test_case_timestamps
+      type: List[str]
     prompt: 'Execute unit test cases and record: 1) Pass/fail status, 2) Actual output
       vs expected output, 3) Timestamp per test execution.'
   setup_test_environment:
@@ -135,10 +275,23 @@ nodes:
     name: setup_test_environment
     nodes_depended_on:
     - plan_test_scope
-    nodes_dependent_on:
-    - run_unit_tests
-    - run_integration_tests
-    - run_regression_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: List of hardware specifications required for testing
+      key: hardware_specs
+      type: str
+    - description: List of software specifications required for testing
+      key: software_specs
+      type: str
+    - description: List of test data sets required for testing
+      key: test_data_sets
+      type: str
+    - description: List of mock services required for testing
+      key: mock_services
+      type: str
+    - description: Whether the test environment has been successfully set up
+      key: environment_status
+      type: bool
     prompt: 'List 3-5 environment requirements: hardware/software specs, test data
       sets, mock services needed for testing.'
   sign_off_test_cycle:
@@ -148,5 +301,19 @@ nodes:
     nodes_depended_on:
     - generate_test_report
     nodes_dependent_on: []
+    output_structure:
+    - description: Validation status of the test cycle
+      key: validation_status
+      type: str
+    - description: Residual risk acceptance statement from the product owner
+      key: residual_risk_acceptance_statement
+      type: str
+    - description: Validation status of the test cycle as signed off by the QA lead
+      key: qa_lead_validation_status
+      type: str
+    - description: List of completion metrics for the test cycle, such as pass/fail
+        counts, defect density, and risk assessment rating
+      key: test_cycle_completion_metrics
+      type: List[str]
     prompt: 'Confirm test cycle completion with: 1) Approved sign-off by QA lead,
       2) Residual risk acceptance statement from product owner.'
