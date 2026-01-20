@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A workflow to develop a quantitative trading strategy including data
-  processing, model design, backtesting, optimization, and deployment planning.
+dag_type: typed
+description: Generated workflow from UI.
 name: build_quant_trading_strategy
 nodes:
   calculate_performance_metrics:
@@ -10,6 +9,55 @@ nodes:
     nodes_depended_on:
     - execute_backtesting
     nodes_dependent_on: []
+    output_structure:
+    - description: Compound Annual Growth Rate (CAGR) of the strategy
+      key: cagr
+      type: float
+    - description: Sharpe ratio of the strategy (risk-adjusted return measure)
+      key: sharpe_ratio
+      type: float
+    - description: Maximum drawdown (peak-to-trough decline during the period)
+      key: max_drawdown
+      type: float
+    - description: Proportion of profitable trades (value between 0 and 1)
+      key: win_rate
+      type: float
+    - description: Ulcer index (measure of downside risk and drawdown severity)
+      key: ulcer_index
+      type: float
+    - description: Calmar ratio (annualized return divided by max drawdown)
+      key: calmar_ratio
+      type: float
+    - description: Benchmark CAGR for comparison
+      key: cagr_benchmark
+      type: float
+    - description: Benchmark Sharpe ratio for comparison
+      key: sharpe_benchmark
+      type: float
+    - description: Benchmark maximum drawdown for comparison
+      key: drawdown_benchmark
+      type: float
+    - description: Benchmark Ulcer index for comparison
+      key: ulcer_benchmark
+      type: float
+    - description: Benchmark Calmar ratio for comparison
+      key: calmar_benchmark
+      type: float
+    - description: Whether strategy CAGR exceeds benchmark CAGR
+      key: cagr_outperforms_benchmark
+      type: bool
+    - description: Whether strategy Sharpe ratio exceeds benchmark Sharpe ratio
+      key: sharpe_better_benchmark
+      type: bool
+    - description: Whether strategy max drawdown is lower than benchmark drawdown
+      key: drawdown_better_benchmark
+      type: bool
+    - description: Whether strategy Ulcer index is lower than benchmark Ulcer index
+      key: ulcer_better_benchmark
+      type: bool
+    - description: Whether strategy Calmar ratio exceeds benchmark Calmar ratio
+      key: calmar_better_benchmark
+      type: bool
     prompt: Compute full performance report (CAGR, Sharpe ratio, max drawdown, win
       rate) and risk-adjusted metrics (Ulcer index, Calmar ratio). Include benchmark
       comparisons.
@@ -20,6 +68,14 @@ nodes:
     nodes_depended_on:
     - define_strategy_objectives
     nodes_dependent_on: []
+    output_structure:
+    - description: Selected primary strategy category (market neutral, statistical
+        arbitrage, momentum, mean reversion, trend following)
+      key: strategy_type
+      type: str
+    - description: One-sentence explanation linking strategy choice to defined objectives
+      key: rationale
+      type: str
     prompt: Select one primary strategy type (market neutral, statistical arbitrage,
       momentum, mean reversion, trend following). Provide one-sentence rationale linking
       to objectives.
@@ -30,8 +86,26 @@ nodes:
     nodes_depended_on:
     - retrieve_fundamental_data
     nodes_dependent_on: []
+    output_structure:
+    - description: Whether fundamental data standardization was completed successfully
+      key: success
+      type: bool
+    - description: List of standardized financial metrics (e.g. 'earnings', 'revenues',
+        'EPS')
+      key: standardized_metrics
+      type: List[str]
+    - description: List of source platforms (Bloomberg/Yahoo Finance)
+      key: data_sources
+      type: List[str]
+    - description: List of standardized reporting periods (e.g. 'Q1-2018', 'Q2-2018')
+      key: adjusted_reporting_periods
+      type: List[str]
+    - description: Number of companies in the cleansed dataset
+      key: company_count
+      type: int
     prompt: Reconcile differing reporting standards across 50 companies. Transform
-      earnings, revenues, EPS into consistent units and reporting periods.
+      earnings, revenues, EPS into consistent units and reporting periods. Return
+      cleaned dataset with adjusted prices and continuous time intervals.
   clean_price_data:
     agent: false
     description: Standardize pricing dataset
@@ -39,6 +113,26 @@ nodes:
     nodes_depended_on:
     - retrieve_historical_price_data
     nodes_dependent_on: []
+    output_structure:
+    - description: List of 50 instrument symbols/IDs processed
+      key: instruments
+      type: List[str]
+    - description: List of continuous time intervals in ISO format after cleaning
+        (e.g., ['2015-01-01T00:00:00Z', '2023-12-31T00:00:00Z'])
+      key: timestamp_intervals
+      type: List[str]
+    - description: Count of missing values resolved for each instrument
+      key: missing_values_handled
+      type: List[int]
+    - description: Count of duplicate entries removed for each instrument
+      key: duplicates_removed
+      type: List[int]
+    - description: Count of price discontinuities corrected for each instrument
+      key: price_jumps_adjusted
+      type: List[int]
+    - description: Boolean indicator if all time intervals are now uniformly continuous
+      key: is_time_continuous
+      type: bool
     prompt: Identify and resolve missing values, duplicates, and jumps in 50 instrument
       price time series. Return cleaned dataset with adjusted prices and continuous
       time intervals.
@@ -50,6 +144,27 @@ nodes:
     - optimize_parameters
     - choose_strategy_type
     nodes_dependent_on: []
+    output_structure:
+    - description: Textual description of the algorithm for determining position size
+        per trade
+      key: position_sizing_rule
+      type: str
+    - description: Maximum capital exposure allowed per instrument, expressed as a
+        proportion (e.g., 0.02 for 2%)
+      key: max_exposure_per_instrument
+      type: float
+    - description: Portfolio drawdown percentage at which trading halts are triggered
+        (e.g., 0.15 for 15%)
+      key: drawdown_threshold
+      type: float
+    - description: Maximum daily profit or loss in monetary terms that the strategy
+        can reach before it stops trading
+      key: daily_pnl_limit
+      type: float
+    - description: Description of a fifth risk control such as volatility‑based sizing
+        or stop‑loss rule
+      key: additional_control_rule
+      type: str
     prompt: Design 5 risk management controls including position sizing, maximum exposure
       per instrument, drawdown-based trading halts, and daily P&L limits.
   define_strategy_objectives:
@@ -58,6 +173,23 @@ nodes:
     name: define_strategy_objectives
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: Target annual return expressed as a percentage
+      key: annual_return_target_percentage
+      type: float
+    - description: Maximum acceptable risk or drawdown expressed as a percentage
+      key: maximum_risk_tolerance_percentage
+      type: float
+    - description: List of asset classes included in the strategy (e.g. equities,
+        bonds, commodities)
+      key: target_asset_classes
+      type: List[str]
+    - description: Expected number of trades or signals generated per month
+      key: trading_frequency_per_month
+      type: int
+    - description: Any other specific investment goals or constraints
+      key: additional_investment_goals
+      type: List[str]
     prompt: Define 3-5 specific investment goals (e.g. annual return target, risk
       constraints, asset classes, trading frequency). Focus only on objectives, not
       implementation details.
@@ -68,6 +200,19 @@ nodes:
     nodes_depended_on:
     - choose_strategy_type
     nodes_dependent_on: []
+    output_structure:
+    - description: Names of the 5 core strategy parameters
+      key: parameter_names
+      type: List[str]
+    - description: Mathematical expressions defining each parameter
+      key: parameter_expressions
+      type: List[str]
+    - description: Minimum exploration bounds for each parameter
+      key: parameter_min_values
+      type: List[float]
+    - description: Maximum exploration bounds for each parameter
+      key: parameter_max_values
+      type: List[float]
     prompt: Define 5 core parameters and their mathematical expressions (e.g. MACD
       periods, volatility decay model, factor weights). Specify parameter ranges for
       exploration.
@@ -79,6 +224,27 @@ nodes:
     - choose_strategy_type
     - define_strategy_parameters
     nodes_dependent_on: []
+    output_structure:
+    - description: Number of signal generation equations formulated
+      key: equation_count
+      type: int
+    - description: List of mathematical equations generating 0-1 signals; each equation
+        is expressed in standard mathematical notation
+      key: equations
+      type: List[str]
+    - description: Weighting factors used within each equation (one per equation)
+      key: weight_factors
+      type: List[float]
+    - description: Lookback window in days for each equation (one per equation)
+      key: lookback_windows
+      type: List[int]
+    - description: Normalization method applied in each equation (e.g., z-score, min-max,
+        log) (one per equation)
+      key: normalization_methods
+      type: List[str]
+    - description: 'Range of the output signal: 0-1'
+      key: output_signal_range
+      type: str
     prompt: Formulate 3-5 mathematical equations to transform inputs into 0-1 signals.
       Include weighting factors, lookback windows, and normalization.
   document_live_trading_plan:
@@ -89,6 +255,24 @@ nodes:
     - create_risk_framework
     - generate_deployment_blueprint
     nodes_dependent_on: []
+    output_structure:
+    - description: List of 10 detailed required actions for production deployment
+      key: action_descriptions
+      type: List[str]
+    - description: Maximum allowed latency in milliseconds for each deployment action
+      key: latency_requirements_ms
+      type: List[int]
+    - description: Fallback strategies to be applied during connection failures or
+        service interruptions
+      key: fallback_strategies
+      type: List[str]
+    - description: Daily tasks and procedures for monitoring system health and performance
+      key: daily_monitoring_procedures
+      type: List[str]
+    - description: Priority levels for each of the 10 actions, where lower number
+        indicates higher priority
+      key: actions_priority
+      type: List[int]
     prompt: Outline 10 required actions for production deployment including latency
       requirements, fallback strategies during connection failures, and daily monitoring
       procedures.
@@ -101,6 +285,38 @@ nodes:
     - clean_price_data
     - clean_fundamental_data
     nodes_dependent_on: []
+    output_structure:
+    - description: List of chronological dates covering the backtesting period
+      key: backtest_dates
+      type: List[str]
+    - description: Strategy position sizes or weights per instrument over time
+      key: strategy_positions
+      type: List[float]
+    - description: Calculated daily returns of the strategy net of costs
+      key: daily_returns
+      type: List[float]
+    - description: Transaction costs incurred each day during backtest
+      key: transaction_costs
+      type: List[float]
+    - description: Slippage costs applied to simulated trades during backtest
+      key: slippage_costs
+      type: List[float]
+    - description: Cumulative returns over the backtesting period
+      key: cumulative_returns
+      type: List[float]
+    - description: Discrete trade signals generated by the strategy per day (e.g.
+        -1 for short, 0 for neutral, 1 for long)
+      key: trade_signals
+      type: List[int]
+    - description: Total number of executed trades during the backtest
+      key: number_of_trades
+      type: int
+    - description: Maximum drawdown value observed during backtesting
+      key: max_drawdown
+      type: float
+    - description: Indicates if backtest completed successfully without errors
+      key: backtest_success_flag
+      type: bool
     prompt: Simulate strategy execution from 2018 to 2022 using walk-forward analysis.
       Include transaction costs and slippage model.
   execute_out_of_sample:
@@ -110,6 +326,63 @@ nodes:
     nodes_depended_on:
     - verify_backtest_integrity
     nodes_dependent_on: []
+    output_structure:
+    - description: Total cumulative return achieved over the 6-month out-of-sample
+        period.
+      key: out_of_sample_cumulative_return
+      type: float
+    - description: Compound annual growth rate calculated from the out-of-sample returns.
+      key: out_of_sample_cagr
+      type: float
+    - description: Sharpe ratio of the out-of-sample strategy using risk-free rate
+        of 0.
+      key: out_of_sample_sharpe_ratio
+      type: float
+    - description: Maximum observed drawdown during the out-of-sample period.
+      key: out_of_sample_max_drawdown
+      type: float
+    - description: Proportion of profitable trades in the out-of-sample period (0-1).
+      key: out_of_sample_win_rate
+      type: float
+    - description: Ulcer index computed from the out-of-sample drawdown series.
+      key: out_of_sample_ulcer_index
+      type: float
+    - description: Calmar ratio of the out-of-sample period.
+      key: out_of_sample_calmar_ratio
+      type: float
+    - description: Start date of the out-of-sample period in YYYY-MM-DD format.
+      key: out_of_sample_period_start
+      type: str
+    - description: End date of the out-of-sample period in YYYY-MM-DD format.
+      key: out_of_sample_period_end
+      type: str
+    - description: Percentage difference between out-of-sample CAGR and training CAGR.
+      key: cagr_difference_pct
+      type: float
+    - description: Percentage difference between out-of-sample Sharpe ratio and training
+        Sharpe ratio.
+      key: sharpe_ratio_difference_pct
+      type: float
+    - description: Percentage difference between out-of-sample max drawdown and training
+        max drawdown.
+      key: max_drawdown_difference_pct
+      type: float
+    - description: Percentage difference between out-of-sample win rate and training
+        win rate.
+      key: win_rate_difference_pct
+      type: float
+    - description: Percentage difference between out-of-sample ulcer index and training
+        ulcer index.
+      key: ulcer_index_difference_pct
+      type: float
+    - description: Percentage difference between out-of-sample Calmar ratio and training
+        Calmar ratio.
+      key: calmar_ratio_difference_pct
+      type: float
+    - description: Flag indicating whether any performance metric diverges beyond
+        acceptable threshold.
+      key: performance_divergence_flag
+      type: bool
     prompt: Run full strategy on 6-month unseen data set. Document performance divergence
       from training period.
   generate_deployment_blueprint:
@@ -120,6 +393,50 @@ nodes:
     - test_overfitting
     - create_risk_framework
     nodes_dependent_on: []
+    output_structure:
+    - description: List of API endpoint URLs required for integration.
+      key: api_endpoints
+      type: List[str]
+    - description: List of authentication methods for API access.
+      key: api_authentication_methods
+      type: List[str]
+    - description: Rate limit constraints for each API endpoint.
+      key: api_rate_limits
+      type: List[str]
+    - description: Execution platform environment description (e.g., Docker, Kubernetes,
+        EC2).
+      key: platform_environment
+      type: str
+    - description: Operating system used in execution platform.
+      key: platform_os
+      type: str
+    - description: Python packages or libraries required.
+      key: required_packages
+      type: List[str]
+    - description: Compute resources needed (CPU, memory).
+      key: compute_requirements
+      type: str
+    - description: Step-by-step deployment instructions.
+      key: deployment_steps
+      type: List[str]
+    - description: Names of monitoring dashboards.
+      key: monitoring_dashboard_names
+      type: List[str]
+    - description: URLs of monitoring dashboards.
+      key: monitoring_dashboard_urls
+      type: List[str]
+    - description: IDs or names of risk control rules referenced from risk framework.
+      key: risk_controls_reference
+      type: List[str]
+    - description: Fallback strategies for connection failures or halts.
+      key: fallback_strategies
+      type: List[str]
+    - description: Unit test coverage or integration test scenarios.
+      key: testing_requirements
+      type: List[str]
+    - description: Regulatory or audit compliance requirements.
+      key: compliance_requirements
+      type: List[str]
     prompt: Document API integration requirements, execution platform characteristics,
       and monitoring dashboards needed for live implementation.
   implement_signal_processing:
@@ -129,6 +446,19 @@ nodes:
     nodes_depended_on:
     - develop_algorithmic_logic
     nodes_dependent_on: []
+    output_structure:
+    - description: Full Python pseudocode for signal calculation
+      key: pseudocode
+      type: str
+    - description: List of step-by-step pseudocode lines
+      key: pseudocode_steps
+      type: List[str]
+    - description: Whether input validation is included
+      key: input_validation_included
+      type: bool
+    - description: Whether edge case handling is included
+      key: edge_case_handling_included
+      type: bool
     prompt: Outline step-by-step signal calculation using Python pseudocode. Include
       input validation and edge case handling.
   list_required_data_assets:
@@ -138,6 +468,15 @@ nodes:
     nodes_depended_on:
     - choose_strategy_type
     nodes_dependent_on: []
+    output_structure:
+    - description: List of distinct data type names required for implementation (e.g.
+        OHLC bars, volume, volatility surfaces)
+      key: data_types
+      type: List[str]
+    - description: Corresponding category for each data type, such as market data,
+        orderflow, fundamentals, or macro
+      key: data_categories
+      type: List[str]
     prompt: List 4-8 distinct data types needed for implementation (e.g. OHLC bars,
       volume, volatility surfaces, fundamental ratios). Categorize as market data,
       orderflow, fundamentals, macro.
@@ -149,6 +488,26 @@ nodes:
     - calculate_performance_metrics
     - define_strategy_parameters
     nodes_dependent_on: []
+    output_structure:
+    - description: List of optimized values for each core parameter
+      key: optimized_parameter_values
+      type: List[float]
+    - description: Sharpe ratio achieved by the optimized parameter set
+      key: sharpe_ratio_achieved
+      type: float
+    - description: Flag indicating whether the genetic algorithm met its convergence
+        criteria
+      key: convergence_reached
+      type: bool
+    - description: Number of generations the genetic algorithm executed before stopping
+      key: generations_run
+      type: int
+    - description: Number of candidate solutions in each generation
+      key: population_size
+      type: int
+    - description: List of parameter names corresponding to the optimized values
+      key: parameter_names
+      type: List[str]
     prompt: Use genetic algorithm to find parameter set maximizing Sharpe ratio. Specify
       convergence criteria and population size.
   retrieve_fundamental_data:
@@ -158,6 +517,44 @@ nodes:
     nodes_depended_on:
     - list_required_data_assets
     nodes_dependent_on: []
+    output_structure:
+    - description: Path or URI to the raw data file containing quarterly earnings
+        reports, balance sheet metrics, and dividend history for the 50 companies.
+      key: raw_data_file_path
+      type: str
+    - description: Format of the raw data file (e.g., CSV, JSON, Parquet).
+      key: file_format
+      type: str
+    - description: List of company tickers for which data was successfully retrieved.
+      key: tickers_retrieved
+      type: List[str]
+    - description: List of company tickers for which data could not be retrieved.
+      key: missing_tickers
+      type: List[str]
+    - description: Total number of quarterly earnings records retrieved across all
+        companies.
+      key: total_earnings_records
+      type: int
+    - description: Total number of balance sheet records retrieved across all companies.
+      key: total_balance_sheet_records
+      type: int
+    - description: Total number of dividend history records retrieved across all companies.
+      key: total_dividend_records
+      type: int
+    - description: Whether the retrieval operation completed successfully for all
+        tickers.
+      key: retrieval_success
+      type: bool
+    - description: ISO 8601 timestamp when the retrieval started.
+      key: retrieval_start_time
+      type: str
+    - description: ISO 8601 timestamp when the retrieval ended.
+      key: retrieval_end_time
+      type: str
+    - description: List of data source names used for retrieval (e.g., Bloomberg,
+        Yahoo Finance).
+      key: data_sources_used
+      type: List[str]
     prompt: Request quarterly earnings reports, balance sheet metrics, and dividend
       history for 50 companies from Bloomberg and Yahoo Finance APIs.
   retrieve_historical_price_data:
@@ -167,6 +564,34 @@ nodes:
     nodes_depended_on:
     - list_required_data_assets
     nodes_dependent_on: []
+    output_structure:
+    - description: Path to the file containing the retrieved price data.
+      key: data_file_path
+      type: str
+    - description: List of instrument identifiers for which price data was retrieved.
+      key: instrument_ids
+      type: List[str]
+    - description: List of exchanges from which price data was fetched.
+      key: exchange_ids
+      type: List[str]
+    - description: Start date of the retrieval period in ISO format (YYYY-MM-DD).
+      key: start_date
+      type: str
+    - description: End date of the retrieval period in ISO format (YYYY-MM-DD).
+      key: end_date
+      type: str
+    - description: Granularity of the data (e.g., '1m', '1d', '1w').
+      key: timeframe
+      type: str
+    - description: Total number of price records retrieved.
+      key: total_records
+      type: int
+    - description: Indicates whether the data retrieval was successful.
+      key: data_retrieved
+      type: bool
+    - description: Timestamp when data retrieval completed in ISO format.
+      key: retrieval_timestamp
+      type: str
     prompt: Request granular price data from 3 exchanges (start date 2010-01-01 to
       2024-01-01) for 50 liquid equity instruments. Specify timeframe (e.g. 1m bars,
       daily bars, weekly bars).
@@ -177,6 +602,37 @@ nodes:
     nodes_depended_on:
     - execute_out_of_sample
     nodes_dependent_on: []
+    output_structure:
+    - description: Names of performance metrics evaluated
+      key: metric_names
+      type: List[str]
+    - description: Performance metric values from the original optimized set
+      key: baseline_values
+      type: List[float]
+    - description: Mean performance metric values across all perturbed parameter sets
+      key: perturbed_mean_values
+      type: List[float]
+    - description: Standard deviation of performance metric values across perturbed
+        parameter sets
+      key: perturbed_std_values
+      type: List[float]
+    - description: Minimum performance metric values observed across perturbed parameter
+        sets
+      key: perturbed_min_values
+      type: List[float]
+    - description: Maximum performance metric values observed across perturbed parameter
+        sets
+      key: perturbed_max_values
+      type: List[float]
+    - description: Magnitude of parameter perturbations applied (±20%)
+      key: perturbation_percentage
+      type: float
+    - description: Number of perturbed parameter samples generated
+      key: sample_count
+      type: int
+    - description: Flag indicating whether performance deviation suggests overfitting
+      key: overfitting_detected
+      type: bool
     prompt: Conduct stability test with parameter perturbations of ±20% and 5x random
       samples. Chart performance distribution vs. original optimized set.
   verify_backtest_integrity:
@@ -187,5 +643,78 @@ nodes:
     - execute_backtesting
     - create_risk_framework
     nodes_dependent_on: []
+    output_structure:
+    - description: Random seed used for the out-of-sample test
+      key: random_seed
+      type: int
+    - description: CAGR of out-of-sample period
+      key: out_of_sample_cagr
+      type: float
+    - description: Sharpe ratio of out-of-sample period
+      key: out_of_sample_sharpe
+      type: float
+    - description: Maximum drawdown of out-of-sample period
+      key: out_of_sample_max_drawdown
+      type: float
+    - description: Win rate of out-of-sample period
+      key: out_of_sample_win_rate
+      type: float
+    - description: Ulcer index of out-of-sample period
+      key: out_of_sample_ulcer_index
+      type: float
+    - description: Calmar ratio of out-of-sample period
+      key: out_of_sample_calmar_ratio
+      type: float
+    - description: CAGR of the training period
+      key: training_cagr
+      type: float
+    - description: Sharpe ratio of the training period
+      key: training_sharpe
+      type: float
+    - description: Maximum drawdown of the training period
+      key: training_max_drawdown
+      type: float
+    - description: Win rate of the training period
+      key: training_win_rate
+      type: float
+    - description: Ulcer index of the training period
+      key: training_ulcer_index
+      type: float
+    - description: Calmar ratio of the training period
+      key: training_calmar_ratio
+      type: float
+    - description: Difference between out-of-sample and training CAGR
+      key: cagr_difference
+      type: float
+    - description: Difference between out-of-sample and training Sharpe ratio
+      key: sharpe_difference
+      type: float
+    - description: Difference between out-of-sample and training maximum drawdown
+      key: max_drawdown_difference
+      type: float
+    - description: Difference between out-of-sample and training win rate
+      key: win_rate_difference
+      type: float
+    - description: Difference between out-of-sample and training ulcer index
+      key: ulcer_index_difference
+      type: float
+    - description: Difference between out-of-sample and training Calmar ratio
+      key: calmar_ratio_difference
+      type: float
+    - description: Quantified sensitivity of performance to ±20% parameter perturbations
+      key: parameter_sensitivity_index
+      type: float
+    - description: Flag indicating if parameter sensitivity exceeds threshold
+      key: parameter_sensitivity_detected
+      type: bool
+    - description: Number of trades executed in out-of-sample period
+      key: out_of_sample_trade_count
+      type: int
+    - description: Number of trades executed in training period
+      key: training_trade_count
+      type: int
+    - description: Whether the backtest integrity check passed
+      key: backtest_integrity_passed
+      type: bool
     prompt: Execute out-of-sample test on 2023-2024 data with new random seed. Compare
       performance to training period and identify parameter sensitivity.
