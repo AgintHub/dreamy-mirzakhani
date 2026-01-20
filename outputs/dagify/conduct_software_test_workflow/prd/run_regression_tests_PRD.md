@@ -6,58 +6,30 @@ This node orchestrates the execution of regression test scenarios for unchanged 
 
 ## Conceptual Info
 
-Orchestrates execution of regression test scenarios, capturing baseline comparisons, state drift, and performance data.
+Orchestrates regression test scenarios and collects results for unchanged features.
 
 ## Docstring
 
 ### Summary
-Run regression tests for unchanged features and return baseline comparisons, drift indicators, and performance metrics.
-
-### Parameters
-
-- **test_cases** (List[dict]): List of regression test case definitions produced by the design_regression_test_cases node. Each dictionary should contain at least `scenario_id`, `precondition_setup`, and `expected_state_preservation` keys.
-- **environment** (dict): Environment configuration dictionary produced by the setup_test_environment node. Includes keys like `hardware_specs`, `software_specs`, `test_data_sets`, and `mock_services`.
+Executes regression test scenarios and records results.
 
 ### Returns
 
-dict: Dictionary containing three keys:
-- `baseline_vs_actual_results`: List[str]
-- `state_drift_indicators`: List[str]
-- `performance_metrics`: List[str]
-Each list element corresponds to a regression scenario executed.
-
-### Raises
-
-- RuntimeError: If the environment status is False, indicating the test environment failed to set up.
-- ValueError: If any required test case field is missing or empty.
+tuple[primitive_type.List[str], primitive_type.List[str], primitive_type.List[str]]: baseline_vs_actual_results, state_drift_indicators, performance_metrics
 
 ### Examples
 
 ```python
->>> # Example input test cases and environment
->>> test_cases = [
-...     {
-...         "scenario_id": "reg01",
-...         "precondition_setup": "load fixture A",
-...         "expected_state_preservation": "database record X remains unchanged"
-...     }
->>> ]
->>> environment = {
-...     "hardware_specs": ["8 CPU cores", "32GB RAM"],
-...     "software_specs": ["Python 3.11", "pytest 7.4"],
-...     "test_data_sets": ["dataset1.csv"],
-...     "mock_services": ["auth_service"],
-...     "environment_status": True
->>> }
->>> results = run_regression_tests(test_cases, environment)
->>> print(results['baseline_vs_actual_results'])
-["reg01: baseline=200ms, actual=210ms"]
+>>> baseline_vs_actual_results, state_drift_indicators, performance_metrics = run_regression_tests()
+>>> print(baseline_vs_actual_results)
+[ ['baseline_result1', 'baseline_result2'], ['state_drift_indicator1', 'state_drift_indicator2'], ['perf_metric1', 'perf_metric2'] ]
 ```
 
 ```python
->>> # Example output structure after running tests
->>> print(results['state_drift_indicators'])
->>> print(results['performance_metrics'])
-["reg01: no drift detected"]
-["reg01: throughput=150 req/s", "reg01: response_time=210ms"]
+>>> design_regression_test_cases, setup_test_environment = get_nodes()
+>>> design_regression_test_cases.design_test_cases()
+>>> setup_test_environment.setup_environment()
+>>> run_regression_tests()
+>>> output = run_regression_tests()
+[ ['actual_result1', 'actual_result2'], ['state_drift_indicator1', 'state_drift_indicator2'], ['perf_metric1', 'perf_metric2'] ]
 ```

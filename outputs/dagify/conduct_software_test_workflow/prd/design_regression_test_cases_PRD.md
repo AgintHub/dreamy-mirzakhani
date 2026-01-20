@@ -6,41 +6,36 @@ Create test cases for unchanged features validation.
 
 ## Conceptual Info
 
-This node generates concrete regression test scenarios that focus on features identified as high-risk by the test scope planning stage. Each scenario specifies the initial preconditions required to bring the system into a known state, and defines the expected state that must remain unchanged after the regression test is executed. The output feeds directly into the regression test execution node.
+This node generates test cases for unchanged features validation.
 
 ## Docstring
 
 ### Summary
-Generate regression test scenarios for high‑risk unchanged features.
+Generates test cases for unchanged features validation.
 
 ### Parameters
 
-- **test_objectives** (List[str]): High‑level objectives derived from the test scope node, used to infer which features are high risk.
-- **core_functionality_requirements** (List[str]): Core functionality requirements that must be preserved during regression.
-- **edge_case_requirements** (List[str]): Edge case requirements that inform precondition complexity.
+- **test_objectives** (List[str]): High-level test objectives from the plan_test_scope node.
+- **core_functionality_requirements** (List[str]): Core functionality requirements from the plan_test_scope node.
+- **edge_case_requirements** (List[str]): Edge case requirements from the plan_test_scope node.
+- **performance_requirements** (List[str]): Performance requirements from the plan_test_scope node.
 
 ### Returns
 
-Dict[str, List[str]]: A dictionary with keys 'high_risk_features', 'precondition_setup', and 'expected_state_preservation', each mapping to a list of strings describing the scenario components.
+[{high_risk_features: List[str]}, {precondition_setup: List[str]}, {expected_state_preservation: List[str]}]: Test cases for unchanged features validation.
 
 ### Raises
 
-- ValueError: If any of the input lists are empty, indicating that test scope planning failed to produce requirements.
-- RuntimeError: If the generated number of scenarios is outside the 3‑5 range required by the business rule.
+- ValueError: If test objectives or core functionality requirements are empty.
 
 ### Examples
 
 ```python
->>> scenarios = design_regression_test_cases(
-    test_objectives=["Ensure authentication persists", "Validate transaction consistency"],
-    core_functionality_requirements=["User login", "Funds transfer"],
-    edge_case_requirements=["Invalid input handling"]
-)
->>> print(scenarios["high_risk_features"])
-["User authentication", "Transaction ledger consistency"]
+>>> design_regression_test_cases(plan_test_scope.test_objectives, plan_test_scope.core_functionality_requirements, plan_test_scope.edge_case_requirements, plan_test_scope.performance_requirements)
+[high_risk_features = ['high-risk-1', 'high-risk-2', 'high-risk-3'], precondition_setup = ['setup-1', 'setup-2', 'setup-3'], expected_state_preservation = ['preservation-1', 'preservation-2', 'preservation-3']]
 ```
 
 ```python
->>> print(scenarios["precondition_setup"][0])
-"Log in as admin user and perform a dummy transfer to populate the ledger."
+>>> design_regression_test_cases(plan_test_scope.test_objectives, plan_test_scope.core_functionality_requirements, plan_test_scope.edge_case_requirements, plan_test_scope.performance_requirements)
+[high_risk_features = ['high-risk-1', 'high-risk-2', 'high-risk-3'], precondition_setup = ['setup-1', 'setup-2', 'setup-3'], expected_state_preservation = ['preservation-1', 'preservation-2', 'preservation-3']]
 ```

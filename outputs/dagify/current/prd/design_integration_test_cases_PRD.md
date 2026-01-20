@@ -6,31 +6,35 @@ Create test cases for component interactions
 
 ## Conceptual Info
 
-This node generates integration test cases for component interactions based on the test objectives and coverage requirements defined in the plan_test_scope node.
+Design integration test cases by generating test scenarios with component pairs, data flow paths, and dependency validations.
 
 ## Docstring
 
 ### Summary
-Generates integration test scenarios based on component pairs, data flow paths, and dependency validations.
-
-### Parameters
-
-- **test_objectives** (List[str]): High-level test objectives from the plan_test_scope node
-- **core_functionality_requirements** (List[str]): Core functionality requirements from the plan_test_scope node
-- **edge_case_requirements** (List[str]): Edge case requirements from the plan_test_scope node
-- **performance_requirements** (List[str]): Performance requirements from the plan_test_scope node
+Design integration test cases based on test scope and requirements.
 
 ### Returns
 
-dict: A dictionary containing the generated integration test scenarios
+dict: A dictionary with integration test scenarios and their associated data
 
 ### Raises
 
-- ValueError: If the input test objectives or requirements are invalid or incomplete
+- ValueError: If test scope or requirements are invalid
 
 ### Examples
 
 ```python
->>> design_integration_test_cases(test_objectives=['test_user_login'], core_functionality_requirements=['check_username'], edge_case_requirements=['invalid_username'], performance_requirements=['response_time'])
-{'component_pairs': ['user_login_component', 'database_component'], 'data_flow_paths': ['username_input', 'password_input'], 'dependency_validations': ['check_username'], 'integration_test_scenarios': ['test_user_login_scenario']}
+>>> component_pairs = ['component_a', 'component_b']
+>>> data_flow_paths = ['data_path_1', 'data_path_2']
+>>> dependency_validations = ['validation_1', 'validation_2']
+>>> integration_test_scenarios = generate_integration_test_scenarios(component_pairs, data_flow_paths, dependency_validations)
+{'component_pairs': ['component_a', 'component_b'], 'data_flow_paths': ['data_path_1', 'data_path_2'], 'dependency_validations': ['validation_1', 'validation_2'], 'integration_test_scenarios': {'scenario_1': 'success', 'scenario_2': 'failure'}}
+```
+
+```python
+>>> component_pairs = ['component_c', 'component_d']
+>>> data_flow_paths = ['data_path_3', 'data_path_4']
+>>> dependency_validations = ['validation_3', 'validation_4']
+>>> integration_test_scenarios = generate_integration_test_scenarios(component_pairs, data_flow_paths, dependency_validations)
+{'component_pairs': ['component_c', 'component_d'], 'data_flow_paths': ['data_path_3', 'data_path_4'], 'dependency_validations': ['validation_3', 'validation_4'], 'integration_test_scenarios': {'scenario_3': 'success', 'scenario_4': 'failure'}}
 ```

@@ -6,33 +6,39 @@ Aggregate testing anomalies
 
 ## Conceptual Info
 
-Aggregate testing anomalies from unit, integration, and regression tests.
+This node aggregates testing anomalies from unit, integration, and regression tests.
 
 ## Docstring
 
 ### Summary
-Compile defects from various test types into a summary table.
+Aggregate testing anomalies from multiple test types.
 
 ### Parameters
 
-- **unit_test_results** (dict): Output from analyze_unit_test_results
-- **integration_test_results** (dict): Output from analyze_integration_test_results
-- **regression_test_results** (dict): Output from analyze_regression_test_results
+- **unit_test_results** (dict): Results from unit tests.
+- **integration_test_results** (dict): Results from integration tests.
+- **regression_test_results** (dict): Results from regression tests.
 
 ### Returns
 
-list[dict]: List of defect dictionaries with test_type, component_info, description, severity, and reproduction_steps
+dict: Dict of test type, component info, description, severity, and reproduction steps.
 
 ### Raises
 
-- ValueError: If any test result is not provided or is malformed
+- TypeError: If input results are not dictionaries.
 
 ### Examples
 
 ```python
->>> unit_test_results = {'test_case_name': 'test1', 'actual_output': 'fail', 'suggested_root_cause': 'code issue'}
->>> integration_test_results = {'interface_failures': ['failure1'], 'component_pairs': ['pair1']}
->>> regression_test_results = {'feature_name': 'feature1', 'before_after_state_comparison': 'comparison1'}
->>> report_defects(unit_test_results, integration_test_results, regression_test_results)
-[{'test_type': 'unit', 'component_info': '', 'description': 'test1 failed', 'severity': 'high', 'reproduction_steps': 'rerun test1'}]
+>>> defect_summary = report_defects(unit_test_results={'test_type': 'unit', 'description': 'test desc'},
+>>> integration_test_results={'test_type': 'integration', 'description': 'test desc'},
+>>> regression_test_results={'test_type': 'regression', 'description': 'test desc'})
+{'test_type': 'unit', 'component_info': 'default', 'description': 'test desc', 'severity': 'low', 'reproduction_steps': 'no reproduction steps'}
+```
+
+```python
+>>> defect_summary = report_defects({'test_type': 'unit', 'description': 'test desc'},
+>>> {'test_type': 'integration', 'description': 'test desc'},
+>>> {'test_type': 'regression', 'description': 'test desc'})
+{'test_type': 'unit', 'component_info': 'default', 'description': 'test desc', 'severity': 'low', 'reproduction_steps': 'no reproduction steps'}
 ```

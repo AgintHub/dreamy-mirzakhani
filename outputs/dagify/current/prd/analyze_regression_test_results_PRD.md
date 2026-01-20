@@ -6,35 +6,27 @@ Identify regression risks.
 
 ## Conceptual Info
 
-Analyze regression test results to identify potential risks and anomalies in the system.
+Identify regression risks and output feature name, before/after state comparison, impact severity estimation, and regression summary.
 
 ## Docstring
 
 ### Summary
-Analyzes regression test results to identify potential risks and anomalies.
+This function takes the output of the run_regression_tests function and identifies regression risks by extracting the feature name, before/after state comparison, impact severity estimation, and regression summary.
 
 ### Parameters
 
-- **baseline_vs_actual_results** (List[str]): List of results comparing baseline metrics versus current actual results for each regression scenario.
-- **state_drift_indicators** (List[str]): Indicators signaling any detected state drift during regression tests.
-- **performance_metrics** (List[str]): Various performance metrics recorded during regression testing.
+- **run_regression_tests_output** (dict): The output of the run_regression_tests function.
 
 ### Returns
 
-dict: A dictionary containing feature_name, before_after_state_comparison, impact_severity_estimation, and regression_summary.
-
-### Raises
-
-- ValueError: If the input parameters are invalid or missing.
+dict: A dictionary containing the feature name, before/after state comparison, impact severity estimation, and regression summary.
 
 ### Examples
 
 ```python
->>> analyze_regression_test_results(["baseline_result1", "actual_result1"], ["state_drift_indicator1"], ["performance_metric1"])
-{"feature_name": "feature1", "before_after_state_comparison": "comparison1", "impact_severity_estimation": 5, "regression_summary": "summary1"}
-```
-
-```python
->>> analyze_regression_test_results(["baseline_result2", "actual_result2"], ["state_drift_indicator2"], ["performance_metric2"])
-{"feature_name": "feature2", "before_after_state_comparison": "comparison2", "impact_severity_estimation": 3, "regression_summary": "summary2"}
+>>> import data
+>>> regression_results = run_regression_tests(data)
+>>> regression_issues = analyze_regression_test_results(regression_results)
+>>> print(regression_issues)
+{'feature_name': 'feature_name', 'before_after_state_comparison': 'before/after state comparison', 'impact_severity_estimation': 5, 'regression_summary': 'regression summary'}
 ```

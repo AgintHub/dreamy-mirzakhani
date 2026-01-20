@@ -6,47 +6,25 @@ Compile test results summary
 
 ## Conceptual Info
 
-The sign_off_test_cycle node aggregates the test execution metrics produced by generate_test_report and enriches the summary with a fail count. It produces a concise, numeric snapshot of testing effort and quality, suitable for stakeholder sign‑off.
+Signs off the testing cycle by summarizing the test results.
 
 ## Docstring
 
 ### Summary
-Generate a final test summary including totals, pass/fail counts, defect density and a risk rating.
-
-### Parameters
-
-- **total_tests_executed** (int): Total number of tests run, as reported by generate_test_report.
-- **pass_count** (int): Count of tests that passed, as reported by generate_test_report.
-- **defect_density** (float): Defect density (defects per thousand lines of code or per test), computed by generate_test_report.
-- **risk_assessment_rating** (int): Risk rating on a scale of 1–10 derived from defect density and other quality signals.
+Compiles test results summary.
 
 ### Returns
 
-dict: Dictionary containing the keys total_tests_executed, pass_count, fail_count, defect_density, and risk_assessment_rating.
-
-### Raises
-
-- ValueError: Raised if any required input is missing or of incorrect type.
-- RuntimeError: Raised when internal calculation of fail_count fails due to inconsistent data.
+Tuple[INT, INT, INT, FLOAT, INT]: Returns a tuple containing total tests executed, pass count, fail count, defect density, and risk assessment rating (1-10).
 
 ### Examples
 
 ```python
->>> result = sign_off_test_cycle(
-...     total_tests_executed=1200,
-...     pass_count=1175,
-...     defect_density=0.42,
-...     risk_assessment_rating=3)
->>> print(result)
-{'total_tests_executed': 1200, 'pass_count': 1175, 'fail_count': 25, 'defect_density': 0.42, 'risk_assessment_rating': 3}
+>>> sign_off_test_cycle(results=generate_test_report())
+{total_tests_executed: 100, pass_count: 80, fail_count: 20, defect_density: 0.2, risk_assessment_rating: 8}
 ```
 
 ```python
->>> result = sign_off_test_cycle(
-...     total_tests_executed=500,
-...     pass_count=480,
-...     defect_density=0.05,
-...     risk_assessment_rating=1)
->>> print(result)
-{'total_tests_executed': 500, 'pass_count': 480, 'fail_count': 20, 'defect_density': 0.05, 'risk_assessment_rating': 1}
+>>> sign_off_test_cycle(results=generate_test_report())
+{total_tests_executed: 120, pass_count: 90, fail_count: 30, defect_density: 0.25, risk_assessment_rating: 6}
 ```

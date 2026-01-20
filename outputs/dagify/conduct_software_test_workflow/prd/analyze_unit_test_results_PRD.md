@@ -1,35 +1,41 @@
 # analyze_unit_test_results PRD
 
 ## Description
-Identify unit-level anomalies
+Aggregate testing anomalies.
 
 
 ## Conceptual Info
 
-This node analyzes the results of unit tests to identify failures and provide insights into the root causes of these failures.
+Aggregate testing anomalies by creating a defect summary table.
 
 ## Docstring
 
 ### Summary
-Analyze unit test results to identify test case failures and suggest root causes.
+Create a defect summary table from unit test results.
 
 ### Parameters
 
-- **test_execution_status** (List[bool]): Pass/fail status of each test case
-- **actual_output_vs_expected_output** (List[str]): Difference between actual and expected output of each test case
-- **test_case_timestamps** (List[str]): Timestamps for each test execution
+- **test_execution_status** (PrimitiveType.LIST_BOOL): Pass/fail status of each test case from the run_unit_tests node
+- **actual_output_vs_expected_output** (PrimitiveType.LIST_STR): Difference between actual and expected output of each test case from the run_unit_tests node
+- **test_case_timestamps** (PrimitiveType.LIST_STR): Timestamps for each test execution from the run_unit_tests node
 
 ### Returns
 
-dict: A dictionary containing test case names, actual outputs, suggested root causes, test types, passed tests, and failed tests.
+{test_type: PrimitiveType.STR, component_info: PrimitiveType.STR, description: PrimitiveType.STR, severity: PrimitiveType.STR, reproduction_steps: PrimitiveType.STR}: A defect summary table with columns: Test Type | Component | Description | Severity | Reproduction Steps.
 
 ### Raises
 
-- ValueError: If the input test execution status, actual output vs expected output, or test case timestamps are empty or invalid.
+- TypeError: If the inputs from run_unit_tests node are not valid
 
 ### Examples
 
 ```python
->>> analyze_unit_test_results([True, False, True], ['pass', 'fail', 'pass'], ['2022-01-01 12:00:00', '2022-01-01 12:01:00', '2022-01-01 12:02:00'])
-{'test_case_name': ['test_case_2'], 'actual_output': ['fail'], 'suggested_root_cause': ['Implementation error'], 'test_type': ['unit_test'], 'passed_tests': ['test_case_1', 'test_case_3'], 'failed_tests': ['test_case_2']}
+>>> def run_unit_tests(test_execution_status, actual_output_vs_expected_output, test_case_timestamps):"
+                "	test_results = []"
+                "	for status, output, timestamp in zip(test_execution_status, actual_output_vs_expected_output, test_case_timestamps):"
+                "		test_results.append("Test Type: unit, Component: , Description: , Severity: , Reproduction Steps: ")"
+                "	return test_results"
+                ""
+                "analyze_unit_test_results = run_unit_tests([True, False, True], ['passed', 'failed', 'passed'], ['2022-01-01 12:00:00', '2022-01-01 12:01:00', '2022-01-01 12:02:00'])
+["Test Type: unit, Component: , Description: , Severity: , Reproduction Steps: ", "Test Type: unit, Component: , Description: , Severity: , Reproduction Steps: ", "Test Type: unit, Component: , Description: , Severity: , Reproduction Steps: "]
 ```
