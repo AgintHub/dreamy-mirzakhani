@@ -6,34 +6,39 @@ Compile test results summary
 
 ## Conceptual Info
 
-This node takes the aggregated test results and outputs a test summary containing total tests executed, pass/fail counts, defect density, and risk assessment rating.
+This node synthesizes a concise health summary of the test cycle by consuming defect summaries produced by report_defects and execution-level results from prior test runs. It computes total tests, successful tests, defect density, and a risk rating to convey overall quality and risk posture.
 
 ## Docstring
 
 ### Summary
-Takes the aggregated test results and outputs a test summary.
+Compute a compact test execution summary from defect data and test execution outcomes.
 
 ### Parameters
 
-- **report_defects** (report_defects): Aggregated test results
+- **defect_report_summary** (str): Serialized defect summary produced by report_defects (e.g., JSON string).
+- **execution_summary** (str): Serialized execution results summary (e.g., JSON string) with total, passes, and optional failures.
 
 ### Returns
 
-dict: Test summary with total tests executed, pass/fail counts, defect density, and risk assessment rating.
+Dict[str, Any]: Dictionary containing the computed metrics: total_tests_executed (int), pass_count (int), defect_density (float), risk_assessment_rating (int).
 
 ### Raises
 
-- Error: If there's an error aggregating the test results
+- ValueError: If inputs are not valid JSON or required fields are missing.
+- TypeError: If input types do not conform to expected string inputs.
 
 ### Examples
 
 ```python
->>> def generate_test_report(report_defects)
-...     # Assuming report_defects is a dictionary with aggregated test results"
-                "    total_tests_executed = report_defects['total_tests_executed']"
-                "    pass_count = report_defects['pass_count']"
-                "    defect_density = report_defects['defect_density']"
-                "    risk_assessment_rating = report_defects['risk_assessment_rating']"
-                "    return {'total_tests_executed': total_tests_executed, 'pass_count': pass_count, 'defect_density': defect_density, 'risk_assessment_rating': risk_assessment_rating}
-{"total_tests_executed": 100, "pass_count": 90, "defect_density": 0.02, "risk_assessment_rating": 5}
+>>> defect_report_summary = '{"defects": 3, "details": []}'
+>>> execution_summary = '{"tests_executed": 120, "passes": 117}'
+>>> result = generate_test_report(defect_report_summary, execution_summary)
+{'total_tests_executed': 120, 'pass_count': 117, 'defect_density': 0.025, 'risk_assessment_rating': 6}
+```
+
+```python
+>>> defect_report_summary = '{"defects": 0, "details": []}'
+>>> execution_summary = '{"tests_executed": 80, "passes": 80}'
+>>> result = generate_test_report(defect_report_summary, execution_summary)
+{'total_tests_executed': 80, 'pass_count': 80, 'defect_density': 0.0, 'risk_assessment_rating': 2}
 ```
