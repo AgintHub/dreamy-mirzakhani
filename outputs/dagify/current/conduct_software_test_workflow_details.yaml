@@ -45,66 +45,37 @@ nodes:
       key: regression_summary
       type: str
     prd:
-      conceptual_info: This node identifies regression risks by analyzing the output
-        of the regression test scenarios.
+      conceptual_info: This node identifies regression risks by analyzing the regression
+        test results.
       docstring:
         examples:
         - lines:
-          - 'analyze_regression_test_results_input = {
-
-            '
-          - '    ''baseline_vs_actual_results'': [''baseline1'', ''baseline2''],
-
-            '
-          - '    ''state_drift_indicators'': [''indicator1'', ''indicator2''],
-
-            '
-          - '    ''performance_metrics'': [''metric1'', ''metric2'']
-
-            '
-          - '}'
-          - 'result = analyze_regression_test_results(analyze_regression_test_results_input)
-
-            '
-          - print(result)
-          output: '{''feature_name'': ''feature1'', ''before_after_state_comparison'':
-            ''before/after comparison1'', ''impact_severity_estimation'': 1, ''regression_summary'':
-            ''regression issues1''}'
-        - lines:
-          - 'analyze_regression_test_results_input = {
-
-            '
-          - '    ''baseline_vs_actual_results'': [''baseline1'', ''baseline2''],
-
-            '
-          - '    ''state_drift_indicators'': [''indicator1'', ''indicator2''],
-
-            '
-          - '    ''performance_metrics'': [''metric1'', ''metric2'']
-
-            '
-          - '}'
-          - 'result = analyze_regression_test_results(analyze_regression_test_results_input)
-
-            '
-          - print(result)
-          output: '{''feature_name'': ''feature2'', ''before_after_state_comparison'':
-            ''before/after comparison2'', ''impact_severity_estimation'': 2, ''regression_summary'':
-            ''regression issues2''}'
+          - run_regression_tests()
+          - analyze_regression_test_results(run_regression_tests())
+          output: feature_name='Regresion 1', before_after_state_comparison='State
+            changed', impact_severity_estimation=5, regression_summary='Issue resolved'
         parameters:
-        - description: The output of the regression test scenarios, including baseline
-            vs actual results, state drift indicators, and performance metrics.
-          name: run_regression_tests_input
-          type: dict
-        raises:
-        - description: If the input contains invalid or missing data.
-          type: ValueError
+        - description: The output of the run_regression_tests node.
+          name: run_regression_tests
+          type: '{output_structure: [{key: baseline_vs_actual_results, type: list[str],
+            description: List of results comparing baseline metrics versus current
+            actual results for each regression scenario.}, {key: state_drift_indicators,
+            type: list[str], description: Indicators signaling any detected state
+            drift during regression tests, such as deviations or anomalies.}, {key:
+            performance_metrics, type: list[str], description: Various performance
+            metrics recorded during regression testing, such as response times and
+            throughput.}]}'
+        raises: []
         returns:
-          description: A dictionary containing the feature name, before/after state
-            comparison, impact severity estimation, and regression summary for each
-            regression anomaly.
-          type: dict
-        summary: Analyze regression test results.
+          description: The analyzed regression risks.
+          type: '{output_structure: [{key: feature_name, type: str, description: Name
+            of the feature with regression anomalies.}, {key: before_after_state_comparison,
+            type: str, description: Description of the before/after state comparison
+            of the regressions.}, {key: impact_severity_estimation, type: int, description:
+            Estimated impact severity of the regression as an integer value.}, {key:
+            regression_summary, type: str, description: Summary of the regression
+            issues encountered.}]}'
+        summary: Analyze regression test results to identify regression risks.
     prompt: 'List all regression anomalies with: 1) Feature name, 2) Before/after
       state comparison, 3) Impact severity estimation.'
   analyze_unit_test_results:
@@ -130,28 +101,6 @@ nodes:
     - description: Steps to reproduce the defect
       key: reproduction_steps
       type: str
-    prd:
-      conceptual_info: This node aggregates testing anomalies and creates a defect
-        summary table.
-      docstring:
-        examples:
-        - lines:
-          - 'node = {''test_type'': ''unit'', ''component_info'': ''component_1'',
-            ''description'': ''defect_description'', ''severity'': ''high'', ''reproduction_steps'':
-            ''reproduce_steps''}'
-          - result = report_defects(node)
-          output: '{''test_type'': ''unit'', ''component_info'': ''component_1'',
-            ''description'': ''defect_description'', ''severity'': ''high'', ''reproduction_steps'':
-            ''reproduce_steps''}'
-        parameters: []
-        raises:
-        - description: If an exception occurs during the aggregation of testing anomalies
-          type: Exception
-        returns:
-          description: A dictionary containing test type, component information, description,
-            severity, and reproduction steps
-          type: dict
-        summary: Aggregates testing anomalies and creates a defect summary table.
     prompt: 'Create defect summary table with columns: Test Type | Component | Description
       | Severity | Reproduction Steps.'
   design_integration_test_cases:
@@ -174,71 +123,6 @@ nodes:
     - description: List of integration test scenarios
       key: integration_test_scenarios
       type: List[str]
-    prd:
-      conceptual_info: This node generates integration test cases based on the test
-        objectives and coverage requirements.
-      docstring:
-        examples:
-        - lines:
-          - test_objectives = ['obj1', 'obj2', 'obj3']
-          - core_functionality_requirements = ['req1', 'req2', 'req3']
-          - edge_case_requirements = ['ec1', 'ec2', 'ec3']
-          - performance_requirements = ['pr1', 'pr2', 'pr3']
-          - hardware_specs = ['hs1', 'hs2', 'hs3']
-          - software_specs = ['ss1', 'ss2', 'ss3']
-          - test_data_sets = ['tds1', 'tds2', 'tds3']
-          - mock_services = ['ms1', 'ms2', 'ms3']
-          - integration_test_cases = generate_integration_test_cases(test_objectives)
-          - print(integration_test_cases)
-          output: '{"component_pairs": ["cp1", "cp2", "cp3"], "data_flow_paths": ["dp1",
-            "dp2", "dp3"], "dependency_validations": ["dv1", "dv2", "dv3"], "integration_test_scenarios":
-            ["its1", "its2", "its3"]}'
-        - lines:
-          - test_objectives = ['obj4', 'obj5', 'obj6']
-          - core_functionality_requirements = ['req4', 'req5', 'req6']
-          - edge_case_requirements = ['ec4', 'ec5', 'ec6']
-          - performance_requirements = ['pr4', 'pr5', 'pr6']
-          - hardware_specs = ['hs4', 'hs5', 'hs6']
-          - software_specs = ['ss4', 'ss5', 'ss6']
-          - test_data_sets = ['tds4', 'tds5', 'tds6']
-          - mock_services = ['ms4', 'ms5', 'ms6']
-          - integration_test_cases = generate_integration_test_cases(test_objectives)
-          output: '{"component_pairs": ["cp4", "cp5", "cp6"], "data_flow_paths": ["dp4",
-            "dp5", "dp6"], "dependency_validations": ["dv4", "dv5", "dv6"], "integration_test_scenarios":
-            ["its4", "its5", "its6"]}'
-        parameters:
-        - description: High-level test objectives
-          name: test_objectives
-          type: List[str]
-        - description: List of core functionality requirements
-          name: core_functionality_requirements
-          type: List[str]
-        - description: List of edge case requirements
-          name: edge_case_requirements
-          type: List[str]
-        - description: List of performance requirements
-          name: performance_requirements
-          type: List[str]
-        - description: List of hardware specifications required for testing
-          name: hardware_specs
-          type: List[str]
-        - description: List of software specifications required for testing
-          name: software_specs
-          type: List[str]
-        - description: List of test data sets required for testing
-          name: test_data_sets
-          type: List[str]
-        - description: List of mock services required for testing
-          name: mock_services
-          type: List[str]
-        raises:
-        - description: If the input parameters are invalid
-          type: ValueError
-        returns:
-          description: A dictionary with integration test cases and their corresponding
-            information
-          type: Dict[str, List[str]]
-        summary: Generates integration test cases.
     prompt: 'Generate 4-6 integration test scenarios with: 1) Component pairs, 2)
       Data flow paths, 3) Dependency validations.'
   design_regression_test_cases:
@@ -301,23 +185,35 @@ nodes:
       key: risk_assessment_rating
       type: int
     prd:
-      conceptual_info: Compiles test results summary.
+      conceptual_info: This node generates a test report with summary metrics such
+        as total tests executed, pass/fail counts, defect density, and risk assessment
+        rating.
       docstring:
         examples:
         - lines:
-          - 'report_defects = ...  # assume this is already computed'
-          - total_tests_executed, pass_count, defect_density, risk_assessment_rating
-            = generate_test_report(report_defects)
-          output: total_tests_executed = 100, pass_count = 90, defect_density = 0.05,
-            risk_assessment_rating = 8
-        parameters: []
-        raises: []
+          - 'def generate_test_report(report_defects):'
+          - '    total_tests_executed = report_defects[''total_tests_executed'']'
+          - '    pass_count = report_defects[''pass_count'']'
+          - '    defect_density = report_defects[''defect_density'']'
+          - '    risk_assessment_rating = report_defects[''risk_assessment_rating'']'
+          - '    return {''total_tests_executed'': total_tests_executed,'
+          - '            ''pass_count'': pass_count,'
+          - '            ''defect_density'': defect_density,'
+          - '            ''risk_assessment_rating'': risk_assessment_rating}'
+          output: '{total_tests_executed=10, pass_count=8, defect_density=0.5, risk_assessment_rating=6}'
+        parameters:
+        - description: Defect report generated by the `report_defects` node
+          name: report_defects
+          type: report_defects
+        raises:
+        - description: If the input report_defects is invalid or missing necessary
+            data.
+          type: ValueError
         returns:
-          description: A tuple containing the total number of tests executed, the
-            number of passed tests, the defect density metric, and the risk assessment
-            rating.
-          type: Tuple[int, int, float, int]
-        summary: Generates a test results summary based on the provided test data.
+          description: A dictionary containing summary metrics such as total tests
+            executed, pass/fail counts, defect density, and risk assessment rating.
+          type: dict
+        summary: Generates a test report with summary metrics.
     prompt: 'Produce test summary with metrics: total tests executed, pass/fail counts,
       defect density, and risk assessment rating (1-10).'
   plan_test_scope:
