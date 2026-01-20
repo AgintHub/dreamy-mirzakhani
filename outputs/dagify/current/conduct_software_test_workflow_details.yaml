@@ -10,19 +10,39 @@ nodes:
     - run_integration_tests
     nodes_dependent_on: []
     output_structure:
-    - description: List of interface failure descriptions, each detailing the component
-        pair, data exchange issues, and contract violations if any.
+    - description: List of interface failure descriptions
       key: interface_failures
       type: List[str]
-    - description: List of component pairs involved in failures.
+    - description: List of component pairs involved in failures
       key: component_pairs
       type: List[str]
-    - description: List of data exchange problems identified during testing.
+    - description: List of data exchange problems identified during testing
       key: data_exchange_issues
       type: List[str]
-    - description: List of descriptions of contract violations if any occurred.
+    - description: List of descriptions of contract violations
       key: contract_violations
       type: List[str]
+    prd:
+      conceptual_info: This node analyzes integration test results to identify interface-level
+        issues.
+      docstring:
+        examples:
+        - lines:
+          - test_result = run_integration_tests()
+          - interface_failures, component_pairs, data_exchange_issues, contract_violations
+            = analyze_integration_test_results(test_result)
+          output: '{''interface_failures'': [''Failure 1'', ''Failure 2''], ''component_pairs'':
+            [''Component A, Component B''], ''data_exchange_issues'': [''Issue 1'',
+            ''Issue 2''], ''contract_violations'': [''Violation 1'', ''Violation 2'']}'
+        parameters: []
+        raises:
+        - description: If the input is not a valid test result
+          type: ValueError
+        returns:
+          description: A dictionary containing interface failures, component pairs,
+            data exchange issues, and contract violations.
+          type: Dict[str, List[str]]
+        summary: Analyze integration test results to identify interface-level issues.
     prompt: 'List interface failures with: 1) Component pair, 2) Data exchange issues,
       3) Contract violation details (if applicable).'
   analyze_regression_test_results:
@@ -45,6 +65,24 @@ nodes:
     - description: Summary of the regression issues encountered
       key: regression_summary
       type: str
+    prd:
+      conceptual_info: Analyzing regression test results to identify potential risks.
+      docstring:
+        examples:
+        - lines:
+          - results = run_regression_tests()
+          - anomalies = analyze_regression_test_results(results)
+          output: '{''feature_name'': ''Feature1'', ''before_after_state_comparison'':
+            ''State change detected'', ''impact_severity_estimation'': 5, ''regression_summary'':
+            ''Regression issues encountered''}'
+        parameters: []
+        raises: []
+        returns:
+          description: 'A dictionary containing regression anomalies with key-value
+            pairs: feature name, before/after state comparison, impact severity estimation,
+            and regression summary.'
+          type: dict
+        summary: Extract regression anomalies from test results and provide a summary.
     prompt: 'List all regression anomalies with: 1) Feature name, 2) Before/after
       state comparison, 3) Impact severity estimation.'
   analyze_unit_test_results:
@@ -95,6 +133,30 @@ nodes:
     - description: List of integration test scenarios
       key: integration_test_scenarios
       type: List[str]
+    prd:
+      conceptual_info: This node is responsible for designing integration test cases
+        by creating component pairs, data flow paths, and dependency validations.
+      docstring:
+        examples:
+        - lines:
+          - node.run('plan_test_scope')
+          - output = node.design_integration_test_cases(output)
+          output: '{''component_pairs'': [''pair1'', ''pair2''], ''data_flow_paths'':
+            [''path1'', ''path2''], ''dependency_validations'': [''validation1'',
+            ''validation2''], ''integration_test_scenarios'': [''scenario1'', ''scenario2'']}'
+        - lines:
+          - node.run('plan_test_scope')
+          - output = node.design_integration_test_cases(output)
+          output: '{''component_pairs'': [''pair3'', ''pair4''], ''data_flow_paths'':
+            [''path3'', ''path4''], ''dependency_validations'': [''validation3'',
+            ''validation4''], ''integration_test_scenarios'': [''scenario3'', ''scenario4'']}'
+        parameters: []
+        raises: []
+        returns:
+          description: Returns a dictionary containing component pairs, data flow
+            paths, dependency validations, and integration test scenarios
+          type: dict
+        summary: Create integration test cases for component interactions
     prompt: 'Generate 4-6 integration test scenarios with: 1) Component pairs, 2)
       Data flow paths, 3) Dependency validations.'
   design_regression_test_cases:
@@ -180,6 +242,45 @@ nodes:
     - description: List of performance requirements
       key: performance_requirements
       type: List[str]
+    prd:
+      conceptual_info: Plans test scope by identifying high-level objectives, core
+        functionality requirements, edge cases, and performance requirements.
+      docstring:
+        examples:
+        - lines:
+          - test_objectives = ['Ensure secure authentication', 'Verify data import/export
+            functionality']
+          - core_functionality_requirements = ['User authentication', 'Data import/export']
+          - edge_case_requirements = ['Edge case 1', 'Edge case 2']
+          - performance_requirements = ['High performance', 'Low latency']
+          - plan_test_scope(test_objectives, core_functionality_requirements, edge_case_requirements,
+            performance_requirements)
+          output: '{''test_objectives'': [''Ensure secure authentication'', ''Verify
+            data import/export functionality''], ''core_functionality_requirements'':
+            [''User authentication'', ''Data import/export''], ''edge_case_requirements'':
+            [''Edge case 1'', ''Edge case 2''], ''performance_requirements'': [''High
+            performance'', ''Low latency'']}'
+        parameters:
+        - description: List of high-level test objectives
+          name: test_objectives
+          type: List[str]
+        - description: List of core functionality requirements
+          name: core_functionality_requirements
+          type: List[str]
+        - description: List of edge case requirements
+          name: edge_case_requirements
+          type: List[str]
+        - description: List of performance requirements
+          name: performance_requirements
+          type: List[str]
+        raises:
+        - description: If the input test objectives are invalid or incomplete.
+          type: ValueError
+        returns:
+          description: A dictionary containing the planned test scope objectives
+          type: dict
+        summary: Defines test objectives and coverage requirements based on the given
+          prompt.
     prompt: List 3-5 high-level test objectives for the software under test. Include
       core functionality, edge cases, and performance requirements in bullet points.
   report_defects:
@@ -207,6 +308,32 @@ nodes:
     - description: Steps to reproduce the defect
       key: reproduction_steps
       type: str
+    prd:
+      conceptual_info: Aggregate testing anomalies into a summary table.
+      docstring:
+        examples:
+        - lines:
+          - defects = report_defects(analyze_unit_test_results(), analyze_integration_test_results(),
+            analyze_regression_test_results())
+          - print(defects)
+          output: '{''test_type'': ''unit'', ''component_info'': ''component1'', ''description'':
+            ''test description'', ''severity'': ''high'', ''reproduction_steps'':
+            ''reproduce steps''}'
+        - lines:
+          - defects = report_defects(analyze_unit_test_results(), analyze_integration_test_results(),
+            analyze_regression_test_results())
+          - print(defects)
+          output: '{''test_type'': ''integration'', ''component_info'': ''component2'',
+            ''description'': ''test description'', ''severity'': ''medium'', ''reproduction_steps'':
+            ''reproduce steps''}'
+        parameters: []
+        raises: []
+        returns:
+          description: A tuple containing the test type, component information, description,
+            severity, and reproduction steps of the defect.
+          type: (str, str, str, str, str)
+        summary: Create a defect summary table from the results of unit, integration,
+          and regression testing.
     prompt: 'Create defect summary table with columns: Test Type | Component | Description
       | Severity | Reproduction Steps.'
   run_integration_tests:
@@ -247,6 +374,33 @@ nodes:
     - description: List of performance metrics
       key: performance_metrics
       type: List[str]
+    prd:
+      conceptual_info: Execute regression scenarios and record baseline vs actual
+        results, state drift indicators, and performance metrics.
+      docstring:
+        examples:
+        - lines:
+          - baseline_vs_actual_results, state_drift_indicators, performance_metrics
+            = run_regression_tests()
+          - print(baseline_vs_actual_results)
+          - print(state_drift_indicators)
+          - print(performance_metrics)
+          output: '[''baseline vs actual result 1'', ''baseline vs actual result 2'',
+            ''baseline vs actual result 3'']
+
+            [''state drift indicator 1'', ''state drift indicator 2'', ''state drift
+            indicator 3'']
+
+            [''performance metric 1'', ''performance metric 2'', ''performance metric
+            3'']'
+        parameters: []
+        raises: []
+        returns:
+          description: Dictionary of baseline vs actual results, state drift indicators,
+            and performance metrics
+          type: Dict[str, List[str]]
+        summary: Execute regression scenarios and record baseline vs actual results,
+          state drift indicators, and performance metrics.
     prompt: 'Execute regression scenarios and record: 1) Baseline vs actual results,
       2) State drift indicators, 3) Performance metrics.'
   run_unit_tests:
@@ -266,7 +420,39 @@ nodes:
       type: str
     - description: Timestamps for each test execution
       key: test_case_timestamps
-      type: List[str]
+      type: str
+    prd:
+      conceptual_info: The node executes unit test cases, logging pass/fail status,
+        actual vs expected output, and timestamp for each test execution.
+      docstring:
+        examples:
+        - lines:
+          - test_cases = ['test_1', 'test_2', 'test_3']
+          - 'test_environment = {''hardware'': ''GPU'', ''software'': ''CUDA''}'
+          - result = run_unit_tests(unit_test_cases=test_cases, test_environment=test_environment)
+          - print(result)
+          output: '{''test_execution_status'': {''test_1'': True, ''test_2'': False,
+            ''test_3'': True}, ''actual_output_vs_expected_output'': {''test_1'':
+            ''passed'', ''test_2'': ''failed'', ''test_3'': ''passed''}, ''test_case_timestamps'':
+            [''2023-12-01 10:00:00'', ''2023-12-01 10:05:00'', ''2023-12-01 10:10:00'']}'
+        parameters:
+        - description: Input list of unit test cases to be executed.
+          name: unit_test_cases
+          type: list
+        - description: Input dictionary of test environment required for unit test
+            execution.
+          name: test_environment
+          type: dict
+        raises:
+        - description: Raised when unit test execution fails or test environment setup
+            fails.
+          type: Error
+        returns:
+          description: The result dictionary includes test execution status, actual
+            output vs expected output, and timestamp for each test case.
+          type: dict
+        summary: Execute and record the result of unit test cases with pass/fail status,
+          actual output vs expected output, and timestamp.
     prompt: 'Execute unit test cases and record: 1) Pass/fail status, 2) Actual output
       vs expected output, 3) Timestamp per test execution.'
   setup_test_environment:
@@ -279,19 +465,48 @@ nodes:
     output_structure:
     - description: List of hardware specifications required for testing
       key: hardware_specs
-      type: str
+      type: List[str]
     - description: List of software specifications required for testing
       key: software_specs
-      type: str
+      type: List[str]
     - description: List of test data sets required for testing
       key: test_data_sets
-      type: str
+      type: List[str]
     - description: List of mock services required for testing
       key: mock_services
-      type: str
+      type: List[str]
     - description: Whether the test environment has been successfully set up
       key: environment_status
       type: bool
+    prd:
+      conceptual_info: This node prepares the testing infrastructure and dependencies
+        by listing the required hardware, software, test data sets, mock services,
+        and determining the environment status.
+      docstring:
+        examples:
+        - lines:
+          - def setup_test_environment(plan_test_scope={})
+          - hardware_specs = plan_test_scope['hardware_specs']
+          - software_specs = plan_test_scope['software_specs']
+          - test_data_sets = plan_test_scope['test_data_sets']
+          - mock_services = plan_test_scope['mock_services']
+          - environment_status = plan_test_scope['environment_status']
+          output: '{} {''hardware_specs'': [''spec1'', ''spec2''], ''software_specs'':
+            [''spec3'', ''spec4''], ''test_data_sets'': [''test1'', ''test2''], ''mock_services'':
+            [''mock1'', ''mock2''], ''environment_status'': True}'
+        parameters:
+        - description: Input from the plan_test_scope node, which defines test objectives
+            and coverage requirements
+          name: plan_test_scope
+          type: dict
+        raises:
+        - description: If the input plan_test_scope is not of type dict
+          type: TypeError
+        returns:
+          description: A dictionary containing the hardware specifications, software
+            specifications, test data sets, mock services, and environment status
+          type: dict
+        summary: Prepare testing infrastructure and dependencies
     prompt: 'List 3-5 environment requirements: hardware/software specs, test data
       sets, mock services needed for testing.'
   sign_off_test_cycle:
