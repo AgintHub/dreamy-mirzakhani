@@ -6,32 +6,44 @@ Execute component interaction tests
 
 ## Conceptual Info
 
-Execute integration test scenarios and document communication logs and interface validation outcomes.
+Orchestrates the execution of predefined integration test scenarios in the prepared test environment and collects per-scenario communication logs and interface validation results for each test step.
 
 ## Docstring
 
 ### Summary
-Execute integration test scenarios and document communication logs and interface validation outcomes.
+Run integration test scenarios and collect per-scenario communication logs and interface validation results.
 
 ### Parameters
 
-- **design_integration_test_cases** (object): Integration test scenarios designed by this node.
-- **setup_test_environment** (object): Setup test environment required to run integration tests.
+- **inputs** (dict): Structured input containing integration_test_scenarios (List[str]) and environment_config (dict).
 
 ### Returns
 
-object: Contains communication logs, interface validation results, and test scenario IDs.
+dict: {'communication_logs': List[str], 'interface_validation_results': List[str], 'test_scenario_ids': List[str]}
 
 ### Raises
 
-- ValueError: If test setup fails or test scenarios are not properly designed or executed.
+- ValueError: If inputs is not a dict, or required keys are missing/empty (e.g., 'integration_test_scenarios').
+- KeyError: If expected keys within inputs are missing when accessed.
 
 ### Examples
 
 ```python
->>> design_integration_test_cases = design_integration_test_cases()
->>> setup_test_environment = setup_test_environment()
->>> integration_test_results = run_integration_tests(design_integration_test_cases, setup_test_environment)
->>> print(integration_test_results)
-{'communication_logs': [...] , 'interface_validation_results': [...], 'test_scenario_ids': [...]}
+>>> run_integration_tests({
+...   'inputs': {
+...     'integration_test_scenarios': ['SCN-001'],
+...     'environment_config': {'hardware': 'x86_64', 'os': 'ubuntu-22.04'}
+...   }
+>>> })
+{'communication_logs': ['SCN-001: tx_ok; rx_ok'], 'interface_validation_results': ['SCN-001: all_interfaces_valid'], 'test_scenario_ids': ['SCN-001']}
+```
+
+```python
+>>> run_integration_tests({
+...   'inputs': {
+...     'integration_test_scenarios': ['SCN-001', 'SCN-002'],
+...     'environment_config': {'hardware': 'x86_64', 'os': 'ubuntu-22.04'}
+...   }
+>>> })
+{'communication_logs': ['SCN-001: tx_ok; rx_ok', 'SCN-002: tx_fail; rx_ok'], 'interface_validation_results': ['SCN-001: all_interfaces_valid', 'SCN-002: data_format_mismatch'], 'test_scenario_ids': ['SCN-001', 'SCN-002']}
 ```

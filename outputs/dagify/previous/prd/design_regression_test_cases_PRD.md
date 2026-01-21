@@ -1,41 +1,39 @@
 # design_regression_test_cases PRD
 
 ## Description
-Create test cases for unchanged features validation.
+Create test cases for unchanged features validation
 
 
 ## Conceptual Info
 
-This node generates test cases for unchanged features validation.
+This node generates regression test cases focused on unchanged/high-risk features identified from planning inputs. It outputs three parallel lists: the names of high-risk features to test, the precondition steps needed to reproduce stable baseline conditions for each scenario, and concise descriptions of the expected state preservation to validate regression integrity.
 
 ## Docstring
 
 ### Summary
-Generates test cases for unchanged features validation.
+Generate 3-5 regression test scenarios targeting high-risk features with precondition setup and expected state preservation.
 
 ### Parameters
 
-- **test_objectives** (List[str]): High-level test objectives from the plan_test_scope node.
-- **core_functionality_requirements** (List[str]): Core functionality requirements from the plan_test_scope node.
-- **edge_case_requirements** (List[str]): Edge case requirements from the plan_test_scope node.
-- **performance_requirements** (List[str]): Performance requirements from the plan_test_scope node.
+- **plan_scope** (dict): Structured plan scope data produced by plan_test_scope, containing planning context (objectives, requirements, and risk context) used to select high-risk features for regression testing.
 
 ### Returns
 
-[{high_risk_features: List[str]}, {precondition_setup: List[str]}, {expected_state_preservation: List[str]}]: Test cases for unchanged features validation.
+dict: Dictionary with keys 'high_risk_features', 'precondition_setup', and 'expected_state_preservation', each a List[str].
 
 ### Raises
 
-- ValueError: If test objectives or core functionality requirements are empty.
+- ValueError: If plan_scope is missing required risk-context information or necessary keys to identify high-risk features.
+- TypeError: If plan_scope is not a dict.
 
 ### Examples
 
 ```python
->>> design_regression_test_cases(plan_test_scope.test_objectives, plan_test_scope.core_functionality_requirements, plan_test_scope.edge_case_requirements, plan_test_scope.performance_requirements)
-[high_risk_features = ['high-risk-1', 'high-risk-2', 'high-risk-3'], precondition_setup = ['setup-1', 'setup-2', 'setup-3'], expected_state_preservation = ['preservation-1', 'preservation-2', 'preservation-3']]
+>>> generate_regression_test_cases(plan_scope)
+{'high_risk_features': ['auth_token_refresh', 'checkout_flow_timeout'], 'precondition_setup': ['enable regression flag for feature set', 'initialize baseline user data'], 'expected_state_preservation': ['user_session remains valid', 'shopping_cart contents unchanged']}
 ```
 
 ```python
->>> design_regression_test_cases(plan_test_scope.test_objectives, plan_test_scope.core_functionality_requirements, plan_test_scope.edge_case_requirements, plan_test_scope.performance_requirements)
-[high_risk_features = ['high-risk-1', 'high-risk-2', 'high-risk-3'], precondition_setup = ['setup-1', 'setup-2', 'setup-3'], expected_state_preservation = ['preservation-1', 'preservation-2', 'preservation-3']]
+>>> generate_regression_test_cases(plan_scope_variant)
+{'high_risk_features': ['session_timeout', 'pricing_adjustments'], 'precondition_setup': ['set deterministic clock', 'reset test DB'], 'expected_state_preservation': ['session_id unchanged', 'order_record stable']}
 ```

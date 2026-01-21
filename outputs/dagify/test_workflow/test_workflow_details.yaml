@@ -1,48 +1,113 @@
 dag_type: plain_text
-description: A concise workflow that defines a single test case, executes it, validates
-  the outcome, and reports the result.
+description: A workflow to design, execute, and validate a comprehensive test plan
+  through parallel setup, development, execution, and reporting phases
 name: test_workflow
 nodes:
-  define_test_case:
+  aggregate_test_results:
     agent: false
-    description: Generates a JSON definition of the test case.
-    name: define_test_case
+    description: Consolidate validation outcomes
+    name: aggregate_test_results
+    nodes_depended_on:
+    - execute_unit_tests
+    - execute_integration_tests
+    - execute_system_tests
+    nodes_dependent_on:
+    - generate_test_report
+    prompt: Compare actual test outcomes against expected results across all test
+      types, calculate pass/fail percentages and defect rates
+  develop_integration_test_cases:
+    agent: false
+    description: Construct component interaction validation scenarios
+    name: develop_integration_test_cases
+    nodes_depended_on:
+    - setup_environment
+    nodes_dependent_on:
+    - execute_integration_tests
+    prompt: Design tests for interface compatibility, data flow validation, and boundary
+      condition handling between connected modules
+  develop_system_test_cases:
+    agent: false
+    description: Build end-to-end operational scenario tests
+    name: develop_system_test_cases
+    nodes_depended_on:
+    - setup_environment
+    nodes_dependent_on:
+    - execute_system_tests
+    prompt: Create comprehensive test scenarios for full system workflows under realistic
+      environmental conditions
+  develop_unit_test_cases:
+    agent: false
+    description: Create atomic module-level test scenarios
+    name: develop_unit_test_cases
+    nodes_depended_on:
+    - setup_environment
+    nodes_dependent_on:
+    - execute_unit_tests
+    prompt: Design test cases for individual functions/methods covering 100% code
+      paths. Include isolation techniques and mocking where required
+  execute_integration_tests:
+    agent: false
+    description: Validate component interoperability
+    name: execute_integration_tests
+    nodes_depended_on:
+    - develop_integration_test_cases
+    - prepare_test_data
+    nodes_dependent_on:
+    - aggregate_test_results
+    prompt: Run integration tests through all wired system components, capture sequence
+      logs and response times
+  execute_system_tests:
+    agent: false
+    description: Test complete system functionality
+    name: execute_system_tests
+    nodes_depended_on:
+    - develop_system_test_cases
+    - prepare_test_data
+    nodes_dependent_on:
+    - aggregate_test_results
+    prompt: Run end-to-end system tests using realistic workloads, measure performance
+      metrics and functional correctness
+  execute_unit_tests:
+    agent: false
+    description: Run isolated granular test cases
+    name: execute_unit_tests
+    nodes_depended_on:
+    - develop_unit_test_cases
+    - prepare_test_data
+    nodes_dependent_on:
+    - aggregate_test_results
+    prompt: Execute unit test cases with prepared datasets, record code coverage metrics
+      and test outcomes in machine-readable format
+  generate_test_report:
+    agent: false
+    description: Produce comprehensive validation documentation
+    name: generate_test_report
+    nodes_depended_on:
+    - aggregate_test_results
+    nodes_dependent_on: []
+    prompt: Create detailed test summary including pass rates, defect classifications,
+      regression statistics, and root cause analysis
+  prepare_test_data:
+    agent: false
+    description: Generate synthetic test data sets for validation
+    name: prepare_test_data
+    nodes_depended_on:
+    - setup_environment
+    nodes_dependent_on:
+    - execute_unit_tests
+    - execute_integration_tests
+    - execute_system_tests
+    prompt: Create diversified datasets for testing including edge cases, typical
+      scenarios, and invalid inputs. Format data for test compatibility
+  setup_environment:
+    agent: false
+    description: Prepare the testing infrastructure and system requirements
+    name: setup_environment
     nodes_depended_on: []
     nodes_dependent_on:
-    - run_test
-    prompt: 'Create a simple test case definition. Specify the function to test, the
-      input parameters, and the expected output. Present the definition in a JSON
-      object with keys: function_name, inputs, expected_output.'
-  report_result:
-    agent: false
-    description: Produces a final human‑readable test report.
-    name: report_result
-    nodes_depended_on:
-    - validate_result
-    nodes_dependent_on: []
-    prompt: Summarize the test outcome. Output a plain text report that states whether
-      the test passed, the function tested, the inputs used, and any failure details
-      if applicable.
-  run_test:
-    agent: false
-    description: Executes the function under test with the given inputs.
-    name: run_test
-    nodes_depended_on:
-    - define_test_case
-    nodes_dependent_on:
-    - validate_result
-    prompt: 'Using the test case JSON from the previous step, execute the specified
-      function with the provided inputs. Capture the actual output and return it in
-      a JSON object with keys: actual_output. Assume the function is available in
-      the execution environment.'
-  validate_result:
-    agent: false
-    description: Checks if the test passed and records details.
-    name: validate_result
-    nodes_depended_on:
-    - run_test
-    nodes_dependent_on:
-    - report_result
-    prompt: 'Compare the actual_output from the previous step with the expected_output
-      from the test case definition. Return a JSON object with keys: passed (boolean),
-      details (string explaining mismatch if any).'
+    - prepare_test_data
+    - develop_unit_test_cases
+    - develop_integration_test_cases
+    - develop_system_test_cases
+    prompt: Configure the testing environment including software tools, hardware requirements,
+      and network configurations. Verify all dependencies are available
