@@ -1,172 +1,83 @@
-dag_type: typed
-description: Generated workflow from UI.
-name: execute_test_suite
+dag_type: plain_text
+description: A workflow demonstrating one processing node feeding into two parallel
+  processing nodes, with explicit start and stop steps for each node.
+name: parallel_processing_with_dependency
 nodes:
-  analyze_failure_patterns:
+  compile_result_report:
     agent: false
-    description: Identify recurring issue categories in failed tests
-    name: analyze_failure_patterns
+    description: Aggregate outcomes from both parallel processes
+    name: compile_result_report
     nodes_depended_on:
-    - collect_test_results
+    - finalize_parallel_a
+    - finalize_parallel_b
     nodes_dependent_on: []
-    output_structure:
-    - description: List of recurring error categories
-      key: failure_categories
-      type: List[str]
-    - description: Suggested root cause analysis for each recurring error category
-      key: root_cause_suggestions
-      type: List[str]
-    - description: Total number of test failures
-      key: total_test_failures
-      type: int
-    prompt: Group test failures by common error types and suggest root cause categories
-  collect_test_results:
+    prompt: Create a two-sentence summary combining the results of processes A and
+      B. Focus only on synthesizing the provided details into a unified presentation.
+  finalize_parallel_a:
     agent: false
-    description: Aggregate test outcomes from parallel execution
-    name: collect_test_results
+    description: Terminate and clean up parallel process A
+    name: finalize_parallel_a
     nodes_depended_on:
-    - execute_test_module1
-    - execute_test_module2
+    - prepare_parallel_a
     nodes_dependent_on: []
-    output_structure:
-    - description: Pass rate of test scenario
-      key: pass_rate
-      type: float
-    - description: Count of failed test cases in the scenario
-      key: failure_count
-      type: int
-    - description: Tabulated test results including pass/fail status for each scenario
-      key: test_results
-      type: List[str]
-    prompt: Tabulate test results by scenario with percentage pass rate and list of
-      failures
-  create_test_case_module1:
+    prompt: 'Remove temporary resources and confirm completion of process A. Output
+      only: ''Parallel A complete'''
+  finalize_parallel_b:
     agent: false
-    description: Write assertions for scenario 1 test cases.
-    name: create_test_case_module1
+    description: Terminate and clean up parallel process B
+    name: finalize_parallel_b
     nodes_depended_on:
-    - generate_test_data_module1
+    - prepare_parallel_b
     nodes_dependent_on: []
-    output_structure:
-    - description: A list of test assertions in pseudocode format for each data point
-        in scenario 1.
-      key: test_assertions
-      type: List[str]
-    prompt: For each data point in scenario 1, write a test assertion in pseudocode
-      format.
-  create_test_case_module2:
+    prompt: 'Remove temporary resources and confirm completion of process B. Output
+      only: ''Parallel B complete'''
+  initialize_processed_data:
     agent: false
-    description: Write assertions for scenario 2 test cases
-    name: create_test_case_module2
-    nodes_depended_on:
-    - generate_test_data_module2
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of test assertions in pseudocode format
-      key: test_assertions
-      type: List[str]
-    prompt: For each data point in scenario 2, write a test assertion in pseudocode
-      format
-  define_test_scenarios:
-    agent: false
-    description: Create distinct test scenarios with expected outcomes
-    name: define_test_scenarios
+    description: Generate the initial data required for the dependent parallel processes
+    name: initialize_processed_data
     nodes_depended_on: []
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of generated test scenarios with input parameters and expected
-        output
-      key: scenarios
-      type: List[str]
-    prompt: 'Generate 5 unique test scenarios with input parameters and expected output.
-      Format each as: Scenario X - Input: [values], Expected Result: [values]'
-  execute_test_module1:
+    nodes_dependent_on:
+    - prepare_parallel_a
+    - prepare_parallel_b
+    prompt: Generate and store the foundational data or signal required to launch
+      the parallel processes. Describe the output in one sentence.
+  prepare_parallel_a:
     agent: false
-    description: Run all scenario 1 test cases
-    name: execute_test_module1
+    description: Trigger initiation of parallel process A
+    name: prepare_parallel_a
     nodes_depended_on:
-    - create_test_case_module1
-    nodes_dependent_on: []
-    output_structure:
-    - description: Status of test execution
-      key: test_status
-      type: str
-    - description: Number of test results
-      key: result_count
-      type: int
-    - description: List of failed test reports
-      key: failure_reports
-      type: List[str]
-    prompt: For each test assertion in scenario 1, report pass/fail status with error
-      details (if any)
-  execute_test_module2:
+    - initialize_processed_data
+    nodes_dependent_on:
+    - process_parallel_a
+    - finalize_parallel_a
+    prompt: 'Establish the initialization parameters and environment specific to parallel
+      process A. Output only the confirmation: ''Parallel A ready'''
+  prepare_parallel_b:
     agent: false
-    description: Run all scenario 2 test cases
-    name: execute_test_module2
+    description: Trigger initiation of parallel process B
+    name: prepare_parallel_b
     nodes_depended_on:
-    - create_test_case_module2
-    nodes_dependent_on: []
-    output_structure:
-    - description: Number of passed test assertions
-      key: pass_count
-      type: int
-    - description: Number of failed test assertions
-      key: failure_count
-      type: int
-    - description: List of error messages for failed test assertions
-      key: error_messages
-      type: List[str]
-    prompt: For each test assertion in scenario 2, report pass/fail status with error
-      details (if any)
-  generate_test_coverage_report:
+    - initialize_processed_data
+    nodes_dependent_on:
+    - process_parallel_b
+    - finalize_parallel_b
+    prompt: 'Establish the initialization parameters and environment specific to parallel
+      process B. Output only the confirmation: ''Parallel B ready'''
+  process_parallel_a:
     agent: false
-    description: Create summary of testing scope and results
-    name: generate_test_coverage_report
+    description: Execute the core transformation logic for parallel process A
+    name: process_parallel_a
     nodes_depended_on:
-    - collect_test_results
-    - analyze_failure_patterns
+    - prepare_parallel_a
     nodes_dependent_on: []
-    output_structure:
-    - description: Comprehensive test coverage report
-      key: test_coverage_report
-      type: str
-    - description: Pass rates for each test scenario
-      key: pass_rates
-      type: List[float]
-    - description: Analysis of failure patterns
-      key: failure_analysis
-      type: str
-    - description: Identified coverage gaps in the testing scope
-      key: coverage_gaps
-      type: List[str]
-    prompt: Produce a comprehensive test coverage report with pass rates, failure
-      analysis, and coverage gaps
-  generate_test_data_module1:
+    prompt: Run the parallel process A operations using the previously prepared environment
+      and input data. Summarize results in one sentence.
+  process_parallel_b:
     agent: false
-    description: Create synthetic test data for scenario 1
-    name: generate_test_data_module1
+    description: Execute the core transformation logic for parallel process B
+    name: process_parallel_b
     nodes_depended_on:
-    - define_test_scenarios
+    - prepare_parallel_b
     nodes_dependent_on: []
-    output_structure:
-    - description: List of synthetic test data values
-      key: test_data
-      type: List[str]
-    prompt: Generate 10 test data points matching scenario 1 requirements with random
-      valid parameter variations
-  generate_test_data_module2:
-    agent: false
-    description: Create synthetic test data for scenario 2
-    name: generate_test_data_module2
-    nodes_depended_on:
-    - define_test_scenarios
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of lists containing test data points
-      key: test_data
-      type: List[str]
-    - description: Total number of test data points generated
-      key: total_data_points
-      type: int
-    prompt: Generate 10 test data points matching scenario 2 requirements with random
-      valid parameter variations.
+    prompt: Run the parallel process B operations using the previously prepared environment
+      and input data. Summarize results in one sentence.
