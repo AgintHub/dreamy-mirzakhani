@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A parallelizable workflow for testing that decomposes test execution
-  into modular, concurrent component workflows
+dag_type: typed
+description: Generated workflow from UI.
 name: execute_test_suite
 nodes:
   analyze_failure_patterns:
@@ -10,6 +9,16 @@ nodes:
     nodes_depended_on:
     - collect_test_results
     nodes_dependent_on: []
+    output_structure:
+    - description: List of recurring error categories
+      key: failure_categories
+      type: List[str]
+    - description: Suggested root cause analysis for each recurring error category
+      key: root_cause_suggestions
+      type: List[str]
+    - description: Total number of test failures
+      key: total_test_failures
+      type: int
     prompt: Group test failures by common error types and suggest root cause categories
   collect_test_results:
     agent: false
@@ -19,17 +28,32 @@ nodes:
     - execute_test_module1
     - execute_test_module2
     nodes_dependent_on: []
+    output_structure:
+    - description: Pass rate of test scenario
+      key: pass_rate
+      type: float
+    - description: Count of failed test cases in the scenario
+      key: failure_count
+      type: int
+    - description: Tabulated test results including pass/fail status for each scenario
+      key: test_results
+      type: List[str]
     prompt: Tabulate test results by scenario with percentage pass rate and list of
       failures
   create_test_case_module1:
     agent: false
-    description: Write assertions for scenario 1 test cases
+    description: Write assertions for scenario 1 test cases.
     name: create_test_case_module1
     nodes_depended_on:
     - generate_test_data_module1
     nodes_dependent_on: []
+    output_structure:
+    - description: A list of test assertions in pseudocode format for each data point
+        in scenario 1.
+      key: test_assertions
+      type: List[str]
     prompt: For each data point in scenario 1, write a test assertion in pseudocode
-      format
+      format.
   create_test_case_module2:
     agent: false
     description: Write assertions for scenario 2 test cases
@@ -37,6 +61,10 @@ nodes:
     nodes_depended_on:
     - generate_test_data_module2
     nodes_dependent_on: []
+    output_structure:
+    - description: List of test assertions in pseudocode format
+      key: test_assertions
+      type: List[str]
     prompt: For each data point in scenario 2, write a test assertion in pseudocode
       format
   define_test_scenarios:
@@ -45,6 +73,11 @@ nodes:
     name: define_test_scenarios
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: List of generated test scenarios with input parameters and expected
+        output
+      key: scenarios
+      type: List[str]
     prompt: 'Generate 5 unique test scenarios with input parameters and expected output.
       Format each as: Scenario X - Input: [values], Expected Result: [values]'
   execute_test_module1:
@@ -54,6 +87,16 @@ nodes:
     nodes_depended_on:
     - create_test_case_module1
     nodes_dependent_on: []
+    output_structure:
+    - description: Status of test execution
+      key: test_status
+      type: str
+    - description: Number of test results
+      key: result_count
+      type: int
+    - description: List of failed test reports
+      key: failure_reports
+      type: List[str]
     prompt: For each test assertion in scenario 1, report pass/fail status with error
       details (if any)
   execute_test_module2:
@@ -63,6 +106,16 @@ nodes:
     nodes_depended_on:
     - create_test_case_module2
     nodes_dependent_on: []
+    output_structure:
+    - description: Number of passed test assertions
+      key: pass_count
+      type: int
+    - description: Number of failed test assertions
+      key: failure_count
+      type: int
+    - description: List of error messages for failed test assertions
+      key: error_messages
+      type: List[str]
     prompt: For each test assertion in scenario 2, report pass/fail status with error
       details (if any)
   generate_test_coverage_report:
@@ -73,6 +126,19 @@ nodes:
     - collect_test_results
     - analyze_failure_patterns
     nodes_dependent_on: []
+    output_structure:
+    - description: Comprehensive test coverage report
+      key: test_coverage_report
+      type: str
+    - description: Pass rates for each test scenario
+      key: pass_rates
+      type: List[float]
+    - description: Analysis of failure patterns
+      key: failure_analysis
+      type: str
+    - description: Identified coverage gaps in the testing scope
+      key: coverage_gaps
+      type: List[str]
     prompt: Produce a comprehensive test coverage report with pass rates, failure
       analysis, and coverage gaps
   generate_test_data_module1:
@@ -82,6 +148,10 @@ nodes:
     nodes_depended_on:
     - define_test_scenarios
     nodes_dependent_on: []
+    output_structure:
+    - description: List of synthetic test data values
+      key: test_data
+      type: List[str]
     prompt: Generate 10 test data points matching scenario 1 requirements with random
       valid parameter variations
   generate_test_data_module2:
@@ -91,5 +161,12 @@ nodes:
     nodes_depended_on:
     - define_test_scenarios
     nodes_dependent_on: []
+    output_structure:
+    - description: List of lists containing test data points
+      key: test_data
+      type: List[str]
+    - description: Total number of test data points generated
+      key: total_data_points
+      type: int
     prompt: Generate 10 test data points matching scenario 2 requirements with random
-      valid parameter variations
+      valid parameter variations.
