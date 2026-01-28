@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: A workflow to design, execute, and validate a comprehensive test plan
-  through parallel setup, development, execution, and reporting phases
+dag_type: typed
+description: Generated workflow from UI.
 name: test_workflow
 nodes:
   aggregate_test_results:
@@ -11,8 +10,32 @@ nodes:
     - execute_unit_tests
     - execute_integration_tests
     - execute_system_tests
-    nodes_dependent_on:
-    - generate_test_report
+    nodes_dependent_on: []
+    output_structure:
+    - description: Total number of test cases executed across unit, integration, and
+        system tests
+      key: total_test_cases
+      type: int
+    - description: Number of test cases that passed
+      key: passed_test_cases
+      type: int
+    - description: Number of test cases that failed
+      key: failed_test_cases
+      type: int
+    - description: Percentage of passed test cases (passed / total * 100)
+      key: pass_percentage
+      type: float
+    - description: Percentage of failed test cases (failed / total * 100)
+      key: fail_percentage
+      type: float
+    - description: 'List of defect counts identified per test type in the order: [unit,
+        integration, system]'
+      key: defect_counts
+      type: List[int]
+    - description: Overall defect rate calculated as total defects divided by total
+        test cases
+      key: defect_rate
+      type: float
     prompt: Compare actual test outcomes against expected results across all test
       types, calculate pass/fail percentages and defect rates
   develop_integration_test_cases:
@@ -21,8 +44,32 @@ nodes:
     name: develop_integration_test_cases
     nodes_depended_on:
     - setup_environment
-    nodes_dependent_on:
-    - execute_integration_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifiers for each generated integration test case
+      key: test_case_ids
+      type: List[str]
+    - description: Brief textual description of the purpose and steps of each test
+        case
+      key: test_case_descriptions
+      type: List[str]
+    - description: Names of the interfaces or modules involved in each test case
+      key: interface_names
+      type: List[str]
+    - description: Specified boundary conditions or edge cases covered by each test
+        case
+      key: boundary_conditions
+      type: List[str]
+    - description: Expected results or pass criteria for each test case
+      key: expected_outcomes
+      type: List[str]
+    - description: Numeric priority (e.g., 1‑5) assigned to each test case, where
+        a lower number indicates higher priority
+      key: priority_levels
+      type: List[int]
+    - description: Indicates whether each test case requires mocking of external dependencies
+      key: requires_mocking
+      type: List[bool]
     prompt: Design tests for interface compatibility, data flow validation, and boundary
       condition handling between connected modules
   develop_system_test_cases:
@@ -31,8 +78,25 @@ nodes:
     name: develop_system_test_cases
     nodes_depended_on:
     - setup_environment
-    nodes_dependent_on:
-    - execute_system_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifiers for each system test case generated
+      key: test_case_ids
+      type: List[str]
+    - description: Human‑readable description of each end‑to‑end system workflow scenario
+      key: test_scenario_descriptions
+      type: List[str]
+    - description: Estimated runtime in minutes for each test scenario
+      key: estimated_execution_time_minutes
+      type: List[int]
+    - description: List of hardware, software, or data resources needed to execute
+        each test case
+      key: required_resources
+      type: List[str]
+    - description: Flag indicating whether each test case is part of the critical
+        path for system validation
+      key: is_critical_path
+      type: List[bool]
     prompt: Create comprehensive test scenarios for full system workflows under realistic
       environmental conditions
   develop_unit_test_cases:
@@ -41,8 +105,32 @@ nodes:
     name: develop_unit_test_cases
     nodes_depended_on:
     - setup_environment
-    nodes_dependent_on:
-    - execute_unit_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifiers for each generated unit test case
+      key: test_case_ids
+      type: List[str]
+    - description: Brief description of the purpose and scenario of each test case
+      key: test_case_descriptions
+      type: List[str]
+    - description: Names of the functions or methods that each test case validates
+      key: target_functions
+      type: List[str]
+    - description: Flag for each test case indicating whether isolation (e.g., dependency
+        injection) is applied
+      key: isolation_techniques
+      type: List[bool]
+    - description: Description of mocking strategies or libraries used for each test
+        case
+      key: mocking_strategies
+      type: List[str]
+    - description: Expected result or assertion for each test case
+      key: expected_outcomes
+      type: List[str]
+    - description: Overall code coverage percentage achieved by the generated unit
+        test suite
+      key: coverage_percentage
+      type: float
     prompt: Design test cases for individual functions/methods covering 100% code
       paths. Include isolation techniques and mocking where required
   execute_integration_tests:
@@ -52,8 +140,24 @@ nodes:
     nodes_depended_on:
     - develop_integration_test_cases
     - prepare_test_data
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Identifiers of the integration test cases that were executed
+      key: test_case_ids
+      type: List[str]
+    - description: Pass/fail result for each test case (true = pass, false = fail)
+      key: test_statuses
+      type: List[bool]
+    - description: Measured response time in milliseconds for each test case
+      key: response_times_ms
+      type: List[float]
+    - description: Concise log excerpt for each test case describing key events and
+        any errors
+      key: log_summaries
+      type: List[str]
+    - description: Overall percentage of passed test cases (0.0 – 100.0)
+      key: overall_pass_rate
+      type: float
     prompt: Run integration tests through all wired system components, capture sequence
       logs and response times
   execute_system_tests:
@@ -63,8 +167,28 @@ nodes:
     nodes_depended_on:
     - develop_system_test_cases
     - prepare_test_data
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for this system test execution run
+      key: test_execution_id
+      type: str
+    - description: Names of the system test cases that were executed
+      key: test_case_names
+      type: List[str]
+    - description: Pass/fail result for each executed test case
+      key: test_passed
+      type: List[bool]
+    - description: Measured performance values (e.g., response time, throughput) for
+        each test case
+      key: performance_metrics
+      type: List[float]
+    - description: Overall success flag indicating whether all system tests met their
+        pass criteria
+      key: overall_success
+      type: bool
+    - description: Concise textual summary of execution logs and any errors encountered
+      key: log_summary
+      type: str
     prompt: Run end-to-end system tests using realistic workloads, measure performance
       metrics and functional correctness
   execute_unit_tests:
@@ -74,10 +198,38 @@ nodes:
     nodes_depended_on:
     - develop_unit_test_cases
     - prepare_test_data
-    nodes_dependent_on:
-    - aggregate_test_results
+    nodes_dependent_on: []
+    output_structure:
+    - description: Identifiers of the unit test cases that were executed
+      key: test_case_ids
+      type: List[str]
+    - description: Outcome for each test case (e.g., "passed", "failed", "skipped")
+      key: test_case_results
+      type: List[str]
+    - description: Number of test cases that passed
+      key: passed_count
+      type: int
+    - description: Number of test cases that failed
+      key: failed_count
+      type: int
+    - description: Number of test cases that were skipped
+      key: skipped_count
+      type: int
+    - description: Total number of unit test cases executed
+      key: total_tests
+      type: int
+    - description: Overall code coverage percentage achieved by the unit tests
+      key: coverage_percent
+      type: float
+    - description: Total time taken to run all unit tests, in seconds
+      key: execution_time_seconds
+      type: float
+    - description: JSON or CSV string containing the full structured results for downstream
+        consumption
+      key: results_machine_readable
+      type: str
     prompt: Execute unit test cases with prepared datasets, record code coverage metrics
-      and test outcomes in machine-readable format
+      and test outcomes in machine‑readable format
   generate_test_report:
     agent: false
     description: Produce comprehensive validation documentation
@@ -85,6 +237,38 @@ nodes:
     nodes_depended_on:
     - aggregate_test_results
     nodes_dependent_on: []
+    output_structure:
+    - description: Title of the generated test report
+      key: report_title
+      type: str
+    - description: Overall percentage of passed test cases across all test types
+      key: overall_pass_rate
+      type: float
+    - description: Overall percentage of failed test cases across all test types
+      key: overall_fail_rate
+      type: float
+    - description: Total number of defects identified during testing
+      key: total_defect_count
+      type: int
+    - description: Defect rate expressed as a percentage of total test cases
+      key: defect_rate
+      type: float
+    - description: Number of regression tests executed
+      key: regression_test_count
+      type: int
+    - description: Pass rate for regression tests
+      key: regression_pass_rate
+      type: float
+    - description: High‑level summary of root cause analysis for identified defects
+      key: root_cause_summary
+      type: str
+    - description: Itemized list of key findings, including defect classifications
+        and notable observations
+      key: detailed_findings
+      type: List[str]
+    - description: ISO‑8601 timestamp indicating when the report was generated
+      key: report_generated_timestamp
+      type: str
     prompt: Create detailed test summary including pass rates, defect classifications,
       regression statistics, and root cause analysis
   prepare_test_data:
@@ -93,10 +277,26 @@ nodes:
     name: prepare_test_data
     nodes_depended_on:
     - setup_environment
-    nodes_dependent_on:
-    - execute_unit_tests
-    - execute_integration_tests
-    - execute_system_tests
+    nodes_dependent_on: []
+    output_structure:
+    - description: File system paths or identifiers for each generated test data file
+      key: dataset_file_paths
+      type: List[str]
+    - description: Number of records/rows in each corresponding dataset
+      key: record_counts
+      type: List[int]
+    - description: Indicates whether the generated datasets contain explicitly crafted
+        edge‑case records
+      key: includes_edge_cases
+      type: bool
+    - description: Indicates whether the datasets contain deliberately malformed or
+        invalid input examples
+      key: includes_invalid_inputs
+      type: bool
+    - description: List of data formats (e.g., CSV, JSON, XML) used for the generated
+        datasets
+      key: data_formats
+      type: List[str]
     prompt: Create diversified datasets for testing including edge cases, typical
       scenarios, and invalid inputs. Format data for test compatibility
   setup_environment:
@@ -104,10 +304,25 @@ nodes:
     description: Prepare the testing infrastructure and system requirements
     name: setup_environment
     nodes_depended_on: []
-    nodes_dependent_on:
-    - prepare_test_data
-    - develop_unit_test_cases
-    - develop_integration_test_cases
-    - develop_system_test_cases
+    nodes_dependent_on: []
+    output_structure:
+    - description: Indicates whether the testing environment has been successfully
+        set up and is ready for use
+      key: environment_ready
+      type: bool
+    - description: List of software tools and versions that were installed in the
+        environment
+      key: installed_software_tools
+      type: List[str]
+    - description: List of hardware components that were provisioned and verified
+      key: hardware_components
+      type: List[str]
+    - description: Indicates whether network settings and connectivity have been correctly
+        configured
+      key: network_configuration_status
+      type: bool
+    - description: List of any required dependencies that could not be found or installed
+      key: missing_dependencies
+      type: List[str]
     prompt: Configure the testing environment including software tools, hardware requirements,
       and network configurations. Verify all dependencies are available
