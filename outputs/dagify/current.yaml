@@ -1,4 +1,4 @@
-dag_type: plain_text
+dag_type: typed
 description: Generated workflow from UI.
 name: post_trading_workflow
 nodes:
@@ -11,6 +11,23 @@ nodes:
     nodes_depended_on:
     - establish_pico_connection
     nodes_dependent_on: []
+    output_structure:
+    - description: OAuth 2.0 access token used to authenticate requests to the Pico
+        datacenter.
+      key: access_token
+      type: str
+    - description: Type of the token (e.g., Bearer).
+      key: token_type
+      type: str
+    - description: Number of seconds until the token expires.
+      key: expires_in
+      type: int
+    - description: List of OAuth scopes granted by the token.
+      key: scopes
+      type: List[str]
+    - description: Indicates whether the token was successfully validated.
+      key: is_valid
+      type: bool
     prompt: Authenticate to the Pico datacenter by initiating an OAuth 2.0 flow using
       the provided client credentials. Obtain and validate the access token to enable
       authorized, secure access to Pico datacenter resources without direct use of
@@ -23,6 +40,28 @@ nodes:
     name: establish_pico_connection
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: OAuth 2.0 access token for authenticating with the pico datacenter.
+      key: access_token
+      type: str
+    - description: Type of token, typically 'Bearer'.
+      key: token_type
+      type: str
+    - description: Time in seconds until the access token expires.
+      key: expires_in
+      type: int
+    - description: Status of the connection attempt, e.g., 'connected' or 'failed'.
+      key: connection_status
+      type: str
+    - description: True if connection was successfully established, False otherwise.
+      key: is_connected
+      type: bool
+    - description: Unique identifier for the established connection session.
+      key: connection_id
+      type: str
+    - description: Error message if the connection attempt failed; empty string otherwise.
+      key: error_message
+      type: str
     prompt: Establish a secure OAuth 2.0 authenticated connection to the pico datacenter
       by obtaining and using valid access tokens based on the provided OAuth credentials,
       ensuring encrypted transmission and adherence to best practices in identity
@@ -36,6 +75,20 @@ nodes:
     nodes_depended_on:
     - authenticate_pico_credentials
     nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier for the dropcopy source.
+      key: source_id
+      type: str
+    - description: Human-readable name of the dropcopy source.
+      key: source_name
+      type: str
+    - description: URI or path to the dropcopy source within the pico datacenter.
+      key: source_uri
+      type: str
+    - description: Indicates whether the source was verified as accessible and ready
+        for extraction.
+      key: is_accessible
+      type: bool
     prompt: Using secure OAuth authentication, identify the specific, authoritative
       dropcopy source within the pico datacenter infrastructure that requires extraction.
       Ensure that the source is accurately pinpointed by validating its accessibility
@@ -52,6 +105,35 @@ nodes:
     - store_dropcopy_part2
     - store_dropcopy_part3
     nodes_dependent_on: []
+    output_structure:
+    - description: Unique identifier or repository path of the merged dropcopy dataset.
+      key: merged_dataset_id
+      type: str
+    - description: Total number of records aggregated into the merged dataset.
+      key: record_count
+      type: int
+    - description: Total size of the merged dataset in bytes.
+      key: total_size_bytes
+      type: int
+    - description: ISO 8601 timestamp when the merge operation was completed.
+      key: merge_timestamp
+      type: str
+    - description: Indicates whether the merge operation completed successfully.
+      key: merge_success
+      type: bool
+    - description: Identifier of the stored first segment of the dropcopy.
+      key: part1_id
+      type: str
+    - description: Identifier of the stored second segment of the dropcopy.
+      key: part2_id
+      type: str
+    - description: Identifier of the stored third segment of the dropcopy.
+      key: part3_id
+      type: str
+    - description: Cryptographic hash (e.g., SHA-256) of the merged dataset for integrity
+        verification.
+      key: checksum
+      type: str
     prompt: Using OAuth authentication, securely merge the three stored and processed
       segments of the dropcopy into a single, consolidated dataset within the repository.
       Ensure the merged dataset maintains full consistency and integrity, preparing
@@ -66,6 +148,40 @@ nodes:
     nodes_depended_on:
     - verify_dropcopy_integrity
     nodes_dependent_on: []
+    output_structure:
+    - description: Status of the notification delivery (e.g., 'sent', 'failed').
+      key: notification_status
+      type: str
+    - description: The content of the notification sent to stakeholders.
+      key: notification_message
+      type: str
+    - description: ISO 8601 timestamp when the notification was sent.
+      key: notification_timestamp
+      type: str
+    - description: List of stakeholder identifiers (e.g., email addresses) who received
+        the notification.
+      key: stakeholders_notified
+      type: List[str]
+    - description: Unique identifier of the dropcopy dataset.
+      key: dropcopy_id
+      type: str
+    - description: Cryptographic hash value used to verify the dropcopy integrity.
+      key: verification_hash
+      type: str
+    - description: ISO 8601 timestamp when the dropcopy integrity verification was
+        performed.
+      key: verification_timestamp
+      type: str
+    - description: True if the dropcopy integrity verification succeeded; false otherwise.
+      key: is_verified
+      type: bool
+    - description: Total time in seconds spent processing the dropcopy.
+      key: processing_time_seconds
+      type: float
+    - description: Error details if the notification or verification failed; empty
+        string otherwise.
+      key: error_message
+      type: str
     prompt: Using OAuth authentication for secure authorization, notify stakeholders
       that the dropcopy has been successfully pulled, its integrity verified, and
       processing completed without errors. Include relevant metadata about processing
@@ -79,6 +195,40 @@ nodes:
     nodes_depended_on:
     - pull_dropcopy
     nodes_dependent_on: []
+    output_structure:
+    - description: Identifier for the part of the dropcopy being processed.
+      key: part_number
+      type: int
+    - description: Number of trade records extracted from this part.
+      key: record_count
+      type: int
+    - description: List of transaction identifiers extracted from this part.
+      key: transaction_ids
+      type: List[str]
+    - description: List of instrument identifiers corresponding to each trade.
+      key: instrument_ids
+      type: List[str]
+    - description: List indicating the trade side ('buy' or 'sell') for each record.
+      key: sides
+      type: List[str]
+    - description: List of trade volumes (number of units) for each record.
+      key: trade_volumes
+      type: List[int]
+    - description: List of trade prices per unit for each record.
+      key: trade_prices
+      type: List[float]
+    - description: ISO 8601 timestamps for each trade record.
+      key: trade_timestamps
+      type: List[str]
+    - description: Flag indicating whether the extraction and parsing were successful.
+      key: is_valid
+      type: bool
+    - description: Total volume of all trades in this part.
+      key: total_volume
+      type: int
+    - description: Average trade price for this part.
+      key: average_price
+      type: float
     prompt: Utilize OAuth-authenticated credentials to securely process the first
       segment of the pulled dropcopy data. Extract and parse relevant transactional,
       pricing, and timestamp details with precision, transforming raw data into structured,
@@ -92,14 +242,33 @@ nodes:
     nodes_depended_on:
     - pull_dropcopy
     nodes_dependent_on: []
+    output_structure:
+    - description: List of unique trade identifiers extracted from the dropcopy segment.
+      key: trade_ids
+      type: List[str]
+    - description: Corresponding trade prices.
+      key: prices
+      type: List[float]
+    - description: Corresponding trade volumes.
+      key: volumes
+      type: List[int]
+    - description: Stock or asset symbols associated with each trade.
+      key: symbols
+      type: List[str]
+    - description: ISO 8601 timestamps of each trade.
+      key: timestamps
+      type: List[str]
+    - description: Trade side ('buy' or 'sell') for each trade.
+      key: sides
+      type: List[str]
     prompt: Using OAuth authentication, process the second part of the pulled dropcopy
       to accurately extract, validate, and structure relevant trade and market information,
       ensuring data consistency and compliance with access security protocols.
   process_dropcopy_part3:
     agent: false
-    description: This node performs a secure, OAuth‑authenticated extraction of the
+    description: This node performs a secure, OAuth-authenticated extraction of the
       third portion of the dropcopy obtained from the pico datacenter. It verifies
-      the access token’s validity (client‑credentials or delegated flow), automatically
+      the access token's validity (client-credentials or delegated flow), automatically
       refreshes tokens as needed, and parses the provided data segment, extracting
       relevant metadata, user identifiers, timestamps, and payload contents. The node
       then sanitizes, normalizes, and serializes the extracted information into a
@@ -109,6 +278,36 @@ nodes:
     nodes_depended_on:
     - pull_dropcopy
     nodes_dependent_on: []
+    output_structure:
+    - description: List of metadata field names extracted from the dropcopy segment
+      key: metadata_keys
+      type: List[str]
+    - description: Corresponding list of metadata field values as strings
+      key: metadata_values
+      type: List[str]
+    - description: List of user identifiers extracted from the data segment
+      key: user_ids
+      type: List[str]
+    - description: List of timestamps in ISO 8601 string format associated with extracted
+        events
+      key: timestamps
+      type: List[str]
+    - description: Serialized JSON strings representing sanitized and normalized payload
+        data items
+      key: payload_contents
+      type: List[str]
+    - description: Chronological log entries of authentication states and token refresh
+        events
+      key: auth_states
+      type: List[str]
+    - description: Logs and metrics related to parsing performance and encountered
+        errors or warnings
+      key: parse_metrics
+      type: List[str]
+    - description: Indicates whether the processing and extraction were successful
+        without critical errors
+      key: success
+      type: bool
     prompt: Using OAuth 2.0 authentication, securely access the third section of the
       dropcopy supplied by the previous pull_dropcopy step. Validate the access token,
       refresh it if expired, then parse the data, extract all required fields, and
@@ -124,6 +323,26 @@ nodes:
     nodes_depended_on:
     - identify_dropcopy_source
     nodes_dependent_on: []
+    output_structure:
+    - description: Base64-encoded raw dropcopy data retrieved from the source.
+      key: raw_data_base64
+      type: str
+    - description: Identifier of the dropcopy source, as determined by identify_dropcopy_source
+        node.
+      key: source_id
+      type: str
+    - description: ISO 8601 timestamp of when the dropcopy was retrieved.
+      key: retrieved_at
+      type: str
+    - description: Total size in bytes of the retrieved dropcopy data.
+      key: size_bytes
+      type: int
+    - description: SHA-256 hash of the retrieved dropcopy data for integrity verification.
+      key: sha256_hash
+      type: str
+    - description: Indicates whether the dropcopy retrieval succeeded without errors.
+      key: retrieval_success
+      type: bool
     prompt: Authenticate using OAuth credentials and securely pull the dropcopy data
       from the identified source in the pico datacenter, ensuring compliance with
       access protocols and data integrity standards.
@@ -136,6 +355,26 @@ nodes:
     nodes_depended_on:
     - process_dropcopy_part1
     nodes_dependent_on: []
+    output_structure:
+    - description: The file system or repository path where the processed dropcopy
+        segment was stored.
+      key: file_path
+      type: str
+    - description: Indicates whether the storage operation succeeded.
+      key: is_successful
+      type: bool
+    - description: The number of records or entries stored from the processed dropcopy
+        segment.
+      key: records_stored
+      type: int
+    - description: Timestamp (ISO 8601 format) indicating when the storage operation
+        was completed.
+      key: storage_timestamp
+      type: str
+    - description: Error message if the storage operation failed; empty string if
+        successful.
+      key: error_message
+      type: str
     prompt: Authenticate using OAuth and securely store the first processed segment
       of the dropcopy into the designated repository, enabling streamlined access
       control and safeguarding data integrity for further comprehensive analysis.
@@ -149,6 +388,25 @@ nodes:
     nodes_depended_on:
     - process_dropcopy_part2
     nodes_dependent_on: []
+    output_structure:
+    - description: Repository path or URL where the processed second segment was stored.
+      key: stored_file_path
+      type: str
+    - description: Number of trade records stored.
+      key: record_count
+      type: int
+    - description: SHA-256 hash of the stored file for integrity verification.
+      key: storage_hash
+      type: str
+    - description: True if storage succeeded, False otherwise.
+      key: storage_success
+      type: bool
+    - description: ISO 8601 timestamp of when the file was stored.
+      key: stored_timestamp
+      type: str
+    - description: List of trade IDs included in the stored segment.
+      key: trade_ids
+      type: List[str]
     prompt: Authenticate the storage operation using OAuth to securely store the fully
       processed second segment of the dropcopy data in the designated repository,
       ensuring compliance and enabling efficient retrieval for comprehensive downstream
@@ -162,6 +420,22 @@ nodes:
     nodes_depended_on:
     - process_dropcopy_part3
     nodes_dependent_on: []
+    output_structure:
+    - description: The repository path where the processed dropcopy part 3 was stored.
+      key: stored_file_path
+      type: str
+    - description: The number of records stored from the processed dropcopy part 3.
+      key: record_count
+      type: int
+    - description: The SHA-256 checksum of the stored file to verify data integrity.
+      key: checksum
+      type: str
+    - description: The ISO 8601 timestamp when the file was stored.
+      key: stored_at
+      type: str
+    - description: Whether the storage operation succeeded without errors.
+      key: is_success
+      type: bool
     prompt: Authenticate the storage operation using OAuth and securely store the
       third processed segment of the dropcopy data in the designated repository. Ensure
       that the storage process preserves data integrity and enables seamless access
@@ -177,6 +451,22 @@ nodes:
     nodes_depended_on:
     - merge_stored_dropcopy
     nodes_dependent_on: []
+    output_structure:
+    - description: Boolean indicating whether the dropcopy integrity verification
+        passed successfully
+      key: is_integrity_valid
+      type: bool
+    - description: ISO 8601 timestamp when the integrity verification was performed
+      key: validation_timestamp
+      type: str
+    - description: Name of the cryptographic method or algorithm used for the integrity
+        verification
+      key: validation_method
+      type: str
+    - description: Additional information or notes related to the verification process,
+        including error messages if verification failed
+      key: details_message
+      type: str
     prompt: Authenticate and verify the integrity of the consolidated dropcopy dataset
       using OAuth-secured access. Cryptographically validate that the merged dropcopy
       has remained unaltered, confirming data consistency and ensuring it has not
