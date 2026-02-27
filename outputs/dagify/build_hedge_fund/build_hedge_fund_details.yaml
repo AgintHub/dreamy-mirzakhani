@@ -1,7 +1,6 @@
 dag_type: plain_text
-description: A comprehensive, step‑by‑step workflow that produces a ready‑to‑launch
-  hedge fund plan, covering objectives, strategy, legal setup, operations, risk, compliance,
-  fundraising, and launch timeline.
+description: A step‑by‑step plan that creates all documents, decisions, and arrangements
+  needed to launch a hedge fund.
 name: build_hedge_fund
 nodes:
   choose_investment_strategy:
@@ -13,30 +12,27 @@ nodes:
     nodes_dependent_on:
     - define_asset_universe
     - design_risk_management_framework
-    - draft_fee_structure
-    - compile_pitch_deck_outline
     prompt: Select one primary hedge fund strategy category that best serves the fund
       objectives (e.g., long/short equity, global macro). Provide a one‑sentence rationale.
   choose_legal_entity_type:
     agent: false
-    description: Define the legal structure of the fund.
+    description: Decide on the legal vehicle for the fund.
     name: choose_legal_entity_type
     nodes_depended_on:
     - select_jurisdiction
     nodes_dependent_on:
-    - list_service_providers
-    - outline_governance_structure
     - design_compliance_program
+    - outline_governance_structure
     prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
       for the chosen jurisdiction. Give a one‑sentence explanation.
   clarify_fund_objectives:
     agent: false
-    description: Create a list of core objectives that the fund seeks to achieve.
+    description: Generate the core business objectives of the hedge fund.
     name: clarify_fund_objectives
     nodes_depended_on: []
     nodes_dependent_on:
-    - select_jurisdiction
     - choose_investment_strategy
+    - select_jurisdiction
     - define_investor_profile
     - set_performance_and_risk_targets
     prompt: State the primary business objectives for launching the hedge fund. Produce
@@ -44,7 +40,7 @@ nodes:
       vision (max 8 bullets). Focus only on objectives, do not include strategy details.
   compile_pitch_deck_outline:
     agent: false
-    description: Framework for fundraising presentation.
+    description: Create an outline for the investor pitch deck.
     name: compile_pitch_deck_outline
     nodes_depended_on:
     - clarify_fund_objectives
@@ -53,8 +49,7 @@ nodes:
     - set_performance_and_risk_targets
     - draft_fee_structure
     - design_risk_management_framework
-    nodes_dependent_on:
-    - produce_final_fund_plan_summary
+    nodes_dependent_on: []
     prompt: Create a 10‑slide outline (slide titles only) for an investor pitch deck
       incorporating objectives, strategy, team, edge, risk controls, fees, and expected
       returns.
@@ -64,20 +59,17 @@ nodes:
     name: create_hiring_plan
     nodes_depended_on:
     - draft_operations_workflow
-    - choose_legal_entity_type
-    nodes_dependent_on:
-    - develop_timeline_and_milestones
+    nodes_dependent_on: []
     prompt: List essential full‑time positions for launch (max 8), with one‑line responsibility
       each. Align roles with operations workflow gaps.
   define_asset_universe:
     agent: false
-    description: Enumerate tradable assets.
+    description: Enumerate tradable assets for the strategy.
     name: define_asset_universe
     nodes_depended_on:
     - choose_investment_strategy
     nodes_dependent_on:
     - draft_operations_workflow
-    - estimate_setup_and_operating_costs
     prompt: List the specific asset classes and instruments the chosen strategy will
       trade (e.g., US large‑cap equities, S&P futures). Keep list ≤10 items.
   define_investor_profile:
@@ -88,10 +80,19 @@ nodes:
     - clarify_fund_objectives
     nodes_dependent_on:
     - compile_pitch_deck_outline
-    - draft_fee_structure
     prompt: 'Based on the stated fund objectives, specify the ideal target investor
       profile (e.g., family offices, pensions). List key characteristics: typical
       ticket size, risk tolerance, liquidity preference, and geographic focus.'
+  define_technology_stack:
+    agent: false
+    description: Specify technology tools supporting operations.
+    name: define_technology_stack
+    nodes_depended_on:
+    - draft_operations_workflow
+    nodes_dependent_on: []
+    prompt: 'Identify required software and infrastructure components for each operations
+      step (e.g., OMS, EMS, risk system). Present as 2‑column table: Ops Step | Tech
+      Component.'
   design_compliance_program:
     agent: false
     description: Create compliance policies aligned with regulations and risk.
@@ -99,46 +100,28 @@ nodes:
     nodes_depended_on:
     - identify_regulatory_requirements
     - design_risk_management_framework
-    - design_technology_stack
-    - choose_legal_entity_type
     nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - produce_final_fund_plan_summary
+    - draft_pitch_deck_outline
     prompt: 'Generate a compliance checklist mapping each regulatory requirement to
       a specific internal policy or procedure. Table with columns: Requirement | Policy
       Reference.'
   design_risk_management_framework:
     agent: false
-    description: Outline quantitative and qualitative risk controls.
+    description: Outline risk controls for the fund.
     name: design_risk_management_framework
     nodes_depended_on:
     - set_performance_and_risk_targets
-    - define_asset_universe
     nodes_dependent_on:
     - draft_operations_workflow
-    - design_compliance_program
-    - draft_fee_structure
     prompt: 'List core risk controls aligned with the target metrics: position limits,
       VaR limits, stop‑loss rules, liquidity thresholds. Provide 4–6 bullet points.'
-  design_technology_stack:
-    agent: false
-    description: Specify technology tools supporting operations.
-    name: design_technology_stack
-    nodes_depended_on:
-    - draft_operations_workflow
-    - choose_legal_entity_type
-    nodes_dependent_on:
-    - design_compliance_program
-    prompt: 'Identify required software and infrastructure components for each operations
-      step (e.g., OMS, EMS, risk system). Present as a 2‑column table: Ops Step |
-      Tech Component.'
   develop_timeline_and_milestones:
     agent: false
     description: Create a phased schedule leading to fund launch.
     name: develop_timeline_and_milestones
     nodes_depended_on:
     - draft_operations_workflow
-    - design_technology_stack
+    - define_technology_stack
     - create_hiring_plan
     - compile_pitch_deck_outline
     nodes_dependent_on:
@@ -153,9 +136,7 @@ nodes:
     nodes_depended_on:
     - set_performance_and_risk_targets
     - estimate_setup_and_operating_costs
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
-    - produce_final_fund_plan_summary
+    nodes_dependent_on: []
     prompt: Propose management and performance fee percentages that balance cost recovery
       and competitiveness. Include incentive hurdle if relevant. Summarize in ≤3 sentences.
   draft_operations_workflow:
@@ -166,21 +147,18 @@ nodes:
     - define_asset_universe
     - list_service_providers
     - design_risk_management_framework
-    - estimate_setup_and_operating_costs
     nodes_dependent_on:
-    - design_technology_stack
+    - define_technology_stack
     prompt: 'Sketch the daily trade lifecycle: idea generation → order entry → execution
       → confirmation → settlement → reconciliation. List each step with primary responsible
       party (internal or provider).'
   estimate_setup_and_operating_costs:
     agent: false
-    description: Estimate setup and operating costs.
+    description: Create a rough cost model for fund setup and operations.
     name: estimate_setup_and_operating_costs
     nodes_depended_on:
     - list_service_providers
-    - define_asset_universe
-    nodes_dependent_on:
-    - draft_operations_workflow
+    nodes_dependent_on: []
     prompt: 'Provide a simple annual cost estimate (in USD) for each listed service
       provider plus overhead (office, tech). Present as two columns: Cost Item | Estimated
       USD.'
@@ -197,14 +175,12 @@ nodes:
       only.
   list_service_providers:
     agent: false
-    description: Enumerate required third‑party service provider categories.
+    description: Enumerate required third‑party service providers.
     name: list_service_providers
     nodes_depended_on:
     - choose_legal_entity_type
     nodes_dependent_on:
     - estimate_setup_and_operating_costs
-    - draft_operations_workflow
-    - design_compliance_program
     prompt: 'Generate a checklist of mandatory external service providers: prime broker,
       fund administrator, auditor, legal counsel, compliance consultant, and custodian.
       No descriptive text—just provider types.'
@@ -214,8 +190,7 @@ nodes:
     name: outline_governance_structure
     nodes_depended_on:
     - choose_legal_entity_type
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
+    nodes_dependent_on: []
     prompt: 'Draft a simple governance chart: roles of GP, investment manager, board
       (if any). Limit to 5 roles with one‑line duties each.'
   produce_final_fund_plan_summary:
@@ -232,15 +207,12 @@ nodes:
       allowed.
   select_jurisdiction:
     agent: false
-    description: Select the legal domicile for the fund vehicle.
+    description: Select the fund domicile and justify the choice.
     name: select_jurisdiction
     nodes_depended_on:
     - clarify_fund_objectives
     nodes_dependent_on:
     - choose_legal_entity_type
-    - list_service_providers
-    - outline_governance_structure
-    - identify_regulatory_requirements
     prompt: Choose the optimal fund domicile (e.g., Cayman, Delaware, Luxembourg)
       considering objectives. Provide 2 pros and 2 cons for the selected jurisdiction
       only.
@@ -253,7 +225,6 @@ nodes:
     nodes_dependent_on:
     - design_risk_management_framework
     - draft_fee_structure
-    - compile_pitch_deck_outline
     prompt: Define numerical annual targets for gross return, volatility (standard
       deviation), Sharpe ratio, and maximum drawdown consistent with the chosen strategy.
       Present as a 4‑row table.
