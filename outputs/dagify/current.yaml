@@ -28,6 +28,54 @@ nodes:
     - description: Indicates whether the token was successfully validated.
       key: is_valid
       type: bool
+    prd:
+      conceptual_info: This node securely authenticates client credentials against
+        the Pico datacenter's OAuth 2.0 service to obtain a valid access token. It
+        ensures delegated, token-based access without requiring direct user credentials,
+        aligning with best practices in identity and access management and security
+        compliance.
+      docstring:
+        examples:
+        - lines:
+          - result = authenticate_pico_credentials(
+          - '    client_id=''abc123'','
+          - '    client_secret=''s3cr3t'','
+          - '    token_endpoint=''https://auth.pico.com/oauth/token'','
+          - '    scopes=[''read'', ''write'']'
+          - )
+          - print(result)
+          output: '{'
+        parameters:
+        - description: OAuth 2.0 client identifier issued by the Pico datacenter authorization
+            server.
+          name: client_id
+          type: str
+        - description: OAuth 2.0 client secret used to authenticate the client during
+            the token request.
+          name: client_secret
+          type: str
+        - description: URL of the OAuth 2.0 token endpoint of the Pico datacenter
+            authorization server.
+          name: token_endpoint
+          type: str
+        - description: Optional list of OAuth scopes to request for the access token.
+          name: scopes
+          type: List[str]
+        raises:
+        - description: Raised if unable to reach the OAuth token endpoint.
+          type: ConnectionError
+        - description: Raised if client credentials are rejected or token is invalid.
+          type: AuthenticationError
+        - description: Raised if the response payload is malformed or missing expected
+            fields.
+          type: ValueError
+        returns:
+          description: 'Dictionary containing the keys: ''access_token'' (str), ''token_type''
+            (str), ''expires_in'' (int), ''scopes'' (List[str]), and ''is_valid''
+            (bool).'
+          type: dict
+        summary: Authenticate with the Pico datacenter using OAuth 2.0 client credentials
+          flow and validate the returned access token for authorized access.
     prompt: Authenticate to the Pico datacenter by initiating an OAuth 2.0 flow using
       the provided client credentials. Obtain and validate the access token to enable
       authorized, secure access to Pico datacenter resources without direct use of
@@ -62,6 +110,56 @@ nodes:
     - description: Error message if the connection attempt failed; empty string otherwise.
       key: error_message
       type: str
+    prd:
+      conceptual_info: This node is responsible for creating and managing a secure
+        connection to the pico datacenter using OAuth 2.0 authentication. It obtains
+        an access token with delegated authorization scopes, and establishes a session
+        ensuring encrypted communication and adherence to best practices in identity
+        and access management.
+      docstring:
+        examples:
+        - lines:
+          - result = establish_pico_connection(
+          - '    client_id=''my_client_id'','
+          - '    client_secret=''my_secret'','
+          - '    scope=''read write'','
+          - '    auth_endpoint=''https://auth.pico-datacenter.com/token'','
+          - '    token_endpoint_params={''grant_type'': ''client_credentials''}'
+          - )
+          output: '{'
+        parameters:
+        - description: OAuth 2.0 client identifier used for authentication.
+          name: client_id
+          type: str
+        - description: OAuth 2.0 client secret associated with the client ID.
+          name: client_secret
+          type: str
+        - description: Requested OAuth scopes defining access levels in the pico datacenter.
+          name: scope
+          type: str
+        - description: OAuth 2.0 token endpoint URL to request access tokens.
+          name: auth_endpoint
+          type: str
+        - description: Additional parameters for the token request, if any.
+          name: token_endpoint_params
+          type: dict
+        raises:
+        - description: If the connection to the pico datacenter could not be established.
+          type: ConnectionError
+        - description: If OAuth credentials are invalid or token retrieval fails.
+          type: AuthenticationError
+        - description: If required parameters are missing or malformed.
+          type: ValueError
+        returns:
+          description: 'A dictionary with keys: ''access_token'' (str), ''token_type''
+            (str), ''expires_in'' (int), ''connection_status'' (str), ''is_connected''
+            (bool), ''connection_id'' (str), and ''error_message'' (str), representing
+            the outcome of the connection attempt.'
+          type: dict
+        summary: Establish a secure OAuth 2.0 authenticated connection to the pico
+          datacenter. This involves obtaining a valid access token with the necessary
+          credentials, initiating a secure session, and providing detailed connection
+          status and identifiers.
     prompt: Establish a secure OAuth 2.0 authenticated connection to the pico datacenter
       by obtaining and using valid access tokens based on the provided OAuth credentials,
       ensuring encrypted transmission and adherence to best practices in identity
@@ -89,6 +187,35 @@ nodes:
         for extraction.
       key: is_accessible
       type: bool
+    prd:
+      conceptual_info: The node determines the authoritative dropcopy source in the
+        Pico datacenter by verifying OAuth authentication and checking source reachability,
+        ensuring that subsequent data retrieval is performed against a valid and accessible
+        resource.
+      docstring:
+        examples: []
+        parameters:
+        - description: OAuth 2.0 access token obtained from authenticate_pico_credentials.
+          name: access_token
+          type: str
+        - description: Type of the OAuth token (e.g., 'Bearer').
+          name: token_type
+          type: str
+        - description: Seconds until the access token expires.
+          name: expires_in
+          type: int
+        - description: List of OAuth scopes granted by the token.
+          name: scopes
+          type: List[str]
+        - description: Flag indicating whether the access token has been validated.
+          name: is_valid
+          type: bool
+        raises: []
+        returns:
+          description: Dictionary containing 'source_id' (str), 'source_name' (str),
+            'source_uri' (str), and 'is_accessible' (bool).
+          type: dict
+        summary: Identify the authoritative dropcopy source within the Pico datacenter.
     prompt: Using secure OAuth authentication, identify the specific, authoritative
       dropcopy source within the pico datacenter infrastructure that requires extraction.
       Ensure that the source is accurately pinpointed by validating its accessibility
@@ -140,10 +267,9 @@ nodes:
       it for detailed verification and downstream analytical processes.
   notify_dropcopy_pull:
     agent: false
-    description: Communicate to relevant stakeholders that the dropcopy file has been
-      successfully retrieved, integrity-verified, and appropriately processed using
-      secure OAuth authentication to ensure authorized and auditable notification
-      delivery.
+    description: Communicates to stakeholders the successful retrieval, integrity
+      verification, and processing of the dropcopy dataset using secure OAuth authentication
+      to ensure authorized and auditable notification delivery.
     name: notify_dropcopy_pull
     nodes_depended_on:
     - verify_dropcopy_integrity
@@ -182,6 +308,110 @@ nodes:
         string otherwise.
       key: error_message
       type: str
+    prd:
+      conceptual_info: This node ensures secure and auditable communication to relevant
+        stakeholders about the successful retrieval, cryptographic integrity verification,
+        and processing of the dropcopy dataset. Leveraging OAuth authentication for
+        authorization, it confirms that the dropcopy has been pulled without errors,
+        providing traceability through detailed metadata including timestamps and
+        verification hashes.
+      docstring:
+        examples:
+        - lines:
+          - result = notify_dropcopy_pull(
+          - '    notification_status=''sent'','
+          - '    notification_message=''Dropcopy ID dc123 successfully retrieved and
+            verified.'','
+          - '    notification_timestamp=''2024-06-01T12:00:00Z'','
+          - '    stakeholders_notified=[''alice@example.com'', ''bob@example.com''],'
+          - '    dropcopy_id=''dc123'','
+          - '    verification_hash=''a1b2c3d4e5f6g7h8i9j0'','
+          - '    verification_timestamp=''2024-06-01T11:50:00Z'','
+          - '    is_verified=True,'
+          - '    processing_time_seconds=125.4,'
+          - '    error_message='''')'
+          output: '{''notification_status'': ''sent'', ''notification_message'': ''Dropcopy
+            ID dc123 successfully retrieved and verified.'', ''notification_timestamp'':
+            ''2024-06-01T12:00:00Z'', ''stakeholders_notified'': [''alice@example.com'',
+            ''bob@example.com''], ''dropcopy_id'': ''dc123'', ''verification_hash'':
+            ''a1b2c3d4e5f6g7h8i9j0'', ''verification_timestamp'': ''2024-06-01T11:50:00Z'',
+            ''is_verified'': True, ''processing_time_seconds'': 125.4, ''error_message'':
+            ''''}'
+        - lines:
+          - result = notify_dropcopy_pull(
+          - '    notification_status=''failed'','
+          - '    notification_message=''Verification failed: integrity hash mismatch.'','
+          - '    notification_timestamp=''2024-06-01T12:30:00Z'','
+          - '    stakeholders_notified=[''admin@example.com''],'
+          - '    dropcopy_id=''dc124'','
+          - '    verification_hash=''unknown'','
+          - '    verification_timestamp=''2024-06-01T12:20:00Z'','
+          - '    is_verified=False,'
+          - '    processing_time_seconds=98.2,'
+          - '    error_message=''Integrity hash mismatch detected during verification.'')'
+          output: '{''notification_status'': ''failed'', ''notification_message'':
+            ''Verification failed: integrity hash mismatch.'', ''notification_timestamp'':
+            ''2024-06-01T12:30:00Z'', ''stakeholders_notified'': [''admin@example.com''],
+            ''dropcopy_id'': ''dc124'', ''verification_hash'': ''unknown'', ''verification_timestamp'':
+            ''2024-06-01T12:20:00Z'', ''is_verified'': False, ''processing_time_seconds'':
+            98.2, ''error_message'': ''Integrity hash mismatch detected during verification.''}'
+        parameters:
+        - description: Status of the notification delivery, for example 'sent' or
+            'failed'.
+          name: notification_status
+          type: str
+        - description: Content of the notification sent to stakeholders describing
+            the dropcopy pull and verification status.
+          name: notification_message
+          type: str
+        - description: ISO 8601 formatted timestamp representing when the notification
+            was sent.
+          name: notification_timestamp
+          type: str
+        - description: List of stakeholder identifiers such as email addresses who
+            received the notification.
+          name: stakeholders_notified
+          type: List[str]
+        - description: Unique identifier of the dropcopy dataset being referenced
+            in the notification.
+          name: dropcopy_id
+          type: str
+        - description: Cryptographic hash (e.g., SHA-256) value used to verify the
+            dropcopy’s integrity.
+          name: verification_hash
+          type: str
+        - description: ISO 8601 timestamp denoting when the dropcopy integrity verification
+            was performed.
+          name: verification_timestamp
+          type: str
+        - description: Boolean flag indicating whether the dropcopy integrity verification
+            was successful.
+          name: is_verified
+          type: bool
+        - description: Total elapsed time in seconds to process the dropcopy from
+            retrieval through verification.
+          name: processing_time_seconds
+          type: float
+        - description: Details of any errors encountered during notification or verification;
+            empty string if none.
+          name: error_message
+          type: str
+        raises:
+        - description: Raised if notification delivery via authorized OAuth channel
+            fails.
+          type: NotificationDeliveryError
+        - description: Raised if verification hash is missing or corrupted, or if
+            integrity verification failed.
+          type: VerificationError
+        returns:
+          description: A dictionary containing notification delivery status, message
+            content, timestamps, stakeholder list, dropcopy identifiers and verification
+            metadata, processing time, and potential error messages.
+          type: dict
+        summary: Notify stakeholders using OAuth-secured authorization that the dropcopy
+          dataset has been successfully retrieved, its integrity verified, and processed
+          without errors. Sends a notification including metadata to ensure traceability
+          and accountability.
     prompt: Using OAuth authentication for secure authorization, notify stakeholders
       that the dropcopy has been successfully pulled, its integrity verified, and
       processing completed without errors. Include relevant metadata about processing
@@ -229,6 +459,52 @@ nodes:
     - description: Average trade price for this part.
       key: average_price
       type: float
+    prd:
+      conceptual_info: This node is responsible for securely processing the first
+        segment of the dropcopy data retrieved with OAuth authentication. It extracts,
+        validates, and structures critical transactional details—such as transaction
+        IDs, instruments, trade sides, volumes, prices, and timestamps—from the raw
+        encoded data, transforming it into a structured format with computed aggregates
+        for downstream consumption while ensuring data integrity and compliance.
+      docstring:
+        examples:
+        - lines:
+          - result = process_dropcopy_part1(raw_data_base64='c3ViamVjdA==', access_token='valid_oauth_token')
+          - print(result['part_number'], result['record_count'], result['total_volume'],
+            round(result['average_price'], 2))
+          output: 1 5 1200 101.35
+        - lines:
+          - data = 'eyJ0cmFuc2FjdGlvbl9pZCI6IFsiVDEyMyIsICJUMTI0Il0sICJpbnN0cl9pZCI6IFsiSU5TIDEwMCIsICJJTlNURTEwMSJdLCAic2lkZXMiOiBbImJ1eSIsICJzZWxsIl0sICJ2b2x1bWVzIjogWzUwLCA3MF0sICJwcmljZXMiOiBbMTAwLjUsIDEwMi4zXSwgInRpbWVzdGFtcHMiOiBbIjIwMjMtMDYtMDEwVDA5OjAwOjAwWiIsICIyMDIzLTA2LTAxVDA5OjEwOjAwWiJdfQ=='
+          - result = process_dropcopy_part1(raw_data_base64=data, access_token='token123')
+          - print(result['is_valid'])
+          output: 'True'
+        parameters:
+        - description: Base64-encoded raw dropcopy data string retrieved securely
+            from the pico datacenter.
+          name: raw_data_base64
+          type: str
+        - description: OAuth 2.0 access token enabling secure, authorized access to
+            decrypt and parse the dropcopy data.
+          name: access_token
+          type: str
+        raises:
+        - description: Raised if the raw data is empty or improperly encoded.
+          type: ValueError
+        - description: Raised if the OAuth token is invalid or expired, preventing
+            secure access.
+          type: AuthenticationError
+        - description: Raised when extraction or parsing of trade records fails due
+            to format or data inconsistencies.
+          type: ParseError
+        returns:
+          description: Dictionary containing structured trade data fields such as
+            transaction IDs, instrument IDs, sides, volumes, prices, timestamps, indicators
+            of parsing success, and calculated total volume and average price for
+            the first segment of dropcopy data.
+          type: dict
+        summary: Process and parse the initial segment of OAuth-authenticated dropcopy
+          data to extract detailed trade and market information, returning structured
+          data elements and summary statistics.
     prompt: Utilize OAuth-authenticated credentials to securely process the first
       segment of the pulled dropcopy data. Extract and parse relevant transactional,
       pricing, and timestamp details with precision, transforming raw data into structured,
@@ -261,6 +537,57 @@ nodes:
     - description: Trade side ('buy' or 'sell') for each trade.
       key: sides
       type: List[str]
+    prd:
+      conceptual_info: This node securely processes the second segment of the dropcopy
+        data retrieved from a data source within the pico datacenter, using OAuth
+        authentication to ensure authorized and secure access. It extracts, validates,
+        and structures detailed trade and market information from the raw data segment,
+        including unique trade identifiers, pricing, volumes, asset symbols, timestamps,
+        and trade sides. The node ensures the extracted data conforms to security
+        protocols and maintains data integrity, providing structured output for downstream
+        usage or storage.
+      docstring:
+        examples:
+        - lines:
+          - output = process_dropcopy_part2(
+          - '    raw_data_segment=''U29tZUJhc2U2NERhdGE='','
+          - '    access_token=''Bearer validaccesstoken123'''
+          - )
+          - print(output['trade_ids'][0], output['prices'][0])
+          output: '[''T12345''] 101.25'
+        - lines:
+          - output = process_dropcopy_part2(
+          - '    raw_data_segment=''QW5vdGhlckJhc2U2NERhdGE='','
+          - '    access_token=''Bearer othervalidtoken456'''
+          - )
+          - print(len(output['trade_ids']))
+          output: '5'
+        parameters:
+        - description: Base64-encoded raw data segment of the dropcopy to be processed,
+            representing the second part of the full dropcopy.
+          name: raw_data_segment
+          type: str
+        - description: Valid OAuth 2.0 access token authorizing secure access to the
+            pico datacenter data source.
+          name: access_token
+          type: str
+        raises:
+        - description: If the input data segment is invalid, empty, or cannot be decoded.
+          type: ValueError
+        - description: If the OAuth access token is invalid, expired, or unauthorized.
+          type: AuthenticationError
+        - description: If extracted data fails validation checks (e.g., inconsistent
+            data lengths across fields).
+          type: DataIntegrityError
+        returns:
+          description: A dictionary containing lists of parsed trade information fields
+            including 'trade_ids', 'prices', 'volumes', 'symbols', 'timestamps', and
+            'sides'. Each list contains entries corresponding to individual trades
+            extracted from the data segment.
+          type: dict[str, list]
+        summary: Securely process the second segment of retrieved dropcopy data to
+          extract and structure trade and market information, using OAuth authentication
+          to ensure authorized and compliant access.
     prompt: Using OAuth authentication, process the second part of the pulled dropcopy
       to accurately extract, validate, and structure relevant trade and market information,
       ensuring data consistency and compliance with access security protocols.
@@ -308,6 +635,68 @@ nodes:
         without critical errors
       key: success
       type: bool
+    prd:
+      conceptual_info: This node securely extracts and processes the third segment
+        of the dropcopy data from the pico datacenter using OAuth 2.0 authentication.
+        It ensures token validity with automatic refreshes, parses the segment to
+        extract metadata, user identifiers, timestamps, and payload content, then
+        sanitizes and normalizes the data. It outputs all information in a standardized
+        JSON format while comprehensively logging authentication states and parsing
+        metrics for traceability and error handling.
+      docstring:
+        examples:
+        - lines:
+          - result = process_dropcopy_part3(
+          - '  access_token=''valid_token_xyz'','
+          - '  dropcopy_data_segment=''eyJtZXRhZGF0YSI6eyJmaWVsZDEiOiJ2YWx1ZTEifSwgdXNlcjoiYXVzZXIxIiwgInRpbWVzdGFtcCI6IjIwMjQtMDYtMDFUMTI6MzA6MDBaIiwgInBheWxvYWQiOnsicmVjb3JkIjoxMjN9fQ=='','
+          - '  token_refresh_callback=lambda: ''new_valid_token_abc'''
+          - )
+          output: '{''metadata_keys'': [''field1''], ''metadata_values'': [''value1''],
+            ''user_ids'': [''auser1''], ''timestamps'': [''2024-06-01T12:30:00Z''],
+            ''payload_contents'': [''{"record":123}''], ''auth_states'': [''Token
+            valid'', ''Token refreshed''], ''parse_metrics'': [''Parsed 1 record,
+            0 errors''], ''success'': True}'
+        - lines:
+          - 'try:'
+          - '  process_dropcopy_part3('
+          - '    access_token=''expired_token'','
+          - '    dropcopy_data_segment=''invalid_data_segment'','
+          - '    token_refresh_callback=lambda: ''refreshed_token'''
+          - '  )'
+          - 'except AuthenticationError as e:'
+          - '  print(''Authentication failed:'', e)'
+          output: 'Authentication failed: Access token invalid and refresh failed'
+        parameters:
+        - description: An OAuth 2.0 access token used to authenticate the request
+            for accessing the dropcopy segment.
+          name: access_token
+          type: str
+        - description: The raw data segment (e.g., base64 or other encoded string)
+            representing the third part of the dropcopy to be processed.
+          name: dropcopy_data_segment
+          type: str
+        - description: A callable function to obtain a fresh access token if the current
+            one is expired or invalid.
+          name: token_refresh_callback
+          type: Callable[[], str]
+        raises:
+        - description: If the access token is invalid and cannot be refreshed.
+          type: AuthenticationError
+        - description: If the dropcopy data segment cannot be parsed or validated
+            after token authentication.
+          type: DataParsingError
+        - description: For any other unexpected errors encountered during processing.
+          type: UnexpectedError
+        returns:
+          description: A dictionary containing lists of extracted metadata keys and
+            values, user identifiers, ISO 8601 timestamps, sanitized payload JSON
+            strings, chronological authentication state logs, parsing metrics, and
+            a boolean success flag.
+          type: Dict[str, Any]
+        summary: Process and extract the third part of the dropcopy data securely
+          using OAuth 2.0 authentication, validating and refreshing tokens as needed,
+          parsing and normalizing the data segment, and logging authentication and
+          parsing events.
     prompt: Using OAuth 2.0 authentication, securely access the third section of the
       dropcopy supplied by the previous pull_dropcopy step. Validate the access token,
       refresh it if expired, then parse the data, extract all required fields, and
@@ -343,6 +732,63 @@ nodes:
     - description: Indicates whether the dropcopy retrieval succeeded without errors.
       key: retrieval_success
       type: bool
+    prd:
+      conceptual_info: This node performs a secure, OAuth-authenticated retrieval
+        of raw dropcopy data from a specific authoritative source within the pico
+        datacenter, ensuring authorized access, data integrity, and compliance with
+        security protocols.
+      docstring:
+        examples:
+        - lines:
+          - 'oauth_creds = {''access_token'': ''abc123'', ''token_type'': ''Bearer'',
+            ''scopes'': [''read_dropcopy'']}'
+          - result = pull_dropcopy(source_id='dropcopy_source_001', oauth_credentials=oauth_creds)
+          - print(result['retrieval_success'])
+          - print(result['raw_data_base64'][:50] + '...')
+          - print(result['sha256_hash'])
+          output: 'True
+
+            ''QmFzZTY0ZW5jb2RlZCBkYXRhIGRhdGEgaGVyZQ==''
+
+            ''3f786850e387550fdab836ed7e6dc881de23001b'''
+        - lines:
+          - 'try:'
+          - '    pull_dropcopy(source_id=''invalid_source'', oauth_credentials={''access_token'':
+            ''expired''})'
+          - 'except AuthenticationError as e:'
+          - '    print(str(e))'
+          output: '''OAuth token invalid or expired, cannot authenticate data retrieval.'''
+        parameters:
+        - description: Unique identifier of the dropcopy source to pull data from,
+            as provided by the identify_dropcopy_source node.
+          name: source_id
+          type: str
+        - description: OAuth 2.0 credentials including access token and related authentication
+            details used to authorize the data retrieval operation.
+          name: oauth_credentials
+          type: dict
+        raises:
+        - description: Raised if OAuth authentication fails or credentials are invalid.
+          type: AuthenticationError
+        - description: Raised if the OAuth token lacks required scopes or permissions
+            to access the dropcopy source.
+          type: AuthorizationError
+        - description: Raised if the network connection to the pico datacenter or
+            source is unavailable.
+          type: ConnectionError
+        - description: Raised if the retrieval from the dropcopy source fails or the
+            data is corrupted.
+          type: DataRetrievalError
+        returns:
+          description: 'A dictionary containing: base64-encoded raw dropcopy data
+            (`raw_data_base64`), source identifier (`source_id`), timestamp of retrieval
+            (`retrieved_at`), size in bytes (`size_bytes`), SHA-256 hash for data
+            integrity (`sha256_hash`), and a boolean indicating if retrieval was successful
+            (`retrieval_success`).'
+          type: dict
+        summary: Retrieve the dropcopy data securely from the identified source within
+          the pico datacenter using OAuth authentication, producing a base64-encoded
+          data blob with integrity metadata.
     prompt: Authenticate using OAuth credentials and securely pull the dropcopy data
       from the identified source in the pico datacenter, ensuring compliance with
       access protocols and data integrity standards.
@@ -375,6 +821,51 @@ nodes:
         successful.
       key: error_message
       type: str
+    prd:
+      conceptual_info: This node persists the first segment of a processed dropcopy
+        to a secure repository, ensuring that the data is stored safely with proper
+        access control and integrity checks. This step is critical for downstream
+        processes such as merging, verification, and notifications.
+      docstring:
+        examples: []
+        parameters:
+        - description: Identifier for the part of the dropcopy being processed.
+          name: part_number
+          type: int
+        - description: Number of trade records extracted from this part.
+          name: record_count
+          type: int
+        - description: List of transaction identifiers extracted from this part.
+          name: transaction_ids
+          type: List[str]
+        - description: List of instrument identifiers corresponding to each trade.
+          name: instrument_ids
+          type: List[str]
+        - description: List indicating the trade side ('buy' or 'sell') for each record.
+          name: sides
+          type: List[str]
+        - description: List of trade volumes (number of units) for each record.
+          name: trade_volumes
+          type: List[int]
+        - description: List of trade prices per unit for each record.
+          name: trade_prices
+          type: List[float]
+        - description: ISO 8601 timestamps for each trade record.
+          name: trade_timestamps
+          type: List[str]
+        - description: Flag indicating whether the extraction and parsing were successful.
+          name: is_valid
+          type: bool
+        - description: Total volume of all trades in this part.
+          name: total_volume
+          type: int
+        - description: Average trade price for this part.
+          name: average_price
+          type: float
+        raises: []
+        returns: null
+        summary: Stores the first segment of a processed dropcopy into a secure repository
+          using OAuth authentication.
     prompt: Authenticate using OAuth and securely store the first processed segment
       of the dropcopy into the designated repository, enabling streamlined access
       control and safeguarding data integrity for further comprehensive analysis.
@@ -436,6 +927,68 @@ nodes:
     - description: Whether the storage operation succeeded without errors.
       key: is_success
       type: bool
+    prd:
+      conceptual_info: This node is responsible for securely persisting the third
+        processed segment of the dropcopy data into a designated repository. It uses
+        OAuth authentication to authorize the storage operation, ensuring that only
+        authorized agents can store the data. The node also ensures integrity by computing
+        and storing a SHA-256 checksum of the saved file and timestamps the storage
+        event to support traceability. These measures facilitate subsequent detailed
+        analysis and data provenance verification.
+      docstring:
+        examples:
+        - lines:
+          - processed_segment = {
+          - '    ''metadata_keys'': [''source'', ''segment''],'
+          - '    ''metadata_values'': [''pico_datacenter'', ''part3''],'
+          - '    ''user_ids'': [''user123'', ''user456''],'
+          - '    ''timestamps'': [''2024-06-01T10:00:00Z'', ''2024-06-01T10:05:00Z''],'
+          - '    ''payload_contents'': [''{"event": "login"}'', ''{"event": "logout"}''],'
+          - '    ''auth_states'': [''token_validated'', ''token_refreshed''],'
+          - '    ''parse_metrics'': [''records=2'', ''no_errors''],'
+          - '    ''success'': True'
+          - '}'
+          - 'oauth_creds = {''access_token'': ''valid_token''}'
+          - result = store_dropcopy_part3(processed_segment, oauth_creds)
+          output: '{''stored_file_path'': ''/repo/dropcopy/part3_20240601.json'',
+            ''record_count'': 2, ''checksum'': ''a3f5...c9e'', ''stored_at'': ''2024-06-01T10:15:00Z'',
+            ''is_success'': True}'
+        - lines:
+          - 'invalid_oauth = {''access_token'': ''expired_token''}'
+          - 'try:'
+          - '    store_dropcopy_part3(processed_segment, invalid_oauth)'
+          - 'except AuthenticationError as e:'
+          - '    print(e)'
+          output: '"OAuth authentication failed: token expired."'
+        parameters:
+        - description: The structured and sanitized third segment of the dropcopy
+            data as output by the 'process_dropcopy_part3' node, containing metadata,
+            user IDs, timestamps, payload contents, and authentication logs.
+          name: processed_data
+          type: dict
+        - description: OAuth authentication credentials (e.g., access token) to authorize
+            and authenticate the storage operation securely.
+          name: oauth_credentials
+          type: dict
+        raises:
+        - description: Raised if OAuth authentication fails or is invalid, preventing
+            secure authorization of storage.
+          type: AuthenticationError
+        - description: Raised if the storage operation cannot be completed, due to
+            repository access issues or write failures.
+          type: StorageError
+        - description: Raised if the computed checksum of the stored file does not
+            match the expected value, indicating data corruption.
+          type: ChecksumMismatchError
+        returns:
+          description: A dictionary containing the storage result including 'stored_file_path'
+            (repository path), 'record_count' (number of records stored), 'checksum'
+            (SHA-256 hash of the stored file), 'stored_at' (ISO 8601 timestamp of
+            storage), and 'is_success' (boolean indicating success).
+          type: dict
+        summary: Securely store the processed third segment of the dropcopy data into
+          a repository using OAuth authentication, while preserving data integrity
+          and recording storage metadata.
     prompt: Authenticate the storage operation using OAuth and securely store the
       third processed segment of the dropcopy data in the designated repository. Ensure
       that the storage process preserves data integrity and enables seamless access
@@ -467,6 +1020,35 @@ nodes:
         including error messages if verification failed
       key: details_message
       type: str
+    prd:
+      conceptual_info: The node verifies that the merged dropcopy dataset remains
+        unchanged and authentic by comparing its computed hash against the stored
+        checksum, ensuring data integrity before downstream processes.
+      docstring:
+        examples: []
+        parameters:
+        - description: Unique identifier or repository path of the merged dropcopy
+            dataset.
+          name: merged_dataset_id
+          type: str
+        - description: Cryptographic hash (e.g., SHA-256) of the merged dataset previously
+            computed during merge.
+          name: checksum
+          type: str
+        raises:
+        - description: If OAuth authentication fails or credentials are invalid.
+          type: ValueError
+        - description: If the merged dataset cannot be retrieved from the repository.
+          type: FileNotFoundError
+        - description: If the computed checksum does not match the expected checksum.
+          type: IntegrityError
+        returns:
+          description: 'Dictionary containing integrity verification results: is_integrity_valid
+            (bool), validation_timestamp (str), validation_method (str), and details_message
+            (str).'
+          type: dict
+        summary: Verify the integrity of a merged dropcopy dataset using OAuth authentication
+          and cryptographic checks.
     prompt: Authenticate and verify the integrity of the consolidated dropcopy dataset
       using OAuth-secured access. Cryptographically validate that the merged dropcopy
       has remained unaltered, confirming data consistency and ensuring it has not
