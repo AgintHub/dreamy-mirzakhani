@@ -1,199 +1,133 @@
 dag_type: plain_text
-description: A workflow for implementing a complete econometrics model, from problem
-  definition through data validation and result interpretation.
-name: implement_econometrics_model
+description: Constructs an adaptive group lasso model from variable grouping definitions,
+  weight formulation, penalty construction, optimization, cross-validation, and performance
+  evaluation.
+name: adaptive_group_lasso_workflow
 nodes:
-  check_autocorrelation:
+  compile_performance_report:
     agent: false
-    description: Identify time-series dependence in residuals
-    name: check_autocorrelation
+    description: Generate comprehensive model evaluation documentation
+    name: compile_performance_report
     nodes_depended_on:
-    - estimate_model_parameters
-    nodes_dependent_on:
-    - validate_model_assumptions
-    prompt: Execute Durbin-Watson test for first-order serial correlation. Suggest
-      ARMA error correction if significant.
-  check_data_types:
-    agent: false
-    description: Verify correct implementation of variable measurement scales
-    name: check_data_types
-    nodes_depended_on:
-    - collect_data
-    nodes_dependent_on:
-    - split_data_train_test
-    prompt: 'Create a table listing each variable with: data type (categorical/numerical),
-      scale (ratio/nominal), and appropriate measurement units.'
-  check_heteroskedasticity:
-    agent: false
-    description: Detect non-constant error variance patterns
-    name: check_heteroskedasticity
-    nodes_depended_on:
-    - estimate_model_parameters
-    nodes_dependent_on:
-    - validate_model_assumptions
-    prompt: Perform White test and Breusch-Pagan test. Report test statistics and
-      p-values. Recommend robust standard errors if significant.
-  check_multicollinearity:
-    agent: false
-    description: Test for excessive correlation among independent variables
-    name: check_multicollinearity
-    nodes_depended_on:
-    - estimate_model_parameters
-    nodes_dependent_on:
-    - validate_model_assumptions
-    prompt: Calculate Variance Inflation Factors (VIF). Flag variables with VIF >10.
-      Suggest principal component reduction if necessary.
-  collect_data:
-    agent: false
-    description: Extract raw time-series or cross-sectional data
-    name: collect_data
-    nodes_depended_on:
-    - identify_data_sources
-    nodes_dependent_on:
-    - check_data_types
-    - handle_missing_values
-    - remove_outliers
-    prompt: Export numerical data from identified sources into structured format (CSV/Excel).
-      Include variable labels and time periods.
-  define_research_objective:
-    agent: false
-    description: Articulate the specific economic hypothesis or relationship to analyze
-    name: define_research_objective
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - select_model_type
-    - write_final_report
-    prompt: Define a specific economic research question or hypothesis to be tested
-      using econometrics. Format as a single concise statement.
-  encode_categorical:
-    agent: false
-    description: Convert qualitative variables to numerical representation
-    name: encode_categorical
-    nodes_depended_on:
-    - remove_outliers
-    nodes_dependent_on:
-    - split_data_train_test
-    prompt: Implement one-hot encoding for categorical variables with more than three
-      distinct values. Report dummy variable table.
-  estimate_model_parameters:
-    agent: false
-    description: Calculate coefficient values through maximum likelihood or least
-      squares
-    name: estimate_model_parameters
-    nodes_depended_on:
-    - split_data_train_test
-    - select_model_type
-    nodes_dependent_on:
-    - check_multicollinearity
-    - check_heteroskedasticity
-    - check_autocorrelation
-    prompt: Run regression analysis using training dataset. Report parameter estimates,
-      standard errors, and p-values in 3-column table.
-  generate_visualizations:
-    agent: false
-    description: Create graphical representations of key relationships
-    name: generate_visualizations
-    nodes_depended_on:
-    - interpret_results
-    nodes_dependent_on:
-    - write_final_report
-    prompt: 'Produce three visualizations: scatter plot of predicted vs actual, parameter
-      importance bar chart, and residual distribution histogram.'
-  handle_missing_values:
-    agent: false
-    description: Implement imputation method for incomplete data
-    name: handle_missing_values
-    nodes_depended_on:
-    - collect_data
-    nodes_dependent_on:
-    - split_data_train_test
-    prompt: For variables with >10% missing data, apply multiple imputation by chained
-      equations (MICE). Report imputation model statistics.
-  identify_data_sources:
-    agent: false
-    description: Locate appropriate statistical databases for required variables
-    name: identify_data_sources
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - collect_data
-    prompt: List three credible data sources (government/academic) containing relevant
-      economic variables for the research objective. Include access URLs if available.
-  interpret_results:
-    agent: false
-    description: Analyze coefficient economic significance and statistical reliability
-    name: interpret_results
-    nodes_depended_on:
-    - validate_model_assumptions
-    - estimate_model_parameters
-    nodes_dependent_on:
-    - generate_visualizations
-    - write_final_report
-    prompt: 'Create a table listing: coefficient, p-value, 95% CI, and economic interpretation
-      (impact per unit change). Flag statistically significant results.'
-  normalize_data:
-    agent: false
-    description: Standardize variables to comparable scales
-    name: normalize_data
-    nodes_depended_on:
-    - remove_outliers
-    nodes_dependent_on:
-    - split_data_train_test
-    prompt: Apply z-score normalization to convert all numerical variables to standard
-      normal distribution (mean=0, sd=1).
-  remove_outliers:
-    agent: false
-    description: Apply statistical filters for extreme values
-    name: remove_outliers
-    nodes_depended_on:
-    - collect_data
-    nodes_dependent_on:
-    - normalize_data
-    - encode_categorical
-    prompt: Flag observations exceeding 3 standard deviations from the mean. Propose
-      deletion or Winsorization methods.
-  select_model_type:
-    agent: false
-    description: Choose appropriate econometric specification
-    name: select_model_type
-    nodes_depended_on:
-    - define_research_objective
-    nodes_dependent_on:
-    - estimate_model_parameters
-    prompt: Recommend between linear regression, VAR, GARCH, or fixedeffects models
-      based on research objective. Justify in 2-3 sentences.
-  split_data_train_test:
-    agent: false
-    description: Partition dataset for model development and validation
-    name: split_data_train_test
-    nodes_depended_on:
-    - check_data_types
-    - handle_missing_values
-    - normalize_data
-    - encode_categorical
-    nodes_dependent_on:
-    - estimate_model_parameters
-    prompt: Create 70% training set (1980-2015) and 30% testing set (2016-2023) for
-      time-series data. Use stratified sampling for cross-sectional.
-  validate_model_assumptions:
-    agent: false
-    description: Synthesize specification tests into model quality assessment
-    name: validate_model_assumptions
-    nodes_depended_on:
-    - check_multicollinearity
-    - check_heteroskedasticity
-    - check_autocorrelation
-    nodes_dependent_on:
-    - interpret_results
-    prompt: 'Create summary table of assumption tests with: test name, statistic,
-      p-value, and remedial action required. Include pass/fail assessment.'
-  write_final_report:
-    agent: false
-    description: Compile complete econometric analysis documentation
-    name: write_final_report
-    nodes_depended_on:
-    - define_research_objective
-    - interpret_results
-    - generate_visualizations
+    - validate_model
+    - train_final_model
     nodes_dependent_on: []
-    prompt: 'Create a 5-section report with: Introduction, Methodology, Results, Discussion,
-      and Conclusion. Include all tables/figures from prior steps.'
+    prompt: 'Create a 3-section report summarizing: 1) Model specifications, 2) Regularization
+      path visualization, 3) Performance benchmarks against group lasso baseline.
+      Include ROC curves, residual plots, and variable importance rankings.'
+  compute_adaptive_weights:
+    agent: false
+    description: Derive group-specific penalty weights from initial coefficient estimates
+    name: compute_adaptive_weights
+    nodes_depended_on:
+    - define_variable_groups
+    - compute_initial_coefficients
+    nodes_dependent_on:
+    - construct_adaptive_penalty
+    prompt: Using the formula 1/|β^|, compute adaptive group weights from the initial
+      coefficients. Apply the inverse absolute value transformation to each group's
+      leading coefficients. Include penalty decay parameter λ₀ if applicable.
+  compute_initial_coefficients:
+    agent: false
+    description: Estimate unpenalized coefficients for adaptive weight calculation
+    name: compute_initial_coefficients
+    nodes_depended_on:
+    - define_variable_groups
+    nodes_dependent_on:
+    - compute_adaptive_weights
+    prompt: Using ordinary least squares or logistic regression, compute initial coefficients
+      for all variables grouped in 'define_variable_groups'. Report the full coefficient
+      vector.
+  construct_adaptive_penalty:
+    agent: false
+    description: Formulate weighted group-specific regularization terms
+    name: construct_adaptive_penalty
+    nodes_depended_on:
+    - compute_adaptive_weights
+    - define_variable_groups
+    nodes_dependent_on:
+    - formulate_objective_function
+    prompt: Create a penalty function combining L2 norms of each group's coefficients
+      scaled by their respective adaptive weights. Express the formula using proper
+      LaTeX notation. Specify λ₀ if it wasn't incorporated earlier.
+  define_variable_groups:
+    agent: false
+    description: Categorize predictive variables into coherent groups for shared penalization
+    name: define_variable_groups
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - compute_adaptive_weights
+    prompt: Based on domain knowledge or algorithmic clustering, group correlated
+      variables into distinct sets for joint regularization. List each group with
+      its constituent variables and a one-sentence rationale for the grouping.
+  formulate_objective_function:
+    agent: false
+    description: Combine loss function and adaptive penalty into total cost
+    name: formulate_objective_function
+    nodes_depended_on:
+    - construct_adaptive_penalty
+    nodes_dependent_on:
+    - solve_optimization_problem
+    - generate_lambda_grid
+    prompt: Using the model's loss function (linear/likelihood) and adaptive penalty
+      from the previous step, form the complete optimization objective. Express the
+      formula with λ and λ₀ as parameters.
+  generate_lambda_grid:
+    agent: false
+    description: Create sequence of regularization parameters for tuning
+    name: generate_lambda_grid
+    nodes_depended_on:
+    - formulate_objective_function
+    nodes_dependent_on:
+    - validate_model
+    prompt: Generate a logarithmic grid of 50 λ values spanning from minimal to maximal
+      explanatory power in the model. Ensure the sequence covers the full regularization
+      spectrum in decreasing magnitudes.
+  select_optimal_lambda:
+    agent: false
+    description: Identify regularization parameter with best generalization
+    name: select_optimal_lambda
+    nodes_depended_on:
+    - validate_model
+    nodes_dependent_on:
+    - train_final_model
+    prompt: Apply one-standard-error rule or minimize mean validation loss to choose
+      optimal λ. Explain the selection criteria in 2-3 sentences with numerical comparison
+      of top candidates.
+  solve_optimization_problem:
+    agent: false
+    description: Find coefficient values minimizing the adaptive objective
+    name: solve_optimization_problem
+    nodes_depended_on:
+    - formulate_objective_function
+    - define_variable_groups
+    nodes_dependent_on:
+    - validate_model
+    prompt: Use coordinate descent or proximal gradient descent to optimize the objective
+      function. Return coefficient estimates for each λ in the grid along with standardized
+      residuals for each fold in cross-validation.
+  train_final_model:
+    agent: false
+    description: Produce coefficient estimates using selected regularization
+    name: train_final_model
+    nodes_depended_on:
+    - select_optimal_lambda
+    - solve_optimization_problem
+    nodes_dependent_on:
+    - compile_performance_report
+    prompt: Retrain model using complete training data and the optimal λ selected
+      in the previous step. Report final coefficient values with p-values and estimated
+      standard errors for each group.
+  validate_model:
+    agent: false
+    description: Assess model performance across regularization parameters
+    name: validate_model
+    nodes_depended_on:
+    - solve_optimization_problem
+    - generate_lambda_grid
+    nodes_dependent_on:
+    - select_optimal_lambda
+    - compile_performance_report
+    prompt: Using k-fold cross-validation, compute mean squared error (or appropriate
+      metric) for each λ in the grid. Include bias-variance tradeoff metrics and out-of-sample
+      prediction accuracy measures.
