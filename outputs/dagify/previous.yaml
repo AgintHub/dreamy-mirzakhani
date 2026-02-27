@@ -1,92 +1,140 @@
 dag_type: plain_text
-description: Creates a detailed, step-by-step foundational plan for building a hedge
-  fund, from defining objectives through compiling the final launch blueprint.
-name: build_hedge_fund
+description: Create a hedge fund by following a series of fundamental steps.
+name: build_a_hedge_fund
 nodes:
-  choose_fund_objectives:
+  choose_hedge_fund_strategy:
     agent: false
-    description: Clarify the hedge fund's core objectives.
-    name: choose_fund_objectives
+    description: Select the primary hedge fund strategy category.
+    name: choose_hedge_fund_strategy
+    nodes_depended_on:
+    - define_hedge_fund_objectives
+    nodes_dependent_on: []
+    prompt: Select one primary hedge fund strategy category that best serves the fund
+      objectives (e.g., long/short equity, global macro). Provide a one-sentence rationale
+      for your choice.
+  choose_hedge_fund_structure:
+    agent: false
+    description: Select the legal structure for the fund vehicle.
+    name: choose_hedge_fund_structure
+    nodes_depended_on:
+    - choose_hedge_fund_strategy
+    nodes_dependent_on: []
+    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
+      for the chosen strategy and jurisdiction. Provide a one-sentence explanation
+      for your choice.
+  choose_service_providers:
+    agent: false
+    description: Select external service providers.
+    name: choose_service_providers
+    nodes_depended_on:
+    - choose_hedge_fund_structure
+    nodes_dependent_on: []
+    prompt: 'Generate a checklist of mandatory external service providers: prime broker,
+      fund administrator, auditor, legal counsel, compliance consultant, and custodian.'
+  define_asset_universe:
+    agent: false
+    description: Enumerate tradable assets and instruments.
+    name: define_asset_universe
+    nodes_depended_on:
+    - choose_hedge_fund_strategy
+    nodes_dependent_on: []
+    prompt: List the specific asset classes and instruments the chosen strategy will
+      trade. Keep the list ≤10 items.
+  define_compliance_program:
+    agent: false
+    description: Create compliance policies aligned with regulations and risk.
+    name: define_compliance_program
+    nodes_depended_on:
+    - choose_hedge_fund_structure
+    nodes_dependent_on: []
+    prompt: 'Generate a compliance checklist mapping each regulatory requirement to
+      a specific internal policy or procedure. Table with columns: Requirement | Policy
+      Reference.'
+  define_hedge_fund_objectives:
+    agent: false
+    description: Determine the primary objectives of the hedge fund.
+    name: define_hedge_fund_objectives
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: List primary business objectives for launching the hedge fund. Produce
-      a concise bullet list covering investment purpose, competitive edge, and long-term
-      vision (max 8 bullets). Focus only on objectives, do not include strategy details.
-  choose_jurisdiction:
+    prompt: 'State the primary business objectives for launching the hedge fund. Include
+      the following details:
+
+
+      1. Investment purpose
+
+      2. Competitive edge
+
+      3. Long-term vision'
+  define_technology_stack:
     agent: false
-    description: Pick fund domicile and note rationale.
-    name: choose_jurisdiction
-    nodes_depended_on: []
+    description: Specify technology tools supporting operations.
+    name: define_technology_stack
+    nodes_depended_on:
+    - develop_operations_workflow
+    nodes_dependent_on: []
+    prompt: 'Identify required software and infrastructure components for each operations
+      step. Present as a 2-column table: Ops Step | Tech Component.'
+  determine_initial_staffing_requirements:
+    agent: false
+    description: List essential full-time positions for launch.
+    name: determine_initial_staffing_requirements
+    nodes_depended_on:
+    - choose_service_providers
+    nodes_dependent_on: []
+    prompt: List the essential full-time positions for launch (max 8), with one-line
+      responsibilities each. Align roles with operations workflow gaps.
+  develop_operations_workflow:
+    agent: false
+    description: Create the daily trade lifecycle.
+    name: develop_operations_workflow
+    nodes_depended_on:
+    - choose_service_providers
+    - determine_initial_staffing_requirements
+    nodes_dependent_on: []
+    prompt: 'Sketch the daily trade lifecycle: idea generation → order entry → execution
+      → confirmation → settlement → reconciliation. List each step with primary responsible
+      party (internal or provider).'
+  finalize_hedge_fund_plan:
+    agent: false
+    description: Synthesize prior outputs into a concise executive summary.
+    name: finalize_hedge_fund_plan
+    nodes_depended_on:
+    - set_up_launch_timeline_and_milestones
+    - quantify_return_and_risk_targets
+    nodes_dependent_on: []
+    prompt: Synthesize prior outputs into a concise executive summary (≤400 words)
+      covering strategy, structure, risk, ops, fees, timeline. Bullet or short paragraphs
+      allowed.
+  quantify_return_and_risk_targets:
+    agent: false
+    description: Define numerical annual targets for gross return, volatility, Sharpe
+      ratio, and maximum drawdown.
+    name: quantify_return_and_risk_targets
+    nodes_depended_on:
+    - choose_hedge_fund_strategy
+    nodes_dependent_on: []
+    prompt: Define numerical annual targets for gross return, volatility (standard
+      deviation), Sharpe ratio, and maximum drawdown consistent with the chosen strategy.
+      Present as a 4-row table.
+  select_jurisdiction:
+    agent: false
+    description: Choose the fund domicile and provide rationale.
+    name: select_jurisdiction
+    nodes_depended_on:
+    - choose_hedge_fund_structure
     nodes_dependent_on: []
     prompt: Choose the optimal fund domicile (e.g., Cayman, Delaware, Luxembourg)
       considering objectives. Provide 2 pros and 2 cons for the selected jurisdiction
       only.
-  clarify_fund_investment_strategy:
+  set_up_launch_timeline_and_milestones:
     agent: false
-    description: Identify the high-level investment strategy category.
-    name: clarify_fund_investment_strategy
+    description: Create a phased schedule leading to fund launch.
+    name: set_up_launch_timeline_and_milestones
     nodes_depended_on:
-    - choose_fund_objectives
+    - quantify_return_and_risk_targets
+    - develop_operations_workflow
+    - define_technology_stack
     nodes_dependent_on: []
-    prompt: Select one primary hedge fund strategy category that best serves the fund
-      objectives (e.g., long/short equity, global macro). Provide a one-sentence rationale.
-  compile_investment_committee_description:
-    agent: false
-    description: Describe the hedge fund investment committee.
-    name: compile_investment_committee_description
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Describe how the hedge fund investment committee will be structured and
-      operate. Keep the description concise (≤ 100 words).
-  design_risk_management_framework:
-    agent: false
-    description: Outline quantitative and qualitative risk controls.
-    name: design_risk_management_framework
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Outline quantitative and qualitative risk controls. Describe the methods
-      by which they will be implemented and monitored.
-  develop_hedge_fund_brand_identity:
-    agent: false
-    description: Design and describe the hedge fund's brand identity.
-    name: develop_hedge_fund_brand_identity
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Design and describe the hedge fund's brand identity with mission statement,
-      values, and guiding principles.
-  outline_governance_structure:
-    agent: false
-    description: Define internal governance roles and duties.
-    name: outline_governance_structure
-    nodes_depended_on:
-    - select_legal_entity_type
-    nodes_dependent_on: []
-    prompt: 'Draft a simple governance chart: roles of GP, investment manager, board
-      (if any). Limit to 5 roles with one-line duties each.'
-  produce_final_fund_plan_summary:
-    agent: false
-    description: Compile the final fund plan summary.
-    name: produce_final_fund_plan_summary
-    nodes_depended_on:
-    - design_risk_management_framework
-    nodes_dependent_on: []
-    prompt: 'Summarize the hedge fund build-out in this concise document: Provide
-      an executive summary, mission statement, brand identity and other pertinent
-      items.'
-  select_legal_entity_type:
-    agent: false
-    description: Identify legal structure for the fund vehicle.
-    name: select_legal_entity_type
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
-      for the chosen jurisdiction. Give a one-sentence explanation.
-  select_service_providers:
-    agent: false
-    description: Enumerate required third-party service provider categories.
-    name: select_service_providers
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: List the minimum third-party service provider categories required for
-      fund management. Examples include but are not limited to prime broker, custodian,
-      administrator, auditor and compliance consultant.
+    prompt: Prepare a launch timeline with monthly milestones over the next 12 months.
+      Include regulatory filing, service provider onboarding, capital raise, tech
+      deployment, and go-live.
