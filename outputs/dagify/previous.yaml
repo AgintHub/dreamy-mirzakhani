@@ -1,52 +1,36 @@
 dag_type: plain_text
-description: A minimal workflow that performs and verifies a fundamental test action
-  to validate test execution.
-name: elemental_test_workflow
+description: Creates test data, executes a test, and summarizes the outcome.
+name: basic_test_workflow
 nodes:
-  define_test_action:
+  collect_test_results:
     agent: false
-    description: Define the specific test action to be performed, specifying the conditions
-      and expected outcome.
-    name: define_test_action
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - execute_test_action
-    - prepare_test_environment
-    prompt: Specify a clear and simple test action, with input parameters and the
-      expected result. Describe only the test action without reasoning about test
-      framework or environment.
-  execute_test_action:
-    agent: false
-    description: Perform the test action using the defined parameters and prepared
-      environment.
-    name: execute_test_action
+    description: Creates a human‑readable summary of the test results.
+    name: collect_test_results
     nodes_depended_on:
-    - define_test_action
-    - prepare_test_environment
-    nodes_dependent_on:
-    - verify_test_result
-    prompt: Execute the specified test action in the provided environment setup. Return
-      only the raw test execution output or result data.
-  prepare_test_environment:
-    agent: false
-    description: Set up all necessary conditions, variables, or mock data needed to
-      run the test action.
-    name: prepare_test_environment
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - execute_test_action
-    prompt: Create and describe the environment setup including variables, configurations,
-      or mock inputs required to run the defined test action. Only specify setup details
-      relevant for the test execution.
-  verify_test_result:
-    agent: false
-    description: Compare the test execution output against the expected outcome to
-      determine pass or fail status.
-    name: verify_test_result
-    nodes_depended_on:
-    - execute_test_action
-    - define_test_action
+    - execute_test
     nodes_dependent_on: []
-    prompt: Compare the actual result from test execution with the expected result
-      defined in the test action. Return a concise verdict of PASS or FAIL with a
-      brief explanation.
+    prompt: Summarize the test execution outcome. Present the total number of records
+      tested, the count of passed and failed records, and any error messages. Output
+      a concise report in plain text.
+  execute_test:
+    agent: false
+    description: Runs the test against the generated data and records pass/fail counts.
+    name: execute_test
+    nodes_depended_on:
+    - generate_test_data
+    nodes_dependent_on:
+    - collect_test_results
+    prompt: Run the test using the data from `generate_test_data`. The test should
+      verify that all records have a `status` of 'valid'. Record the number of passing
+      and failing records. Return the results in JSON with keys `passed`, `failed`,
+      and `details`.
+  generate_test_data:
+    agent: false
+    description: Produces sample input data for the test.
+    name: generate_test_data
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - execute_test
+    prompt: Generate a small set of sample input data for the test. Include at least
+      three records with fields `id`, `value`, and `status`. Provide the data in JSON
+      format.
