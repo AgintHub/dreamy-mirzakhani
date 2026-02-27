@@ -1,5 +1,6 @@
 dag_type: plain_text
-description: A workflow for pulling dropcopies from pico datacenter
+description: Workflow to authenticate, pull, concurrently process in three parts,
+  verify, and notify dropcopy from pico datacenter
 name: post_trading_workflow
 nodes:
   authenticate_pico_credentials:
@@ -8,7 +9,8 @@ nodes:
     name: authenticate_pico_credentials
     nodes_depended_on:
     - establish_pico_connection
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - identify_dropcopy_source
     prompt: Authenticate with the pico datacenter using the provided username and
       password.
   establish_pico_connection:
@@ -16,7 +18,8 @@ nodes:
     description: Establish a connection to the pico datacenter
     name: establish_pico_connection
     nodes_depended_on: []
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - authenticate_pico_credentials
     prompt: Establish a secure connection to the pico datacenter using the provided
       credentials.
   identify_dropcopy_source:
@@ -25,9 +28,23 @@ nodes:
     name: identify_dropcopy_source
     nodes_depended_on:
     - authenticate_pico_credentials
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - pull_dropcopy
     prompt: Identify the specific dropcopy source in the pico datacenter that needs
       to be pulled.
+  merge_stored_dropcopy:
+    agent: false
+    description: Merge the three stored processed parts of the dropcopy into a single
+      repository entry
+    name: merge_stored_dropcopy
+    nodes_depended_on:
+    - store_dropcopy_part1
+    - store_dropcopy_part2
+    - store_dropcopy_part3
+    nodes_dependent_on:
+    - verify_dropcopy_integrity
+    prompt: Merge the stored portions of the processed dropcopy parts into a consolidated
+      dataset for verification.
   notify_dropcopy_pull:
     agent: false
     description: Notify stakeholders that the dropcopy has been pulled
@@ -37,36 +54,84 @@ nodes:
     nodes_dependent_on: []
     prompt: Notify stakeholders that the dropcopy has been successfully pulled and
       processed.
-  process_dropcopy:
+  process_dropcopy_part1:
     agent: false
-    description: Process the pulled dropcopy for further analysis
-    name: process_dropcopy
+    description: Process the first part of the pulled dropcopy to extract relevant
+      information
+    name: process_dropcopy_part1
     nodes_depended_on:
     - pull_dropcopy
-    nodes_dependent_on: []
-    prompt: Process the pulled dropcopy to extract relevant information.
+    nodes_dependent_on:
+    - store_dropcopy_part1
+    prompt: Process the first part of the pulled dropcopy to extract relevant information.
+  process_dropcopy_part2:
+    agent: false
+    description: Process the second part of the pulled dropcopy to extract relevant
+      information
+    name: process_dropcopy_part2
+    nodes_depended_on:
+    - pull_dropcopy
+    nodes_dependent_on:
+    - store_dropcopy_part2
+    prompt: Process the second part of the pulled dropcopy to extract relevant information.
+  process_dropcopy_part3:
+    agent: false
+    description: Process the third part of the pulled dropcopy to extract relevant
+      information
+    name: process_dropcopy_part3
+    nodes_depended_on:
+    - pull_dropcopy
+    nodes_dependent_on:
+    - store_dropcopy_part3
+    prompt: Process the third part of the pulled dropcopy to extract relevant information.
   pull_dropcopy:
     agent: false
     description: Pull the dropcopy from the identified source
     name: pull_dropcopy
     nodes_depended_on:
     - identify_dropcopy_source
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - process_dropcopy_part1
+    - process_dropcopy_part2
+    - process_dropcopy_part3
     prompt: Pull the dropcopy from the identified source in the pico datacenter.
-  store_dropcopy:
+  store_dropcopy_part1:
     agent: false
-    description: Store the processed dropcopy in a designated repository
-    name: store_dropcopy
+    description: Store the first processed part of the dropcopy in a designated repository
+    name: store_dropcopy_part1
     nodes_depended_on:
-    - process_dropcopy
-    nodes_dependent_on: []
-    prompt: Store the processed dropcopy in a designated repository for further analysis.
+    - process_dropcopy_part1
+    nodes_dependent_on:
+    - merge_stored_dropcopy
+    prompt: Store the first processed part of the dropcopy in a designated repository
+      for further analysis.
+  store_dropcopy_part2:
+    agent: false
+    description: Store the second processed part of the dropcopy in a designated repository
+    name: store_dropcopy_part2
+    nodes_depended_on:
+    - process_dropcopy_part2
+    nodes_dependent_on:
+    - merge_stored_dropcopy
+    prompt: Store the second processed part of the dropcopy in a designated repository
+      for further analysis.
+  store_dropcopy_part3:
+    agent: false
+    description: Store the third processed part of the dropcopy in a designated repository
+    name: store_dropcopy_part3
+    nodes_depended_on:
+    - process_dropcopy_part3
+    nodes_dependent_on:
+    - merge_stored_dropcopy
+    prompt: Store the third processed part of the dropcopy in a designated repository
+      for further analysis.
   verify_dropcopy_integrity:
     agent: false
     description: Verify the integrity of the stored dropcopy
     name: verify_dropcopy_integrity
     nodes_depended_on:
-    - store_dropcopy
-    nodes_dependent_on: []
+    - merge_stored_dropcopy
+    nodes_dependent_on:
+    - notify_dropcopy_pull
     prompt: Verify the integrity of the stored dropcopy to ensure it was not tampered
       with.

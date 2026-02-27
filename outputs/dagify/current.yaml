@@ -1,137 +1,183 @@
 dag_type: plain_text
-description: Workflow to authenticate, pull, concurrently process in three parts,
-  verify, and notify dropcopy from pico datacenter
+description: Generated workflow from UI.
 name: post_trading_workflow
 nodes:
   authenticate_pico_credentials:
     agent: false
-    description: Authenticate credentials for pico datacenter access
+    description: Perform secure OAuth-based authentication to obtain and validate
+      access tokens, enabling authorized access to the Pico datacenter’s resources
+      in compliance with modern security standards.
     name: authenticate_pico_credentials
     nodes_depended_on:
     - establish_pico_connection
-    nodes_dependent_on:
-    - identify_dropcopy_source
-    prompt: Authenticate with the pico datacenter using the provided username and
-      password.
+    nodes_dependent_on: []
+    prompt: Authenticate to the Pico datacenter by initiating an OAuth 2.0 flow using
+      the provided client credentials. Obtain and validate the access token to enable
+      authorized, secure access to Pico datacenter resources without direct use of
+      usernames and passwords.
   establish_pico_connection:
     agent: false
-    description: Establish a connection to the pico datacenter
+    description: Initiates a robust, secure connection to the pico datacenter by leveraging
+      OAuth 2.0 authentication to ensure highly secure, delegated access and maintain
+      compliance with modern security standards.
     name: establish_pico_connection
     nodes_depended_on: []
-    nodes_dependent_on:
-    - authenticate_pico_credentials
-    prompt: Establish a secure connection to the pico datacenter using the provided
-      credentials.
+    nodes_dependent_on: []
+    prompt: Establish a secure OAuth 2.0 authenticated connection to the pico datacenter
+      by obtaining and using valid access tokens based on the provided OAuth credentials,
+      ensuring encrypted transmission and adherence to best practices in identity
+      and access management.
   identify_dropcopy_source:
     agent: false
-    description: Identify the dropcopy source in the pico datacenter
+    description: Precisely determine the authoritative dropcopy source within the
+      pico datacenter environment, leveraging validated OAuth authentication to ensure
+      secure and compliant access.
     name: identify_dropcopy_source
     nodes_depended_on:
     - authenticate_pico_credentials
-    nodes_dependent_on:
-    - pull_dropcopy
-    prompt: Identify the specific dropcopy source in the pico datacenter that needs
-      to be pulled.
+    nodes_dependent_on: []
+    prompt: Using secure OAuth authentication, identify the specific, authoritative
+      dropcopy source within the pico datacenter infrastructure that requires extraction.
+      Ensure that the source is accurately pinpointed by validating its accessibility
+      and relevance prior to data retrieval.
   merge_stored_dropcopy:
     agent: false
-    description: Merge the three stored processed parts of the dropcopy into a single
-      repository entry
+    description: Integrate and consolidate the three individually stored, processed
+      segments of the dropcopy into a unified, comprehensive repository entry. This
+      merged dataset serves as a definitive source for subsequent verification and
+      analysis, ensuring data integrity and coherence across the combined parts.
     name: merge_stored_dropcopy
     nodes_depended_on:
     - store_dropcopy_part1
     - store_dropcopy_part2
     - store_dropcopy_part3
-    nodes_dependent_on:
-    - verify_dropcopy_integrity
-    prompt: Merge the stored portions of the processed dropcopy parts into a consolidated
-      dataset for verification.
+    nodes_dependent_on: []
+    prompt: Using OAuth authentication, securely merge the three stored and processed
+      segments of the dropcopy into a single, consolidated dataset within the repository.
+      Ensure the merged dataset maintains full consistency and integrity, preparing
+      it for detailed verification and downstream analytical processes.
   notify_dropcopy_pull:
     agent: false
-    description: Notify stakeholders that the dropcopy has been pulled
+    description: Communicate to relevant stakeholders that the dropcopy file has been
+      successfully retrieved, integrity-verified, and appropriately processed using
+      secure OAuth authentication to ensure authorized and auditable notification
+      delivery.
     name: notify_dropcopy_pull
     nodes_depended_on:
     - verify_dropcopy_integrity
     nodes_dependent_on: []
-    prompt: Notify stakeholders that the dropcopy has been successfully pulled and
-      processed.
+    prompt: Using OAuth authentication for secure authorization, notify stakeholders
+      that the dropcopy has been successfully pulled, its integrity verified, and
+      processing completed without errors. Include relevant metadata about processing
+      status and timestamps to ensure traceability and accountability.
   process_dropcopy_part1:
     agent: false
-    description: Process the first part of the pulled dropcopy to extract relevant
-      information
+    description: Securely analyze the initial segment of the retrieved dropcopy data
+      to extract, parse, and structure relevant transactional and market information
+      using OAuth-authenticated access to ensure compliance and data integrity.
     name: process_dropcopy_part1
     nodes_depended_on:
     - pull_dropcopy
-    nodes_dependent_on:
-    - store_dropcopy_part1
-    prompt: Process the first part of the pulled dropcopy to extract relevant information.
+    nodes_dependent_on: []
+    prompt: Utilize OAuth-authenticated credentials to securely process the first
+      segment of the pulled dropcopy data. Extract and parse relevant transactional,
+      pricing, and timestamp details with precision, transforming raw data into structured,
+      actionable intelligence for downstream workflows.
   process_dropcopy_part2:
     agent: false
-    description: Process the second part of the pulled dropcopy to extract relevant
-      information
+    description: Securely process the second segment of the retrieved dropcopy using
+      OAuth-authenticated access to ensure authorized extraction of critical trade
+      and market information with precision and data integrity.
     name: process_dropcopy_part2
     nodes_depended_on:
     - pull_dropcopy
-    nodes_dependent_on:
-    - store_dropcopy_part2
-    prompt: Process the second part of the pulled dropcopy to extract relevant information.
+    nodes_dependent_on: []
+    prompt: Using OAuth authentication, process the second part of the pulled dropcopy
+      to accurately extract, validate, and structure relevant trade and market information,
+      ensuring data consistency and compliance with access security protocols.
   process_dropcopy_part3:
     agent: false
-    description: Process the third part of the pulled dropcopy to extract relevant
-      information
+    description: This node performs a secure, OAuth‑authenticated extraction of the
+      third portion of the dropcopy obtained from the pico datacenter. It verifies
+      the access token’s validity (client‑credentials or delegated flow), automatically
+      refreshes tokens as needed, and parses the provided data segment, extracting
+      relevant metadata, user identifiers, timestamps, and payload contents. The node
+      then sanitizes, normalizes, and serializes the extracted information into a
+      consistent JSON format for downstream processing, while logging authentication
+      states and parsing metrics.
     name: process_dropcopy_part3
     nodes_depended_on:
     - pull_dropcopy
-    nodes_dependent_on:
-    - store_dropcopy_part3
-    prompt: Process the third part of the pulled dropcopy to extract relevant information.
+    nodes_dependent_on: []
+    prompt: Using OAuth 2.0 authentication, securely access the third section of the
+      dropcopy supplied by the previous pull_dropcopy step. Validate the access token,
+      refresh it if expired, then parse the data, extract all required fields, and
+      output them in the structured format required by downstream stages. Log all
+      authentication and parsing events, handle errors gracefully, and ensure the
+      final payload conforms to the downstream schema.
   pull_dropcopy:
     agent: false
-    description: Pull the dropcopy from the identified source
+    description: Securely retrieve the identified dropcopy data from the specified
+      source within the pico datacenter using OAuth authentication to ensure authorized
+      access.
     name: pull_dropcopy
     nodes_depended_on:
     - identify_dropcopy_source
-    nodes_dependent_on:
-    - process_dropcopy_part1
-    - process_dropcopy_part2
-    - process_dropcopy_part3
-    prompt: Pull the dropcopy from the identified source in the pico datacenter.
+    nodes_dependent_on: []
+    prompt: Authenticate using OAuth credentials and securely pull the dropcopy data
+      from the identified source in the pico datacenter, ensuring compliance with
+      access protocols and data integrity standards.
   store_dropcopy_part1:
     agent: false
-    description: Store the first processed part of the dropcopy in a designated repository
+    description: Securely persist the first segment of the processed dropcopy into
+      a designated repository using OAuth authentication, ensuring data integrity
+      and controlled access for subsequent in-depth analysis.
     name: store_dropcopy_part1
     nodes_depended_on:
     - process_dropcopy_part1
-    nodes_dependent_on:
-    - merge_stored_dropcopy
-    prompt: Store the first processed part of the dropcopy in a designated repository
-      for further analysis.
+    nodes_dependent_on: []
+    prompt: Authenticate using OAuth and securely store the first processed segment
+      of the dropcopy into the designated repository, enabling streamlined access
+      control and safeguarding data integrity for further comprehensive analysis.
   store_dropcopy_part2:
     agent: false
-    description: Store the second processed part of the dropcopy in a designated repository
+    description: Securely store the thoroughly processed second segment of the dropcopy
+      data in a designated, access-controlled repository utilizing OAuth authentication
+      to ensure authorized, compliant data handling and enable seamless retrieval
+      for subsequent detailed analysis and auditing.
     name: store_dropcopy_part2
     nodes_depended_on:
     - process_dropcopy_part2
-    nodes_dependent_on:
-    - merge_stored_dropcopy
-    prompt: Store the second processed part of the dropcopy in a designated repository
-      for further analysis.
+    nodes_dependent_on: []
+    prompt: Authenticate the storage operation using OAuth to securely store the fully
+      processed second segment of the dropcopy data in the designated repository,
+      ensuring compliance and enabling efficient retrieval for comprehensive downstream
+      analysis.
   store_dropcopy_part3:
     agent: false
-    description: Store the third processed part of the dropcopy in a designated repository
+    description: Securely store the third processed segment of the dropcopy data in
+      a designated repository using OAuth authentication to ensure authorized access
+      and maintain data integrity for subsequent detailed analysis.
     name: store_dropcopy_part3
     nodes_depended_on:
     - process_dropcopy_part3
-    nodes_dependent_on:
-    - merge_stored_dropcopy
-    prompt: Store the third processed part of the dropcopy in a designated repository
-      for further analysis.
+    nodes_dependent_on: []
+    prompt: Authenticate the storage operation using OAuth and securely store the
+      third processed segment of the dropcopy data in the designated repository. Ensure
+      that the storage process preserves data integrity and enables seamless access
+      for subsequent advanced analysis.
   verify_dropcopy_integrity:
     agent: false
-    description: Verify the integrity of the stored dropcopy
+    description: Perform a comprehensive integrity verification of the consolidated
+      dropcopy dataset by cryptographically validating its authenticity and ensuring
+      it remains untampered since merging. This process confirms data consistency
+      and trustworthiness following the aggregation of all processed dropcopy parts
+      into a single repository entry.
     name: verify_dropcopy_integrity
     nodes_depended_on:
     - merge_stored_dropcopy
-    nodes_dependent_on:
-    - notify_dropcopy_pull
-    prompt: Verify the integrity of the stored dropcopy to ensure it was not tampered
-      with.
+    nodes_dependent_on: []
+    prompt: Authenticate and verify the integrity of the consolidated dropcopy dataset
+      using OAuth-secured access. Cryptographically validate that the merged dropcopy
+      has remained unaltered, confirming data consistency and ensuring it has not
+      been tampered with since merging.
