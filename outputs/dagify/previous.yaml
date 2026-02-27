@@ -1,140 +1,76 @@
 dag_type: plain_text
-description: Create a hedge fund by following a series of fundamental steps.
-name: build_a_hedge_fund
+description: A workflow that defines, plans, executes, and documents a generic testing
+  process, from scope definition to remediation.
+name: generic_test_execution
 nodes:
-  choose_hedge_fund_strategy:
+  analyze_test_results:
     agent: false
-    description: Select the primary hedge fund strategy category.
-    name: choose_hedge_fund_strategy
+    description: Analyzes results to determine overall health.
+    name: analyze_test_results
     nodes_depended_on:
-    - define_hedge_fund_objectives
-    nodes_dependent_on: []
-    prompt: Select one primary hedge fund strategy category that best serves the fund
-      objectives (e.g., long/short equity, global macro). Provide a one-sentence rationale
-      for your choice.
-  choose_hedge_fund_structure:
+    - collect_test_results
+    nodes_dependent_on:
+    - generate_test_report
+    prompt: Analyze the collected results, summarize pass/fail counts, highlight failures,
+      and assess trend insights.
+  collect_test_results:
     agent: false
-    description: Select the legal structure for the fund vehicle.
-    name: choose_hedge_fund_structure
+    description: Collects all logs, results, and metrics.
+    name: collect_test_results
     nodes_depended_on:
-    - choose_hedge_fund_strategy
-    nodes_dependent_on: []
-    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
-      for the chosen strategy and jurisdiction. Provide a one-sentence explanation
-      for your choice.
-  choose_service_providers:
+    - execute_test_cases
+    nodes_dependent_on:
+    - analyze_test_results
+    prompt: Collect all execution logs, error reports, and pass/fail status from the
+      test run.
+  define_test_scope:
     agent: false
-    description: Select external service providers.
-    name: choose_service_providers
-    nodes_depended_on:
-    - choose_hedge_fund_structure
-    nodes_dependent_on: []
-    prompt: 'Generate a checklist of mandatory external service providers: prime broker,
-      fund administrator, auditor, legal counsel, compliance consultant, and custodian.'
-  define_asset_universe:
-    agent: false
-    description: Enumerate tradable assets and instruments.
-    name: define_asset_universe
-    nodes_depended_on:
-    - choose_hedge_fund_strategy
-    nodes_dependent_on: []
-    prompt: List the specific asset classes and instruments the chosen strategy will
-      trade. Keep the list ≤10 items.
-  define_compliance_program:
-    agent: false
-    description: Create compliance policies aligned with regulations and risk.
-    name: define_compliance_program
-    nodes_depended_on:
-    - choose_hedge_fund_structure
-    nodes_dependent_on: []
-    prompt: 'Generate a compliance checklist mapping each regulatory requirement to
-      a specific internal policy or procedure. Table with columns: Requirement | Policy
-      Reference.'
-  define_hedge_fund_objectives:
-    agent: false
-    description: Determine the primary objectives of the hedge fund.
-    name: define_hedge_fund_objectives
+    description: Specifies the boundaries and goals of the testing effort.
+    name: define_test_scope
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: 'State the primary business objectives for launching the hedge fund. Include
-      the following details:
-
-
-      1. Investment purpose
-
-      2. Competitive edge
-
-      3. Long-term vision'
-  define_technology_stack:
+    nodes_dependent_on:
+    - identify_test_requirements
+    - set_up_test_environment
+    prompt: Define the scope of the testing effort, listing objectives, constraints,
+      and key deliverables.
+  execute_test_cases:
     agent: false
-    description: Specify technology tools supporting operations.
-    name: define_technology_stack
+    description: Runs the test cases and records outcomes.
+    name: execute_test_cases
     nodes_depended_on:
-    - develop_operations_workflow
-    nodes_dependent_on: []
-    prompt: 'Identify required software and infrastructure components for each operations
-      step. Present as a 2-column table: Ops Step | Tech Component.'
-  determine_initial_staffing_requirements:
+    - write_test_cases
+    - set_up_test_environment
+    nodes_dependent_on:
+    - collect_test_results
+    prompt: Run all test cases, record execution results, and capture any errors or
+      anomalies.
+  identify_test_requirements:
     agent: false
-    description: List essential full-time positions for launch.
-    name: determine_initial_staffing_requirements
+    description: Identifies all requirements that the tests need to address.
+    name: identify_test_requirements
     nodes_depended_on:
-    - choose_service_providers
-    nodes_dependent_on: []
-    prompt: List the essential full-time positions for launch (max 8), with one-line
-      responsibilities each. Align roles with operations workflow gaps.
-  develop_operations_workflow:
+    - define_test_scope
+    nodes_dependent_on:
+    - write_test_cases
+    prompt: Identify the functional, performance, and security requirements that the
+      test cases must cover, based on the defined scope.
+  set_up_test_environment:
     agent: false
-    description: Create the daily trade lifecycle.
-    name: develop_operations_workflow
+    description: Prepares the necessary environment for running tests.
+    name: set_up_test_environment
     nodes_depended_on:
-    - choose_service_providers
-    - determine_initial_staffing_requirements
-    nodes_dependent_on: []
-    prompt: 'Sketch the daily trade lifecycle: idea generation → order entry → execution
-      → confirmation → settlement → reconciliation. List each step with primary responsible
-      party (internal or provider).'
-  finalize_hedge_fund_plan:
+    - define_test_scope
+    nodes_dependent_on:
+    - execute_test_cases
+    prompt: Set up the test environment, including necessary software, databases,
+      and network configurations required to run the test cases.
+  write_test_cases:
     agent: false
-    description: Synthesize prior outputs into a concise executive summary.
-    name: finalize_hedge_fund_plan
+    description: Creates detailed test cases for coverage.
+    name: write_test_cases
     nodes_depended_on:
-    - set_up_launch_timeline_and_milestones
-    - quantify_return_and_risk_targets
-    nodes_dependent_on: []
-    prompt: Synthesize prior outputs into a concise executive summary (≤400 words)
-      covering strategy, structure, risk, ops, fees, timeline. Bullet or short paragraphs
-      allowed.
-  quantify_return_and_risk_targets:
-    agent: false
-    description: Define numerical annual targets for gross return, volatility, Sharpe
-      ratio, and maximum drawdown.
-    name: quantify_return_and_risk_targets
-    nodes_depended_on:
-    - choose_hedge_fund_strategy
-    nodes_dependent_on: []
-    prompt: Define numerical annual targets for gross return, volatility (standard
-      deviation), Sharpe ratio, and maximum drawdown consistent with the chosen strategy.
-      Present as a 4-row table.
-  select_jurisdiction:
-    agent: false
-    description: Choose the fund domicile and provide rationale.
-    name: select_jurisdiction
-    nodes_depended_on:
-    - choose_hedge_fund_structure
-    nodes_dependent_on: []
-    prompt: Choose the optimal fund domicile (e.g., Cayman, Delaware, Luxembourg)
-      considering objectives. Provide 2 pros and 2 cons for the selected jurisdiction
-      only.
-  set_up_launch_timeline_and_milestones:
-    agent: false
-    description: Create a phased schedule leading to fund launch.
-    name: set_up_launch_timeline_and_milestones
-    nodes_depended_on:
-    - quantify_return_and_risk_targets
-    - develop_operations_workflow
-    - define_technology_stack
-    nodes_dependent_on: []
-    prompt: Prepare a launch timeline with monthly milestones over the next 12 months.
-      Include regulatory filing, service provider onboarding, capital raise, tech
-      deployment, and go-live.
+    - identify_test_requirements
+    nodes_dependent_on:
+    - execute_test_cases
+    prompt: Write detailed test cases that cover all identified requirements, including
+      test steps, expected outcomes, and data setup instructions.
