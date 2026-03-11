@@ -1,44 +1,65 @@
 dag_type: plain_text
-description: A minimal workflow defining elemental steps to perform a generic 'test'
-  action by validating input, performing a simple operation, and reporting results.
-name: elemental_test_workflow
+description: A workflow consisting of fundamental steps to execute and validate a
+  basic 'test' operation.
+name: execute_basic_test_action
 nodes:
-  generate_test_report:
+  analyze_test_results:
     agent: false
-    description: Create a concise report summarizing the test results.
-    name: generate_test_report
+    description: Evaluate the test outputs against success criteria to determine test
+      outcome.
+    name: analyze_test_results
     nodes_depended_on:
-    - perform_test_operation
-    nodes_dependent_on: []
-    prompt: Summarize the test operation outcome in clear, concise language. Include
-      status, any errors, and final result interpretation.
-  perform_test_operation:
-    agent: false
-    description: Execute the core testing operation using the validated input.
-    name: perform_test_operation
-    nodes_depended_on:
-    - validate_test_input
+    - collect_test_results
     nodes_dependent_on:
-    - generate_test_report
-    prompt: Perform the main test action using the valid input data. Produce a definitive
-      outcome or result strictly based on the input without additional assumptions.
-  receive_test_input:
+    - report_test_findings
+    prompt: Examine the collected test results and compare them to the test objective
+      and success criteria to assess if the test passed or failed.
+  collect_test_results:
     agent: false
-    description: Receive or define the input data for the test.
-    name: receive_test_input
+    description: Gather and record the output or results generated from the test execution.
+    name: collect_test_results
+    nodes_depended_on:
+    - execute_test
+    nodes_dependent_on:
+    - analyze_test_results
+    prompt: Collect all output, logs, or data produced by the test execution, ensuring
+      completeness and accuracy.
+  define_test_objective:
+    agent: false
+    description: Specify the precise objective and scope of the test to be performed.
+    name: define_test_objective
     nodes_depended_on: []
     nodes_dependent_on:
-    - validate_test_input
-    prompt: Provide or specify the data or parameters that represent the input for
-      the test. This input should be precise and self-contained.
-  validate_test_input:
+    - prepare_test_inputs
+    prompt: State clearly the specific goal and scope of the test you intend to perform,
+      including what is being tested and what outcome defines success.
+  execute_test:
     agent: false
-    description: Check that the test input data meets required format and criteria.
-    name: validate_test_input
+    description: Run the test using the prepared inputs and under the defined conditions.
+    name: execute_test
     nodes_depended_on:
-    - receive_test_input
+    - prepare_test_inputs
     nodes_dependent_on:
-    - perform_test_operation
-    prompt: Examine the provided test input data and confirm it satisfies the expected
-      format and constraints. State 'valid' if successful or specify validation errors
-      clearly.
+    - collect_test_results
+    prompt: Perform the test by applying the inputs to the system or subject under
+      test, following the defined procedures.
+  prepare_test_inputs:
+    agent: false
+    description: Generate or collect the necessary inputs and data needed to run the
+      test.
+    name: prepare_test_inputs
+    nodes_depended_on:
+    - define_test_objective
+    nodes_dependent_on:
+    - execute_test
+    prompt: Based on the defined test objective, prepare or gather all data, parameters,
+      or inputs required to perform the test accurately.
+  report_test_findings:
+    agent: false
+    description: Summarize and document the overall test process, results, and conclusions.
+    name: report_test_findings
+    nodes_depended_on:
+    - analyze_test_results
+    nodes_dependent_on: []
+    prompt: Prepare a concise report summarizing the test objective, methods, results,
+      analysis, and final conclusions.
