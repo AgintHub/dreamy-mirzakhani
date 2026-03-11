@@ -1,116 +1,233 @@
 dag_type: plain_text
-description: A workflow for building a quantitative trading system, from defining
-  objectives through compiling the final trading strategy and risk management framework.
-name: build_quantitative_trading_system
+description: A detailed, concurrent workflow for creating a hedge fund from initial
+  objectives to final launch plan.
+name: build_hedge_fund
 nodes:
-  backtest_trading_system:
-    agent: false
-    description: Backtest the implemented trading system using historical data.
-    name: backtest_trading_system
-    nodes_depended_on:
-    - implement_trading_system
-    nodes_dependent_on: []
-    prompt: Backtest the implemented trading system using historical data and evaluate
-      its performance.
   choose_investment_strategy:
     agent: false
-    description: Identify the high-level investment strategy category.
+    description: Select the fund's high-level investment strategy.
     name: choose_investment_strategy
     nodes_depended_on:
-    - define_investment_objectives
-    nodes_dependent_on: []
-    prompt: Select one primary quantitative trading strategy category that best serves
-      the investment objectives (e.g., statistical arbitrage, momentum, mean reversion).
-      Provide a one-sentence rationale.
-  collect_historical_data:
+    - clarify_fund_objectives
+    nodes_dependent_on:
+    - define_asset_universe
+    - draft_fee_structure
+    prompt: Select one primary hedge fund strategy (e.g., long/short equity, global
+      macro). Provide a one-sentence rationale.
+  choose_legal_entity_type:
     agent: false
-    description: Gather historical price and trading data for selected assets.
-    name: collect_historical_data
+    description: Determine the fund's legal vehicle.
+    name: choose_legal_entity_type
     nodes_depended_on:
-    - select_asset_universe
-    nodes_dependent_on: []
-    prompt: Collect 5 years of historical daily price and trading volume data for
-      the selected assets. Ensure data includes open, high, low, close prices, and
-      trading volume.
-  define_investment_objectives:
+    - select_jurisdiction
+    nodes_dependent_on:
+    - outline_governance_structure
+    - identify_regulatory_requirements
+    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) suitable for
+      the chosen jurisdiction. Give a brief rationale.
+  clarify_fund_objectives:
     agent: false
-    description: Produce a bullet list of the quantitative trading system's core objectives.
-    name: define_investment_objectives
+    description: Generate a concise list of the hedge fund's core objectives.
+    name: clarify_fund_objectives
     nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: State the primary business objectives for the quantitative trading system.
-      Produce a concise bullet list covering investment purpose, risk tolerance, and
-      long-term vision (max 8 bullets). Focus only on objectives, do not include strategy
-      details.
-  define_risk_management_framework:
+    nodes_dependent_on:
+    - choose_investment_strategy
+    - define_investor_profile
+    - set_performance_and_risk_targets
+    - draft_fee_structure
+    prompt: List the primary business objectives for the hedge fund in concise bullets
+      (max 8). Include investment purpose, competitive advantage, and long‑term vision.
+  compile_pitch_deck_outline:
     agent: false
-    description: Outline quantitative and qualitative risk controls.
-    name: define_risk_management_framework
+    description: Outline investor presentation.
+    name: compile_pitch_deck_outline
     nodes_depended_on:
-    - evaluate_model
-    nodes_dependent_on: []
-    prompt: 'List core risk controls aligned with the target metrics: position limits,
-      VaR limits, stop-loss rules, liquidity thresholds. Provide 4–6 bullet points.'
-  evaluate_model:
+    - clarify_fund_objectives
+    - define_investor_profile
+    - choose_investment_strategy
+    - set_performance_and_risk_targets
+    - draft_fee_structure
+    - design_risk_management_framework
+    nodes_dependent_on:
+    - produce_final_fund_plan_summary
+    prompt: Create a 10‑slide outline (titles only) for an investor pitch deck covering
+      objectives, strategy, team, competitive edge, risk controls, fees, expected
+      returns, and timeline.
+  create_hiring_plan:
     agent: false
-    description: Evaluate the performance of the trained model using the testing data.
-    name: evaluate_model
+    description: Plan initial staffing.
+    name: create_hiring_plan
     nodes_depended_on:
-    - train_model
-    nodes_dependent_on: []
-    prompt: Evaluate the performance of the trained model using the testing data and
-      metrics such as accuracy, precision, recall, and Sharpe ratio.
-  feature_engineering:
+    - draft_operations_workflow
+    nodes_dependent_on:
+    - compile_pitch_deck_outline
+    prompt: List essential full‑time positions for launch (max 8). Provide one-line
+      responsibility for each, aligning with workflow gaps.
+  define_asset_universe:
     agent: false
-    description: Create relevant features from the preprocessed data.
-    name: feature_engineering
-    nodes_depended_on:
-    - preprocess_data
-    nodes_dependent_on: []
-    prompt: Create relevant features from the preprocessed data, such as moving averages,
-      RSI, Bollinger Bands.
-  implement_trading_system:
-    agent: false
-    description: Implement the quantitative trading system using the trained model
-      and risk management framework.
-    name: implement_trading_system
-    nodes_depended_on:
-    - define_risk_management_framework
-    nodes_dependent_on: []
-    prompt: Implement the quantitative trading system using the trained model and
-      risk management framework.
-  preprocess_data:
-    agent: false
-    description: Clean and preprocess the collected historical data.
-    name: preprocess_data
-    nodes_depended_on:
-    - collect_historical_data
-    nodes_dependent_on: []
-    prompt: Clean and preprocess the historical data by handling missing values, outliers,
-      and normalizing the data.
-  select_asset_universe:
-    agent: false
-    description: Enumerate tradable assets and instruments.
-    name: select_asset_universe
+    description: Specify the tradable assets.
+    name: define_asset_universe
     nodes_depended_on:
     - choose_investment_strategy
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - draft_operations_workflow
+    - list_service_providers
     prompt: List the specific asset classes and instruments the chosen strategy will
-      trade (e.g., US large-cap equities, S&P futures). Keep list ≤10 items.
-  split_data:
+      trade (max 10 items).
+  define_investor_profile:
     agent: false
-    description: Split the preprocessed data into training and testing sets.
-    name: split_data
+    description: Identify target investors.
+    name: define_investor_profile
     nodes_depended_on:
-    - feature_engineering
-    nodes_dependent_on: []
-    prompt: Split the preprocessed data into training (80%) and testing sets (20%).
-  train_model:
+    - clarify_fund_objectives
+    nodes_dependent_on:
+    - compile_pitch_deck_outline
+    prompt: 'Based on objectives, describe the ideal target investor profile: typical
+      ticket size, risk tolerance, liquidity preference, geographic focus.'
+  define_technology_stack:
     agent: false
-    description: Train a quantitative trading model using the training data.
-    name: train_model
+    description: Specify tech tools.
+    name: define_technology_stack
     nodes_depended_on:
-    - split_data
+    - draft_operations_workflow
+    nodes_dependent_on:
+    - compile_pitch_deck_outline
+    - develop_timeline_and_milestones
+    prompt: 'Identify required software and infrastructure for each operations step
+      (OMS, risk, accounting). Present as 2‑column table: Ops Step | Tech Component.'
+  design_compliance_program:
+    agent: false
+    description: Build compliance program.
+    name: design_compliance_program
+    nodes_depended_on:
+    - identify_regulatory_requirements
+    - design_risk_management_framework
+    nodes_dependent_on:
+    - compile_pitch_deck_outline
+    prompt: 'Create a compliance checklist mapping each regulatory requirement to
+      an internal policy or procedure. Use columns: Requirement | Policy Reference.'
+  design_risk_management_framework:
+    agent: false
+    description: Outline risk controls.
+    name: design_risk_management_framework
+    nodes_depended_on:
+    - set_performance_and_risk_targets
+    nodes_dependent_on:
+    - design_compliance_program
+    - draft_operations_workflow
+    prompt: 'List core risk controls: position limits, VaR limits, stop‑loss rules,
+      liquidity thresholds. Provide 4–6 bullet points.'
+  develop_timeline_and_milestones:
+    agent: false
+    description: Plan launch schedule.
+    name: develop_timeline_and_milestones
+    nodes_depended_on:
+    - draft_operations_workflow
+    - define_technology_stack
+    - create_hiring_plan
+    - compile_pitch_deck_outline
+    nodes_dependent_on:
+    - produce_final_fund_plan_summary
+    prompt: Prepare a monthly launch timeline for the next 12 months. Include regulatory
+      filing, provider onboarding, capital raise, tech deployment, and go‑live.
+  draft_fee_structure:
+    agent: false
+    description: Set fee levels.
+    name: draft_fee_structure
+    nodes_depended_on:
+    - set_performance_and_risk_targets
+    - estimate_setup_and_operating_costs
+    nodes_dependent_on:
+    - compile_pitch_deck_outline
+    prompt: Propose management and performance fees (percentage of assets and profit).
+      Include a hurdle rate if applicable. Summarize in ≤3 sentences.
+  draft_operations_workflow:
+    agent: false
+    description: Map core trade operations.
+    name: draft_operations_workflow
+    nodes_depended_on:
+    - define_asset_universe
+    - list_service_providers
+    - design_risk_management_framework
+    nodes_dependent_on:
+    - compile_pitch_deck_outline
+    prompt: 'Sketch the daily trade lifecycle: idea generation → order entry → execution
+      → confirmation → settlement → reconciliation. List each step with primary responsible
+      party.'
+  estimate_setup_and_operating_costs:
+    agent: false
+    description: Estimate annual costs.
+    name: estimate_setup_and_operating_costs
+    nodes_depended_on:
+    - list_service_providers
+    nodes_dependent_on:
+    - draft_fee_structure
+    prompt: 'Give a simple annual cost estimate (USD) for each provider and overhead.
+      Present two columns: Cost Item | Estimated USD.'
+  identify_regulatory_requirements:
+    agent: false
+    description: Enumerate key regulatory obligations.
+    name: identify_regulatory_requirements
+    nodes_depended_on:
+    - choose_legal_entity_type
+    nodes_dependent_on:
+    - design_compliance_program
+    prompt: List the primary regulatory filings and registrations required for the
+      selected entity and jurisdiction (e.g., SEC Form ADV). Provide the governing
+      body names only.
+  list_service_providers:
+    agent: false
+    description: Identify required external providers.
+    name: list_service_providers
+    nodes_depended_on:
+    - choose_legal_entity_type
+    nodes_dependent_on:
+    - draft_operations_workflow
+    - estimate_setup_and_operating_costs
+    prompt: 'Provide a checklist of mandatory third‑party providers: prime broker,
+      administrator, auditor, custodian, legal counsel, compliance consultant. No
+      additional text.'
+  outline_governance_structure:
+    agent: false
+    description: Define governance roles.
+    name: outline_governance_structure
+    nodes_depended_on:
+    - choose_legal_entity_type
+    nodes_dependent_on:
+    - compile_pitch_deck_outline
+    prompt: 'Draft a governance chart: GP, investment manager, board (if any). Limit
+      to 5 roles, one-line duties each.'
+  produce_final_fund_plan_summary:
+    agent: false
+    description: Generate final fund plan summary.
+    name: produce_final_fund_plan_summary
+    nodes_depended_on:
+    - design_compliance_program
+    - compile_pitch_deck_outline
+    - develop_timeline_and_milestones
     nodes_dependent_on: []
-    prompt: Train a quantitative trading model using the training data and selected
-      features.
+    prompt: Synthesize all prior outputs into a concise executive summary (≤400 words)
+      covering strategy, structure, risk, ops, fees, and timeline. Use bullets or
+      short paragraphs.
+  select_jurisdiction:
+    agent: false
+    description: Pick the fund's legal domicile.
+    name: select_jurisdiction
+    nodes_depended_on:
+    - clarify_fund_objectives
+    nodes_dependent_on:
+    - choose_legal_entity_type
+    - identify_regulatory_requirements
+    prompt: Choose an optimal fund domicile based on objectives. Provide one pros
+      and one con for the selected jurisdiction.
+  set_performance_and_risk_targets:
+    agent: false
+    description: Quantify performance and risk goals.
+    name: set_performance_and_risk_targets
+    nodes_depended_on:
+    - choose_investment_strategy
+    nodes_dependent_on:
+    - design_risk_management_framework
+    - draft_fee_structure
+    prompt: Define annual numerical targets for gross return, volatility, Sharpe ratio,
+      and maximum drawdown consistent with the strategy. Present in a 4-row table.
