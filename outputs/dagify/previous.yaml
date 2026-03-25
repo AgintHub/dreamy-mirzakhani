@@ -1,128 +1,68 @@
 dag_type: plain_text
-description: A detailed, highly concurrent workflow that plans, obtains approval for,
-  conducts, and evaluates a cloud‑seeding operation to induce rainfall over a specified
-  area.
-name: weather_modification_make_it_rain
+description: This workflow is designed to test a given objective or task description
+  and provide a clear execution plan.
+name: test_objective_workflow
 nodes:
-  analyze_results:
+  create_execution_plan:
     agent: false
-    description: Evaluate the effectiveness of the seeding operation.
-    name: analyze_results
+    description: Create a detailed execution plan based on the sequenced tasks.
+    name: create_execution_plan
     nodes_depended_on:
-    - monitor_precipitation
+    - sequence_tasks
     nodes_dependent_on: []
-    prompt: Calculate the percentage increase in rainfall versus baseline, note any
-      spatial patterns, and list possible sources of error.
-  collect_meteorological_data:
+    prompt: Take the sequenced tasks and create a detailed execution plan. Identify
+      any potential roadblocks or contingency plans.
+  decompose_into_tasks:
     agent: false
-    description: Gather recent and forecasted weather data for the target area.
-    name: collect_meteorological_data
+    description: Break down the task into smaller, manageable tasks or sub-tasks.
+    name: decompose_into_tasks
     nodes_depended_on:
-    - define_target_area
+    - parse_task_description
     nodes_dependent_on: []
-    prompt: Retrieve the last 72 hours of temperature, humidity, wind, and cloud cover
-      data for the defined region, plus a 48‑hour forecast. Present the data in a
-      table.
-  define_target_area:
+    prompt: Take the parsed task description and decompose it into smaller tasks.
+      Identify any parallel or concurrent steps.
+  finalize_execution_plan:
     agent: false
-    description: Specify the geographic coordinates and size of the area where rain
-      is desired.
-    name: define_target_area
+    description: Finalize the execution plan and make it ready for implementation.
+    name: finalize_execution_plan
+    nodes_depended_on:
+    - review_and_refine
+    nodes_dependent_on: []
+    prompt: Take the refined execution plan and finalize it. Make any necessary updates
+      to ensure it is ready for implementation.
+  parse_task_description:
+    agent: false
+    description: Parse the task description to extract key elements and objectives.
+    name: parse_task_description
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Provide a clear definition of the target rain‑making region, including
-      latitude/longitude bounds, total area in km², and any local landmarks for reference.
-  execute_cloud_seeding_mission:
+    prompt: Please provide a clear and concise task description. Identify the key
+      objectives and extract any relevant details.
+  prioritize_tasks:
     agent: false
-    description: Fly the aircraft and release the seeding agent during the identified
-      optimal window.
-    name: execute_cloud_seeding_mission
+    description: Prioritize the tasks based on importance, complexity, and dependencies.
+    name: prioritize_tasks
     nodes_depended_on:
-    - schedule_aircraft_and_crew
-    - train_crew_on_seeding_procedure
-    - prepare_seeding_solution
-    - identify_optimal_cloud_conditions
+    - decompose_into_tasks
     nodes_dependent_on: []
-    prompt: 'Generate a mission timeline: taxi, take‑off, climb to target altitude,
-      initiate dispersal at GPS coordinates, and return. Include contingency actions
-      for unexpected weather changes.'
-  generate_report:
+    prompt: Take the decomposed tasks and prioritize them based on importance, complexity,
+      and dependencies.
+  review_and_refine:
     agent: false
-    description: Produce a final report documenting the entire rain‑making operation
-      and its outcomes.
-    name: generate_report
+    description: Review and refine the execution plan to ensure it is complete and
+      feasible.
+    name: review_and_refine
     nodes_depended_on:
-    - analyze_results
-    - obtain_regulatory_approval
+    - create_execution_plan
     nodes_dependent_on: []
-    prompt: Compose a structured report (Executive Summary, Methodology, Results,
-      Conclusions, Recommendations). Include tables from previous steps and attach
-      the permit copy.
-  identify_optimal_cloud_conditions:
+    prompt: Take the execution plan and review it to ensure it is complete and feasible.
+      Identify any areas for improvement or refinement.
+  sequence_tasks:
     agent: false
-    description: Determine whether present or forecasted clouds are suitable for seeding.
-    name: identify_optimal_cloud_conditions
+    description: Sequence the tasks based on dependencies and priorities.
+    name: sequence_tasks
     nodes_depended_on:
-    - collect_meteorological_data
+    - prioritize_tasks
     nodes_dependent_on: []
-    prompt: From the weather data, identify time windows (UTC) when cloud type, liquid
-      water content, and temperature are within accepted cloud‑seeding parameters
-      (e.g., super‑cooled water > -5 °C). List each viable window.
-  monitor_precipitation:
-    agent: false
-    description: Collect post‑mission rainfall data over the target area.
-    name: monitor_precipitation
-    nodes_depended_on:
-    - execute_cloud_seeding_mission
-    nodes_dependent_on: []
-    prompt: Gather rain gauge and radar observations for 24 hours after seeding. Summarize
-      total precipitation (mm) and compare to baseline (pre‑seeding) values.
-  obtain_regulatory_approval:
-    agent: false
-    description: Secure all government permits required for cloud‑seeding in the target
-      jurisdiction.
-    name: obtain_regulatory_approval
-    nodes_depended_on:
-    - define_target_area
-    - identify_optimal_cloud_conditions
-    nodes_dependent_on: []
-    prompt: Draft a concise permit request covering the target area, dates, seeding
-      agent (silver iodide), and safety measures. List the issuing agency and required
-      submission format.
-  prepare_seeding_solution:
-    agent: false
-    description: Mix and load the seeding agent into the aircraft dispersal system.
-    name: prepare_seeding_solution
-    nodes_depended_on:
-    - procure_cloud_seeding_materials
-    nodes_dependent_on: []
-    prompt: Detail the mixing ratio, handling precautions, and loading steps for the
-      silver iodide aerosol system. Include a quick‑reference table of quantities.
-  procure_cloud_seeding_materials:
-    agent: false
-    description: Order and receive the chemical agent and dispensing equipment.
-    name: procure_cloud_seeding_materials
-    nodes_depended_on:
-    - obtain_regulatory_approval
-    nodes_dependent_on: []
-    prompt: Create a purchase order for silver iodide (or alternative), aerosol generators,
-      and safety gear. Include supplier names, quantities, and delivery dates.
-  schedule_aircraft_and_crew:
-    agent: false
-    description: Book a suitable aircraft and assign qualified crew for the mission.
-    name: schedule_aircraft_and_crew
-    nodes_depended_on:
-    - obtain_regulatory_approval
-    nodes_dependent_on: []
-    prompt: Identify an aircraft capable of carrying the seeding payload (e.g., Cessna
-      208). Provide a schedule that aligns with the viable cloud windows identified
-      earlier.
-  train_crew_on_seeding_procedure:
-    agent: false
-    description: Provide the flight and ground crew with a step‑by‑step seeding protocol.
-    name: train_crew_on_seeding_procedure
-    nodes_depended_on:
-    - define_target_area
-    nodes_dependent_on: []
-    prompt: Write a concise training checklist covering safety, equipment loading,
-      altitude control, and dispersal rates. Format as bullet points.
+    prompt: Take the prioritized tasks and sequence them based on dependencies and
+      priorities.
