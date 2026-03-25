@@ -1,44 +1,188 @@
 dag_type: plain_text
-description: A workflow that creates a test environment, writes a sample test script,
-  runs the tests, and captures the results.
-name: test_execution_plan
+description: A concurrent, self‑contained workflow for detecting anomalies in clinical
+  operations data, covering data ingestion, preprocessing, feature engineering, model
+  training, evaluation, deployment and ongoing monitoring.
+name: clinical_ops_anomaly_detection_workflow
 nodes:
-  collect_test_results:
+  aggregate_patient_level_metrics:
     agent: false
-    description: Analyzes the test run result and formats it for reporting.
-    name: collect_test_results
+    description: Aggregate numeric metrics at the patient level.
+    name: aggregate_patient_level_metrics
     nodes_depended_on:
-    - run_test_script
-    nodes_dependent_on: []
-    prompt: 'Parse the captured output to determine if the test passed or failed.
-      Return a JSON object with keys `status` (values: `passed` or `failed`) and `details`
-      containing the raw output.'
-  create_test_directory:
+    - create_categorical_dummies
+    nodes_dependent_on:
+    - generate_rolling_statistics
+    prompt: Group the dataset by patient_id and calculate mean, median, and standard
+      deviation for numeric metrics such as 'visit_duration' and 'lab_value'. Add
+      these aggregates as new columns.
+  clean_and_validate_data:
     agent: false
-    description: Sets up the folder structure required for test files.
-    name: create_test_directory
+    description: Clean the raw data and report any validation issues.
+    name: clean_and_validate_data
+    nodes_depended_on:
+    - ingest_raw_clinical_data
+    nodes_dependent_on:
+    - extract_timestamp_features
+    - handle_missing_values
+    prompt: Given the raw CSV from the ingestion step, remove duplicate rows, validate
+      data types, and flag rows that fail validation. Return a cleaned CSV and a list
+      of validation errors.
+  create_categorical_dummies:
+    agent: false
+    description: One‑hot encode high‑cardinality categorical features.
+    name: create_categorical_dummies
+    nodes_depended_on:
+    - engineer_time_based_features
+    nodes_dependent_on:
+    - aggregate_patient_level_metrics
+    prompt: For each categorical column that has more than 5 categories, create one‑hot
+      encoded columns. Return the updated dataset.
+  define_alerting_rules:
+    agent: false
+    description: Create threshold rules for anomaly alerts.
+    name: define_alerting_rules
+    nodes_depended_on:
+    - setup_monitoring_pipeline
+    nodes_dependent_on: []
+    prompt: Based on historical anomaly rates, set a threshold (e.g., 2% of records
+      in an hour) that triggers an alert. Return the alert rule configuration.
+  deploy_model_to_inference_service:
+    agent: false
+    description: Deploy the model to a production inference service.
+    name: deploy_model_to_inference_service
+    nodes_depended_on:
+    - generate_evaluation_report
+    nodes_dependent_on:
+    - setup_monitoring_pipeline
+    prompt: Package the trained model and expose it as a REST endpoint using a lightweight
+      Flask app. Return the endpoint URL.
+  engineer_time_based_features:
+    agent: false
+    description: Generate dummy variables for weekday categories.
+    name: engineer_time_based_features
+    nodes_depended_on:
+    - extract_timestamp_features
+    nodes_dependent_on:
+    - create_categorical_dummies
+    prompt: From the 'day_of_week' column, create separate binary columns for each
+      weekday. Return the dataset with these dummy variables.
+  evaluate_model_performance:
+    agent: false
+    description: Assess model performance on the test set.
+    name: evaluate_model_performance
+    nodes_depended_on:
+    - train_anomaly_detection_model
+    nodes_dependent_on:
+    - generate_evaluation_report
+    prompt: Use the trained model to predict on X_test. Compute confusion matrix,
+      precision, recall, F1, and ROC AUC. Return these metrics.
+  extract_timestamp_features:
+    agent: false
+    description: Create basic time‑based features from the event timestamp.
+    name: extract_timestamp_features
+    nodes_depended_on:
+    - handle_missing_values
+    nodes_dependent_on:
+    - engineer_time_based_features
+    prompt: Add a new column 'day_of_week' and a boolean column 'is_holiday' based
+      on the 'event_date' field. Return the dataset with these columns.
+  generate_evaluation_report:
+    agent: false
+    description: Create a readable evaluation report.
+    name: generate_evaluation_report
+    nodes_depended_on:
+    - evaluate_model_performance
+    nodes_dependent_on:
+    - deploy_model_to_inference_service
+    prompt: Summarize the evaluation metrics in a Markdown report. Include a table
+      of metrics and a brief interpretation.
+  generate_rolling_statistics:
+    agent: false
+    description: Compute rolling statistics for time‑series features.
+    name: generate_rolling_statistics
+    nodes_depended_on:
+    - aggregate_patient_level_metrics
+    nodes_dependent_on:
+    - normalize_features
+    prompt: For each numeric feature, compute a 7‑day rolling mean and rolling standard
+      deviation. Append these as new columns.
+  handle_missing_values:
+    agent: false
+    description: Impute missing values in the cleaned dataset.
+    name: handle_missing_values
+    nodes_depended_on:
+    - clean_and_validate_data
+    nodes_dependent_on:
+    - extract_timestamp_features
+    prompt: In the cleaned CSV, impute missing numeric values with the median and
+      missing categorical values with the mode. Return the imputed dataset.
+  ingest_raw_clinical_data:
+    agent: false
+    description: Pull the most recent raw clinical operations data for analysis.
+    name: ingest_raw_clinical_data
     nodes_depended_on: []
     nodes_dependent_on:
-    - write_test_script
-    prompt: Create a directory named `tests` in the current working directory. If
-      the directory already exists, do nothing.
-  run_test_script:
+    - clean_and_validate_data
+    prompt: Retrieve the latest raw clinical operations dataset from the data lake.
+      Return the dataset as a CSV string.
+  label_anomaly_scores:
     agent: false
-    description: Runs the test and collects raw output.
-    name: run_test_script
+    description: Generate anomaly labels based on a baseline rule.
+    name: label_anomaly_scores
     nodes_depended_on:
-    - write_test_script
+    - prepare_training_dataset
     nodes_dependent_on:
-    - collect_test_results
-    prompt: Execute the test script using the command `python -m unittest tests/sample_test.py`
-      and capture the stdout and exit code.
-  write_test_script:
+    - split_train_test_sets
+    prompt: Apply a statistical baseline (e.g., z‑score > 3) to label each row as
+      anomaly (1) or normal (0) in the target vector. Return the updated target array.
+  normalize_features:
     agent: false
-    description: Writes a minimal test script to be executed.
-    name: write_test_script
+    description: Normalize numeric features for modeling.
+    name: normalize_features
     nodes_depended_on:
-    - create_test_directory
+    - generate_rolling_statistics
     nodes_dependent_on:
-    - run_test_script
-    prompt: Create a file `tests/sample_test.py` containing a simple unit test that
-      asserts `1 + 1 == 2`. Use Python's `unittest` framework.
+    - prepare_training_dataset
+    prompt: Standard‑scale all numeric features (zero mean, unit variance). Return
+      the scaled dataset.
+  prepare_training_dataset:
+    agent: false
+    description: Create feature matrix and target vector for training.
+    name: prepare_training_dataset
+    nodes_depended_on:
+    - normalize_features
+    nodes_dependent_on:
+    - label_anomaly_scores
+    prompt: Split the dataset into features X and target y. Exclude non‑feature columns
+      such as patient_id and event_date. Return X and y.
+  setup_monitoring_pipeline:
+    agent: false
+    description: Establish a recurring inference and logging process.
+    name: setup_monitoring_pipeline
+    nodes_depended_on:
+    - deploy_model_to_inference_service
+    nodes_dependent_on:
+    - define_alerting_rules
+    prompt: Configure a monitoring job that sends a batch of new clinical records
+      to the inference endpoint every hour and collects predictions. Store results
+      in a monitoring database.
+  split_train_test_sets:
+    agent: false
+    description: Create stratified train/test splits.
+    name: split_train_test_sets
+    nodes_depended_on:
+    - label_anomaly_scores
+    nodes_dependent_on:
+    - train_anomaly_detection_model
+    prompt: Split X and y into training and testing sets using stratified sampling
+      (80/20 split). Return X_train, X_test, y_train, y_test.
+  train_anomaly_detection_model:
+    agent: false
+    description: Fit an unsupervised anomaly detection model.
+    name: train_anomaly_detection_model
+    nodes_depended_on:
+    - split_train_test_sets
+    nodes_dependent_on:
+    - evaluate_model_performance
+    prompt: Train an Isolation Forest model (n_estimators=100, contamination=0.05)
+      on X_train and y_train. Return the trained model object.
