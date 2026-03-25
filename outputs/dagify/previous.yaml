@@ -1,103 +1,181 @@
 dag_type: plain_text
-description: A workflow defining elemental steps to perform a generic 'test' by clarifying
-  the test type, gathering inputs, running the test execution, and reporting results.
-name: execute_test_procedure
+description: Determine test feasibility, validity, and reliability by verifying correct
+  data input, executing edge cases, and collecting feedback from stakeholders.
+name: conduct_quality_assurance_on_test
 nodes:
-  analyze_test_results:
+  clarify_expected_outcomes:
     agent: false
-    description: Evaluate the test outputs against expected outcomes to determine
-      pass/fail status.
-    name: analyze_test_results
+    description: Elaborate on the expected outcomes to ensure everyone involved understands
+      what success looks like.
+    name: clarify_expected_outcomes
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: What specific outcomes do you hope the test will achieve? Provide a clear
+      and concise statement of the expected results.
+  clarify_performance_metrics:
+    agent: false
+    description: Choose KPIs that directly relate to the test's objectives and allow
+      for accurate, actionable feedback.
+    name: clarify_performance_metrics
     nodes_depended_on:
-    - collect_test_results
-    nodes_dependent_on:
-    - generate_test_report
-    prompt: Analyze the collected test results by comparing them to expected results
-      or criteria. Conclude whether the test passes or fails with a brief explanation.
-  collect_test_results:
+    - identify_performance_indicators
+    nodes_dependent_on: []
+    prompt: What key performance indicators (KPIs) will be used to measure the test's
+      success? Specify clear, measurable metrics that support evaluation.
+  collect_stakeholder_feedback:
     agent: false
-    description: Gather all outputs, logs, and data produced by the test execution.
-    name: collect_test_results
+    description: Host interactive feedback sessions or distribute surveys and questionnaires
+      to elicit detailed, actionable input.
+    name: collect_stakeholder_feedback
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: What specific questions or topics would you like stakeholders, subject
+      matter experts, or relevant teams to provide input on? Design feedback-gathering
+      activities and tools to solicit constructive comments.
+  conduct_edge_case_testing:
+    agent: false
+    description: Proactively address edge cases to verify the test's robustness and
+      accuracy, even under exceptional or unexpected conditions.
+    name: conduct_edge_case_testing
     nodes_depended_on:
-    - execute_test
-    nodes_dependent_on:
-    - analyze_test_results
-    prompt: Collect and organize all result data produced from the test run, including
-      logs, output files, and performance metrics.
-  define_test_objective:
+    - identify_boundary_conditions
+    nodes_dependent_on: []
+    prompt: What edge cases need to be tested to ensure the test's validity and reliability?
+      Identify any boundary conditions that might impact results.
+  decide_evaluation_criteria:
     agent: false
-    description: Clarify and specify the exact objective and purpose of the test to
-      be conducted.
-    name: define_test_objective
+    description: Establish a robust evaluation framework that aligns with the test's
+      objectives and promotes fairness and consistency.
+    name: decide_evaluation_criteria
+    nodes_depended_on:
+    - clarify_performance_metrics
+    - identify_acceptance_thresholds
+    nodes_dependent_on: []
+    prompt: Based on the expected outcomes and scope, what criteria will be used to
+      evaluate the test's success or failure? Establish a clear set of rules to assess
+      performance.
+  define_success_and_failure_criteria:
+    agent: false
+    description: Clarify the conditions for success and failure to promote a clear
+      understanding of the test's objectives and evaluation outcomes.
+    name: define_success_and_failure_criteria
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: What specific conditions will be used to determine success, and what will
+      be the criteria for failure? Establish clear definitions for both to guide evaluation.
+  determine_evaluation_frequency:
+    agent: false
+    description: Choose a schedule that balances frequency with resource availability,
+      allowing for timely assessments and adjustments.
+    name: determine_evaluation_frequency
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: How often will the test be evaluated throughout its life cycle? Establish
+      a regular cadence for performance checks and adjustments.
+  determine_test_objectives:
+    agent: false
+    description: Identify the purpose and goals of the test to guide its design, development,
+      and execution.
+    name: determine_test_objectives
+    nodes_depended_on:
+    - clarify_expected_outcomes
+    - identify_scope
+    - decide_evaluation_criteria
+    nodes_dependent_on: []
+    prompt: What are the test's primary objectives? Clearly state the expected outcomes,
+      scope, and criteria for evaluation.
+  document_test_outcomes:
+    agent: false
+    description: Create a well-structured test report to ensure that results are communicated
+      effectively to stakeholders and test improvements are recorded and leveraged
+      for future testing.
+    name: document_test_outcomes
+    nodes_depended_on:
+    - update_test_design
+    nodes_dependent_on: []
+    prompt: What steps will be taken to document the test's results, analysis, and
+      conclusions? Format the findings into a clear, concise report to facilitate
+      decisions and future refinements.
+  explore_extreme_values:
+    agent: false
+    description: Intentionally expose the test to the most demanding scenarios to
+      confirm its resilience and accuracy across various environments.
+    name: explore_extreme_values
+    nodes_depended_on:
+    - test_for_data_integrity
+    nodes_dependent_on: []
+    prompt: What extreme values or edge cases should be explored to validate the test's
+      behavior under challenging conditions? Identify potential vulnerabilities or
+      anomalies.
+  gather_feedback:
+    agent: false
+    description: Encourage open communication and gather feedback to improve the test,
+      address concerns, and validate the findings.
+    name: gather_feedback
     nodes_depended_on: []
     nodes_dependent_on:
-    - identify_test_type
-    - gather_test_requirements
-    prompt: Define clearly what the test is intended to validate or verify. State
-      the objective in one concise sentence focusing strictly on the test's purpose.
-  execute_test:
+    - collect_stakeholder_feedback
+    - document_test_outcomes
+    prompt: What insights, suggestions, or questions do stakeholders, subject matter
+      experts, or relevant teams have about the test's objectives, procedures, or
+      outcomes? Invite feedback from diverse perspectives.
+  identify_acceptance_thresholds:
     agent: false
-    description: Run the actual test using the prepared environment and gathered inputs.
-    name: execute_test
+    description: Establish well-articulated thresholds to ensure the test's evaluation
+      remains fair, consistent, and actionable.
+    name: identify_acceptance_thresholds
     nodes_depended_on:
-    - prepare_test_environment
-    - gather_test_inputs
-    nodes_dependent_on:
-    - collect_test_results
-    prompt: Perform the test execution as per the test type, using the provided inputs
-      and environment. Document any immediate observations strictly from the execution.
-  gather_test_inputs:
-    agent: false
-    description: Collect or generate all input data or parameters needed for the test
-      execution.
-    name: gather_test_inputs
-    nodes_depended_on:
-    - identify_test_type
-    nodes_dependent_on:
-    - execute_test
-    prompt: Collect or create all required inputs for the test consistent with the
-      test type. List each input and its expected format or value range.
-  gather_test_requirements:
-    agent: false
-    description: List out all prerequisites, conditions, and resources needed for
-      the test.
-    name: gather_test_requirements
-    nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on:
-    - prepare_test_environment
-    prompt: Enumerate all requirements necessary to perform the test including data,
-      environment specifications, tools, and configurations. Provide a bullet list.
-  generate_test_report:
-    agent: false
-    description: Create a clear and concise report summarizing test objectives, procedure,
-      outcomes, and conclusions.
-    name: generate_test_report
-    nodes_depended_on:
-    - analyze_test_results
+    - define_success_and_failure_criteria
     nodes_dependent_on: []
-    prompt: Produce a final report capturing the test objective, environment, inputs,
-      results, pass/fail status, and any recommendations or remarks. Use clear, concise
-      language.
-  identify_test_type:
+    prompt: What thresholds will be used to determine whether the test has achieved
+      its objectives or not? Specify clear, well-defined criteria for both success
+      and failure.
+  identify_boundary_conditions:
     agent: false
-    description: Determine the specific category or type of test to be performed based
-      on the objective.
-    name: identify_test_type
+    description: Discover and document these boundary conditions to inform testing
+      strategies and ensure thorough evaluation.
+    name: identify_boundary_conditions
     nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on:
-    - gather_test_inputs
-    prompt: Identify the type of test appropriate for the defined objective (e.g.,
-      functional, performance, usability). Provide a one-sentence justification.
-  prepare_test_environment:
+    - explore_extreme_values
+    nodes_dependent_on: []
+    prompt: What values, inputs, or outputs represent the test's boundaries? Identify
+      critical points that might influence results or induce errors.
+  identify_performance_indicators:
     agent: false
-    description: Set up and configure the environment and tools required to run the
-      test.
-    name: prepare_test_environment
+    description: Carefully curate performance indicators to avoid unnecessary data
+      collection or noise.
+    name: identify_performance_indicators
     nodes_depended_on:
-    - gather_test_requirements
-    nodes_dependent_on:
-    - execute_test
-    prompt: Configure the test environment according to the specified requirements.
-      This includes hardware, software, network, and any necessary setup steps.
+    - determine_evaluation_frequency
+    nodes_dependent_on: []
+    prompt: What specific performance indicators will be tracked and analyzed during
+      the test? Establish a list of relevant metrics to facilitate evaluation.
+  identify_scope:
+    agent: false
+    description: Set boundaries to ensure the test stays focused on the most critical
+      aspects and avoids unnecessary complexity.
+    name: identify_scope
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: What aspects of the test need to be evaluated? Clearly define the scope
+      to prevent over- or under-testing.
+  test_for_data_integrity:
+    agent: false
+    description: Verify data quality and consistency to avoid introducing errors or
+      misinterpretations when evaluating the test's outcomes.
+    name: test_for_data_integrity
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Has the test's data been thoroughly sanitized, and are any potential biases
+      or inconsistencies present? Check for inconsistencies, outliers, or missing
+      values.
+  update_test_design:
+    agent: false
+    description: Integrate feedback, adapt to new conditions, and optimize the test
+      design to improve its performance and effectiveness.
+    name: update_test_design
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: What modifications or updates will be made to the test design based on
+      new information, changes in requirements, or feedback from stakeholders and
+      experts? Apply insights and suggestions to refine the test.
