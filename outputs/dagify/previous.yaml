@@ -1,47 +1,140 @@
 dag_type: plain_text
-description: Creates a minimal testing workflow that generates sample input, processes
-  it, validates the output, and reports success or failure.
-name: execute_simple_test
+description: A pipeline for creating a hedge fund, encompassing core tasks for launch
+  preparation.
+name: build_hedge_fund_pipeline
 nodes:
-  evaluate_result:
+  activate_hedge_fund_reporting_and_monitoring_systems:
     agent: false
-    description: Validates the output against the expected value and determines pass/fail
-      status.
-    name: evaluate_result
+    description: Implement hedge fund reporting and monitoring systems.
+    name: activate_hedge_fund_reporting_and_monitoring_systems
     nodes_depended_on:
-    - run_test
-    nodes_dependent_on:
-    - report_test_outcome
-    prompt: Check if the `result` field from the test output equals 15. If it does,
-      set `status` to "pass"; otherwise set `status` to "fail" and include `expected`
-      and `actual` values in the response.
-  prepare_test_input:
-    agent: false
-    description: Generates the input data that will be used by the test operation.
-    name: prepare_test_input
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - run_test
-    prompt: Create a JSON object that represents the input for the test. Include the
-      fields `value` with integer 5 and `multiplier` with integer 3.
-  report_test_outcome:
-    agent: false
-    description: Produces the final test report.
-    name: report_test_outcome
-    nodes_depended_on:
-    - evaluate_result
+    - complete_hedge_fund_regulatory_filing_requirements
     nodes_dependent_on: []
-    prompt: Return a JSON object with the field `status` and, if failed, also include
-      `expected` and `actual` fields. The output should be human‑readable and suitable
-      for logging.
-  run_test:
+    prompt: Develop the infrastructure for hedge fund performance reporting and monitoring,
+      covering metrics on performance, risk, and compliance.
+  assemble_hedge_fund_operation_team:
     agent: false
-    description: Performs the operation under test and produces the output.
-    name: run_test
+    description: Set up the hedge fund operation team.
+    name: assemble_hedge_fund_operation_team
     nodes_depended_on:
-    - prepare_test_input
-    nodes_dependent_on:
-    - evaluate_result
-    prompt: Take the JSON input produced in the previous step, multiply `value` by
-      `multiplier`, and return a JSON object with a single field `result` containing
-      the product.
+    - compile_hedge_fund_pitch_deck
+    nodes_dependent_on: []
+    prompt: Establish essential personnel roles for hedge fund operational tasks,
+      such as trading, risk management, compliance, and accounting.
+  begin_hedge_fund_trading_activities:
+    agent: false
+    description: Begin hedge fund trading operations.
+    name: begin_hedge_fund_trading_activities
+    nodes_depended_on:
+    - activate_hedge_fund_reporting_and_monitoring_systems
+    nodes_dependent_on: []
+    prompt: Initiate live trading activities according to established investment criteria
+      and risk management procedures.
+  compile_hedge_fund_pitch_deck:
+    agent: false
+    description: Develop an initial hedge fund pitch deck.
+    name: compile_hedge_fund_pitch_deck
+    nodes_depended_on:
+    - draft_hedge_fund_business_plan
+    nodes_dependent_on: []
+    prompt: Create a foundational pitch deck for investor pitches, highlighting objectives,
+      strategy, governance, risks, fees, and returns.
+  complete_hedge_fund_regulatory_filing_requirements:
+    agent: false
+    description: Complete the hedge fund's regulatory filings and registrations.
+    name: complete_hedge_fund_regulatory_filing_requirements
+    nodes_depended_on:
+    - launch_hedge_fund_marketing_campaign
+    nodes_dependent_on: []
+    prompt: Finalize the submission of necessary hedge fund regulatory documents and
+      filings to relevant authorities.
+  define_hedge_fund_objectives:
+    agent: false
+    description: Define core hedge fund objectives.
+    name: define_hedge_fund_objectives
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Establish the primary objectives for the hedge fund. Define a concise
+      bullet list of investment purpose, competitive edge, and long-term vision.
+  determine_hedge_fund_legal_structure:
+    agent: false
+    description: Determine the hedge fund legal structure.
+    name: determine_hedge_fund_legal_structure
+    nodes_depended_on:
+    - establish_hedge_fund_governance_structure
+    nodes_dependent_on: []
+    prompt: Identify the optimal legal entity structure for the hedge fund, such as
+      LP or LLC.
+  draft_hedge_fund_business_plan:
+    agent: false
+    description: Develop a hedge fund business plan.
+    name: draft_hedge_fund_business_plan
+    nodes_depended_on:
+    - research_required_service_providers
+    nodes_dependent_on: []
+    prompt: Produce a concise hedge fund business plan outlining key features, risks,
+      and future prospects.
+  establish_hedge_fund_governance_structure:
+    agent: false
+    description: Establish the hedge fund governance structure.
+    name: establish_hedge_fund_governance_structure
+    nodes_depended_on:
+    - select_hedge_fund_jurisdiction
+    nodes_dependent_on: []
+    prompt: Define the internal governance roles, responsibilities, and charters for
+      the hedge fund.
+  evaluate_hedge_fund_strategy_options:
+    agent: false
+    description: Evaluate and choose a hedge fund strategy based on objectives.
+    name: evaluate_hedge_fund_strategy_options
+    nodes_depended_on:
+    - define_hedge_fund_objectives
+    nodes_dependent_on: []
+    prompt: Given the defined objectives, assess high-level hedge fund strategy categories,
+      including long/short equity, global macro, or event-driven strategies.
+  finalize_hedge_fund_investment_strategy:
+    agent: false
+    description: Lock in the hedge fund investment strategy.
+    name: finalize_hedge_fund_investment_strategy
+    nodes_depended_on:
+    - assemble_hedge_fund_operation_team
+    nodes_dependent_on: []
+    prompt: Specify concrete investment criteria, including asset classes, positions
+      limits, and risk parameters, to guide trading and portfolio management decisions.
+  identify_required_hedge_fund_regulations:
+    agent: false
+    description: Identify required regulatory filings and registrations.
+    name: identify_required_hedge_fund_regulations
+    nodes_depended_on:
+    - determine_hedge_fund_legal_structure
+    nodes_dependent_on: []
+    prompt: Assess key regulatory requirements for the chosen hedge fund legal structure
+      and jurisdiction.
+  launch_hedge_fund_marketing_campaign:
+    agent: false
+    description: Launch the hedge fund marketing campaign.
+    name: launch_hedge_fund_marketing_campaign
+    nodes_depended_on:
+    - finalize_hedge_fund_investment_strategy
+    nodes_dependent_on: []
+    prompt: Coordinate an initial marketing campaign to reach potential investors,
+      outline the investment proposition, and promote the hedge fund's unique value
+      proposition.
+  research_required_service_providers:
+    agent: false
+    description: Identify required service providers for hedge fund operations.
+    name: research_required_service_providers
+    nodes_depended_on:
+    - identify_required_hedge_fund_regulations
+    nodes_dependent_on: []
+    prompt: List essential external service providers, including prime brokers, fund
+      administrators, auditors, legal counsel, and compliance consultants.
+  select_hedge_fund_jurisdiction:
+    agent: false
+    description: Choose the optimal hedge fund jurisdiction.
+    name: select_hedge_fund_jurisdiction
+    nodes_depended_on:
+    - evaluate_hedge_fund_strategy_options
+    nodes_dependent_on: []
+    prompt: Determine the optimal jurisdiction for the hedge fund, such as Cayman,
+      Delaware, or Luxembourg, while considering the chosen strategy.
