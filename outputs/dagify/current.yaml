@@ -1,4 +1,4 @@
-dag_type: typed
+dag_type: plain_text
 description: Generated workflow from UI.
 name: physician_credentialing_onboarding
 nodes:
@@ -11,12 +11,10 @@ nodes:
     - schedule_privileging_committee_review
     nodes_dependent_on: []
     output_structure:
-    - description: List of clinical privileges assigned to the physician
+    - description: List of specific clinical privileges approved and assigned to the
+        physician
       key: privileges_assigned
       type: List[str]
-    - description: Whether the EMR profile was successfully updated
-      key: emr_update_status
-      type: bool
     prompt: List the approved clinical privileges (e.g., inpatient admission, surgery)
       and update the EMR profile. Return JSON with privileges_assigned array.
   check_pecos:
@@ -28,16 +26,19 @@ nodes:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: True if the physician is enrolled in PECOS, false otherwise
-      key: pecos_enrolled
+    - description: Indicates whether the physician is enrolled in PECOS.
+      key: is_enrolled
       type: bool
-    - description: Date of PECOS enrollment in YYYY-MM-DD format
-      key: pecos_enrollment_date
+    - description: Date of PECOS enrollment in YYYY-MM-DD format.
+      key: enrollment_date
       type: str
-    - description: True if the physician is eligible for Medicare participation, false
-        otherwise
+    - description: Indicates whether the physician is eligible for Medicare based
+        on PECOS data.
       key: medicare_eligible
       type: bool
+    - description: The Medicare enrollment number assigned to the physician.
+      key: medicare_number
+      type: str
     prompt: Verify the physician's enrollment in the Provider Enrollment, Chain, and
       Ownership System (PECOS) for Medicare participation.
   collect_physician_basic_info:
@@ -47,34 +48,6 @@ nodes:
     name: collect_physician_basic_info
     nodes_depended_on: []
     nodes_dependent_on: []
-    output_structure:
-    - description: Full legal name of the physician
-      key: name
-      type: str
-    - description: Primary email address
-      key: email
-      type: str
-    - description: Primary contact phone number
-      key: phone
-      type: str
-    - description: National Provider Identifier
-      key: NPI
-      type: str
-    - description: State medical license number
-      key: medical_license_number
-      type: str
-    - description: Drug Enforcement Administration registration number
-      key: DEA_number
-      type: str
-    - description: List of education entries (e.g., medical school, residency, fellowship)
-      key: education_history
-      type: List[str]
-    - description: List of employment entries (e.g., previous hospitals, practices)
-      key: employment_history
-      type: List[str]
-    - description: Name of the malpractice insurance provider
-      key: malpractice_insurance_provider
-      type: str
     prompt: 'Create a checklist of required basic information for a new physician
       and format the collected data as a JSON object with keys: name, email, phone,
       NPI, medical_license_number, DEA_number, education_history, employment_history,
@@ -95,34 +68,35 @@ nodes:
     - check_pecos
     nodes_dependent_on: []
     output_structure:
-    - description: Status of medical license verification (pass/fail)
-      key: medical_license_status
-      type: str
-    - description: Status of board certification verification (pass/fail)
-      key: board_certification_status
-      type: str
-    - description: Status of DEA registration verification (pass/fail)
-      key: dea_registration_status
-      type: str
-    - description: Status of malpractice insurance verification (pass/fail)
-      key: malpractice_insurance_status
-      type: str
-    - description: Status of education and training verification (pass/fail)
-      key: education_and_training_status
-      type: str
-    - description: List of professional references
-      key: professional_references
-      type: List[str]
-    - description: Status of background check (pass/fail)
-      key: background_check_status
-      type: str
-    - description: List of hospital privileges history
-      key: hospital_privileges_history
-      type: List[str]
-    - description: Status of PECOS enrollment verification (pass/fail)
-      key: pecos_enrollment_status
-      type: str
-    - description: Overall recommendation (approve/hold)
+    - description: Indicates if the medical license verification passed
+      key: medical_license_pass
+      type: bool
+    - description: Indicates if the board certification verification passed
+      key: board_certification_pass
+      type: bool
+    - description: Indicates if the DEA registration verification passed
+      key: dea_registration_pass
+      type: bool
+    - description: Indicates if the malpractice insurance verification passed
+      key: malpractice_insurance_pass
+      type: bool
+    - description: Indicates if all education and training verifications passed
+      key: education_and_training_pass
+      type: bool
+    - description: Indicates if professional references meet acceptable criteria
+      key: professional_references_pass
+      type: bool
+    - description: Indicates if the background check passed without issues
+      key: background_check_pass
+      type: bool
+    - description: Indicates if the hospital privileges history is clear of revocations
+        or limitations
+      key: hospital_privileges_history_pass
+      type: bool
+    - description: Indicates if the PECOS enrollment status is acceptable
+      key: pecos_enrollment_pass
+      type: bool
+    - description: Overall credentialing recommendation, e.g. 'approve' or 'hold'
       key: overall_recommendation
       type: str
     prompt: Combine the JSON outputs from all verification steps into one comprehensive
@@ -137,12 +111,11 @@ nodes:
     - schedule_orientation
     nodes_dependent_on: []
     output_structure:
-    - description: List of identifiers for each compliance training module assigned
-        to the physician.
+    - description: List of IDs for compliance training modules assigned to the physician.
       key: training_module_ids
       type: List[str]
-    - description: List of boolean values indicating whether each corresponding module
-        has been completed (true) or not (false).
+    - description: Corresponding list indicating completion status for each module
+        (true
       key: completion_status
       type: List[bool]
     prompt: Enroll the physician in the online compliance training modules, track
@@ -155,14 +128,16 @@ nodes:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: True if the physician has any criminal records, false otherwise.
+    - description: Indicates whether any criminal records were found (true for yes,
+        false for no).
       key: criminal_records
       type: bool
-    - description: True if the physician is subject to any sanctions, false otherwise.
+    - description: Indicates whether the physician is subject to any sanctions (true
+        for yes, false for no).
       key: sanctions
       type: bool
-    - description: Detailed information about any criminal records or sanctions, empty
-        string if none.
+    - description: Additional details regarding any criminal records or sanctions
+        found.
       key: details_if_any
       type: str
     prompt: 'Perform a simulated background check using the physician''s full name
@@ -181,7 +156,7 @@ nodes:
     - description: Unique identifier assigned to the provider in the EMR system.
       key: provider_id
       type: str
-    - description: Creation status of the provider profile (e.g., 'Success', 'Failed').
+    - description: Status of the provider profile creation, e.g., 'success', 'failure'.
       key: status
       type: str
     prompt: Using the credentialing report and signed employment contract, populate
@@ -198,31 +173,31 @@ nodes:
     - verify_hippa_acknowledgment
     nodes_dependent_on: []
     output_structure:
-    - description: The final credentialing status of the physician, e.g., 'Active'
+    - description: Final status of the credentialing process (e.g., 'Active').
       key: final_status
       type: str
-    - description: The date when the physician was activated, formatted as YYYY-MM-DD
+    - description: Date the physician was activated, formatted as YYYY-MM-DD.
       key: activation_date
       type: str
     prompt: Update the credentialing database status to 'Active', log the date of
       activation, and output JSON with final_status and activation_date.
   grant_system_access:
     agent: false
-    description: Provision user accounts for EHR, order entry, and other clinical
-      systems.
+    description: Provision user accounts for the physician across multiple clinical
+      systems, generating usernames and temporary passwords for each system.
     name: grant_system_access
     nodes_depended_on:
     - create_provider_profile_in_emr
     nodes_dependent_on: []
     output_structure:
-    - description: Names of the clinical systems for which accounts are created
-      key: system_name
+    - description: List of system names for which credentials were provisioned.
+      key: system_names
       type: List[str]
-    - description: Generated username for each system
-      key: username
+    - description: Corresponding list of usernames created for each system.
+      key: usernames
       type: List[str]
-    - description: Temporary password assigned to each system account
-      key: temporary_password
+    - description: Corresponding list of temporary passwords for each system.
+      key: temporary_passwords
       type: List[str]
     prompt: Create login credentials for the physician in each required system, set
       appropriate role-based permissions, and output JSON with system_name, username,
@@ -236,37 +211,42 @@ nodes:
     - finalize_credentialing
     nodes_dependent_on: []
     output_structure:
-    - description: The final credentialing status of the physician (e.g., 'Active').
-      key: final_status
+    - description: Status of the notification (e.g., 'sent', 'failed')
+      key: notification_status
       type: str
-    - description: The date the physician was activated, formatted as YYYY-MM-DD.
-      key: activation_date
+    - description: Departments notified, e.g., ['HR', 'Payroll']
+      key: recipient_departments
+      type: List[str]
+    - description: ISO 8601 timestamp when the notification was sent
+      key: timestamp
       type: str
     prompt: Inform HR and payroll that the physician is active and eligible for compensation.
   obtain_professional_references:
     agent: false
     description: Collect and record at least three professional references from the
-      physician's recent supervisors. The node outputs a summary of each reference
-      including the reference's name, relationship to the physician, a rating on a
-      scale of 1 to 5, and any comments.
+      physician's recent supervisors. Outputs a summary of each reference including
+      the reference's name, relationship to the physician, a rating on a scale of
+      1 to 5, and any comments.
     name: obtain_professional_references
     nodes_depended_on:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: List of reference names, one entry per reference
-      key: reference_names
+    - description: List of reference names.
+      key: reference_name
       type: List[str]
-    - description: List of relationships to the physician, aligned with reference_names
-      key: relationships
+    - description: List of relationships of each reference to the physician.
+      key: reference_relationship
       type: List[str]
-    - description: List of integer ratings (1‑5) for each reference, aligned with
-        reference_names
-      key: ratings
+    - description: List of ratings (1-5) for each reference.
+      key: reference_rating
       type: List[int]
-    - description: List of comments or remarks for each reference, aligned with reference_names
-      key: comments
+    - description: List of comments for each reference.
+      key: reference_comments
       type: List[str]
+    - description: Number of references collected.
+      key: reference_count
+      type: int
     prompt: 'Generate a template email to request reference letters, then summarize
       the received responses as JSON: reference_name, relationship, rating (1‑5),
       comments.'
@@ -279,10 +259,10 @@ nodes:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: Unique identifier for the employment contract
+    - description: Unique identifier of the signed employment contract
       key: contract_id
       type: str
-    - description: Date the contract was signed in ISO 8601 format (YYYY-MM-DD)
+    - description: Date the contract was signed in ISO 8601 format
       key: signed_date
       type: str
     prompt: Generate an email with a PDF employment contract attached, request electronic
@@ -296,16 +276,11 @@ nodes:
     - create_provider_profile_in_emr
     nodes_dependent_on: []
     output_structure:
-    - description: Date and time of the scheduled orientation session in ISO 8601
-        format
+    - description: Date of the scheduled orientation session (YYYY-MM-DD or ISO format).
       key: orientation_date
       type: str
-    - description: Physical or virtual location where the orientation will take place
+    - description: Physical or virtual location of the orientation session.
       key: location
-      type: str
-    - description: Outcome of the scheduling operation (e.g., 'scheduled', 'conflict',
-        'failed')
-      key: status
       type: str
     prompt: Select an available orientation slot, send calendar invitation to the
       physician, and return JSON with orientation_date and location.
@@ -317,25 +292,6 @@ nodes:
     nodes_depended_on:
     - compile_credentialing_report
     nodes_dependent_on: []
-    output_structure:
-    - description: The scheduled date of the committee meeting in YYYY-MM-DD format
-      key: meeting_date
-      type: str
-    - description: The scheduled start time of the committee meeting in HH:MM format
-      key: meeting_time
-      type: str
-    - description: Full name of the physician attending the meeting
-      key: physician_name
-      type: str
-    - description: The location or virtual link where the meeting will be held
-      key: meeting_location
-      type: str
-    - description: Unique identifier assigned to the scheduled meeting
-      key: meeting_id
-      type: str
-    - description: Identifier of the attached credentialing report
-      key: credentialing_report_id
-      type: str
     prompt: Create a calendar entry for the privileging committee with date, time,
       physician name, and attach the credentialing report.
   update_credentialing_database:
@@ -347,10 +303,12 @@ nodes:
     - finalize_credentialing
     nodes_dependent_on: []
     output_structure:
-    - description: Unique identifier for the database entry.
+    - description: Unique identifier assigned to the database entry for the credentialing
+        report.
       key: record_id
       type: int
-    - description: Date and time when the record was created, in ISO 8601 format.
+    - description: ISO 8601 formatted timestamp of when the record was created in
+        the database.
       key: timestamp
       type: str
     prompt: Insert the compiled credentialing report and final status into the credentialing
@@ -364,16 +322,17 @@ nodes:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: List of certification bodies the physician is certified by
+    - description: List of certifying boards the physician is certified by.
       key: certification_body
       type: List[str]
-    - description: List of specialties corresponding to each certification
+    - description: List of specialties for which the physician holds board certifications.
       key: specialty
       type: List[str]
-    - description: Current status of each certification (e.g., active, expired, pending)
+    - description: List of current statuses of each board certification (e.g., active,
+        inactive, pending).
       key: certification_status
       type: List[str]
-    - description: Expiration date for each certification in ISO 8601 format
+    - description: List of expiration dates for each board certification.
       key: expiration_date
       type: List[str]
     prompt: Check the physician's board certification(s) against the certifying board
@@ -388,15 +347,14 @@ nodes:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: Current status of the DEA registration (e.g., 'Active', 'Inactive',
-        'Suspended').
+    - description: Status of the DEA registration, e.g., Active, Inactive, Expired.
       key: dea_status
       type: str
-    - description: Expiration date of the DEA registration in ISO 8601 format (YYYY-MM-DD).
+    - description: Expiration date of the DEA registration in YYYY-MM-DD format.
       key: expiration_date
       type: str
-    - description: Indicates whether the name on the DEA registration matches the
-        physician's legal name.
+    - description: Whether the name on the DEA registration matches the physician's
+        name.
       key: name_match
       type: bool
     prompt: 'Validate the DEA_number provided, returning JSON: dea_status, expiration_date,
@@ -411,30 +369,27 @@ nodes:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: List of educational institutions attended.
-      key: institution_list
+    - description: List of unique identifiers or labels for each education entry verified.
+      key: education_entry_id
       type: List[str]
-    - description: List of degrees earned (e.g., MD, DO, MSc).
-      key: degree_list
+    - description: List of education institutions corresponding to each verified education
+        entry.
+      key: education_institution_name
       type: List[str]
-    - description: List of fields of study or specialties.
-      key: field_of_study_list
+    - description: List of degree or training types (e.g., Medical School, Residency,
+        Fellowship) for each education entry.
+      key: education_degree_type
       type: List[str]
-    - description: List of start years for each education entry.
-      key: start_year_list
-      type: List[int]
-    - description: List of end years for each education entry.
-      key: end_year_list
-      type: List[int]
-    - description: List of accrediting bodies that approved each program.
-      key: accreditation_body_list
+    - description: List of accrediting bodies used to verify each education entry.
+      key: accrediting_body
       type: List[str]
-    - description: List indicating if the education entry was verified (e.g., 'verified',
-        'not verified').
-      key: verification_status_list
-      type: List[str]
-    - description: List of dates when each education entry was verified.
-      key: verification_date_list
+    - description: List indicating whether each education entry was successfully verified
+        against the accrediting body.
+      key: verification_status
+      type: List[bool]
+    - description: Additional comments or notes regarding the verification result
+        for each education entry.
+      key: verification_comments
       type: List[str]
     prompt: Cross-reference each entry in education_history with the appropriate accrediting
       body and output JSON for each entry.
@@ -447,10 +402,11 @@ nodes:
     - complete_compliance_training
     nodes_dependent_on: []
     output_structure:
-    - description: Date when the HIPAA acknowledgment was signed, formatted as YYYY-MM-DD
+    - description: Date when the physician acknowledged HIPAA policies, in ISO 8601
+        format.
       key: acknowledgment_date
       type: str
-    - description: Full name of the person who signed the HIPAA acknowledgment form
+    - description: Name of the physician who signed the acknowledgment.
       key: signed_by
       type: str
     prompt: Capture the electronic signature on the HIPAA acknowledgment form and
@@ -464,27 +420,27 @@ nodes:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: Concise textual summary of the hospital privileges history
-      key: summary_text
+    - description: Indicates if the physician has any revoked privileges
+      key: has_revoked_privileges
+      type: bool
+    - description: List describing each revoked privilege
+      key: revoked_privileges_details
+      type: List[str]
+    - description: Indicates if the physician has any suspended privileges
+      key: has_suspended_privileges
+      type: bool
+    - description: List describing each suspended privilege
+      key: suspended_privileges_details
+      type: List[str]
+    - description: Indicates if the physician has any limited privileges
+      key: has_limited_privileges
+      type: bool
+    - description: List describing each limited privilege
+      key: limited_privileges_details
+      type: List[str]
+    - description: Concise summary notes on the hospital privileges history
+      key: summary_notes
       type: str
-    - description: Number of hospital privileges that have been revoked
-      key: revoked_count
-      type: int
-    - description: Number of hospital privileges that have been suspended
-      key: suspended_count
-      type: int
-    - description: Number of hospital privileges that have been limited
-      key: limited_count
-      type: int
-    - description: True if any privileges were revoked, otherwise False
-      key: has_revoked
-      type: bool
-    - description: True if any privileges were suspended, otherwise False
-      key: has_suspended
-      type: bool
-    - description: True if any privileges were limited, otherwise False
-      key: has_limited
-      type: bool
     prompt: Summarize the physician's past hospital privileges, indicating any revoked,
       suspended, or limited privileges, in JSON format.
   verify_malpractice_insurance:
@@ -496,24 +452,9 @@ nodes:
     - collect_physician_basic_info
     nodes_dependent_on: []
     output_structure:
-    - description: Name of the malpractice insurance carrier
+    - description: Name of the insurance carrier
       key: carrier_name
       type: str
-    - description: Insurance policy number issued to the physician
-      key: policy_number
-      type: str
-    - description: Maximum coverage limit per claim in monetary units
-      key: coverage_limit
-      type: float
-    - description: Date the policy became effective (ISO 8601 format)
-      key: effective_date
-      type: str
-    - description: Date the policy expires (ISO 8601 format)
-      key: expiration_date
-      type: str
-    - description: Indicates whether there are any coverage gaps or lapses
-      key: any_gaps
-      type: bool
     prompt: 'Contact the malpractice insurance provider listed and return JSON: carrier_name,
       policy_number, coverage_limit, effective_date, expiration_date, any_gaps.'
   verify_medical_license:
@@ -525,18 +466,21 @@ nodes:
     nodes_dependent_on: []
     output_structure:
     - description: The physician's medical license number.
-      key: medical_license_number
+      key: license_number
       type: str
-    - description: Current status of the license (e.g., Active, Suspended, Revoked).
-      key: status
+    - description: Current status of the license (e.g., Active, Expired, Suspended).
+      key: license_status
       type: str
-    - description: Expiration date of the medical license in YYYY-MM-DD format.
+    - description: Type of medical license (e.g., MD, DO, NP).
+      key: license_type
+      type: str
+    - description: State issuing the license.
+      key: license_state
+      type: str
+    - description: Expiration date of the license in YYYY-MM-DD format.
       key: expiration_date
       type: str
-    - description: Whether the license is currently active.
-      key: is_active
+    - description: Whether the license is currently valid.
+      key: license_valid
       type: bool
-    - description: Any error or note encountered during verification.
-      key: error_message
-      type: str
     prompt: Verify medical license using license number from basic information.
