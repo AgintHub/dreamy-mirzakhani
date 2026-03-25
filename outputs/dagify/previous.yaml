@@ -1,68 +1,11 @@
 dag_type: plain_text
-description: This workflow is designed to test a given objective or task description
-  and provide a clear execution plan.
-name: test_objective_workflow
+description: Outputs a simple greeting message.
+name: say_hello_workflow
 nodes:
-  create_execution_plan:
+  generate_greeting:
     agent: false
-    description: Create a detailed execution plan based on the sequenced tasks.
-    name: create_execution_plan
-    nodes_depended_on:
-    - sequence_tasks
-    nodes_dependent_on: []
-    prompt: Take the sequenced tasks and create a detailed execution plan. Identify
-      any potential roadblocks or contingency plans.
-  decompose_into_tasks:
-    agent: false
-    description: Break down the task into smaller, manageable tasks or sub-tasks.
-    name: decompose_into_tasks
-    nodes_depended_on:
-    - parse_task_description
-    nodes_dependent_on: []
-    prompt: Take the parsed task description and decompose it into smaller tasks.
-      Identify any parallel or concurrent steps.
-  finalize_execution_plan:
-    agent: false
-    description: Finalize the execution plan and make it ready for implementation.
-    name: finalize_execution_plan
-    nodes_depended_on:
-    - review_and_refine
-    nodes_dependent_on: []
-    prompt: Take the refined execution plan and finalize it. Make any necessary updates
-      to ensure it is ready for implementation.
-  parse_task_description:
-    agent: false
-    description: Parse the task description to extract key elements and objectives.
-    name: parse_task_description
+    description: Creates the greeting message to be returned.
+    name: generate_greeting
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Please provide a clear and concise task description. Identify the key
-      objectives and extract any relevant details.
-  prioritize_tasks:
-    agent: false
-    description: Prioritize the tasks based on importance, complexity, and dependencies.
-    name: prioritize_tasks
-    nodes_depended_on:
-    - decompose_into_tasks
-    nodes_dependent_on: []
-    prompt: Take the decomposed tasks and prioritize them based on importance, complexity,
-      and dependencies.
-  review_and_refine:
-    agent: false
-    description: Review and refine the execution plan to ensure it is complete and
-      feasible.
-    name: review_and_refine
-    nodes_depended_on:
-    - create_execution_plan
-    nodes_dependent_on: []
-    prompt: Take the execution plan and review it to ensure it is complete and feasible.
-      Identify any areas for improvement or refinement.
-  sequence_tasks:
-    agent: false
-    description: Sequence the tasks based on dependencies and priorities.
-    name: sequence_tasks
-    nodes_depended_on:
-    - prioritize_tasks
-    nodes_dependent_on: []
-    prompt: Take the prioritized tasks and sequence them based on dependencies and
-      priorities.
+    prompt: Provide the text "Hello!" exactly as the output.
