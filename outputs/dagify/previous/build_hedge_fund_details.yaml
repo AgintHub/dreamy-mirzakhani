@@ -1,7 +1,5 @@
 dag_type: plain_text
-description: A detailed, step‑by‑step plan that covers strategy selection, legal setup,
-  regulatory compliance, operations, technology, staffing, fundraising, and launch
-  timeline for a new hedge fund.
+description: Generated workflow from UI.
 name: build_hedge_fund
 nodes:
   choose_investment_strategy:
@@ -22,8 +20,10 @@ nodes:
     nodes_depended_on:
     - select_jurisdiction
     nodes_dependent_on:
-    - list_service_providers
+    - define_legal_entity_type
     - identify_regulatory_requirements
+    - list_service_providers
+    - outline_governance_structure
     prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
       for the chosen jurisdiction. Give a one‑sentence explanation.
   clarify_fund_objectives:
@@ -33,9 +33,9 @@ nodes:
     name: clarify_fund_objectives
     nodes_depended_on: []
     nodes_dependent_on:
-    - select_jurisdiction
     - choose_investment_strategy
     - define_investor_profile
+    - select_jurisdiction
     prompt: List the primary business objectives for the hedge fund. Produce a concise
       bullet list covering investment purpose, competitive edge, and long‑term vision
       (max 8 bullets). Do not include strategy details.
@@ -47,7 +47,7 @@ nodes:
     - draft_operations_workflow
     - define_technology_stack
     nodes_dependent_on:
-    - outline_governance_structure
+    - execute_hiring_plan
     prompt: List essential full‑time positions for launch (max 8), with one‑line responsibility
       each. Align roles with operations workflow gaps.
   define_asset_universe:
@@ -66,11 +66,19 @@ nodes:
     name: define_investor_profile
     nodes_depended_on:
     - clarify_fund_objectives
-    nodes_dependent_on:
-    - draft_pitch_deck_outline
+    nodes_dependent_on: []
     prompt: 'Based on the stated objectives, specify the ideal target investor profile
       (e.g., family offices, pensions). List key characteristics: typical ticket size,
       risk tolerance, liquidity preference, and geographic focus.'
+  define_legal_entity_type:
+    agent: false
+    description: Determine the legal vehicle for the fund.
+    name: define_legal_entity_type
+    nodes_depended_on:
+    - choose_legal_entity_type
+    nodes_dependent_on: []
+    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
+      for the chosen jurisdiction. Give a one‑sentence explanation.
   define_technology_stack:
     agent: false
     description: Specify technology tools supporting operations.
@@ -78,7 +86,7 @@ nodes:
     nodes_depended_on:
     - draft_operations_workflow
     nodes_dependent_on:
-    - create_hiring_plan
+    - estimate_setup_and_operating_costs
     prompt: 'Identify required software and infrastructure components for each operations
       step (e.g., OMS, EMS, risk system). Present as 2‑column table: Ops Step | Tech
       Component.'
@@ -89,8 +97,7 @@ nodes:
     nodes_depended_on:
     - identify_regulatory_requirements
     - design_risk_management_framework
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
+    nodes_dependent_on: []
     prompt: 'Generate a compliance checklist mapping each regulatory requirement to
       a specific internal policy or procedure. Table with columns: Requirement | Policy
       Reference.'
@@ -102,7 +109,6 @@ nodes:
     - set_performance_and_risk_targets
     nodes_dependent_on:
     - draft_operations_workflow
-    - design_compliance_program
     prompt: 'List core risk controls aligned with the target metrics: position limits,
       VaR limits, stop‑loss rules, liquidity thresholds. Provide 4–6 bullet points.'
   draft_fee_structure:
@@ -112,8 +118,7 @@ nodes:
     nodes_depended_on:
     - set_performance_and_risk_targets
     - estimate_setup_and_operating_costs
-    nodes_dependent_on:
-    - compile_pitch_deck_outline
+    nodes_dependent_on: []
     prompt: Propose management and performance fee percentages that balance cost recovery
       and competitiveness. Include incentive hurdle if relevant. Summarize in ≤3 sentences.
   draft_operations_workflow:
@@ -126,7 +131,7 @@ nodes:
     - design_risk_management_framework
     nodes_dependent_on:
     - define_technology_stack
-    - create_hiring_plan
+    - estimate_setup_and_operating_costs
     prompt: 'Sketch the daily trade lifecycle: idea generation → order entry → execution
       → confirmation → settlement → reconciliation. List each step with primary responsible
       party (internal or provider).'
@@ -136,11 +141,20 @@ nodes:
     name: estimate_setup_and_operating_costs
     nodes_depended_on:
     - list_service_providers
-    nodes_dependent_on:
-    - draft_fee_structure
+    - define_technology_stack
+    nodes_dependent_on: []
     prompt: 'Provide a simple annual cost estimate (in USD) for each listed service
       provider plus overhead (office, tech). Present as two columns: Cost Item | Estimated
       USD.'
+  execute_hiring_plan:
+    agent: false
+    description: Execute the hiring plan by specifying hiring steps and timelines.
+    name: execute_hiring_plan
+    nodes_depended_on:
+    - create_hiring_plan
+    nodes_dependent_on: []
+    prompt: Outline the execution steps to hire the defined positions, including posting
+      channels, interview process, and onboarding timeline.
   identify_regulatory_requirements:
     agent: false
     description: Catalog mandatory regulatory filings.
@@ -160,8 +174,7 @@ nodes:
     - choose_legal_entity_type
     nodes_dependent_on:
     - draft_operations_workflow
-    - define_technology_stack
-    - create_hiring_plan
+    - estimate_setup_and_operating_costs
     prompt: 'Generate a checklist of mandatory external service providers: prime broker,
       fund administrator, auditor, legal counsel, compliance consultant, and custodian.
       No descriptive text—just provider types.'
@@ -193,6 +206,7 @@ nodes:
     - choose_investment_strategy
     nodes_dependent_on:
     - design_risk_management_framework
+    - draft_fee_structure
     prompt: Define numerical annual targets for gross return, volatility (standard
       deviation), Sharpe ratio, and maximum drawdown consistent with the chosen strategy.
       Present as a 4‑row table.
