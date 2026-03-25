@@ -1,72 +1,68 @@
 dag_type: plain_text
-description: A workflow that achieves the objective of testing a task or function.
+description: This workflow is designed to test a given objective or task description
+  and provide a clear execution plan.
 name: test_objective_workflow
 nodes:
-  define_test_criteria:
+  create_execution_plan:
     agent: false
-    description: Establish clear, specific, and measurable requirements for the test
-    name: define_test_criteria
+    description: Create a detailed execution plan based on the sequenced tasks.
+    name: create_execution_plan
+    nodes_depended_on:
+    - sequence_tasks
+    nodes_dependent_on: []
+    prompt: Take the sequenced tasks and create a detailed execution plan. Identify
+      any potential roadblocks or contingency plans.
+  decompose_into_tasks:
+    agent: false
+    description: Break down the task into smaller, manageable tasks or sub-tasks.
+    name: decompose_into_tasks
+    nodes_depended_on:
+    - parse_task_description
+    nodes_dependent_on: []
+    prompt: Take the parsed task description and decompose it into smaller tasks.
+      Identify any parallel or concurrent steps.
+  finalize_execution_plan:
+    agent: false
+    description: Finalize the execution plan and make it ready for implementation.
+    name: finalize_execution_plan
+    nodes_depended_on:
+    - review_and_refine
+    nodes_dependent_on: []
+    prompt: Take the refined execution plan and finalize it. Make any necessary updates
+      to ensure it is ready for implementation.
+  parse_task_description:
+    agent: false
+    description: Parse the task description to extract key elements and objectives.
+    name: parse_task_description
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Define the specific criteria for testing this task or function. What success
-      conditions must be met?
-  document_results:
+    prompt: Please provide a clear and concise task description. Identify the key
+      objectives and extract any relevant details.
+  prioritize_tasks:
     agent: false
-    description: Create a transparent and complete record of the test's outcomes
-    name: document_results
+    description: Prioritize the tasks based on importance, complexity, and dependencies.
+    name: prioritize_tasks
     nodes_depended_on:
-    - verify_output
-    - validate_edge_cases
+    - decompose_into_tasks
     nodes_dependent_on: []
-    prompt: Document the test results, including observations, successes, and failures.
-      Describe any issues that arose during testing.
-  generate_test_data:
+    prompt: Take the decomposed tasks and prioritize them based on importance, complexity,
+      and dependencies.
+  review_and_refine:
     agent: false
-    description: Develop relevant test inputs that validate the task or function's
-      execution
-    name: generate_test_data
+    description: Review and refine the execution plan to ensure it is complete and
+      feasible.
+    name: review_and_refine
     nodes_depended_on:
-    - setup_test_environment
-    nodes_dependent_on:
-    - identify_execution_path
-    prompt: Create data necessary to execute the task or function along the identified
-      execution path.
-  identify_execution_path:
-    agent: false
-    description: Pinpoint the key execution flow that should be tested
-    name: identify_execution_path
-    nodes_depended_on:
-    - setup_test_environment
+    - create_execution_plan
     nodes_dependent_on: []
-    prompt: Determine the primary execution path through the task or function to focus
-      the test.
-  setup_test_environment:
+    prompt: Take the execution plan and review it to ensure it is complete and feasible.
+      Identify any areas for improvement or refinement.
+  sequence_tasks:
     agent: false
-    description: Prepare the necessary context and input data to conduct a fair and
-      relevant test
-    name: setup_test_environment
+    description: Sequence the tasks based on dependencies and priorities.
+    name: sequence_tasks
     nodes_depended_on:
-    - define_test_criteria
+    - prioritize_tasks
     nodes_dependent_on: []
-    prompt: Set up the test environment and necessary input data. Identify potential
-      edge cases that could impact the test's correctness
-  validate_edge_cases:
-    agent: false
-    description: Validate the task or function's performance with uncommon or unusual
-      inputs
-    name: validate_edge_cases
-    nodes_depended_on:
-    - generate_test_data
-    nodes_dependent_on: []
-    prompt: Test edge cases to ensure the task or function operates correctly under
-      unexpected inputs or execution paths.
-  verify_output:
-    agent: false
-    description: Confirm that the task or function's outputs align with expectations
-    name: verify_output
-    nodes_depended_on:
-    - generate_test_data
-    - identify_execution_path
-    nodes_dependent_on: []
-    prompt: Verify that the task or function outputs meet the established test criteria
-      and execution path.
+    prompt: Take the prioritized tasks and sequence them based on dependencies and
+      priorities.
