@@ -1,286 +1,265 @@
-dag_type: typed
-description: Generated workflow from UI.
+dag_type: plain_text
+description: A workflow that creates a quantitative trading strategy by gathering
+  data, engineering features, selecting models, backtesting, optimizing, and defining
+  execution and risk controls.
 name: build_quant_trading_strategy
 nodes:
-  backtest_initial_strategy:
+  analyze_backtest_results:
     agent: false
-    description: Execute basic performance evaluation
-    name: backtest_initial_strategy
+    description: Assess the output of backtesting to evaluate strategy viability and
+      identify improvements.
+    name: analyze_backtest_results
     nodes_depended_on:
-    - develop_entry_signals
-    - develop_exit_signals
-    - define_position_sizing
-    nodes_dependent_on: []
-    output_structure:
-    - description: Total return of the strategy
-      key: total_return
-      type: float
-    - description: Maximum drawdown of the strategy
-      key: max_drawdown
-      type: float
-    - description: Sharpe ratio of the strategy
-      key: Sharpe_ratio
-      type: float
-    prompt: Simulate strategy performance from price/indicator data using entry/exit
-      rules and position sizing. Report total return, max drawdown, and Sharpe ratio
-      in 3-cell table.
-  calculate_technical_indicators:
+    - run_backtest
+    nodes_dependent_on:
+    - refine_strategy_or_finalize
+    prompt: Analyze the backtest output metrics and visualizations to judge if the
+      strategy meets target performance and risk criteria. Identify weaknesses or
+      confirm readiness.
+  clean_historical_market_data:
     agent: false
-    description: Generate indicator values for strategy signals
-    name: calculate_technical_indicators
+    description: Process and clean raw historical market data to handle missing values,
+      errors, and standardize formats.
+    name: clean_historical_market_data
     nodes_depended_on:
-    - select_data_sources
-    - collect_price_data
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of asset symbols
-      key: asset_symbols
-      type: List[str]
-    - description: 2D list of technical indicator values
-      key: indicator_values
-      type: List[float]
-    - description: List of data sources used
-      key: data_sources
-      type: List[str]
-    prompt: Compute technical indicators from the selected sources for each asset
-      in the price data table. Present as [Date] | [Indicator1] | [Indicator2] | ...
-      in tabular form.
-  collect_price_data:
+    - gather_historical_market_data
+    nodes_dependent_on:
+    - engineer_features_from_market_data
+    prompt: Clean the collected historical market data by filling or removing missing
+      values, correcting erroneous data points, normalizing formats, and ensuring
+      consistent timestamps.
+  construct_backtesting_environment:
     agent: false
-    description: Gather historical price data for all target assets
-    name: collect_price_data
+    description: Set up a system to simulate trading the strategy on historical data
+      including transaction costs and market impact.
+    name: construct_backtesting_environment
     nodes_depended_on:
-    - select_data_sources
-    nodes_dependent_on: []
-    output_structure:
-    - description: Date timestamp of the data point
-      key: date_timestamp
-      type: str
-    - description: Open value of the stock
-      key: open_value
-      type: float
-    - description: High value of the stock
-      key: high_value
-      type: float
-    - description: Low value of the stock
-      key: low_value
-      type: float
-    - description: Close value of the stock
-      key: close_value
-      type: float
-    prompt: 'Using selected data sources, compile daily OHLCV data for the target
-      asset universe covering the last 3 years. Format as 5-column table: Date | Open
-      | High | Low | Close.'
-  construct_risk_model:
+    - test_final_model
+    nodes_dependent_on:
+    - run_backtest
+    prompt: Develop a backtesting framework that applies the model’s signals to historical
+      asset prices, incorporating realistic execution and cost assumptions.
+  define_performance_metrics:
     agent: false
-    description: Develop statistical risk assessment framework
-    name: construct_risk_model
+    description: Specify the key metrics that will define strategy success and guide
+      optimization.
+    name: define_performance_metrics
     nodes_depended_on:
-    - calculate_technical_indicators
-    - backtest_initial_strategy
-    nodes_dependent_on: []
-    output_structure:
-    - description: Correlation table of risk metrics and scenarios
-      key: risk_matrix
-      type: str
-    - description: Confidence interval values for risk metrics
-      key: confidence_intervals
-      type: str
-    - description: Selected volatility measure
-      key: volatility_measure
-      type: str
-    - description: Expected drawdown probability
-      key: drawdown_probability
-      type: float
-    - description: Selected tail risk measure
-      key: tail_risk_measure
-      type: str
-    prompt: Build risk matrix including volatility, drawdown probability, and tail
-      risk measures. Format as correlation table of [Metric][Scenario] with confidence
-      intervals.
-  define_position_sizing:
+    - merge_features
+    nodes_dependent_on:
+    - split_dataset
+    prompt: Identify measurable performance metrics for the trading strategy such
+      as annualized return, Sharpe ratio, maximum drawdown, and turnover. Provide
+      definitions and target thresholds.
+  define_risk_management_rules:
     agent: false
-    description: Create capital allocation logic
-    name: define_position_sizing
+    description: Specify risk controls and monitoring measures to limit losses and
+      ensure compliance during live trading.
+    name: define_risk_management_rules
     nodes_depended_on:
-    - define_strategy_framework
+    - refine_strategy_or_finalize
     nodes_dependent_on: []
-    output_structure:
-    - description: Calculated risk per trade
-      key: risk_per-trade
-      type: float
-    - description: List of account size rules
-      key: account-size-rules
-      type: List[str]
-    - description: Calculated volatility scaling factor
-      key: volatility-scaling
-      type: float
-    - description: List of risk limits for each trade step
-      key: risk-limits
-      type: List[float]
-    prompt: 'Specify position size determination logic including: 1) risk per trade
-      2) account size rules 3) volatility scaling. Present as calculation steps with
-      risk limits.'
-  define_strategy_framework:
+    prompt: Establish quantitative risk limits, stop-loss criteria, exposure constraints,
+      and procedures for monitoring and responding to risk breaches during live trading.
+  define_trading_universe:
     agent: false
-    description: Establish basic strategy parameters and investment universe
-    name: define_strategy_framework
+    description: Specify the set of assets and markets to consider for the trading
+      strategy.
+    name: define_trading_universe
     nodes_depended_on: []
-    nodes_dependent_on: []
-    output_structure:
-    - description: Primary objective of the trading strategy
-      key: strategy_objective
-      type: str
-    - description: List of target assets or classes
-      key: target_assets
-      type: List[str]
-    - description: Capital allocation model used in the strategy
-      key: capital_allocation_model
-      type: str
-    prompt: 'Create a trading strategy framework including: 1) primary objective (e.g.
-      momentum, mean reversion) 2) target assets/classes 3) capital allocation model.
-      Present as 3-column table: Feature | Specification | Rationale.'
-  develop_entry_signals:
+    nodes_dependent_on:
+    - gather_historical_market_data
+    - gather_alternative_data
+    prompt: List the asset classes, markets, and instruments you want to include in
+      your quantitative trading strategy (e.g., US equities, futures, FX pairs). Specify
+      any time frames or exchanges if relevant.
+  design_execution_plan:
     agent: false
-    description: Construct trade entry conditions
-    name: develop_entry_signals
+    description: Define how the trading strategy will be executed in live markets,
+      including order types and execution timing.
+    name: design_execution_plan
     nodes_depended_on:
-    - calculate_technical_indicators
+    - refine_strategy_or_finalize
     nodes_dependent_on: []
-    output_structure:
-    - description: List of IF-THEN-ELSE rules for entry signals
-      key: entry_rules
-      type: List[str]
-    - description: List of conditions for long signals
-      key: long_conditions
-      type: List[str]
-    - description: List of conditions for short signals
-      key: short_conditions
-      type: List[str]
-    - description: Description of position sizing logic
-      key: position-sizing_logic
-      type: str
-    - description: Whether entry rules are valid and correct
-      key: validation_results
-      type: bool
-    prompt: 'Create unambiguous entry rules using available indicators: 1) long conditions
-      2) short conditions 3) position sizing. Format as IF-THEN-ELSE rule set.'
-  develop_exit_signals:
+    prompt: Detail the live trading execution methods for the strategy, specifying
+      order types (market, limit), execution timing, position sizing rules, and interaction
+      with brokers or venues.
+  engineer_features_from_alternative_data:
     agent: false
-    description: Construct trade exit conditions
-    name: develop_exit_signals
+    description: Extract useful features from processed alternative data like sentiment
+      scores or economic trend indicators.
+    name: engineer_features_from_alternative_data
     nodes_depended_on:
-    - calculate_technical_indicators
-    nodes_dependent_on: []
-    output_structure:
-    - description: Unambiguous exit rule
-      key: exit_signal
-      type: str
-    - description: Profit target value
-      key: profit_target
-      type: float
-    - description: Stop-loss rule
-      key: stop_loss_rule
-      type: str
-    - description: Trailing stop value
-      key: trailing_stop
-      type: float
-    - description: Performance metrics for each rule
-      key: metrics
-      type: List[float]
-    prompt: 'Create unambiguous exit rules using available indicators: 1) profit targets
-      2) stop-loss rules 3) trailing stops. Present as IF-THEN-ELSE rule set.'
-  generate_strategy_documentation:
+    - process_alternative_data
+    nodes_dependent_on:
+    - merge_features
+    prompt: Derive numerical or categorical features from alternative data such as
+      sentiment indexes, event flags, macroeconomic trend values, or other predictive
+      indicators aligned by asset and time.
+  engineer_features_from_market_data:
     agent: false
-    description: Create formal trading strategy specification
-    name: generate_strategy_documentation
+    description: Create quantitative features from cleaned historical market data
+      such as returns, volatility, and technical indicators.
+    name: engineer_features_from_market_data
     nodes_depended_on:
-    - define_strategy_framework
-    - select_data_sources
-    - develop_entry_signals
-    - develop_exit_signals
-    - define_position_sizing
-    - optimize_parameters
-    - construct_risk_model
-    nodes_dependent_on: []
-    output_structure:
-    - description: Name of the generated trading strategy
-      key: strategy_name
-      type: str
-    - description: Primary objective of the trading strategy
-      key: strategy_objectives
-      type: str
-    - description: Table of entry and exit rules
-      key: rules_table
-      type: str
-    - description: Table of risk controls
-      key: risk_controls_table
-      type: str
-    - description: Performance metrics of the trading strategy
-      key: performance_metrics
-      type: str
-    - description: Executive summary of the trading strategy document
-      key: executive_summary
-      type: str
-    prompt: 'Synthesize complete strategy document with: 1) objectives 2) rules 3)
-      risk controls 4) performance metrics. Format as executive summary with 4-part
-      structure.'
+    - clean_historical_market_data
+    nodes_dependent_on:
+    - merge_features
+    prompt: Generate quantitative features from the cleaned market data, including
+      price returns over various periods, moving averages, volatility measures, volume
+      indicators, and other technical factors relevant to trading signals.
+  gather_alternative_data:
+    agent: false
+    description: Obtain non-traditional data sources relevant to the trading universe,
+      such as sentiment, news, or macroeconomic indicators.
+    name: gather_alternative_data
+    nodes_depended_on:
+    - define_trading_universe
+    nodes_dependent_on:
+    - process_alternative_data
+    prompt: Acquire alternative datasets relevant to the defined assets (e.g., news
+      sentiment, economic indicators, social media signals) aligned in time and scope
+      with the historical market data.
+  gather_historical_market_data:
+    agent: false
+    description: Collect raw historical price and volume data for the defined trading
+      universe.
+    name: gather_historical_market_data
+    nodes_depended_on:
+    - define_trading_universe
+    nodes_dependent_on:
+    - clean_historical_market_data
+    prompt: Using the defined trading universe, retrieve historical market data of
+      prices, volumes, and relevant fundamental or technical data from reliable sources
+      for at least 3 years. Provide data with timestamps and identifiers.
+  merge_features:
+    agent: false
+    description: Combine features derived from market and alternative data into a
+      single dataset for model input.
+    name: merge_features
+    nodes_depended_on:
+    - engineer_features_from_market_data
+    - engineer_features_from_alternative_data
+    nodes_dependent_on:
+    - select_model_type
+    - define_performance_metrics
+    prompt: Integrate all engineered features from market and alternative datasets
+      into one consolidated feature matrix indexed by time and asset, ready for model
+      training.
   optimize_parameters:
     agent: false
-    description: Refine strategy with historical optimization
+    description: Adjust model hyperparameters to improve performance based on validation
+      results.
     name: optimize_parameters
     nodes_depended_on:
-    - backtest_initial_strategy
-    nodes_dependent_on: []
-    output_structure:
-    - description: Top 3 optimized parameter sets
-      key: optimized_parameters
-      type: List[int]
-    - description: Performance metrics for the optimized parameter sets
-      key: performance_metrics
-      type: List[float]
-    - description: Best parameter set for the strategy
-      key: best_param_set
-      type: List[int]
-    - description: Best performance metric for the strategy
-      key: best_performance
-      type: float
-    prompt: Conduct parameter optimization for key variables (timeframes, thresholds)
-      using grid search. Present top 3 parameter sets with corresponding performance
-      metrics.
-  select_data_sources:
+    - validate_model
+    nodes_dependent_on:
+    - test_final_model
+    prompt: Use validation feedback to perform hyperparameter optimization of the
+      model (e.g., grid search, random search). Document the best configuration found.
+  perform_cross_validation:
     agent: false
-    description: Identify required market data feeds and technical indicators
-    name: select_data_sources
+    description: Perform k-fold or rolling-window cross-validation to assess model
+      stability and variance.
+    name: perform_cross_validation
     nodes_depended_on:
-    - define_strategy_framework
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of required data sources
-      key: data_sources
-      type: List[str]
-    - description: List of required technical indicators
-      key: technical_indicators
-      type: List[str]
-    prompt: List 3-5 critical data sources (e.g. Yahoo Finance, Alpha Vantage) and
-      4 technical indicators (e.g. RSI, MACD) required for this strategy's signal
-      generation. Format as [Indicator] - [Calculation Period] - [Source].
-  validate_out_of_sample:
+    - validate_model
+    nodes_dependent_on:
+    - test_final_model
+    prompt: Execute cross-validation procedures on the training and validation datasets
+      to estimate model robustness and variability of performance metrics.
+  process_alternative_data:
     agent: false
-    description: Test performance on unused historical data
-    name: validate_out_of_sample
+    description: Clean and structure alternative data sources for integration.
+    name: process_alternative_data
+    nodes_depended_on:
+    - gather_alternative_data
+    nodes_dependent_on:
+    - engineer_features_from_alternative_data
+    prompt: Clean and preprocess the alternative data to remove noise and irrelevant
+      records. Structure it into a format compatible with the market data timeline
+      and identifiers.
+  refine_strategy_or_finalize:
+    agent: false
+    description: Decide to iterate improvements on the strategy or finalize the trading
+      model for implementation.
+    name: refine_strategy_or_finalize
+    nodes_depended_on:
+    - analyze_backtest_results
+    nodes_dependent_on:
+    - design_execution_plan
+    - define_risk_management_rules
+    prompt: Based on backtest analysis, either specify refinements on feature engineering,
+      model, or parameters and restart relevant steps, or proceed to formalize how
+      the model will execute live and manage risk.
+  run_backtest:
+    agent: false
+    description: Execute the trading strategy simulation over historical data to generate
+      detailed performance results.
+    name: run_backtest
+    nodes_depended_on:
+    - construct_backtesting_environment
+    nodes_dependent_on:
+    - analyze_backtest_results
+    prompt: Run the backtest on historical data using the constructed environment.
+      Produce detailed results including returns, drawdown, turnover, and risk metrics.
+  select_model_type:
+    agent: false
+    description: Choose the type of quantitative model(s) to develop for the strategy
+      (e.g., statistical, machine learning, factor-based).
+    name: select_model_type
+    nodes_depended_on:
+    - merge_features
+    nodes_dependent_on:
+    - split_dataset
+    prompt: Based on the features available, select appropriate model methodology
+      types such as linear regression, random forest, neural networks, or factor models
+      for the quantitative trading strategy.
+  split_dataset:
+    agent: false
+    description: Partition the consolidated dataset into training, validation, and
+      test sets for model development and evaluation.
+    name: split_dataset
+    nodes_depended_on:
+    - select_model_type
+    - define_performance_metrics
+    nodes_dependent_on:
+    - train_model
+    prompt: Divide the feature dataset chronologically into training, validation,
+      and test datasets ensuring no lookahead bias. Specify proportions or date cutoffs
+      used.
+  test_final_model:
+    agent: false
+    description: Evaluate the optimized model on the holdout test dataset for unbiased
+      performance estimation.
+    name: test_final_model
     nodes_depended_on:
     - optimize_parameters
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of out-of-sample metrics
-      key: out_of_sample_results
-      type: List[float]
-    - description: List of in-sample metrics
-      key: in_sample_results
-      type: List[float]
-    - description: Comparison between in-sample and out-of-sample results
-      key: evaluation
-      type: str
-    prompt: Execute out-of-sample backtest on 12-month period outside historical data
-      range. Compare results to in-sample metrics in 2-row table.
+    - perform_cross_validation
+    nodes_dependent_on:
+    - construct_backtesting_environment
+    prompt: Use the test dataset to generate unbiased performance metrics for the
+      final model configuration. Confirm metrics meet strategy success criteria.
+  train_model:
+    agent: false
+    description: Fit the chosen quantitative model to the training dataset.
+    name: train_model
+    nodes_depended_on:
+    - split_dataset
+    nodes_dependent_on:
+    - validate_model
+    prompt: Train the selected model type on the training dataset. Optimize parameters
+      internally as needed, but do not evaluate performance yet.
+  validate_model:
+    agent: false
+    description: Evaluate the trained model on the validation dataset to estimate
+      generalization performance.
+    name: validate_model
+    nodes_depended_on:
+    - train_model
+    nodes_dependent_on:
+    - optimize_parameters
+    - perform_cross_validation
+    prompt: Assess the model’s predictive quality and trading signal efficacy using
+      the validation dataset. Calculate defined performance metrics and identify areas
+      needing tuning.
