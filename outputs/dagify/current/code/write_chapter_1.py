@@ -8,6 +8,16 @@ from ._write_chapter_1.develop_chapter_events import develop_chapter_events
 from ._write_chapter_1.weave_chapter_prose import weave_chapter_prose
 from ._write_chapter_1.validate_chapter_output import validate_chapter_output
 
+from ._write_chapter_1.validate_inputs import validate_inputs
+from ._write_chapter_1.create_chapter_structure import create_chapter_structure
+from ._write_chapter_1.extract_character_context import extract_character_context
+from ._write_chapter_1.extract_setting_context import extract_setting_context
+from ._write_chapter_1.integrate_color_themes import integrate_color_themes
+from ._write_chapter_1.craft_opening_scene import craft_opening_scene
+from ._write_chapter_1.develop_chapter_events import develop_chapter_events
+from ._write_chapter_1.weave_chapter_prose import weave_chapter_prose
+from ._write_chapter_1.validate_chapter_output import validate_chapter_output
+
 from pydantic import BaseModel, Field
 from typing import List
 

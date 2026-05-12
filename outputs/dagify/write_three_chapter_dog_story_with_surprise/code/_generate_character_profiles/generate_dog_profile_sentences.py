@@ -33,4 +33,41 @@ def generate_dog_profile_sentences(dog_data: str) -> List[str]:
     [Breed: Golden Retriever, Age: 5, Personality: Loyal]
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(dog_data, str):
+        raise TypeError("Input data must be a string")
+    
+    if not dog_data or not dog_data.strip():
+        raise ValueError("Input data cannot be empty")
+    
+    
+    dog_data = dog_data.strip()
+    
+    pairs = []
+    parts = dog_data.split(',')
+    
+    parsed_data = {}
+    for part in parts:
+        part = part.strip()
+        if ':' in part:
+            key, value = part.split(':', 1)
+            parsed_data[key.strip().lower()] = value.strip()
+    
+    if not parsed_data:
+        raise ValueError("Input data is invalid - no recognizable key-value pairs found")
+    
+    sentences = []
+    
+    if 'breed' in parsed_data:
+        sentences.append(f"This dog is a {parsed_data['breed']}.")
+    
+    if 'age' in parsed_data:
+        sentences.append(f"The dog is {parsed_data['age']} years old.")
+    
+    if 'personality' in parsed_data:
+        sentences.append(f"This dog has a {parsed_data['personality'].lower()} personality.")
+    
+    for key, value in parsed_data.items():
+        if key not in ['breed', 'age', 'personality']:
+            sentences.append(f"The dog's {key} is {value}.")
+    
+    return sentences

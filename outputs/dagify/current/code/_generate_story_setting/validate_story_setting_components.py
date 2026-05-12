@@ -53,4 +53,30 @@ def validate_story_setting_components(location: str, time_period: str, environme
     ValueError: Invalid input: 'location' cannot be empty.
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    if not isinstance(location, str):
+        raise TypeError("Invalid input: 'location' must be a string.")
+    if not isinstance(time_period, str):
+        raise TypeError("Invalid input: 'time_period' must be a string.")
+    if not isinstance(environmental_details, str):
+        raise TypeError("Invalid input: 'environmental_details' must be a string.")
+    if not isinstance(favorite_color, str):
+        raise TypeError("Invalid input: 'favorite_color' must be a string.")
+    
+    if not location.strip():
+        raise ValueError("Invalid input: 'location' cannot be empty.")
+    if not time_period.strip():
+        raise ValueError("Invalid input: 'time_period' cannot be empty.")
+    if not environmental_details.strip():
+        raise ValueError("Invalid input: 'environmental_details' cannot be empty.")
+    if not favorite_color.strip():
+        raise ValueError("Invalid input: 'favorite_color' cannot be empty.")
+    
+    validated_components = {
+        'location': location,
+        'time_period': time_period,
+        'environmental_details': environmental_details,
+        'favorite_color': favorite_color
+    }
+    
+    return str(validated_components)

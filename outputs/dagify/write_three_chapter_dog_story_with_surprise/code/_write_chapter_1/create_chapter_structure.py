@@ -1,3 +1,6 @@
+import json
+
+
 def create_chapter_structure(chapter_bullet_points: str, story_title: str) -> str:
     """
     Creates a dictionary representing a chapter based on bullet points and story
@@ -34,4 +37,18 @@ def create_chapter_structure(chapter_bullet_points: str, story_title: str) -> st
     Story Title'}
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(chapter_bullet_points, str):
+        raise TypeError("chapter_bullet_points must be a string")
+    if not isinstance(story_title, str):
+        raise TypeError("story_title must be a string")
+    if not chapter_bullet_points.strip():
+        raise ValueError("chapter_bullet_points cannot be empty")
+    if not story_title.strip():
+        raise ValueError("story_title cannot be empty")
+    
+    chapter_dict = {
+        'bullet_points': chapter_bullet_points,
+        'story_title': story_title
+    }
+    
+    return json.dumps(chapter_dict)

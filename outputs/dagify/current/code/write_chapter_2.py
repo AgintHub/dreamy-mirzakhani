@@ -7,6 +7,15 @@ from ._write_chapter_2.identify_narrative_threads import identify_narrative_thre
 from ._write_chapter_2.compose_chapter_2_prose import compose_chapter_2_prose
 from ._write_chapter_2.polish_chapter_text import polish_chapter_text
 
+from ._write_chapter_2.validate_inputs import validate_inputs
+from ._write_chapter_2.analyze_chapter_1_context import analyze_chapter_1_context
+from ._write_chapter_2.extract_chapter_2_outline import extract_chapter_2_outline
+from ._write_chapter_2.integrate_character_profiles import integrate_character_profiles
+from ._write_chapter_2.prepare_setting_elements import prepare_setting_elements
+from ._write_chapter_2.identify_narrative_threads import identify_narrative_threads
+from ._write_chapter_2.compose_chapter_2_prose import compose_chapter_2_prose
+from ._write_chapter_2.polish_chapter_text import polish_chapter_text
+
 from pydantic import BaseModel, Field
 from typing import List
 

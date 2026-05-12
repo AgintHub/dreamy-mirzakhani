@@ -51,4 +51,22 @@ def validate_inputs(chapter_1_input: str, outline_input: str, character_input: s
     'Invalid input format: input must be a string.'
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(chapter_1_input, str):
+        raise TypeError("chapter_1_input must be a string")
+    if not isinstance(outline_input, str):
+        raise TypeError("outline_input must be a string")
+    if not isinstance(character_input, str):
+        raise TypeError("character_input must be a string")
+    if not isinstance(setting_input, str):
+        raise TypeError("setting_input must be a string")
+    
+    if not chapter_1_input.strip():
+        raise ValueError("chapter_1_input cannot be empty")
+    if not outline_input.strip():
+        raise ValueError("outline_input cannot be empty")
+    if not character_input.strip():
+        raise ValueError("character_input cannot be empty")
+    if not setting_input.strip():
+        raise ValueError("setting_input cannot be empty")
+    
+    return "Validated inputs successfully!"

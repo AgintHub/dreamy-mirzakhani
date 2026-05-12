@@ -1,3 +1,6 @@
+import json
+
+
 def assign_favorite_color(character_data: str) -> str:
     """
     Calculates a character's favorite color based on their personality traits.
@@ -30,4 +33,56 @@ def assign_favorite_color(character_data: str) -> str:
     'purple'
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    if not isinstance(character_data, str):
+        raise TypeError("Input must be a string")
+    
+    if not character_data.strip():
+        raise ValueError("Input string cannot be empty")
+    
+    try:
+        data = json.loads(character_data)
+    except json.JSONDecodeError:
+        raise ValueError("Invalid JSON format in character_data")
+    
+    if not isinstance(data, dict):
+        raise ValueError("Character data must be a dictionary")
+    
+    personality = data.get('personality', '').lower().strip()
+    
+    if not personality:
+        raise ValueError("Personality trait is required")
+    
+    personality_color_map = {
+        'calm': 'blue',
+        'peaceful': 'blue',
+        'serene': 'blue',
+        'adventurous': 'purple',
+        'bold': 'purple',
+        'daring': 'purple',
+        'energetic': 'red',
+        'passionate': 'red',
+        'fiery': 'red',
+        'creative': 'orange',
+        'artistic': 'orange',
+        'imaginative': 'orange',
+        'cheerful': 'yellow',
+        'optimistic': 'yellow',
+        'bright': 'yellow',
+        'nature-loving': 'green',
+        'balanced': 'green',
+        'harmonious': 'green',
+        'mysterious': 'black',
+        'elegant': 'black',
+        'sophisticated': 'black',
+        'pure': 'white',
+        'innocent': 'white',
+        'simple': 'white',
+        'romantic': 'pink',
+        'gentle': 'pink',
+        'caring': 'pink'
+    }
+    
+    color = personality_color_map.get(personality, 'gray')
+    
+    return color

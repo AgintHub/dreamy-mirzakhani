@@ -1,6 +1,10 @@
 from typing import List
 
 
+import re
+import json
+
+
 def extract_character_profiles_from_input(input_data: str, kwargs: str) -> List[str]:
     """
     Extracts character profiles from the input data, validating the extracted
@@ -62,4 +66,71 @@ def extract_character_profiles_from_input(input_data: str, kwargs: str) -> List[
     format.
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    if not isinstance(input_data, str):
+        raise TypeError("Input data must be a string")
+    
+    if not isinstance(kwargs, str):
+        raise TypeError("kwargs must be a string")
+    
+    try:
+        config = json.loads(kwargs) if kwargs.strip() else {}
+    except json.JSONDecodeError:
+        try:
+            config = eval(kwargs) if kwargs.strip() else {}
+        except:
+            config = {}
+    
+    required_keys = config.get('required_keys', [])
+    
+    if not input_data.strip():
+        raise ValueError("Input data does not conform to the prescribed structure and format.")
+    
+    character_pattern = r'Character \d+:([^,]+)(?:,([^,]+))*'
+    characters = []
+    
+    if 'Character' not in input_data:
+        raise ValueError("Input data does not conform to the prescribed structure and format.")
+    
+    character_blocks = re.split(r'Character \d+:', input_data)
+    character_blocks = [block.strip() for block in character_blocks if block.strip()]
+    
+    if not character_blocks:
+        raise ValueError("Input data does not conform to the prescribed structure and format.")
+    
+    for block in character_blocks:
+        character_dict = {}
+        
+        parts = [part.strip() for part in block.split(',')]
+        
+        if not parts or not parts[0]:
+            continue
+            
+        character_dict['Name'] = parts[0]
+        
+        for part in parts[1:]:
+            if ':' in part:
+                key, value = part.split(':', 1)
+                key = key.strip()
+                value = value.strip()
+                
+                if key == 'Age':
+                    try:
+                        character_dict[key] = int(value)
+                    except ValueError:
+                        raise TypeError("Input data contains unexpected or malformed types.")
+                elif key == 'Traits':
+                    character_dict[key] = [value]
+                else:
+                    character_dict[key] = value
+        
+        for req_key in required_keys:
+            if req_key not in character_dict:
+                raise ValueError("Input data does not conform to the prescribed structure and format.")
+        
+        characters.append(str(character_dict))
+    
+    if not characters:
+        raise ValueError("Input data does not conform to the prescribed structure and format.")
+    
+    return characters

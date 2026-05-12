@@ -44,4 +44,37 @@ def weave_chapter_prose(opening_scene: str, chapter_body: str, color_themes: str
     almost invisible.
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(opening_scene, str):
+        raise TypeError("opening_scene must be a string")
+    if not isinstance(chapter_body, str):
+        raise TypeError("chapter_body must be a string")
+    if not isinstance(color_themes, str):
+        raise TypeError("color_themes must be a string")
+    
+    if not opening_scene.strip():
+        raise ValueError("opening_scene cannot be empty or whitespace")
+    if not chapter_body.strip():
+        raise ValueError("chapter_body cannot be empty or whitespace")
+    if not color_themes.strip():
+        raise ValueError("color_themes cannot be empty or whitespace")
+    
+    opening_scene = opening_scene.strip()
+    chapter_body = chapter_body.strip()
+    color_themes = color_themes.strip()
+    
+    chapter_parts = [opening_scene]
+    
+    if not opening_scene.endswith(('.', '!', '?')):
+        chapter_parts[0] += '.'
+    
+    chapter_parts.append(chapter_body)
+    
+    if not chapter_body.endswith(('.', '!', '?')):
+        chapter_parts[1] += '.'
+    
+    chapter_parts.append(color_themes)
+    
+    if not color_themes.endswith(('.', '!', '?')):
+        chapter_parts[2] += '.'
+    
+    return ' '.join(chapter_parts)

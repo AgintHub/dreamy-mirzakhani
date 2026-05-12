@@ -33,4 +33,10 @@ def validate_chapter_output(chapter_text: str) -> bool:
     False
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(chapter_text, str):
+        raise TypeError("When the chapter text is not a string.")
+    
+    if not chapter_text or not chapter_text.strip():
+        raise ValueError("When the chapter text is empty or malformed.")
+    
+    return True

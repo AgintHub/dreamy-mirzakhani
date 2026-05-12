@@ -1,3 +1,6 @@
+import re
+
+
 def enhance_emotional_depth(content: str, character_connections: str) -> str:
     """
     This shim function enhances the emotional depth of a narrative by using
@@ -43,4 +46,40 @@ def enhance_emotional_depth(content: str, character_connections: str) -> str:
     prose, character_connections: another connections}
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    if not isinstance(content, str) or not isinstance(character_connections, str):
+        raise TypeError("Input types must be strings")
+    
+    if not content.strip() or not character_connections.strip():
+        raise ValueError("Content and character connections cannot be empty")
+    
+    connections_list = [conn.strip() for conn in character_connections.split(',') if conn.strip()]
+    
+    enhanced_content = content
+    
+    for connection in connections_list:
+        if connection.lower() in enhanced_content.lower():
+            pattern = re.compile(re.escape(connection), re.IGNORECASE)
+            enhanced_content = pattern.sub(f"{connection} (whose bond runs deeper than mere words)", enhanced_content, count=1)
+    
+    sentences = re.split(r'[.!?]+', enhanced_content)
+    emotional_phrases = [
+        "with a heavy heart", 
+        "feeling the weight of emotion",
+        "touched by profound connection",
+        "moved by an inexplicable bond"
+    ]
+    
+    enhanced_sentences = []
+    for i, sentence in enumerate(sentences):
+        if sentence.strip():
+            if i % 2 == 0 and len(connections_list) > 0:
+                enhanced_sentences.append(sentence.strip() + f" - {emotional_phrases[i % len(emotional_phrases)]}")
+            else:
+                enhanced_sentences.append(sentence.strip())
+    
+    final_enhanced = '. '.join(enhanced_sentences)
+    if not final_enhanced.endswith('.'):
+        final_enhanced += '.'
+    
+    return final_enhanced

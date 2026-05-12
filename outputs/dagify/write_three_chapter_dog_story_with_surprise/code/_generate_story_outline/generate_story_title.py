@@ -29,4 +29,17 @@ def generate_story_title(prompt: str) -> str:
     'A Story of Friendship'
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if prompt is None:
+        raise ValueError("Input prompt cannot be None")
+    
+    if not isinstance(prompt, str):
+        raise TypeError("Input prompt must be a string")
+    
+    if not prompt.strip():
+        raise ValueError("Input prompt cannot be empty")
+    
+    words = prompt.strip().split()
+    capitalized_words = [word.capitalize() for word in words]
+    title = ' '.join(capitalized_words)
+    
+    return title

@@ -37,4 +37,41 @@ def generate_dog_favorite_color(prompt: str, story_context: str) -> str:
     'green'
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    if not isinstance(prompt, str):
+        raise TypeError("prompt must be of type str")
+    if not isinstance(story_context, str):
+        raise TypeError("story_context must be of type str")
+    
+    if not prompt.strip() or not story_context.strip():
+        raise ValueError("Input parameters cannot be empty or invalid")
+    
+    combined_text = (prompt + " " + story_context).lower()
+    
+    color_keywords = {
+        'brave': 'blue',
+        'playful': 'green', 
+        'adventure': 'green',
+        'park': 'green',
+        'calm': 'blue',
+        'peaceful': 'blue',
+        'energetic': 'red',
+        'fierce': 'red',
+        'loyal': 'brown',
+        'gentle': 'yellow',
+        'happy': 'yellow',
+        'night': 'black',
+        'snow': 'white',
+        'forest': 'green',
+        'ocean': 'blue',
+        'fire': 'red'
+    }
+    
+    for keyword, color in color_keywords.items():
+        if keyword in combined_text:
+            return color
+    
+    hash_value = hash(combined_text) % 7
+    default_colors = ['blue', 'red', 'green', 'yellow', 'brown', 'black', 'white']
+    
+    return default_colors[hash_value]

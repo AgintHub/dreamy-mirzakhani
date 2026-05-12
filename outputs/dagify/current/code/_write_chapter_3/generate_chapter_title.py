@@ -1,3 +1,6 @@
+import re
+
+
 def generate_chapter_title(outline_title: str, chapter_titles: str) -> str:
     """
     Generate a Chapter 3 title from the provided outline title and chapter
@@ -36,4 +39,33 @@ def generate_chapter_title(outline_title: str, chapter_titles: str) -> str:
     it expects chapter_titles to be a list)
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    if not isinstance(outline_title, str):
+        raise TypeError("outline_title must be a string")
+    if not isinstance(chapter_titles, str):
+        raise TypeError("chapter_titles must be a string")
+    
+    if not outline_title.strip():
+        raise ValueError("outline_title cannot be empty")
+    
+    if not chapter_titles.strip():
+        raise ValueError("chapter_titles cannot be empty")
+    
+    chapter_pattern = r'Chapter\s+\d+:\s*([^,]+)'
+    matches = re.findall(chapter_pattern, chapter_titles)
+    
+    if len(matches) < 2:
+        raise ValueError("chapter_titles must contain at least 2 chapters in the correct format")
+    
+    last_title = matches[-1].strip()
+    
+    if 'beginning' in last_title.lower() or 'start' in last_title.lower():
+        generated_title = 'The Journey Continues'
+    elif 'conflict' in last_title.lower() or 'problem' in last_title.lower():
+        generated_title = 'Resolution'
+    elif 'mystery' in last_title.lower() or 'secret' in last_title.lower():
+        generated_title = 'Revelation'
+    else:
+        generated_title = 'New Developments'
+    
+    return f'Chapter 3: {generated_title}'

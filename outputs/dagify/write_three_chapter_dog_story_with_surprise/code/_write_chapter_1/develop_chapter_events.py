@@ -1,3 +1,6 @@
+import re
+
+
 def develop_chapter_events(bullet_points: str, character_context: str, setting_context: str) -> str:
     """
     Crafts a chapter by integrating character context and setting details with
@@ -42,4 +45,38 @@ def develop_chapter_events(bullet_points: str, character_context: str, setting_c
     details, and bullet points.
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(bullet_points, str):
+        raise TypeError("bullet_points must be a string")
+    if not isinstance(character_context, str):
+        raise TypeError("character_context must be a string")
+    if not isinstance(setting_context, str):
+        raise TypeError("setting_context must be a string")
+    
+    if not bullet_points.strip():
+        raise ValueError("bullet_points cannot be empty")
+    if not character_context.strip():
+        raise ValueError("character_context cannot be empty")
+    if not setting_context.strip():
+        raise ValueError("setting_context cannot be empty")
+    
+    
+    points = re.split(r'\d+\.', bullet_points)
+    points = [point.strip() for point in points if point.strip()]
+    
+    if len(points) < 3:
+        raise ValueError("bullet_points must contain at least three points")
+    
+    chapter = f"Chapter\n\n"
+    chapter += f"Setting: {setting_context}\n\n"
+    chapter += f"Character Background: {character_context}\n\n"
+    chapter += f"Events:\n"
+    
+    for i, point in enumerate(points[:3], 1):
+        chapter += f"{i}. {point}\n"
+    
+    chapter += f"\nIn this chapter, our protagonist navigates through {setting_context.lower()}, "
+    chapter += f"drawing upon their {character_context.lower()} as they encounter the following developments: "
+    chapter += f"{', '.join(points[:3])}. "
+    chapter += f"These events shape the narrative and drive the story forward in meaningful ways."
+    
+    return chapter

@@ -43,4 +43,13 @@ def validate_inputs(story_outline: str, character_profiles: str, story_setting: 
     Error: Empty input parameter(s).
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(story_outline, str) or not isinstance(character_profiles, str) or not isinstance(story_setting, str):
+        raise TypeError("All input parameters must be strings")
+    
+    if not story_outline or not character_profiles or not story_setting:
+        raise ValueError("All input parameters must be non-empty")
+    
+    if not story_outline.strip() or not character_profiles.strip() or not story_setting.strip():
+        return "Error: Empty input parameter(s)."
+    
+    return "Inputs are valid."

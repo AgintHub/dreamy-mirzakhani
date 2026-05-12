@@ -4,6 +4,12 @@ from ._generate_story_outline.generate_chapter_titles import generate_chapter_ti
 from ._generate_story_outline.generate_chapter_bullet_points import generate_chapter_bullet_points
 from ._generate_story_outline.generate_dog_favorite_color import generate_dog_favorite_color
 
+from ._generate_story_outline.validate_prompt import validate_prompt
+from ._generate_story_outline.generate_story_title import generate_story_title
+from ._generate_story_outline.generate_chapter_titles import generate_chapter_titles
+from ._generate_story_outline.generate_chapter_bullet_points import generate_chapter_bullet_points
+from ._generate_story_outline.generate_dog_favorite_color import generate_dog_favorite_color
+
 from pydantic import BaseModel, Field
 from typing import List
 

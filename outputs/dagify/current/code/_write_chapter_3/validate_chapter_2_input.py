@@ -36,4 +36,15 @@ def validate_chapter_2_input(chapter_2_text: str) -> str:
     Validation failed due to invalid input text
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(chapter_2_text, str):
+        raise TypeError("When input text is not of type str.")
+    
+    stripped_text = chapter_2_text.strip()
+    
+    if not stripped_text:
+        raise ValueError("Validation failed due to invalid input text.")
+    
+    if stripped_text.startswith(' '):
+        raise ValueError("Validation failed due to invalid input text.")
+    
+    return stripped_text
