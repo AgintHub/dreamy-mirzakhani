@@ -1,65 +1,71 @@
 dag_type: plain_text
-description: A workflow that prepares a test environment, runs a test, analyzes the
-  outcome, and produces a concise report.
-name: execute_simple_test
+description: Develop a comprehensive strategy for natural gas investments
+name: build_natural_gas_strategy
 nodes:
-  analyze_test_result:
+  analyze_market_trends:
     agent: false
-    description: Analyzes the test outcome against expected results.
-    name: analyze_test_result
-    nodes_depended_on:
-    - capture_test_output
-    nodes_dependent_on:
-    - generate_test_report
-    prompt: Compare the captured output against the defined success criteria. Determine
-      whether the test passed or failed and note any discrepancies.
-  capture_test_output:
-    agent: false
-    description: Formats and stores the raw test output for analysis.
-    name: capture_test_output
-    nodes_depended_on:
-    - run_test
-    nodes_dependent_on:
-    - analyze_test_result
-    prompt: 'Collect the raw output from the test execution and format it as a JSON
-      object with keys: `output`, `timestamp`, and `status`.'
-  define_test_conditions:
-    agent: false
-    description: Creates a clear set of test conditions for the upcoming test.
-    name: define_test_conditions
+    description: Examine current and historical natural gas market trends
+    name: analyze_market_trends
     nodes_depended_on: []
-    nodes_dependent_on:
-    - prepare_test_environment
-    - run_test
-    prompt: Specify the test conditions including input data, expected output, and
-      success criteria. List each condition as a bullet point.
-  generate_test_report:
-    agent: false
-    description: Produces the final test report.
-    name: generate_test_report
-    nodes_depended_on:
-    - analyze_test_result
     nodes_dependent_on: []
-    prompt: Create a concise test report that includes the test name, pass/fail status,
-      key metrics, and any notable observations. Format as a markdown section.
-  prepare_test_environment:
+    prompt: Provide an analysis of the current and historical trends in the natural
+      gas market, including supply and demand factors, price fluctuations, and future
+      projections.
+  assess_geopolitical_factors:
     agent: false
-    description: Prepares the environment required to run the test.
-    name: prepare_test_environment
+    description: Evaluate geopolitical factors affecting natural gas supply and demand
+    name: assess_geopolitical_factors
     nodes_depended_on: []
-    nodes_dependent_on:
-    - run_test
-    prompt: 'Set up the required environment for the test: install necessary software,
-      configure settings, and ensure resources are available. Provide a checklist
-      of completed actions.'
-  run_test:
+    nodes_dependent_on: []
+    prompt: Assess the impact of geopolitical factors on natural gas supply and demand,
+      including regulatory changes, trade policies, and regional conflicts.
+  create_portfolio_model:
     agent: false
-    description: Runs the test and captures the raw output.
-    name: run_test
+    description: Create a portfolio model for natural gas investments
+    name: create_portfolio_model
     nodes_depended_on:
-    - define_test_conditions
-    - prepare_test_environment
-    nodes_dependent_on:
-    - capture_test_output
-    prompt: Execute the test using the prepared environment and defined conditions.
-      Record the raw output data.
+    - develop_investment_strategy
+    nodes_dependent_on: []
+    prompt: Create a portfolio model for natural gas investments, including asset
+      allocation, diversification, and risk management strategies.
+  develop_investment_strategy:
+    agent: false
+    description: Develop a comprehensive investment strategy for natural gas
+    name: develop_investment_strategy
+    nodes_depended_on:
+    - identify_investment_opportunities
+    - evaluate_risk_factors
+    nodes_dependent_on: []
+    prompt: Based on the identified investment opportunities and risk factors, develop
+      a comprehensive investment strategy for natural gas, including asset allocation,
+      risk management, and performance metrics.
+  evaluate_risk_factors:
+    agent: false
+    description: Evaluate risk factors associated with natural gas investments
+    name: evaluate_risk_factors
+    nodes_depended_on:
+    - identify_investment_opportunities
+    nodes_dependent_on: []
+    prompt: Evaluate the risk factors associated with natural gas investments, including
+      price volatility, regulatory risks, and environmental concerns.
+  identify_investment_opportunities:
+    agent: false
+    description: Identify potential investment opportunities in the natural gas sector
+    name: identify_investment_opportunities
+    nodes_depended_on:
+    - analyze_market_trends
+    - assess_geopolitical_factors
+    nodes_dependent_on: []
+    prompt: Based on market trends and geopolitical factors, identify potential investment
+      opportunities in the natural gas sector, including exploration and production,
+      transportation, and storage.
+  monitor_and_adjust:
+    agent: false
+    description: Monitor and adjust the natural gas investment strategy
+    name: monitor_and_adjust
+    nodes_depended_on:
+    - create_portfolio_model
+    nodes_dependent_on: []
+    prompt: Continuously monitor the natural gas market and adjust the investment
+      strategy as needed, including rebalancing the portfolio and adjusting risk management
+      strategies.
