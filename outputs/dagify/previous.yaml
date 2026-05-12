@@ -1,71 +1,94 @@
 dag_type: plain_text
-description: Develop a comprehensive strategy for natural gas investments
-name: build_natural_gas_strategy
+description: A workflow for managing the open day operations of a multistrategy quantitative
+  trading firm
+name: open_day_workflow
 nodes:
-  analyze_market_trends:
+  generate_initial_trades:
     agent: false
-    description: Examine current and historical natural gas market trends
-    name: analyze_market_trends
+    description: Generate initial trades for each trading strategy
+    name: generate_initial_trades
+    nodes_depended_on:
+    - load_trading_strategies
+    nodes_dependent_on: []
+    prompt: Use trading strategies to generate initial trades for the open day, considering
+      current market conditions and risk management settings.
+  generate_open_day_report:
+    agent: false
+    description: Generate an open day report for the trading firm
+    name: generate_open_day_report
+    nodes_depended_on:
+    - update_risk_management_models
+    nodes_dependent_on: []
+    prompt: Generate a report summarizing trading performance, risk management, and
+      market conditions for the open day.
+  initialize_market_data_feeds:
+    agent: false
+    description: Initialize market data feeds for all tradable assets
+    name: initialize_market_data_feeds
     nodes_depended_on: []
     nodes_dependent_on: []
-    prompt: Provide an analysis of the current and historical trends in the natural
-      gas market, including supply and demand factors, price fluctuations, and future
-      projections.
-  assess_geopolitical_factors:
+    prompt: Connect to market data providers and initialize feeds for all tradable
+      assets, including equities, futures, and forex.
+  load_trading_strategies:
     agent: false
-    description: Evaluate geopolitical factors affecting natural gas supply and demand
-    name: assess_geopolitical_factors
-    nodes_depended_on: []
-    nodes_dependent_on: []
-    prompt: Assess the impact of geopolitical factors on natural gas supply and demand,
-      including regulatory changes, trade policies, and regional conflicts.
-  create_portfolio_model:
-    agent: false
-    description: Create a portfolio model for natural gas investments
-    name: create_portfolio_model
+    description: Load and configure all trading strategies for the open day
+    name: load_trading_strategies
     nodes_depended_on:
-    - develop_investment_strategy
+    - initialize_market_data_feeds
     nodes_dependent_on: []
-    prompt: Create a portfolio model for natural gas investments, including asset
-      allocation, diversification, and risk management strategies.
-  develop_investment_strategy:
+    prompt: Load and configure all trading strategies, including parameter tuning
+      and risk management settings.
+  monitor_trades_and_adjust:
     agent: false
-    description: Develop a comprehensive investment strategy for natural gas
-    name: develop_investment_strategy
+    description: Monitor trades and adjust trading strategies as needed
+    name: monitor_trades_and_adjust
     nodes_depended_on:
-    - identify_investment_opportunities
-    - evaluate_risk_factors
+    - route_trades_to_execution_systems
     nodes_dependent_on: []
-    prompt: Based on the identified investment opportunities and risk factors, develop
-      a comprehensive investment strategy for natural gas, including asset allocation,
-      risk management, and performance metrics.
-  evaluate_risk_factors:
+    prompt: Monitor trades in real-time and adjust trading strategies as needed to
+      optimize performance and manage risk.
+  notify_stakeholders_of_open_day_results:
     agent: false
-    description: Evaluate risk factors associated with natural gas investments
-    name: evaluate_risk_factors
+    description: Notify stakeholders of open day results
+    name: notify_stakeholders_of_open_day_results
     nodes_depended_on:
-    - identify_investment_opportunities
+    - store_open_day_results
     nodes_dependent_on: []
-    prompt: Evaluate the risk factors associated with natural gas investments, including
-      price volatility, regulatory risks, and environmental concerns.
-  identify_investment_opportunities:
+    prompt: Notify stakeholders, including investors and management, of open day results
+      and provide context and insights.
+  review_and_validate_open_day_results:
     agent: false
-    description: Identify potential investment opportunities in the natural gas sector
-    name: identify_investment_opportunities
+    description: Review and validate open day results for accuracy and completeness
+    name: review_and_validate_open_day_results
     nodes_depended_on:
-    - analyze_market_trends
-    - assess_geopolitical_factors
+    - generate_open_day_report
     nodes_dependent_on: []
-    prompt: Based on market trends and geopolitical factors, identify potential investment
-      opportunities in the natural gas sector, including exploration and production,
-      transportation, and storage.
-  monitor_and_adjust:
+    prompt: Review and validate open day results to ensure accuracy and completeness,
+      and identify areas for improvement.
+  route_trades_to_execution_systems:
     agent: false
-    description: Monitor and adjust the natural gas investment strategy
-    name: monitor_and_adjust
+    description: Route trades to execution systems for all trading strategies
+    name: route_trades_to_execution_systems
     nodes_depended_on:
-    - create_portfolio_model
+    - generate_initial_trades
     nodes_dependent_on: []
-    prompt: Continuously monitor the natural gas market and adjust the investment
-      strategy as needed, including rebalancing the portfolio and adjusting risk management
-      strategies.
+    prompt: Route trades to execution systems, including brokers, exchanges, and dark
+      pools.
+  store_open_day_results:
+    agent: false
+    description: Store open day results in the trading firm's database
+    name: store_open_day_results
+    nodes_depended_on:
+    - review_and_validate_open_day_results
+    nodes_dependent_on: []
+    prompt: Store open day results in the trading firm's database for future reference
+      and analysis.
+  update_risk_management_models:
+    agent: false
+    description: Update risk management models for all trading strategies
+    name: update_risk_management_models
+    nodes_depended_on:
+    - monitor_trades_and_adjust
+    nodes_dependent_on: []
+    prompt: Update risk management models for all trading strategies based on current
+      market conditions and trading performance.
