@@ -1,79 +1,80 @@
 dag_type: plain_text
-description: A workflow that writes a three‑chapter story about a dog by outlining
-  the plot, creating characters and setting, writing each chapter, and assembling
-  the final document.
-name: write_three_chapter_dog_story
+description: Creates character profiles, outline, setting, writes three sequential
+  chapters, and adds a M. Night Shyamalan‑style grand finale surprise.
+name: write_three_chapter_dog_story_with_surprise
 nodes:
+  add_grand_finale:
+    agent: false
+    description: Adds a M. Night Shyamalan‑style grand finale surprise to the end
+      of Chapter 3.
+    name: add_grand_finale
+    nodes_depended_on:
+    - write_chapter_3
+    nodes_dependent_on: []
+    prompt: Take the completed Chapter 3 text and append a shocking, twist‑filled
+      grand finale inspired by M. Night Shyamalan’s style. The surprise should reframe
+      the entire story in an unexpected way while remaining coherent. Output the final
+      chapter with the surprise included.
   generate_character_profiles:
     agent: false
-    description: Creates character biographies to be used in chapter writing.
+    description: Creates detailed biographies for the dog and supporting characters.
     name: generate_character_profiles
     nodes_depended_on: []
-    nodes_dependent_on:
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
+    nodes_dependent_on: []
     prompt: Generate detailed profiles for the dog and any supporting characters.
       Provide name, age (if applicable), personality traits, and role in the plot.
   generate_story_outline:
     agent: false
-    description: Produces the structural outline for the story.
+    description: Produces a concise three‑chapter outline for the story.
     name: generate_story_outline
     nodes_depended_on: []
-    nodes_dependent_on:
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
+    nodes_dependent_on: []
     prompt: Create a concise outline for a 3‑chapter story about a dog. Include a
       title, chapter titles, and 2–3 bullet points per chapter describing the main
       events.
   generate_story_setting:
     agent: false
-    description: Provides the setting context for the story.
+    description: Describes the main setting(s) for the story.
     name: generate_story_setting
     nodes_depended_on: []
-    nodes_dependent_on:
-    - write_chapter_1
-    - write_chapter_2
-    - write_chapter_3
+    nodes_dependent_on: []
     prompt: Describe the main setting(s) for the story, including location, time period,
       and any relevant environmental details that influence the dog’s adventure.
   write_chapter_1:
     agent: false
-    description: Writes the first chapter of the story.
+    description: Writes Chapter 1 using outline, character profiles, and setting.
     name: write_chapter_1
     nodes_depended_on:
     - generate_story_outline
     - generate_character_profiles
     - generate_story_setting
-    nodes_dependent_on:
-    - assemble_story_document
+    nodes_dependent_on: []
     prompt: Write Chapter 1 of the story using the provided outline, character profiles,
       and setting. Focus on introducing the dog, its environment, and the inciting
       incident. Output a complete chapter in prose.
   write_chapter_2:
     agent: false
-    description: Writes the second chapter of the story.
+    description: Writes Chapter 2, receiving Chapter 1 output to continue the narrative.
     name: write_chapter_2
     nodes_depended_on:
+    - write_chapter_1
     - generate_story_outline
     - generate_character_profiles
     - generate_story_setting
-    nodes_dependent_on:
-    - assemble_story_document
+    nodes_dependent_on: []
     prompt: Write Chapter 2 of the story using the provided outline, character profiles,
-      and setting. Continue the plot, developing the conflict and interactions. Output
-      a complete chapter in prose.
+      setting, and the full text of Chapter 1. Continue the plot, developing the conflict
+      and interactions. Output a complete chapter in prose.
   write_chapter_3:
     agent: false
-    description: Writes the third chapter of the story.
+    description: Writes Chapter 3, receiving Chapter 2 output to conclude the story.
     name: write_chapter_3
     nodes_depended_on:
+    - write_chapter_2
     - generate_story_outline
     - generate_character_profiles
     - generate_story_setting
-    nodes_dependent_on:
-    - assemble_story_document
+    nodes_dependent_on: []
     prompt: Write Chapter 3 of the story using the provided outline, character profiles,
-      and setting. Resolve the plot and conclude the dog’s adventure. Output a complete
-      chapter in prose.
+      setting, and the full text of Chapter 2. Resolve the plot and conclude the dog’s
+      adventure. Output a complete chapter in prose.
