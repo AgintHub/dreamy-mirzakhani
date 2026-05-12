@@ -1,195 +1,236 @@
 dag_type: plain_text
-description: A detailed, concurrent workflow for designing, testing, and deploying
-  a quantitative trading strategy from data acquisition to live execution.
-name: build_quant_trading_strategy
+description: A detailed, highly concurrent workflow that produces a complete foundational
+  plan for launching a quantitative hedge fund, covering strategy definition, data
+  infrastructure, legal setup, operations, risk, technology, staffing, compliance,
+  and launch timeline.
+name: build_quant_hedge_fund
 nodes:
-  adjust_risk_controls:
+  choose_legal_entity:
     agent: false
-    description: Modify risk parameters to align with performance objectives.
-    name: adjust_risk_controls
+    description: Identify the legal structure of the fund vehicle.
+    name: choose_legal_entity
     nodes_depended_on:
-    - evaluate_backtest_results
-    nodes_dependent_on:
-    - finalize_strategy_documentation
-    prompt: If drawdown exceeds the target, suggest position‑size scaling or tighter
-      stop‑loss. If Sharpe is low, propose feature or model adjustments. Return a
-      revised trading rule if changes are made.
-  backtest_strategy:
+    - select_jurisdiction
+    nodes_dependent_on: []
+    prompt: Specify the legal vehicle (e.g., LP, LLC, SICAV) suitable for the chosen
+      jurisdiction and give a one‑sentence rationale.
+  clarify_fund_mission:
     agent: false
-    description: Simulate strategy performance on unseen data.
-    name: backtest_strategy
-    nodes_depended_on:
-    - normalize_and_split_data
-    - develop_trading_rule
-    nodes_dependent_on:
-    - evaluate_backtest_results
-    - adjust_risk_controls
-    prompt: Run the trading rule on the test set, simulating daily orders, slippage
-      0.05%, and transaction costs 5 bps. Generate P&L, drawdown, Sharpe, and turnover
-      metrics. Output a CSV of trade logs.
-  clean_and_store_raw_data:
-    agent: false
-    description: Prepare clean, stored market data ready for feature engineering.
-    name: clean_and_store_raw_data
-    nodes_depended_on:
-    - collect_market_data
-    - define_eligibility_criteria
-    nodes_dependent_on:
-    - generate_feature_set
-    prompt: 'For each selected instrument, clean the data: adjust for splits/dividends,
-      interpolate missing values, and store in a time‑series database. Provide a status
-      report of cleaned records.'
-  collect_market_data:
-    agent: false
-    description: Gather raw market data required for analysis.
-    name: collect_market_data
-    nodes_depended_on:
-    - select_asset_universe
-    nodes_dependent_on:
-    - clean_and_store_raw_data
-    - extract_market_factors
-    prompt: Retrieve historical price and volume data for each instrument in the asset
-      universe covering the last 10 years. Include OHLCV and adjusted close. Output
-      in CSV format.
-  define_eligibility_criteria:
-    agent: false
-    description: Filter the asset universe to suitable trading candidates.
-    name: define_eligibility_criteria
-    nodes_depended_on:
-    - select_asset_universe
-    nodes_dependent_on:
-    - clean_and_store_raw_data
-    prompt: 'Specify filtering rules for the assets: minimum market cap, liquidity
-      threshold (average daily volume > 1M shares), and data availability. Return
-      a list of instruments that meet all criteria.'
-  define_strategy_goals:
-    agent: false
-    description: Establish the quantitative performance and risk targets that the
-      strategy must meet.
-    name: define_strategy_goals
+    description: Produce a concise bullet list of the fund's overarching mission and
+      objectives.
+    name: clarify_fund_mission
     nodes_depended_on: []
-    nodes_dependent_on:
-    - select_asset_universe
+    nodes_dependent_on: []
+    prompt: List up to eight bullet points that capture the core mission of the quantitative
+      hedge fund, including investment focus, desired market impact, and long‑term
+      vision.
+  compile_pitch_deck_outline:
+    agent: false
+    description: Create the structure of the fundraising presentation.
+    name: compile_pitch_deck_outline
+    nodes_depended_on:
+    - clarify_fund_mission
+    - define_investment_strategy
     - set_performance_targets
-    prompt: 'Specify the primary objectives of the strategy: expected annual return,
-      maximum drawdown, target Sharpe ratio, and maximum position size. Provide concise
-      bullet points.'
-  develop_trading_rule:
+    - draft_fee_structure
+    - design_risk_framework
+    nodes_dependent_on: []
+    prompt: Provide a 10‑slide outline (slide titles only) for an investor pitch deck
+      covering mission, strategy, edge, performance targets, risk controls, fees,
+      team, service providers, timeline, and ask.
+  create_data_pipeline_spec:
     agent: false
-    description: Create the concrete trading logic that will be backtested.
-    name: develop_trading_rule
+    description: Define the quantitative data acquisition and validation process.
+    name: create_data_pipeline_spec
     nodes_depended_on:
-    - select_best_model
-    nodes_dependent_on:
-    - backtest_strategy
-    prompt: 'Define a trading rule that maps model predictions to position sizes:
-      e.g., long if predicted return > 0.5% and scale by z‑score. Include stop‑loss
-      and take‑profit thresholds. Output the rule in pseudocode.'
-  evaluate_backtest_results:
+    - specify_asset_universe
+    nodes_dependent_on: []
+    prompt: 'Detail a data ingestion pipeline for the asset universe: source types,
+      frequency, storage format, and validation checks. Present as a short numbered
+      list.'
+  create_hiring_plan:
     agent: false
-    description: Assess whether the backtest meets the predefined goals.
-    name: evaluate_backtest_results
+    description: Determine the initial staffing requirements.
+    name: create_hiring_plan
     nodes_depended_on:
-    - backtest_strategy
-    nodes_dependent_on:
-    - adjust_risk_controls
-    prompt: Compare backtest metrics to performance targets set in define_strategy_goals.
-      Highlight any shortfalls in a concise report.
-  evaluate_feature_importance:
+    - draft_operations_flow
+    - define_technology_stack
+    nodes_dependent_on: []
+    prompt: List up to eight essential full‑time roles for launch (e.g., quant researcher,
+      data engineer, risk analyst, portfolio manager, CTO, compliance officer). Include
+      a one‑line responsibility for each.
+  define_investment_strategy:
     agent: false
-    description: Assess which features contribute most to predictive power.
-    name: evaluate_feature_importance
+    description: Choose the primary quantitative investment strategy.
+    name: define_investment_strategy
     nodes_depended_on:
-    - generate_feature_set
-    nodes_dependent_on:
-    - select_features
-    prompt: Using a simple random forest regressor, compute feature importance scores
-      on a hold‑out sample. Return a ranked list of features with importance values.
-  extract_market_factors:
+    - clarify_fund_mission
+    nodes_dependent_on: []
+    prompt: Select a single quantitative strategy category (e.g., statistical arbitrage,
+      systematic macro, machine‑learning equity) and provide a brief one‑sentence
+      description of its core signal generation approach.
+  define_target_investor_profile:
     agent: false
-    description: Generate macro and factor data to be used in feature construction.
-    name: extract_market_factors
+    description: Specify the target investor audience.
+    name: define_target_investor_profile
     nodes_depended_on:
-    - collect_market_data
-    nodes_dependent_on:
-    - generate_feature_set
-    prompt: Compute standard market factors (e.g., Fama–French 3 factors, momentum)
-      for the universe over the same period. Output factor time series with dates.
-  generate_feature_set:
+    - clarify_fund_mission
+    nodes_dependent_on: []
+    prompt: 'Describe the ideal investor segment (e.g., family offices, endowments)
+      with characteristics: typical ticket size, risk tolerance, liquidity preference,
+      and geographic focus.'
+  define_technology_stack:
     agent: false
-    description: Construct the raw feature set for model training.
-    name: generate_feature_set
+    description: Specify technology tools for each operational step.
+    name: define_technology_stack
     nodes_depended_on:
-    - clean_and_store_raw_data
-    - extract_market_factors
-    nodes_dependent_on:
-    - evaluate_feature_importance
-    - normalize_and_split_data
-    prompt: 'Create a comprehensive feature matrix: price‑based (returns, moving averages,
-      volatility), volume‑based, macro factors, and sentiment indicators. Include
-      lagged and rolling window features. Output a CSV with timestamps.'
-  normalize_and_split_data:
+    - draft_operations_flow
+    nodes_dependent_on: []
+    prompt: 'Create a two‑column table: Operations Step | Recommended Technology Component
+      (e.g., data warehouse, Python back‑tester, order management system, real‑time
+      market data feed).'
+  design_compliance_program:
     agent: false
-    description: Prepare data for modeling and evaluation.
-    name: normalize_and_split_data
+    description: Build the fund's compliance framework.
+    name: design_compliance_program
     nodes_depended_on:
-    - select_features
-    nodes_dependent_on:
-    - train_and_tune_models
-    - backtest_strategy
-    prompt: Standardize the feature matrix (z‑score). Split into training (70%), validation
-      (15%), and test (15%) sets using rolling origin cross‑validation. Output the
-      split datasets in separate CSVs.
-  select_asset_universe:
+    - list_regulatory_requirements
+    - design_risk_framework
+    nodes_dependent_on: []
+    prompt: 'Generate a compliance checklist mapping each regulatory requirement to
+      an internal policy or procedure. Present as a two‑column table: Requirement
+      | Policy Reference.'
+  design_model_development_process:
     agent: false
-    description: Define the set of tradable securities for the strategy.
-    name: select_asset_universe
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - collect_market_data
-    - define_eligibility_criteria
-    prompt: List the asset classes and specific instruments the strategy will trade
-      (e.g., NYSE equities, E-mini S&P futures, EUR/USD). Include ticker symbols and
-      market identifiers.
-  select_best_model:
-    agent: false
-    description: Identify the optimal predictive model for deployment.
-    name: select_best_model
+    description: Establish the model development lifecycle.
+    name: design_model_development_process
     nodes_depended_on:
-    - train_and_tune_models
-    nodes_dependent_on:
-    - develop_trading_rule
-    prompt: Choose the model with the lowest validation RMSE that also meets a minimum
-      Sharpe ratio on the validation set. Return the model architecture and hyperparameters.
-  select_features:
+    - create_data_pipeline_spec
+    - define_investment_strategy
+    nodes_dependent_on: []
+    prompt: Outline a step‑by‑step workflow for research, model building, back‑testing,
+      and validation. Include version control and documentation checkpoints.
+  design_risk_framework:
     agent: false
-    description: Filter the feature set to a manageable subset.
-    name: select_features
+    description: Outline quantitative risk management controls.
+    name: design_risk_framework
     nodes_depended_on:
-    - evaluate_feature_importance
-    nodes_dependent_on:
-    - normalize_and_split_data
-    prompt: Choose the top 30 features based on importance, removing highly collinear
-      pairs (R > 0.85). List selected feature names.
+    - set_performance_targets
+    - specify_asset_universe
+    nodes_dependent_on: []
+    prompt: 'List core risk controls aligned with the targets: position limits, sector
+      caps, VaR limit, stop‑loss rules, liquidity buffers. Provide 5 bullet points.'
+  develop_launch_timeline:
+    agent: false
+    description: Create a phased schedule leading to fund launch.
+    name: develop_launch_timeline
+    nodes_depended_on:
+    - select_jurisdiction
+    - choose_legal_entity
+    - list_service_providers
+    - draft_operations_flow
+    - create_hiring_plan
+    - compile_pitch_deck_outline
+    nodes_dependent_on: []
+    prompt: 'Produce a month‑by‑month timeline for the next 12 months, marking key
+      milestones: legal filing, service provider contracts, technology deployment,
+      hiring, capital raise, mock trading, and go‑live.'
+  draft_fee_structure:
+    agent: false
+    description: Set the fund's fee schedule.
+    name: draft_fee_structure
+    nodes_depended_on:
+    - clarify_fund_mission
+    - estimate_setup_costs
+    nodes_dependent_on: []
+    prompt: Propose a management fee (as % of AUM) and a performance fee (as % of
+      profits) that balance cost recovery with market competitiveness. Include a hurdle
+      rate if applicable.
+  draft_operations_flow:
+    agent: false
+    description: Map the core operational workflow.
+    name: draft_operations_flow
+    nodes_depended_on:
+    - specify_asset_universe
+    - list_service_providers
+    - design_risk_framework
+    nodes_dependent_on: []
+    prompt: 'Sketch the end‑to‑end daily trade lifecycle: idea generation → signal
+      computation → order creation → execution → confirmation → settlement → reconciliation
+      → reporting. For each step, name the primary responsible party (internal team
+      or external provider).'
+  estimate_setup_costs:
+    agent: false
+    description: Produce a rough annual cost model for setup and operations.
+    name: estimate_setup_costs
+    nodes_depended_on:
+    - list_service_providers
+    nodes_dependent_on: []
+    prompt: 'Provide a simple table with two columns: Cost Item | Estimated Annual
+      USD. Include each service provider category plus overhead items such as office
+      rent and technology licensing.'
+  list_regulatory_requirements:
+    agent: false
+    description: Identify key regulatory obligations.
+    name: list_regulatory_requirements
+    nodes_depended_on:
+    - choose_legal_entity
+    nodes_dependent_on: []
+    prompt: Provide a checklist of the principal regulatory filings and registrations
+      required for the selected entity and jurisdiction (e.g., SEC Form ADV, AIFMD
+      notification). List only the filing name and governing authority.
+  list_service_providers:
+    agent: false
+    description: Enumerate essential external service providers.
+    name: list_service_providers
+    nodes_depended_on:
+    - choose_legal_entity
+    nodes_dependent_on: []
+    prompt: Create a plain list of mandatory third‑party service provider types for
+      a hedge fund (e.g., prime broker, fund administrator, auditor, legal counsel,
+      compliance consultant, custodian).
+  produce_final_fund_plan:
+    agent: false
+    description: Generate a unified launch blueprint for the quantitative hedge fund.
+    name: produce_final_fund_plan
+    nodes_depended_on:
+    - compile_pitch_deck_outline
+    - develop_launch_timeline
+    - design_compliance_program
+    - draft_fee_structure
+    - design_risk_framework
+    - define_technology_stack
+    - create_hiring_plan
+    nodes_dependent_on: []
+    prompt: Synthesize all prior outputs into a concise executive summary (≤400 words)
+      covering strategy, structure, risk, operations, technology, fees, costs, timeline,
+      and compliance.
+  select_jurisdiction:
+    agent: false
+    description: Pick the optimal legal jurisdiction for the fund and justify the
+      choice.
+    name: select_jurisdiction
+    nodes_depended_on:
+    - clarify_fund_mission
+    nodes_dependent_on: []
+    prompt: Choose a single primary domicile (e.g., Cayman Islands, Delaware, Luxembourg)
+      that best aligns with the mission. Provide two advantages and two disadvantages
+      of the chosen jurisdiction.
   set_performance_targets:
     agent: false
-    description: Convert strategic objectives into measurable numeric targets.
+    description: Quantify expected risk‑adjusted performance.
     name: set_performance_targets
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - define_strategy_goals
-    prompt: 'Translate the strategy goals into quantitative metrics: target annual
-      return %, max drawdown %, minimum Sharpe ratio, and maximum position size %
-      of portfolio. Use a table format.'
-  train_and_tune_models:
-    agent: false
-    description: Generate multiple predictive models with tuned parameters.
-    name: train_and_tune_models
     nodes_depended_on:
-    - normalize_and_split_data
-    nodes_dependent_on:
-    - select_best_model
-    prompt: Train a portfolio of candidate models (linear regression, LSTM, XGBoost,
-      CatBoost, SVM) on the training set. Perform hyperparameter tuning via Bayesian
-      search on the validation set. Return model performance metrics (RMSE, MAE) and
-      the best hyperparameters.
+    - define_investment_strategy
+    nodes_dependent_on: []
+    prompt: Define annual quantitative targets for gross return, volatility (standard
+      deviation), Sharpe ratio, and maximum drawdown. Present as a 4‑row table.
+  specify_asset_universe:
+    agent: false
+    description: Enumerate the assets the fund will trade.
+    name: specify_asset_universe
+    nodes_depended_on:
+    - define_investment_strategy
+    nodes_dependent_on: []
+    prompt: List up to ten tradable instruments or asset classes that the chosen strategy
+      will target (e.g., US equities, EUR/USD futures, credit default swaps).
