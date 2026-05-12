@@ -1,14 +1,35 @@
-dag_type: spec
+dag_type: stub
 description: Generated workflow from UI.
 name: write_three_chapter_dog_story_with_surprise
 nodes:
   add_grand_finale:
     agent: false
+    code_node_type: stub
     description: Elevates Chapter 3’s conclusion by introducing an intricate, M. Night
       Shyamalan-style grand finale—a masterfully constructed, emotionally resonant,
       and intellectually gripping twist that reframes the narrative arc in a surprising,
       yet thematically cohesive, new light, while incorporating a subtle visual motif
       to enhance thematic resonance and character psychology.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass WriteChapter3Output(BaseModel):\n\
+      \    \"\"\"Pydantic model for write_chapter_3 node outputs.\"\"\"\n    chapter_title:\
+      \ str = Field(..., description=\"The title of Chapter 3.\")\n    chapter_content:\
+      \ str = (\n        Field(..., description=\"The prose content of Chapter 3.\"\
+      )\n    )\n    chapter_summary: str = (\n        Field(..., description=\"A summary\
+      \ of what happens in Chapter 3.\")\n    )\n\n\nclass AddGrandFinaleOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for add_grand_finale node outputs.\"\"\"\n    final_chapter_text:\
+      \ str = (\n        Field(..., description=\"The polished, finalized Chapter\
+      \ 3 text incorporating the M. Night Shyamalan-style twist, emotional depth,\
+      \ and thematic symbolism.\")\n    )\n\n\ndef add_grand_finale(write_chapter_3_input:\
+      \ WriteChapter3Output, **kwargs) -> AddGrandFinaleOutput:\n    \"\"\"\n    Adds\
+      \ a grand finale twist to Chapter 3, maintaining narrative coherence\n    while\
+      \ surprising the reader.\n\n    Returns\n    -------\n    str\n        The revised\
+      \ final chapter with the grand finale twist and emotional\n        resonance\
+      \ fully integrated.\n\n    Examples\n    --------\n    >>> create_grand_finale_twist('write_chapter_3')\n\
+      \    The grand finale twist is crafted, enriching the narrative and deepening\n\
+      \    character connections.\n\n    >>> create_grand_finale_twist('write_chapter_3')\n\
+      \    The emotional resonance of the twist enhances character psychology and\n\
+      \    thematic symbolism.\n\n    \"\"\"\n    return AddGrandFinaleOutput(\n \
+      \       final_chapter_text=\"\",\n    )"
     name: add_grand_finale
     nodes_depended_on:
     - write_chapter_3
@@ -47,8 +68,10 @@ nodes:
       with a subtle but powerful emotional beat that ties into one of the protagonist’s
       core traits or character arc. Output the revised final chapter with the grand
       finale twist and emotional resonance fully integrated.
+    shims: []
   generate_character_profiles:
     agent: false
+    code_node_type: stub
     description: Generates richly detailed character biographies that capture identity,
       motivation, and narrative function. Each profile includes a name, age (when
       relevant), personality traits, plot role, and a favorite color that informs
@@ -56,6 +79,30 @@ nodes:
       strings detailing breed, backstory, habits, and core motivations. The output
       is structured to support seamless integration with subsequent plot development
       and visual design stages.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass GenerateCharacterProfilesOutput(BaseModel):\n    \"\"\"Pydantic model\
+      \ for generate_character_profiles node outputs.\"\"\"\n    character_name: str\
+      \ = (\n        Field(..., description=\"The character\\u2019s full name.\")\n\
+      \    )\n    age: float = (\n        Field(..., description=\"The character\\\
+      u2019s age in years, if applicable.\")\n    )\n    personality_traits: str =\
+      \ (\n        Field(..., description=\"A concise list of defining personality\
+      \ traits.\")\n    )\n    role_in_plot: str = (\n        Field(..., description=\"\
+      The character\\u2019s functional role within the story.\")\n    )\n    favorite_color:\
+      \ str = (\n        Field(..., description=\"A color that encapsulates the character\\\
+      u2019s essence or aesthetic.\")\n    )\n    dog_profile: List[str] = (\n   \
+      \     Field(..., description=\"A series of sentences detailing the dog\\u2019s\
+      \ breed, background, quirks, and motivations.\")\n    )\n\n\ndef generate_character_profiles(general_input:\
+      \ str, **kwargs) -> GenerateCharacterProfilesOutput:\n    \"\"\"\n    Generate\
+      \ detailed character profiles.\n\n    Parameters\n    ----------\n    character_profiles\
+      \ : List[dict]\n        List of dictionaries containing character information\
+      \ for each\n        person and the dog.\n\n    Returns\n    -------\n    dict\n\
+      \        A dictionary containing the generated character profiles where each\n\
+      \        key is a character name and each value is a dictionary with their\n\
+      \        profile information.\n\n    Raises\n    ------\n    TypeError\n   \
+      \     If the input character_profiles is not a list of dictionaries.\n    \"\
+      \"\"\n    return GenerateCharacterProfilesOutput(\n        character_name=\"\
+      \",\n        age=0.0,\n        personality_traits=\"\",\n        role_in_plot=\"\
+      \",\n        favorite_color=\"\",\n        dog_profile=[],\n    )"
     name: generate_character_profiles
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -100,11 +147,63 @@ nodes:
         summary: Generate detailed character profiles.
     prompt: 'Craft comprehensive biographies for the protagonist dog and each supporting
       character. For every individual, provide:'
+    shims: []
   generate_story_outline:
     agent: false
+    code_node_type: stub
     description: Creates a succinct, three-chapter outline for a dog-centric narrative,
       providing a title, chapter titles, event bullet points, and a favorite color
       for the dog’s character profile.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass GenerateStoryOutlineOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ generate_story_outline node outputs.\"\"\"\n    title: str = Field(..., description=\"\
+      Title of the story.\")\n    chapter_titles: List[str] = (\n        Field(...,\
+      \ description=\"List of chapter titles.\")\n    )\n    chapter_1_bullet_points:\
+      \ List[str] = (\n        Field(..., description=\"Three bullet points summarizing\
+      \ Chapter 1.\")\n    )\n    chapter_2_bullet_points: List[str] = (\n       \
+      \ Field(..., description=\"Three bullet points summarizing Chapter 2.\")\n \
+      \   )\n    chapter_3_bullet_points: List[str] = (\n        Field(..., description=\"\
+      Three bullet points summarizing Chapter 3.\")\n    )\n    favorite_color: str\
+      \ = (\n        Field(..., description=\"The dog\\u2019s favorite color, reflecting\
+      \ its personality.\")\n    )\n\n\ndef generate_story_outline(general_input:\
+      \ str, **kwargs) -> GenerateStoryOutlineOutput:\n    \"\"\"\n    Generates a\
+      \ three-chapter outline for a dog story.\n\n    Parameters\n    ----------\n\
+      \    prompt : str\n        A prompt for the story outline.\n\n    Returns\n\
+      \    -------\n    dict\n        A dictionary with story outline details.\n\n\
+      \    Raises\n    ------\n    Exception\n        If the prompt is invalid.\n\n\
+      \    Examples\n    --------\n    >>> generate_story_outline(prompt='A heartwarming\
+      \ dog story')\n    >>> output = {'title': 'The Adventures of Buddy', 'chapter_titles':\n\
+      \    ['Chapter 1: Introduction', 'Chapter 2: The Journey', 'Chapter 3: The\n\
+      \    Return'], 'chapter_1_bullet_points': ['Buddy meets a new friend', 'Buddy\n\
+      \    goes on an adventure', 'Buddy returns home'], 'chapter_2_bullet_points':\n\
+      \    ['Buddy faces a challenge', 'Buddy finds a treasure', 'Buddy makes a new\n\
+      \    friend'], 'chapter_3_bullet_points': ['Buddy concludes his journey', 'Buddy\n\
+      \    says goodbye to friends', 'Buddy returns home happy'], 'favorite_color':\n\
+      \    'Blue'}\n    {'title': 'The Adventures of Buddy', 'chapter_titles': ['Chapter\
+      \ 1:\n    Introduction', 'Chapter 2: The Journey', 'Chapter 3: The Return'],\n\
+      \    'chapter_1_bullet_points': ['Buddy meets a new friend', 'Buddy goes on\
+      \ an\n    adventure', 'Buddy returns home'], 'chapter_2_bullet_points': ['Buddy\
+      \ faces\n    a challenge', 'Buddy finds a treasure', 'Buddy makes a new friend'],\n\
+      \    'chapter_3_bullet_points': ['Buddy concludes his journey', 'Buddy says\n\
+      \    goodbye to friends', 'Buddy returns home happy'], 'favorite_color': 'Blue'}\n\
+      \n    >>> generate_story_outline(prompt='A dog story with a mystery')\n    >>>\
+      \ output = {'title': 'The Mystery of the Missing Treats',\n    'chapter_titles':\
+      \ ['Chapter 1: The Mysterious Scene', 'Chapter 2: The\n    Investigation', 'Chapter\
+      \ 3: The Suspect Revealed'],\n    'chapter_1_bullet_points': ['A treat goes\
+      \ missing', 'The scene is\n    established', 'Clues are revealed'], 'chapter_2_bullet_points':\
+      \ ['The\n    investigation begins', 'More clues are found', 'The plot thickens'],\n\
+      \    'chapter_3_bullet_points': ['The suspect is revealed', 'The mystery is\n\
+      \    solved', 'The dog returns home'], 'favorite_color': 'Red'}\n    {'title':\
+      \ 'The Mystery of the Missing Treats', 'chapter_titles': ['Chapter\n    1: The\
+      \ Mysterious Scene', 'Chapter 2: The Investigation', 'Chapter 3: The\n    Suspect\
+      \ Revealed'], 'chapter_1_bullet_points': ['A treat goes missing', 'The\n   \
+      \ scene is established', 'Clues are revealed'], 'chapter_2_bullet_points':\n\
+      \    ['The investigation begins', 'More clues are found', 'The plot thickens'],\n\
+      \    'chapter_3_bullet_points': ['The suspect is revealed', 'The mystery is\n\
+      \    solved', 'The dog returns home'], 'favorite_color': 'Red'}\n\n    \"\"\"\
+      \n    return GenerateStoryOutlineOutput(\n        title=\"\",\n        chapter_titles=[],\n\
+      \        chapter_1_bullet_points=[],\n        chapter_2_bullet_points=[],\n\
+      \        chapter_3_bullet_points=[],\n        favorite_color=\"\",\n    )"
     name: generate_story_outline
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -184,12 +283,42 @@ nodes:
       Include a captivating title, unique chapter titles, and 2-3 bullet points per
       chapter that outline the main events. Additionally, for the character profile
       of the dog, specify a favorite color that reflects its personality.
+    shims: []
   generate_story_setting:
     agent: false
+    code_node_type: stub
     description: Creates a rich, immersive setting that anchors the narrative. It
       specifies the geographic locale, temporal context, environmental conditions,
       and introduces a favorite color that reflects character traits or thematic undercurrents.
       This comprehensive backdrop informs mood, plot direction, and visual storytelling.
+    implementation: "from pydantic import BaseModel, Field\n\n\nclass GenerateStorySettingOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_story_setting node outputs.\"\"\"\n \
+      \   location: str = (\n        Field(..., description=\"The geographic place\
+      \ where the story unfolds.\")\n    )\n    time_period: str = (\n        Field(...,\
+      \ description=\"The historical or temporal setting of the narrative.\")\n  \
+      \  )\n    environmental_details: str = (\n        Field(..., description=\"\
+      Key environmental factors\\u2014weather, terrain, societal norms\\u2014that\
+      \ influence the dog\\u2019s adventure.\")\n    )\n    favorite_color: str =\
+      \ (\n        Field(..., description=\"A color favored by the protagonist, offering\
+      \ insight into personality or thematic symbolism.\")\n    )\n\n\ndef generate_story_setting(general_input:\
+      \ str, **kwargs) -> GenerateStorySettingOutput:\n    \"\"\"\n    Generate a\
+      \ story setting based on the input parameters.\n\n    Parameters\n    ----------\n\
+      \    location : str\n        The geographic place where the story unfolds.\n\
+      \    time_period : str\n        The historical or temporal setting of the narrative.\n\
+      \    environmental_details : str\n        Key environmental factors—weather,\
+      \ terrain, societal norms—that\n        influence the dog’s adventure.\n   \
+      \ favorite_color : str\n        A color favored by the protagonist, offering\
+      \ insight into\n        personality or thematic symbolism.\n\n    Returns\n\
+      \    -------\n    [str, str, str, str]\n        A list of strings representing\
+      \ the location, time period,\n        environmental details, and favorite color.\n\
+      \n    Raises\n    ------\n    TypeError\n        If any of the input parameters\
+      \ are not of the correct type.\n\n    Examples\n    --------\n    >>> location\
+      \ = 'New York City'\n    >>> time_period = '1980s'\n    >>> environmental_details\
+      \ = 'cold weather, urban terrain, hipster society'\n    >>> favorite_color =\
+      \ 'blue'\n    ['New York City', '1980s', 'cold weather, urban terrain, hipster\
+      \ society',\n    'blue']\n\n    \"\"\"\n    return GenerateStorySettingOutput(\n\
+      \        location=\"\",\n        time_period=\"\",\n        environmental_details=\"\
+      \",\n        favorite_color=\"\",\n    )"
     name: generate_story_setting
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -249,13 +378,75 @@ nodes:
       location, the era or time frame, and any environmental nuances—weather, geography,
       societal norms—that will shape the dog’s journey. Additionally, note a favorite
       color that the protagonist is drawn to, hinting at personality or thematic symbolism.'
+    shims: []
   write_chapter_1:
     agent: false
+    code_node_type: stub
     description: Crafts the opening chapter of the story by weaving together the concise
       outline, richly detailed character profiles (including each character’s favorite
       color), and the environmental context. The chapter must vividly introduce the
       canine protagonist, establish the setting, and present the inciting incident
       that propels the narrative forward.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass GenerateStoryOutlineOutput(BaseModel):\n    \"\"\"Pydantic model for\
+      \ generate_story_outline node outputs.\"\"\"\n    title: str = Field(..., description=\"\
+      Title of the story.\")\n    chapter_titles: List[str] = (\n        Field(...,\
+      \ description=\"List of chapter titles.\")\n    )\n    chapter_1_bullet_points:\
+      \ List[str] = (\n        Field(..., description=\"Three bullet points summarizing\
+      \ Chapter 1.\")\n    )\n    chapter_2_bullet_points: List[str] = (\n       \
+      \ Field(..., description=\"Three bullet points summarizing Chapter 2.\")\n \
+      \   )\n    chapter_3_bullet_points: List[str] = (\n        Field(..., description=\"\
+      Three bullet points summarizing Chapter 3.\")\n    )\n    favorite_color: str\
+      \ = (\n        Field(..., description=\"The dog\\u2019s favorite color, reflecting\
+      \ its personality.\")\n    )\n\n\nclass GenerateCharacterProfilesOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_character_profiles node outputs.\"\"\"\
+      \n    character_name: str = (\n        Field(..., description=\"The character\\\
+      u2019s full name.\")\n    )\n    age: float = (\n        Field(..., description=\"\
+      The character\\u2019s age in years, if applicable.\")\n    )\n    personality_traits:\
+      \ str = (\n        Field(..., description=\"A concise list of defining personality\
+      \ traits.\")\n    )\n    role_in_plot: str = (\n        Field(..., description=\"\
+      The character\\u2019s functional role within the story.\")\n    )\n    favorite_color:\
+      \ str = (\n        Field(..., description=\"A color that encapsulates the character\\\
+      u2019s essence or aesthetic.\")\n    )\n    dog_profile: List[str] = (\n   \
+      \     Field(..., description=\"A series of sentences detailing the dog\\u2019s\
+      \ breed, background, quirks, and motivations.\")\n    )\n\n\nclass GenerateStorySettingOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_story_setting node outputs.\"\"\"\n \
+      \   location: str = (\n        Field(..., description=\"The geographic place\
+      \ where the story unfolds.\")\n    )\n    time_period: str = (\n        Field(...,\
+      \ description=\"The historical or temporal setting of the narrative.\")\n  \
+      \  )\n    environmental_details: str = (\n        Field(..., description=\"\
+      Key environmental factors\\u2014weather, terrain, societal norms\\u2014that\
+      \ influence the dog\\u2019s adventure.\")\n    )\n    favorite_color: str =\
+      \ (\n        Field(..., description=\"A color favored by the protagonist, offering\
+      \ insight into personality or thematic symbolism.\")\n    )\n\n\nclass WriteChapter1Output(BaseModel):\n\
+      \    \"\"\"Pydantic model for write_chapter_1 node outputs.\"\"\"\n    chapter_text:\
+      \ str = (\n        Field(..., description=\"The complete, prose-formatted text\
+      \ of Chapter 1\")\n    )\n    valid_output: bool = (\n        Field(..., description=\"\
+      True if the output is a well-formed, non-empty chapter; otherwise False\")\n\
+      \    )\n\n\ndef write_chapter_1(generate_story_outline_input: GenerateStoryOutlineOutput,\
+      \ generate_character_profiles_input: GenerateCharacterProfilesOutput, generate_story_setting_input:\
+      \ GenerateStorySettingOutput, **kwargs) -> WriteChapter1Output:\n    \"\"\"\n\
+      \    Crafts the opening chapter of a story by weaving together the provided\
+      \ story\n    outline, character profiles with their favorite colors, and environmental\n\
+      \    context.\n\n    Parameters\n    ----------\n    story_outline : dict\n\
+      \        The concise story outline for the narrative.\n    character_profiles\
+      \ : list\n        A list of richly detailed character biographies.\n    story_setting\
+      \ : dict\n        The comprehensive story setting including the geographic locale,\n\
+      \        temporal context, environmental conditions, and a favorite color\n\
+      \        that reflects character traits or thematic undercurrents.\n\n    Returns\n\
+      \    -------\n    dict\n        {'chapter_text': 'The complete, prose-formatted\
+      \ text of Chapter 1',\n        'valid_output': True/False}\n\n    Raises\n \
+      \   ------\n    ValueError\n        If the input story outline, character profiles,\
+      \ or story setting is\n        invalid or missing.\n\n    Examples\n    --------\n\
+      \    >>> story_outline = {'title': 'Story Title', 'chapter_titles': ['Chapter\
+      \ 1',\n    'Chapter 2'], 'event_bullet_points': ['Point 1', 'Point 2', 'Point\
+      \ 3']}\n    >>> character_profiles = [{'name': 'John', 'age': 30, 'personality_traits':\n\
+      \    'friendly', 'role_in_plot': 'protagonist', 'favorite_color': 'red'}]\n\
+      \    >>> story_setting = {'location': 'Park', 'time_period': 'Now',\n    'environmental_details':\
+      \ 'sunny', 'favorite_color': 'blue'}\n    >>> write_chapter_1(story_outline,\
+      \ character_profiles, story_setting)\n    {'chapter_text': 'The complete, prose-formatted\
+      \ text of Chapter 1',\n    'valid_output': True}\n\n    \"\"\"\n    return WriteChapter1Output(\n\
+      \        chapter_text=\"\",\n        valid_output=False,\n    )"
     name: write_chapter_1
     nodes_depended_on:
     - generate_story_outline
@@ -316,9 +507,79 @@ nodes:
       the inciting incident that sets the plot in motion. Ensure the prose is complete,
       engaging, and flows naturally from one paragraph to the next. Output the full
       chapter as a single block of text.
+    shims: []
   write_chapter_2:
     agent: false
+    code_node_type: stub
     description: Writes Chapter 2, receiving Chapter 1 output to continue the narrative.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass WriteChapter1Output(BaseModel):\n    \"\"\"Pydantic model for write_chapter_1\
+      \ node outputs.\"\"\"\n    chapter_text: str = (\n        Field(..., description=\"\
+      The complete, prose-formatted text of Chapter 1\")\n    )\n    valid_output:\
+      \ bool = (\n        Field(..., description=\"True if the output is a well-formed,\
+      \ non-empty chapter; otherwise False\")\n    )\n\n\nclass GenerateStoryOutlineOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_story_outline node outputs.\"\"\"\n \
+      \   title: str = Field(..., description=\"Title of the story.\")\n    chapter_titles:\
+      \ List[str] = (\n        Field(..., description=\"List of chapter titles.\"\
+      )\n    )\n    chapter_1_bullet_points: List[str] = (\n        Field(..., description=\"\
+      Three bullet points summarizing Chapter 1.\")\n    )\n    chapter_2_bullet_points:\
+      \ List[str] = (\n        Field(..., description=\"Three bullet points summarizing\
+      \ Chapter 2.\")\n    )\n    chapter_3_bullet_points: List[str] = (\n       \
+      \ Field(..., description=\"Three bullet points summarizing Chapter 3.\")\n \
+      \   )\n    favorite_color: str = (\n        Field(..., description=\"The dog\\\
+      u2019s favorite color, reflecting its personality.\")\n    )\n\n\nclass GenerateCharacterProfilesOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_character_profiles node outputs.\"\"\"\
+      \n    character_name: str = (\n        Field(..., description=\"The character\\\
+      u2019s full name.\")\n    )\n    age: float = (\n        Field(..., description=\"\
+      The character\\u2019s age in years, if applicable.\")\n    )\n    personality_traits:\
+      \ str = (\n        Field(..., description=\"A concise list of defining personality\
+      \ traits.\")\n    )\n    role_in_plot: str = (\n        Field(..., description=\"\
+      The character\\u2019s functional role within the story.\")\n    )\n    favorite_color:\
+      \ str = (\n        Field(..., description=\"A color that encapsulates the character\\\
+      u2019s essence or aesthetic.\")\n    )\n    dog_profile: List[str] = (\n   \
+      \     Field(..., description=\"A series of sentences detailing the dog\\u2019s\
+      \ breed, background, quirks, and motivations.\")\n    )\n\n\nclass GenerateStorySettingOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_story_setting node outputs.\"\"\"\n \
+      \   location: str = (\n        Field(..., description=\"The geographic place\
+      \ where the story unfolds.\")\n    )\n    time_period: str = (\n        Field(...,\
+      \ description=\"The historical or temporal setting of the narrative.\")\n  \
+      \  )\n    environmental_details: str = (\n        Field(..., description=\"\
+      Key environmental factors\\u2014weather, terrain, societal norms\\u2014that\
+      \ influence the dog\\u2019s adventure.\")\n    )\n    favorite_color: str =\
+      \ (\n        Field(..., description=\"A color favored by the protagonist, offering\
+      \ insight into personality or thematic symbolism.\")\n    )\n\n\nclass WriteChapter2Output(BaseModel):\n\
+      \    \"\"\"Pydantic model for write_chapter_2 node outputs.\"\"\"\n    chapter_2_output:\
+      \ str = (\n        Field(..., description=\"The complete Chapter 2 text in prose.\"\
+      )\n    )\n\n\ndef write_chapter_2(write_chapter_1_input: WriteChapter1Output,\
+      \ generate_story_outline_input: GenerateStoryOutlineOutput, generate_character_profiles_input:\
+      \ GenerateCharacterProfilesOutput, generate_story_setting_input: GenerateStorySettingOutput,\
+      \ **kwargs) -> WriteChapter2Output:\n    \"\"\"\n    Writes Chapter 2 using\
+      \ the provided inputs.\n\n    Parameters\n    ----------\n    chapter_1_output\
+      \ : str\n        The text of the first chapter, used as a basis for the second\n\
+      \        chapter's writing.\n    outline : dict\n        A structured dictionary\
+      \ containing the story outline, including\n        title, chapter titles, event\
+      \ bullet points, and the dog's favorite\n        color.\n    character_profiles\
+      \ : dict\n        A dictionary containing the richly detailed character biographies,\n\
+      \        including each character's name, age, personality traits, plot role,\n\
+      \        and favorite color.\n    story_setting : dict\n        A dictionary\
+      \ describing the rich, immersive setting of the\n        narrative, including\
+      \ geographic locale, temporal context,\n        environmental conditions, and\
+      \ the protagonist's favorite color.\n\n    Returns\n    -------\n    str\n \
+      \       The complete text of Chapter 2.\n\n    Raises\n    ------\n    ValueError\n\
+      \        If any of the input parameters are missing or invalid.\n\n    Examples\n\
+      \    --------\n    >>> write_chapter_2(chapter_1_output='<text>', outline={'title':\
+      \ 'The\n    Story', 'chapter_titles': ['Chapter 1', 'Chapter 2', 'Chapter 3']},\n\
+      \    character_profiles={'dog': {'name': 'Max', 'age': 2, 'personality_traits':\n\
+      \    'Friendly', 'role_in_plot': 'Protagonist', 'favorite_color': 'Blue'}},\n\
+      \    story_setting={'location': 'Beach', 'time_period': 'Summer',\n    'environmental_details':\
+      \ 'Sunny', 'favorite_color': 'Red'})\n    <text of Chapter 2>\n\n    >>> write_chapter_2(chapter_1_output='<text>',\
+      \ outline={'title': 'The\n    Story', 'chapter_titles': ['Chapter 1', 'Chapter\
+      \ 2', 'Chapter 3']},\n    character_profiles={'dog': {'name': 'Max', 'age':\
+      \ 2, 'personality_traits':\n    'Friendly', 'role_in_plot': 'Protagonist', 'favorite_color':\
+      \ 'Blue'}},\n    story_setting={'location': 'Forest', 'time_period': 'Fall',\n\
+      \    'environmental_details': 'Rainy', 'favorite_color': 'Green'})\n    <text\
+      \ of Chapter 2>\n\n    \"\"\"\n    return WriteChapter2Output(\n        chapter_2_output=\"\
+      \",\n    )"
     name: write_chapter_2
     nodes_depended_on:
     - write_chapter_1
@@ -381,9 +642,66 @@ nodes:
     prompt: Write Chapter 2 of the story using the provided outline, character profiles,
       setting, and the full text of Chapter 1. Continue the plot, developing the conflict
       and interactions. Output a complete chapter in prose.
+    shims: []
   write_chapter_3:
     agent: false
+    code_node_type: stub
     description: Writes Chapter 3, receiving Chapter 2 output to conclude the story.
+    implementation: "from pydantic import BaseModel, Field\nfrom typing import List\n\
+      \n\nclass WriteChapter2Output(BaseModel):\n    \"\"\"Pydantic model for write_chapter_2\
+      \ node outputs.\"\"\"\n    chapter_2_output: str = (\n        Field(..., description=\"\
+      The complete Chapter 2 text in prose.\")\n    )\n\n\nclass GenerateStoryOutlineOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_story_outline node outputs.\"\"\"\n \
+      \   title: str = Field(..., description=\"Title of the story.\")\n    chapter_titles:\
+      \ List[str] = (\n        Field(..., description=\"List of chapter titles.\"\
+      )\n    )\n    chapter_1_bullet_points: List[str] = (\n        Field(..., description=\"\
+      Three bullet points summarizing Chapter 1.\")\n    )\n    chapter_2_bullet_points:\
+      \ List[str] = (\n        Field(..., description=\"Three bullet points summarizing\
+      \ Chapter 2.\")\n    )\n    chapter_3_bullet_points: List[str] = (\n       \
+      \ Field(..., description=\"Three bullet points summarizing Chapter 3.\")\n \
+      \   )\n    favorite_color: str = (\n        Field(..., description=\"The dog\\\
+      u2019s favorite color, reflecting its personality.\")\n    )\n\n\nclass GenerateCharacterProfilesOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_character_profiles node outputs.\"\"\"\
+      \n    character_name: str = (\n        Field(..., description=\"The character\\\
+      u2019s full name.\")\n    )\n    age: float = (\n        Field(..., description=\"\
+      The character\\u2019s age in years, if applicable.\")\n    )\n    personality_traits:\
+      \ str = (\n        Field(..., description=\"A concise list of defining personality\
+      \ traits.\")\n    )\n    role_in_plot: str = (\n        Field(..., description=\"\
+      The character\\u2019s functional role within the story.\")\n    )\n    favorite_color:\
+      \ str = (\n        Field(..., description=\"A color that encapsulates the character\\\
+      u2019s essence or aesthetic.\")\n    )\n    dog_profile: List[str] = (\n   \
+      \     Field(..., description=\"A series of sentences detailing the dog\\u2019s\
+      \ breed, background, quirks, and motivations.\")\n    )\n\n\nclass GenerateStorySettingOutput(BaseModel):\n\
+      \    \"\"\"Pydantic model for generate_story_setting node outputs.\"\"\"\n \
+      \   location: str = (\n        Field(..., description=\"The geographic place\
+      \ where the story unfolds.\")\n    )\n    time_period: str = (\n        Field(...,\
+      \ description=\"The historical or temporal setting of the narrative.\")\n  \
+      \  )\n    environmental_details: str = (\n        Field(..., description=\"\
+      Key environmental factors\\u2014weather, terrain, societal norms\\u2014that\
+      \ influence the dog\\u2019s adventure.\")\n    )\n    favorite_color: str =\
+      \ (\n        Field(..., description=\"A color favored by the protagonist, offering\
+      \ insight into personality or thematic symbolism.\")\n    )\n\n\nclass WriteChapter3Output(BaseModel):\n\
+      \    \"\"\"Pydantic model for write_chapter_3 node outputs.\"\"\"\n    chapter_title:\
+      \ str = Field(..., description=\"The title of Chapter 3.\")\n    chapter_content:\
+      \ str = (\n        Field(..., description=\"The prose content of Chapter 3.\"\
+      )\n    )\n    chapter_summary: str = (\n        Field(..., description=\"A summary\
+      \ of what happens in Chapter 3.\")\n    )\n\n\ndef write_chapter_3(write_chapter_2_input:\
+      \ WriteChapter2Output, generate_story_outline_input: GenerateStoryOutlineOutput,\
+      \ generate_character_profiles_input: GenerateCharacterProfilesOutput, generate_story_setting_input:\
+      \ GenerateStorySettingOutput, **kwargs) -> WriteChapter3Output:\n    \"\"\"\n\
+      \    Generates the final chapter of the story, using the provided outline,\n\
+      \    character profiles, and setting to conclude the dog's adventure.\n\n  \
+      \  Parameters\n    ----------\n    chapter_2_output : str\n        The complete\
+      \ text of Chapter 2.\n\n    Returns\n    -------\n    dict[str, str]\n     \
+      \   Contains the title, content, and summary of the final chapter.\n\n    Raises\n\
+      \    ------\n    TypeError\n        If chapter_2_output is not a string.\n\n\
+      \    Examples\n    --------\n    >>> final_chapter = write_chapter_3(chapter_2_output)\n\
+      \    >>> print(final_chapter['chapter_title'])\n    >>> print(final_chapter['chapter_content'])\n\
+      \    >>> print(final_chapter['chapter_summary'])\n    Chapter Title: The Final\
+      \ Chapter\n    Chapter Content: The final chapter of the story.\n    Chapter\
+      \ Summary: The dog's adventure concludes with ​​.\n\n    \"\"\"\n    return\
+      \ WriteChapter3Output(\n        chapter_title=\"\",\n        chapter_content=\"\
+      \",\n        chapter_summary=\"\",\n    )"
     name: write_chapter_3
     nodes_depended_on:
     - write_chapter_2
@@ -430,3 +748,4 @@ nodes:
     prompt: Write Chapter 3 of the story using the provided outline, character profiles,
       setting, and the full text of Chapter 2. Resolve the plot and conclude the dog's
       adventure.
+    shims: []
