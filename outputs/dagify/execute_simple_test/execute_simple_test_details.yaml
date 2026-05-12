@@ -1,47 +1,65 @@
 dag_type: plain_text
-description: Creates a minimal testing workflow that generates sample input, processes
-  it, validates the output, and reports success or failure.
+description: A workflow that prepares a test environment, runs a test, analyzes the
+  outcome, and produces a concise report.
 name: execute_simple_test
 nodes:
-  evaluate_result:
+  analyze_test_result:
     agent: false
-    description: Validates the output against the expected value and determines pass/fail
-      status.
-    name: evaluate_result
+    description: Analyzes the test outcome against expected results.
+    name: analyze_test_result
+    nodes_depended_on:
+    - capture_test_output
+    nodes_dependent_on:
+    - generate_test_report
+    prompt: Compare the captured output against the defined success criteria. Determine
+      whether the test passed or failed and note any discrepancies.
+  capture_test_output:
+    agent: false
+    description: Formats and stores the raw test output for analysis.
+    name: capture_test_output
     nodes_depended_on:
     - run_test
     nodes_dependent_on:
-    - report_test_outcome
-    prompt: Check if the `result` field from the test output equals 15. If it does,
-      set `status` to "pass"; otherwise set `status` to "fail" and include `expected`
-      and `actual` values in the response.
-  prepare_test_input:
+    - analyze_test_result
+    prompt: 'Collect the raw output from the test execution and format it as a JSON
+      object with keys: `output`, `timestamp`, and `status`.'
+  define_test_conditions:
     agent: false
-    description: Generates the input data that will be used by the test operation.
-    name: prepare_test_input
+    description: Creates a clear set of test conditions for the upcoming test.
+    name: define_test_conditions
+    nodes_depended_on: []
+    nodes_dependent_on:
+    - prepare_test_environment
+    - run_test
+    prompt: Specify the test conditions including input data, expected output, and
+      success criteria. List each condition as a bullet point.
+  generate_test_report:
+    agent: false
+    description: Produces the final test report.
+    name: generate_test_report
+    nodes_depended_on:
+    - analyze_test_result
+    nodes_dependent_on: []
+    prompt: Create a concise test report that includes the test name, pass/fail status,
+      key metrics, and any notable observations. Format as a markdown section.
+  prepare_test_environment:
+    agent: false
+    description: Prepares the environment required to run the test.
+    name: prepare_test_environment
     nodes_depended_on: []
     nodes_dependent_on:
     - run_test
-    prompt: Create a JSON object that represents the input for the test. Include the
-      fields `value` with integer 5 and `multiplier` with integer 3.
-  report_test_outcome:
-    agent: false
-    description: Produces the final test report.
-    name: report_test_outcome
-    nodes_depended_on:
-    - evaluate_result
-    nodes_dependent_on: []
-    prompt: Return a JSON object with the field `status` and, if failed, also include
-      `expected` and `actual` fields. The output should be human‑readable and suitable
-      for logging.
+    prompt: 'Set up the required environment for the test: install necessary software,
+      configure settings, and ensure resources are available. Provide a checklist
+      of completed actions.'
   run_test:
     agent: false
-    description: Performs the operation under test and produces the output.
+    description: Runs the test and captures the raw output.
     name: run_test
     nodes_depended_on:
-    - prepare_test_input
+    - define_test_conditions
+    - prepare_test_environment
     nodes_dependent_on:
-    - evaluate_result
-    prompt: Take the JSON input produced in the previous step, multiply `value` by
-      `multiplier`, and return a JSON object with a single field `result` containing
-      the product.
+    - capture_test_output
+    prompt: Execute the test using the prepared environment and defined conditions.
+      Record the raw output data.
