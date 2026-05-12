@@ -1,1070 +1,135 @@
-dag_type: spec
-description: Generated workflow from UI.
-name: quantitative_trading_strategy_development
+dag_type: plain_text
+description: A highly concurrent workflow that gathers diagnostics, validates configurations,
+  and summarizes issues for a live AWS EKS cluster.
+name: debug_live_eks_cluster
 nodes:
-  assemble_feature_matrix:
+  authenticate_aws_cli:
     agent: false
-    description: Combine all engineered features into a single matrix.
-    name: assemble_feature_matrix
-    nodes_depended_on:
-    - engineer_market_features
-    - engineer_news_features
-    - engineer_sentiment_features
-    nodes_dependent_on: []
-    output_structure:
-    - description: The final feature matrix, where each row represents a data sample
-        and each column represents an engineered feature.
-      key: feature_matrix
-      type: List[float]
-    - description: The date range covered by the feature matrix, where each string
-        represents a specific date in ISO format (e.g., YYYY-MM-DD).
-      key: date_range
-      type: List[str]
-    prd:
-      conceptual_info: Assemble the final feature matrix by combining the output of
-        individual feature engineering nodes, handling missing values with median
-        imputation, and exporting the result as a CSV file.
-      docstring:
-        examples:
-        - lines:
-          - news_features = [...]
-          - market_features = [...]
-          - sentiment_features = [...]
-          - result = assemble_feature_matrix(news_features, market_features, sentiment_features,
-            '2022-01-01', 'AAPL')
-          output: '[''[feature_matrix]'', ''[''2022-01-01'', ''2022-01-02'', ...'']'']'
-        parameters:
-        - description: Features extracted from news articles.
-          name: news_features
-          type: List[float]
-        - description: Features generated from market data.
-          name: market_features
-          type: List[float]
-        - description: Features derived from sentiment analysis.
-          name: sentiment_features
-          type: List[float]
-        - description: Date associated with the feature matrix.
-          name: date
-          type: str
-        - description: Asset associated with the feature matrix.
-          name: asset
-          type: str
-        raises:
-        - description: If the input feature matrices have inconsistent shapes or missing
-            values cannot be imputed.
-          type: ValueError
-        returns:
-          description: The assembled feature matrix and date range covered by the
-            matrix.
-          type: Tuple[List[float], List[str]]
-        summary: Join multiple feature matrices into a single matrix, impute missing
-          values, and export as CSV.
-    prompt: Merge all feature CSVs on date and asset, handle missing values with median
-      imputation, and generate a final feature matrix. Export as CSV.
-  backtest_strategy:
-    agent: false
-    description: Simulate strategy performance on historical data.
-    name: backtest_strategy
-    nodes_depended_on:
-    - generate_trade_rules
-    - assemble_feature_matrix
-    nodes_dependent_on: []
-    output_structure:
-    - description: Daily equity curve values
-      key: equity_curve
-      type: List[float]
-    - description: List of trades with their descriptions
-      key: trade_log
-      type: List[str]
-    - description: Backtest performance metrics (e.g., CAGR, annual volatility, Sharpe
-        ratio)
-      key: performance_metrics
-      type: List[float]
-    prd:
-      conceptual_info: This node simulates strategy performance on historical data,
-        taking into account generated trade rules and feature matrices, and outputs
-        daily equity curve values, trades logs, and backtest performance metrics.
-      docstring:
-        examples:
-        - lines:
-          - 'strategy_rules = [{''signal_threshold'': 0.5, ''position_sizing_rule'':
-            ''fixed''}]'
-          - feature_matrix = [[0.1, 0.2], [0.3, 0.4]]
-          - 'slippage_model = {''mean'': 0.01, ''stddev'': 0.001}'
-          - 'commission_model = {''mean'': 0.005, ''stddev'': 0.0005}'
-          output: '{equity_curve: [0.1, 0.2, 0.3, 0.4], trade_log: [{''buy'': ''signal'',
-            ''sell'': ''threshold''}, {''buy'': ''threshold'', ''sell'': ''rule''}],
-            performance_metrics: [0.5, 0.6, 0.7]}'
-        parameters:
-        - description: Generated trade rules from the 'generate_trade_rules' node.
-          name: trade_rules
-          type: List[Dict[str, str]]
-        - description: Feature matrix generated from the 'assemble_feature_matrix'
-            node.
-          name: feature_matrix
-          type: List[List[float]]
-        - description: Realistic slippage model parameters.
-          name: slippage_model
-          type: Dict[str, float]
-        - description: Realistic commission model parameters.
-          name: commission_model
-          type: Dict[str, float]
-        raises:
-        - description: If input data formats are inconsistent.
-          type: ValueError
-        returns:
-          description: Daily equity curve values, trades logs, and backtest performance
-            metrics.
-          type: Dict[str, List[float]]
-        summary: Simulate strategy performance on historical data.
-    prompt: Run a backtest over the past 5 years using the generated rules and feature
-      matrix. Apply a realistic slippage and commission model. Output daily equity
-      curve and trade log.
-  calculate_risk_metrics:
-    agent: false
-    description: Produce detailed risk metrics.
-    name: calculate_risk_metrics
-    nodes_depended_on:
-    - evaluate_performance_metrics
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of CSV files containing risk metrics
-      key: risk_reports
-      type: List[str]
-    - description: List of 95% VaR values for each position
-      key: var_95
-      type: List[float]
-    - description: List of exposure limits for each asset
-      key: exposure_limits
-      type: List[int]
-    - description: Liquidity risk value
-      key: liquidity_risk
-      type: float
-    prd:
-      conceptual_info: This node calculates position-level risk metrics from the trade
-        log.
-      docstring:
-        examples:
-        - lines:
-          - risk_metrics = calculate_risk_metrics(trade_log="trade_data.csv", frequency=1)
-          output: '{''var_95'': [0.1, 0.2, 0.3], ''exposure_limits'': [100, 200, 300],
-            ''liquidity_risk'': 0.5}'
-        parameters:
-        - description: Trade log data.
-          name: trade_log
-          type: str
-        - description: Frequency of calculations (e.g., daily, weekly, monthly).
-          name: frequency
-          type: int
-        raises:
-        - description: Invalid input data format.
-          type: ValueError
-        returns:
-          description: Dict of risk metrics with lists of values.
-          type: Dict[str, List[str|float|int]]
-        summary: Calculate risk metrics from trade log.
-    prompt: From the trade log, calculate position-level VaR at 95%, exposure limits
-      per asset, and liquidity risk. Export as CSV.
-  clean_market_data:
-    agent: false
-    description: Clean raw market data.
-    name: clean_market_data
-    nodes_depended_on:
-    - collect_market_data
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of cleaned CSV files containing market data
-      key: cleaned_market_data
-      type: List[str]
-    - description: Number of duplicate bars removed
-      key: duplicate_bar_count
-      type: int
-    - description: Type of timestamp filling used (e.g., forward-fill)
-      key: timestamp_fill_type
-      type: str
-    prd:
-      conceptual_info: "\n          This node cleans raw market data to remove duplicates\
-        \ and adjust for missing timestamps and corporate actions.\n\n        "
-      docstring:
-        examples:
-        - lines:
-          - clean_market_data(collect_market_data='file.csv', data_csv=['asset1',
-            'asset2'], timestamp_fill_type='forward-fill')
-          output: '{''cleaned_market_data'': [''cleaned_asset1.csv'', ''cleaned_asset2.csv''],
-            ''duplicate_bar_count'': 5}'
-        parameters:
-        - description: Path to the output CSV file
-          name: collect_market_data
-          type: str
-        - description: List of asset symbols retrieved
-          name: data_csv
-          type: List[str]
-        - description: Type of timestamp filling used (e.g., forward-fill)
-          name: timestamp_fill_type
-          type: str
-        raises:
-        - description: If input data is null or empty
-          type: ValueError
-        returns:
-          description: List of cleaned CSV files containing market data
-          type: Dict[str, str]
-        summary: "\n            Cleans market data by removing duplicates and adjusting\
-          \ for missing timestamps and corporate actions.\n            \n        \
-          \    Parameters\n            ----------\n            collect_market_data\
-          \ : str\n              Path to the output CSV file\n            data_csv\
-          \ : List[str]\n              List of asset symbols retrieved\n         \
-          \   timestamp_fill_type : str\n              Type of timestamp filling used\
-          \ (e.g., forward-fill)\n            \n            Returns\n            -------\n\
-          \            cleaned_market_data : List[str]\n              List of cleaned\
-          \ CSV files containing market data\n            duplicate_bar_count : int\n\
-          \              Number of duplicate bars removed\n            \n        \
-          \    Raises\n            ------\n            ValueError\n              If\
-          \ input data is null or empty\n            \n            Examples\n    \
-          \        --------\n            >>> clean_market_data(collect_market_data='file.csv',\
-          \ data_csv=['asset1', 'asset2'], timestamp_fill_type='forward-fill')\n \
-          \           {'cleaned_market_data': ['cleaned_asset1.csv', 'cleaned_asset2.csv'],\
-          \ 'duplicate_bar_count': 5}\n          "
-    prompt: Remove duplicate bars, fill missing timestamps with forward-fill, and
-      adjust for corporate actions. Output cleaned CSV.
-  clean_news_data:
-    agent: false
-    description: Clean raw news data.
-    name: clean_news_data
-    nodes_depended_on:
-    - collect_news_data
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of cleaned news JSON files
-      key: cleaned_news
-      type: List[str]
-    - description: List of counts of duplicate news items by source
-      key: count_duplicate_items
-      type: List[int]
-    - description: List of counts of non-English news articles by source
-      key: count_non_english_articles
-      type: List[int]
-    - description: List of timestamps applied to news items by source
-      key: timestamp_news
-      type: List[str]
-    prd:
-      conceptual_info: This node cleans raw news data by deduplicating items, removing
-        non-English articles, and timestamping them.
-      docstring:
-        examples:
-        - lines:
-          - clean_news_data = clean_news_data(news_data)
-          output: '{''cleaned_news'': [''file1.json'', ''file2.json''], ''count_duplicate_items'':
-            [2], ''count_non_english_articles'': [1], ''timestamp_news'': [''2022-01-01'',
-            ''2022-01-02'']}'
-        parameters:
-        - description: Raw news data as a list of JSON files.
-          name: news_data
-          type: List[str]
-        raises: []
-        returns:
-          description: Cleaned news data with deduplicated items, removed non-English
-            articles, and timestamped.
-          type: Dict[str, List[str]]
-        summary: Clean news data by deduplicating items, removing non-English articles,
-          and timestamping them.
-    prompt: Deduplicate news items, remove non-English articles, and timestamp them.
-      Export cleaned JSON.
-  clean_sentiment_data:
-    agent: false
-    description: Clean raw sentiment data.
-    name: clean_sentiment_data
-    nodes_depended_on:
-    - collect_sentiment_data
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of sentiment scores after cleaning
-      key: cleaned_sentiment_data
-      type: List[float]
-    - description: List of aggregated sentiment scores by day
-      key: aggregated_sentiment
-      type: List[float]
-    prd:
-      conceptual_info: This node aims to clean raw sentiment data by removing entries
-        with null scores and aggregating the rest by day.
-      docstring:
-        examples:
-        - lines:
-          - import pandas as pd
-          output: cleaned_sentiment_data, aggregated_sentiment
-        parameters: []
-        raises:
-        - description: Raised if the input data contains non-numeric sentiment scores.
-          type: ValueError
-        returns:
-          description: Returns cleaned sentiment scores after cleaning and aggregated
-            sentiment scores by day.
-          type: Tuple[List[float], List[float]]
-        summary: Clean sentiment data by removing null scores and aggregating by day.
-    prompt: Remove entries with null scores, aggregate by day, and align timestamps.
-      Output cleaned CSV.
-  collect_market_data:
-    agent: false
-    description: Retrieve raw market price data for the selected assets.
-    name: collect_market_data
-    nodes_depended_on:
-    - select_asset_universe
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of asset symbols retrieved
-      key: asset_list
-      type: List[str]
-    - description: Path to the output CSV file
-      key: data_csv
-      type: str
-    prd:
-      conceptual_info: This node collects raw market price data for the selected assets
-        by downloading historical price and volume data at the desired frequency from
-        a reliable source.
-      docstring:
-        examples:
-        - lines:
-          - asset_instruments = ['AAPL', 'GOOG', 'AMZN']
-          - markets = ['NYSE', 'NASDAQ', 'FX']
-          - instrument_count = 3
-          - collect_market_data(asset_instruments, markets, instrument_count)
-          output: (['AAPL', 'GOOG', 'AMZN'], 'data_AAPL_NYSE.csv')
-        - lines:
-          - asset_instruments = ['MSFT', 'FB', 'TSLA']
-          - markets = ['NASDAQ', 'NYSE', 'FX']
-          - instrument_count = 3
-          - collect_market_data(asset_instruments, markets, instrument_count)
-          output: (['MSFT', 'FB', 'TSLA'], 'data_MSFT_NYSE.csv')
-        parameters:
-        - description: List of selected asset instruments
-          name: asset_instruments
-          type: List[str]
-        - description: List of selected market names
-          name: markets
-          type: List[str]
-        - description: Total number of selected instruments
-          name: instrument_count
-          type: INT
-        raises:
-        - description: If the input assets are not valid or the market data cannot
-            be retrieved
-          type: ValueError
-        returns:
-          description: The list of asset symbols retrieved and the path to the output
-            CSV file
-          type: Tuple[List[str], str]
-        summary: Collects raw market price data for the selected assets.
-    prompt: For each asset in the universe, download historical price and volume data
-      at the desired frequency (e.g., 1‑minute) from a reliable source. Output CSV
-      files.
-  collect_news_data:
-    agent: false
-    description: Collect news data related to the identified assets for trading
-    name: collect_news_data
-    nodes_depended_on:
-    - select_asset_universe
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of asset IDs gathered news content for
-      key: asset_ids
-      type: List[str]
-    - description: List of news headlines for each asset
-      key: news_headlines
-      type: List[str]
-    - description: List of news article bodies for each asset
-      key: article_bodies
-      type: List[str]
-    prd:
-      conceptual_info: This node gathers relevant news data for the assets to be tracked
-        by the quantitative trading strategy.
-      docstring:
-        examples:
-        - lines:
-          - '# Import required libraries'
-          - import requests
-          - import json
-          - '# Define the asset instruments to collect news data for'
-          - asset_instruments = ['AAPL', 'GOOG', 'AMZN']
-          - '# Collect news data for the past year'
-          - response = collect_news_data(asset_instruments, 1)
-          output: '{''AAPL'': [''News Headline 1'', ''News Headline 2''], ''GOOG'':
-            [''News Headline 3'', ''News Headline 4''], ''AMZN'': [''News Headline
-            5'', ''News Headline 6'']}'
-        parameters:
-        - description: List of asset symbols to collect news data for
-          name: asset_instruments
-          type: List[str]
-        - description: Number of years to collect news data for
-          name: time_period
-          type: int
-        raises:
-        - description: If the asset_instruments parameter is empty or not a list of
-            strings
-          type: ValueError
-        returns:
-          description: Dictionary with asset IDs as keys and lists of news headlines
-            and article bodies as values
-          type: Dict[str, List[str]]
-        summary: Collect news data related to the identified assets for trading.
-    prompt: For each asset, gather news headlines and article bodies from a public
-      API for the past two years. Save in JSON format.
-  collect_sentiment_data:
-    agent: false
-    description: Collect social media sentiment data for the assets.
-    name: collect_sentiment_data
-    nodes_depended_on:
-    - select_asset_universe
-    nodes_dependent_on: []
-    output_structure:
-    - description: List of asset symbols
-      key: asset_symbols
-      type: List[str]
-    - description: List of sentiment scores for each asset
-      key: sentiment_scores
-      type: List[float]
-    - description: CSV data containing sentiment scores for each asset
-      key: csv_data
-      type: str
-    prd:
-      conceptual_info: This node collects social media sentiment data for the assets
-        by querying a social media platform and transforming the results into a CSV
-        file.
-      docstring:
-        examples:
-        - lines:
-          - sentiment_data = collect_sentiment_data(['AAPL', 'GOOG'])
-          output: '{''asset_symbols'': [''AAPL'', ''GOOG''], ''sentiment_scores'':
-            [0.5, 0.3], ''csv_data'': ''AAPL,GOOG,0.5,0.3''}'
-        - lines:
-          - sentiment_data = collect_sentiment_data(['MSFT', 'AMZN'])
-          output: '{''asset_symbols'': [''MSFT'', ''AMZN''], ''sentiment_scores'':
-            [0.2, 0.8], ''csv_data'': ''MSFT,AMZN,0.2,0.8''}'
-        parameters:
-        - description: List of asset symbols to collect sentiment data for.
-          name: selected_assets
-          type: List[str]
-        raises:
-        - description: If the asset symbols are invalid or the social media platform
-            returns an error.
-          type: Error
-        returns:
-          description: A dictionary containing the asset symbols and their corresponding
-            sentiment scores, as well as a CSV string containing the sentiment data.
-          type: Dict[str, List[str]]
-        summary: Collect sentiment scores for each asset and export to CSV.
-    prompt: For each asset, collect sentiment scores from a social media platform
-      over the past two years. Export as CSV.
-  define_strategy_goals:
-    agent: false
-    description: Specify high-level performance and risk targets for the strategy.
-    name: define_strategy_goals
+    description: Run `aws configure` or use existing credentials to ensure the AWS
+      CLI can call EKS APIs.
+    name: authenticate_aws_cli
     nodes_depended_on: []
     nodes_dependent_on: []
-    output_structure:
-    - description: Target return percentage.
-      key: target_return
-      type: float
-    - description: Risk tolerance in terms of drawdown percentage.
-      key: risk_tolerance
-      type: float
-    - description: Time horizon in months.
-      key: time_horizon
-      type: int
-    - description: Trading frequency (e.g., daily, weekly, monthly).
-      key: trading_frequency
-      type: str
-    - description: List of primary objectives.
-      key: primary_objectives
-      type: List[str]
-    prd:
-      conceptual_info: This node specifies high-level performance and risk targets
-        for the strategy, outlining primary objectives and serving as a blueprint
-        for further development.
-      docstring:
-        examples:
-        - lines:
-          - target_return = 0.02,
-          - risk_tolerance = 0.10,
-          - time_horizon = 12,
-          - trading_frequency = 'monthly',
-          - primary_objectives = ['maximize returns', 'minimize risk']
-          output: (0.02, 0.1, 12, 'monthly', ['maximize returns', 'minimize risk']
-        - lines:
-          - target_return = 0.03,
-          - risk_tolerance = 0.08,
-          - time_horizon = 18,
-          - trading_frequency = 'weekly',
-          - primary_objectives = ['maximize returns', 'minimize risk']
-          output: (0.03, 0.08, 18, 'weekly', ['maximize returns', 'minimize risk']
-        parameters: []
-        raises: []
-        returns:
-          description: A tuple containing the target return percentage, risk tolerance
-            percentage, time horizon in months, trading frequency, and a list of primary
-            objectives.
-          type: Tuple[float, float, int, str, List[str]]
-        summary: Define the high-level performance and risk targets for a strategy,
-          including target return, risk tolerance, time horizon, and trading frequency.
-    prompt: 'Outline the primary objectives for the strategy: target return, risk
-      tolerance, time horizon, and trading frequency. Provide concise bullet points.'
-  engineer_market_features:
+    prompt: Verify that the AWS CLI is configured with valid access key, secret key,
+      and region. Output the result of `aws sts get-caller-identity`.
+  check_cluster_autoscaler_status:
     agent: false
-    description: Create market-based feature set.
-    name: engineer_market_features
+    description: Determine if the Cluster Autoscaler deployment (if any) is healthy.
+    name: check_cluster_autoscaler_status
     nodes_depended_on:
-    - clean_market_data
+    - list_pod_status
     nodes_dependent_on: []
-    output_structure:
-    - description: Generated market feature matrix
-      key: feature_matrix
-      type: List[float]
-    - description: List of indicator names used
-      key: indicator_names
-      type: List[str]
-    - description: Data quality assessment (e.g., complete, incomplete, missing)
-      key: data_quality
-      type: str
-    prd:
-      conceptual_info: Generate market-based feature set by applying technical indicators.
-      docstring:
-        examples:
-        - lines:
-          - import pandas as pd
-          - from market_indicators import calculate_indicators
-          - cleaned_market_data = pd.read_csv('cleaned_market_data.csv')
-          - feature_matrix, indicator_names, data_quality = engineer_market_features(cleaned_market_data)
-          output: 'feature_matrix: [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
-
-            indicator_names: [''moving_average'', ''rsi'', ''volatility'']
-
-            data_quality: ''complete'''
-        parameters:
-        - description: Cleaned market data CSV files.
-          name: cleaned_market_data
-          type: List[str]
-        raises:
-        - description: If cleaned_market_data is empty or invalid.
-          type: ValueError
-        returns:
-          description: A dictionary containing the feature matrix, indicator names,
-            and data quality assessment.
-          type: Dict[str, any]
-        summary: Engineer market features by applying technical indicators to the
-          cleaned market data.
-    prompt: 'Generate technical indicators: moving averages, RSI, volatility, momentum,
-      and price-action patterns. Save as CSV.'
-  engineer_news_features:
+    prompt: Search for pods in the `kube-system` namespace with label `app=cluster-autoscaler`.
+      Report their Ready condition and any recent events.
+  check_control_plane_health:
     agent: false
-    description: Create news‑based feature set.
-    name: engineer_news_features
+    description: Verify that the EKS control plane API server is reachable and reports
+      healthy metrics.
+    name: check_control_plane_health
     nodes_depended_on:
-    - clean_news_data
+    - collect_cluster_info
     nodes_dependent_on: []
-    output_structure:
-    - description: Extracted news features for each asset in the universe.
-      key: feature_matrix
-      type: List[float]
-    - description: Extracted key topics from news articles.
-      key: key_topics
-      type: List[str]
-    - description: Computed sentiment polarity for each news article.
-      key: sentiment_polarity
-      type: List[float]
-    - description: Computed keyword frequencies for each asset and article.
-      key: keyword_frequencies
-      type: List[int]
-    prd:
-      conceptual_info: This node is responsible for taking in cleaned news data and
-        leveraging NLP techniques to extract relevant news features, key topics, sentiment
-        polarity, and keyword frequencies.
-      docstring:
-        examples:
-        - lines:
-          - "clean_news_data = [\n                  {'asset_id': 'AAPL', 'article_body':\
-            \ 'The company is doing well.'},\n                  {'asset_id': 'AAPL',\
-            \ 'article_body': 'The company is doing poorly.'}\n                ]"
-          - engineer_news_features(clean_news_data)
-          output: 'feature_matrix: [0.4, 0.3], key_topics: [''financial performance''],
-            sentiment_polarity: [0.4, -0.2], keyword_frequencies: [1, 2]'
-        parameters:
-        - description: Cleaned news data in JSON format.
-          name: clean_news_data
-          type: PrimitiveType.LIST_STR
-        raises:
-        - description: If input data is malformed or corrupted.
-          type: ValueError
-        returns:
-          description: Extracted news features, key topics, sentiment polarity, and
-            keyword frequencies for each asset in the universe.
-          type: PrimitiveType.LIST_FLOAT(feature_matrix) and PrimitiveType.LIST_STR(key_topics)
-            and PrimitiveType.LIST_FLOAT(sentiment_polarity) and PrimitiveType.LIST_INT(keyword_frequencies)
-        summary: Engineer news features by applying NLP techniques to cleaned news
-          data.
-    prompt: Apply NLP to extract key topics, sentiment polarity, and keyword frequencies.
-      Output as CSV.
-  engineer_sentiment_features:
+    prompt: Perform a `curl -k <endpoint>/healthz` (using the endpoint from cluster
+      info) and report HTTP status and response body.
+  check_security_group_rules:
     agent: false
-    description: 'Upgraded Description: Create sentiment-based feature set from cleaned
-      sentiment data.'
-    name: engineer_sentiment_features
+    description: Inspect the security groups attached to the control plane and worker
+      nodes for required inbound/outbound ports.
+    name: check_security_group_rules
     nodes_depended_on:
-    - clean_sentiment_data
+    - authenticate_aws_cli
+    - collect_cluster_info
     nodes_dependent_on: []
-    output_structure:
-    - description: List of daily average sentiment scores
-      key: sentiment_scores
-      type: List[float]
-    - description: List of volatility measures
-      key: volatility_measures
-      type: List[float]
-    - description: List of trend indicators
-      key: trend_indicators
-      type: List[str]
-    - description: Path to the CSV output file
-      key: csv_output
-      type: str
-    prd:
-      conceptual_info: Transform raw sentiment scores from cleaned sentiment data
-        into daily averages, volatility measures, and trend indicators for CSV output.
-      docstring:
-        examples:
-        - lines:
-          - 'import pandas as pd
-
-            '
-          - 'from typing import List, Tuple
-
-            '
-          - '
-
-            '
-          - 'def engineer_sentiment_features(cleaned_sentiment_data: List[float])
-            -> Tuple[List[float], List[float], List[str], str]:
-
-            '
-          - '    # Daily average sentiment scores
-
-            '
-          - '    sentiment_scores = [score for score in cleaned_sentiment_data]
-
-            '
-          - '    # Volatility measures
-
-            '
-          - '    volatility_measures = [score − 42 for score in cleaned_sentiment_data]
-
-            '
-          - '    # Trend indicators
-
-            '
-          - '    trend_indicators = [''bull'' if score > 0 else ''bear'' for score
-            in cleaned_sentiment_data]
-
-            '
-          - '    # CSV output
-
-            '
-          - '    csv_output = ''/tmp/output.csv''
-
-            '
-          - '    return sentiment_scores, volatility_measures, trend_indicators, csv_output'
-          - '
-
-            '
-          - 'output = engineer_sentiment_features([1.0, 2.0, 3.0])
-
-            '
-          - 'print(output)
-
-            '
-          output: '[1.0, 2.0, 3.0], [1.0, -41.0, 2.98], [''bull'', ''bull'', ''bull''],
-            ''/tmp/output.csv'''
-        parameters: []
-        raises:
-        - description: Invalid sentiment scores input
-          type: ValueError
-        returns:
-          description: Daily average sentiment scores, volatility measures, trend
-            indicators, and CSV output path.
-          type: Tuple[List[float], List[float], List[str], str]
-        summary: This node transforms raw sentiment scores into daily averages, volatility
-          measures, and trend indicators and produces output as CSV.
-    prompt: Transform raw sentiment scores into daily averages, volatility measures,
-      and trend indicators. Output as CSV.
-  evaluate_performance_metrics:
+    prompt: Using the VpcId from cluster info, list security groups for the control
+      plane ENIs and node ENIs. Ensure ports 443 (HTTPS) and 1025‑65535 (node communication)
+      are allowed as appropriate.
+  collect_cluster_info:
     agent: false
-    description: Generate basic performance statistics.
-    name: evaluate_performance_metrics
+    description: Retrieve basic cluster metadata (version, endpoint, VPC, status).
+    name: collect_cluster_info
     nodes_depended_on:
-    - backtest_strategy
+    - authenticate_aws_cli
     nodes_dependent_on: []
-    output_structure:
-    - description: Compound annual growth rate
-      key: cagr
-      type: float
-    - description: Annualized volatility
-      key: annual_volatility
-      type: float
-    - description: Sharpe ratio
-      key: sharpe_ratio
-      type: float
-    - description: Maximum drawdown
-      key: maximum_drawdown
-      type: float
-    - description: Winning rate
-      key: win_rate
-      type: float
-    - description: Daily equity curve as a CSV string
-      key: equity_curve
-      type: str
-    prd:
-      conceptual_info: The evaluate_performance_metrics node computes basic performance
-        metrics from the equity curve generated by the backtest_strategy node.
-      docstring:
-        examples:
-        - lines:
-          - equity_curve = ['100', '110', '120', '130', '140']
-          - cagr, annual_volatility, sharpe_ratio, maximum_drawdown, win_rate, _ =
-            evaluate_performance_metrics(equity_curve)
-          output: cagr = 0.1, annual_volatility = 0.1, sharpe_ratio = 1.0, maximum_drawdown
-            = 0.1, win_rate = 0.5, equity_curve = ['100', '110', '120', '130', '140']
-        parameters: []
-        raises: []
-        returns:
-          description: A tuple containing the compound annual growth rate (cagr),
-            annualized volatility, Sharpe ratio, maximum drawdown, winning rate, and
-            the daily equity curve as a CSV string.
-          type: tuple[float, float, float, float, float, str]
-        summary: Compute basic performance metrics from the equity curve.
-    prompt: Compute CAGR, annual volatility, Sharpe ratio, maximum drawdown, and win-rate
-      from the equity curve. Provide results in a CSV.
-  forward_test_strategy:
+    prompt: Run `aws eks describe-cluster --name <cluster-name> --region <region>`
+      and extract ClusterVersion, Endpoint, VpcId, and Status. Present as a JSON snippet.
+  describe_services:
     agent: false
-    description: This node validates the refined strategy on unseen data.
-    name: forward_test_strategy
+    description: Show the configuration of all Kubernetes Services and their associated
+      LoadBalancer/Ingress IPs.
+    name: describe_services
     nodes_depended_on:
-    - refine_strategy
+    - set_kubeconfig
     nodes_dependent_on: []
-    output_structure:
-    - description: Result of the refined paper trade simulation
-      key: paper_trade_simulation_result
-      type: str
-    - description: List of refined performance metrics
-      key: performance_metrics
-      type: List[float]
-    - description: Refined trade log output
-      key: trade_log
-      type: str
-    prd:
-      conceptual_info: This node validates the refined strategy on unseen data, leveraging
-        the refined strategy blueprint and optimized risk controls to produce refined
-        performance metrics and a trade log.
-      docstring:
-        examples:
-        - lines:
-          - validate_refined_strategy(refined_strategy_blueprint='refined_blueprint',
-            optimized_risk_controls=['control1', 'control2'], walk_forward_window=365)
-          output: '{''paper_trade_simulation_result'': ''refined_result'', ''performance_metrics'':
-            [''metric1'', ''metric2''], ''trade_log'': ''refined_trade_log''}'
-        parameters:
-        - description: The refined strategy blueprint to validate.
-          name: refined_strategy_blueprint
-          type: str
-        - description: The optimized risk controls to apply during validation.
-          name: optimized_risk_controls
-          type: List[str]
-        - description: The number of days for the walk-forward window.
-          name: walk_forward_window
-          type: int
-        raises:
-        - description: If the refined strategy blueprint or optimized risk controls
-            are invalid.
-          type: ValueError
-        returns:
-          description: A dictionary containing the refined paper trade simulation
-            result, refined performance metrics, and the refined trade log output.
-          type: dict
-        summary: This function validates a refined strategy on unseen data.
-    prompt: Run a refined paper trade simulation on a one-year out-of-sample period
-      with a walk-forward approach, utilizing the refined strategy blueprint and optimized
-      risk controls. Output refined performance metrics and trade log.
-  generate_trade_rules:
+    prompt: Run `kubectl get svc --all-namespaces -o json` and list ServiceName, Namespace,
+      Type, ClusterIP, ExternalIP(s), and Ports.
+  get_recent_pod_logs:
     agent: false
-    description: Create trade rule specifications.
-    name: generate_trade_rules
+    description: Collect the last 200 lines of logs from pods that are not in Running/Completed
+      state.
+    name: get_recent_pod_logs
     nodes_depended_on:
-    - select_strategy_models
+    - list_pod_status
     nodes_dependent_on: []
-    output_structure:
-    - description: Name of the selected model
-      key: model_name
-      type: str
-    - description: Threshold value for generating buy/sell signals
-      key: signal_threshold
-      type: float
-    - description: Rule for determining position size based on model predictions
-      key: position_sizing_rule
-      type: str
-    - description: Condition for generating a buy signal
-      key: buy_signal
-      type: str
-    - description: Condition for generating a sell signal
-      key: sell_signal
-      type: str
-    prd:
-      conceptual_info: The goal of this node is to take the selected models and generate
-        trade rules for each one. These trade rules are created by defining signal
-        thresholds and position sizing rules that translate the models' predictions
-        into buy/sell signals. The rules are then listed in a table for reference.
-      docstring:
-        examples:
-        - lines:
-          - models = ['model1', 'model2', 'model3']
-          - trade_rules = generate_trade_rules(models)
-          output: "{\n    'model1': {'signal_threshold': 0.5, 'position_sizing_rule':\
-            \ 'fixed', 'buy_signal': 'price > signal_threshold', 'sell_signal': 'price\
-            \ < signal_threshold'},\n    'model2': {'signal_threshold': 0.3, 'position_sizing_rule':\
-            \ 'dynamic', 'buy_signal': 'price > signal_threshold', 'sell_signal':\
-            \ 'price < signal_threshold'},\n    'model3': {'signal_threshold': 0.2,\
-            \ 'position_sizing_rule': 'fixed', 'buy_signal': 'price > signal_threshold',\
-            \ 'sell_signal': 'price < signal_threshold'}\n}"
-        parameters:
-        - description: A list of models to generate trade rules for.
-          name: selected_models
-          type: list[str]
-        raises:
-        - description: If the input models are empty.
-          type: ValueError
-        returns:
-          description: A dictionary of trade rules with model names as keys.
-          type: dict
-        summary: Generate trade rules from selected models.
-    prompt: For each model, define a signal threshold and position sizing rule that
-      translates predictions into buy/sell signals. List rules in a table.
-  optimize_hyperparameters:
+    prompt: For each pod identified as CrashLoopBackOff, ImagePullBackOff, or Pending,
+      run `kubectl logs <pod> -n <ns> --tail=200` and store the output.
+  list_node_status:
     agent: false
-    description: Tune model hyperparameters.
-    name: optimize_hyperparameters
+    description: Get the health and readiness state of all worker nodes.
+    name: list_node_status
     nodes_depended_on:
-    - evaluate_performance_metrics
+    - set_kubeconfig
     nodes_dependent_on: []
-    output_structure:
-    - description: List of model names
-      key: model_names
-      type: List[str]
-    - description: Best metric value (e.g., accuracy, precision, recall) for the model
-      key: evaluation_metric
-      type: str
-    prd:
-      conceptual_info: The node optimizes the hyperparameters of machine learning
-        models using a grid search approach.
-      docstring:
-        examples:
-        - lines:
-          - optimized_model = optimize_hyperparameters(model)
-          output: optimized_model
-        - lines:
-          - evaluation_metrics = optimize_hyperparameters(model)
-          output: evaluation_metrics
-        parameters:
-        - description: Machine learning model to optimize the hyperparameters for.
-          name: model
-          type: object
-        raises:
-        - description: If the model is not a machine learning model or if the grid
-            search fails.
-          type: Exception
-        returns:
-          description: Best parameter sets found in the grid search along with the
-            corresponding evaluation metrics.
-          type: object
-        summary: Tune the hyperparameters of machine learning models using a grid
-          search approach.
-    prompt: Perform grid search over each model’s hyperparameters using cross-validation.
-      Output the best parameter sets.
-  refine_strategy:
+    prompt: Run `kubectl get nodes -o json` and list each node with its Ready condition,
+      instance type, and any NotReady reasons.
+  list_pod_status:
     agent: false
-    description: Finalize strategy rules and parameters.
-    name: refine_strategy
+    description: Enumerate all pods across all namespaces with their phase and restart
+      count.
+    name: list_pod_status
     nodes_depended_on:
-    - risk_control_spec
-    - optimize_hyperparameters
+    - set_kubeconfig
     nodes_dependent_on: []
-    output_structure:
-    - description: The finalized strategy blueprint as a string.
-      key: strategy_blueprint
-      type: str
-    - description: A list of risk control parameters applied to the strategy.
-      key: risk_controls
-      type: List[str]
-    - description: The optimized model parameters as a string.
-      key: optimized_parameters
-      type: str
-    prd:
-      conceptual_info: The refine_strategy node finalizes the strategy rules and parameters
-        by integrating the optimized parameters and risk controls into the trade rules,
-        creating a finalized strategy blueprint.
-      docstring:
-        examples:
-        - lines:
-          - finalized_blueprint, risk_controls, optimized_parameters = refine_strategy(optimized_params,
-            risk_controls, trade_rules)
-          - print(finalized_blueprint)
-          output: The finalized strategy blueprint as a string.
-        parameters:
-        - description: Optimized model parameters as a string.
-          name: optimized_parameters
-          type: str
-        - description: Risk control parameters applied to the strategy.
-          name: risk_controls
-          type: List[str]
-        - description: Trade rules to integrate optimized parameters and risk controls.
-          name: trade_rules
-          type: str
-        raises:
-        - description: If trade rules are invalid or incompatible with optimized parameters
-            and risk controls.
-          type: ValueError
-        returns:
-          description: Finalized strategy blueprint, risk controls, and optimized
-            model parameters.
-          type: Tuple[str, List[str], str]
-        summary: Finalize strategy rules and parameters by integrating optimized parameters
-          and risk controls into trade rules.
-    prompt: Integrate the optimized parameters and risk controls into the trade rules,
-      creating a finalized strategy blueprint.
-  risk_control_spec:
+    prompt: 'Execute `kubectl get pods --all-namespaces -o json` and produce a table:
+      Namespace, PodName, Phase, Restarts, Ready/Total.'
+  set_kubeconfig:
     agent: false
-    description: Specify risk control parameters.
-    name: risk_control_spec
+    description: Generate a kubeconfig entry for the target EKS cluster using the
+      AWS CLI.
+    name: set_kubeconfig
     nodes_depended_on:
-    - calculate_risk_metrics
+    - authenticate_aws_cli
     nodes_dependent_on: []
-    output_structure:
-    - description: Whether each rule is based on stop-loss
-      key: stop_loss_rules
-      type: List[bool]
-    - description: The take-profit thresholds for each rule
-      key: take_profit_rules
-      type: List[float]
-    - description: The maximum position sizes for each rule
-      key: max_position_size_rules
-      type: List[int]
-    prd:
-      conceptual_info: This node defines risk control parameters based on the risk
-        metrics calculated by the parent node.
-      docstring:
-        examples:
-        - lines:
-          - risk_metrics = calculate_risk_metrics()
-          - risk_control_specs = risk_control_spec(risk_metrics)
-          output: 'stop-loss rules: [True, False, True], take-profit thresholds: [1.0,
-            2.0, 3.0], maximum position sizes: [10, 20, 30]'
-        parameters:
-        - description: Tuple of VaR at 95%, exposure limits per asset, and liquidity
-            risk values.
-          name: risk_metrics
-          type: tuple[float, float, float]
-        raises: []
-        returns:
-          description: A tuple of stop-loss rules, take-profit thresholds, and maximum
-            position sizes.
-          type: tuple[List[bool], List[float], List[int]]
-        summary: Define risk control specifications.
-    prompt: Define stop-loss, take-profit, and maximum position size rules based on
-      the risk metrics.
-  select_asset_universe:
+    prompt: Execute `aws eks update-kubeconfig --name <cluster-name> --region <region>`
+      and confirm that `kubectl config current-context` points to the cluster. Return
+      any error messages.
+  summarize_findings:
     agent: false
-    description: Identify the set of assets that will be traded.
-    name: select_asset_universe
+    description: Aggregate all collected diagnostics into a concise troubleshooting
+      report.
+    name: summarize_findings
     nodes_depended_on:
-    - define_strategy_goals
+    - collect_cluster_info
+    - list_node_status
+    - list_pod_status
+    - get_recent_pod_logs
+    - describe_services
+    - check_control_plane_health
+    - verify_iam_roles
+    - check_security_group_rules
+    - check_cluster_autoscaler_status
     nodes_dependent_on: []
-    output_structure:
-    - description: List of selected asset instruments
-      key: asset_instruments
-      type: List[str]
-    - description: List of selected market names
-      key: markets
-      type: List[str]
-    - description: Total number of selected instruments
-      key: instrument_count
-      type: int
-    prd:
-      conceptual_info: This node identifies the set of assets that will be traded
-        by the strategy. It is responsible for selecting the tradable instruments
-        and markets that the strategy will target.
-      docstring:
-        examples:
-        - lines:
-          - selected_instruments, selected_markets, instrument_count = select_asset_universe(define_strategy_goals())
-          output: ('AAPL', 'MSFT', 15)
-        parameters: []
-        raises: []
-        returns:
-          description: A tuple containing a list of selected asset instruments, a
-            list of selected market names, and the total number of selected instruments.
-          type: Tuple[List[str], List[str], int]
-        summary: This function takes the output of the `define_strategy_goals` node
-          as input and returns a list of selected asset instruments, market names,
-          and the total number of selected instruments.
-    prompt: List the tradable instruments and markets the strategy will target (e.g.,
-      S&P 500 stocks, EUR/USD FX). Keep the list under 15 items.
-  select_strategy_models:
+    prompt: Combine the outputs of all preceding steps. Highlight any errors, non‑Ready
+      nodes, failing pods, IAM mismatches, security‑group gaps, or control‑plane health
+      issues. Provide a prioritized list of next‑step actions.
+  verify_iam_roles:
     agent: false
-    description: Select models to evaluate for the strategy.
-    name: select_strategy_models
+    description: Confirm that the Node Instance Role and Cluster IAM Role have required
+      policies attached.
+    name: verify_iam_roles
     nodes_depended_on:
-    - assemble_feature_matrix
-    - define_strategy_goals
+    - authenticate_aws_cli
     nodes_dependent_on: []
-    output_structure:
-    - description: List of selected model names
-      key: selected_models
-      type: List[str]
-    - description: Brief justification for the selected models
-      key: justification
-      type: str
-    prd:
-      conceptual_info: This node selects and justifies the predictive models to be
-        used for strategy evaluation. It is a critical step in developing a predictive
-        trading strategy.
-      docstring:
-        examples:
-        - lines:
-          - import pandas as pd
-          - from sklearn.model_selection import train_test_split
-          - from sklearn.linear_model import LinearRegression
-          - feature_matrix = pd.read_csv('feature_matrix.csv')
-          - 'strategy_goals = {''target_return'': 0.1, ''risk_tolerance'': 0.2, ''time_horizon'':
-            12, ''trading_frequency'': ''daily''}'
-          output: '{ ''selected_models'': [''Linear Regression'', ''Random Forest''],
-            ''justification'': ''These models are selected because they have high
-            accuracy and are easy to implement.'' }'
-        - lines:
-          - import pandas as pd
-          - from sklearn.model_selection import train_test_split
-          - from sklearn.ensemble import RandomForestClassifier
-          - feature_matrix = pd.read_csv('feature_matrix.csv')
-          - 'strategy_goals = {''target_return'': 0.1, ''risk_tolerance'': 0.2, ''time_horizon'':
-            12, ''trading_frequency'': ''daily''}'
-          output: '{ ''selected_models'': [''Random Forest'', ''LSTM Neural Network''],
-            ''justification'': ''These models are selected because they have high
-            accuracy and can handle complex data.'' }'
-        parameters:
-        - description: The feature matrix used for model selection.
-          name: feature_matrix
-          type: List[List[float]]
-        - description: The strategy goals, including target return, risk tolerance,
-            time horizon, and trading frequency.
-          name: strategy_goals
-          type: Dict[str, float or int or str]
-        raises:
-        - description: If no valid models are selected or if the strategy goals are
-            not met.
-          type: ValueError
-        returns:
-          description: A dictionary with the selected models and their justifications.
-          type: Dict[str, List[str] and str]
-        summary: Select and justify predictive models for strategy evaluation.
-    prompt: 'Choose 3 candidate predictive models: linear regression, random forest,
-      LSTM neural network. Provide brief justification for each choice.'
+    prompt: Identify the IAM role ARN for the node group (from `aws eks describe-nodegroup`)
+      and the EKS service role. Run `aws iam list-attached-role-policies` for each
+      and verify presence of `AmazonEKSWorkerNodePolicy`, `AmazonEKS_CNI_Policy`,
+      and `AmazonEC2ContainerRegistryReadOnly`.
