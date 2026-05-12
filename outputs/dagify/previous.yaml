@@ -1,197 +1,138 @@
 dag_type: plain_text
-description: A detailed, highly concurrent workflow for planning and executing an
-  open day event at a multistrategy quant trading firm, covering agenda design, speaker
-  coordination, venue and technology setup, marketing, registration, execution, and
-  post‑event follow‑up.
-name: multistrategy_quant_open_day_workflow
+description: A step‑by‑step plan to create a hedge fund, covering strategy, legal
+  setup, compliance, operations, financing, and launch.
+name: build_hedge_fund
 nodes:
-  arrange_exhibit_boards:
+  choose_investment_strategy:
     agent: false
-    description: Plan exhibit board setup.
-    name: arrange_exhibit_boards
+    description: Choose the high‑level investment strategy.
+    name: choose_investment_strategy
     nodes_depended_on:
-    - plan_venue_layout
+    - clarify_fund_objectives
     nodes_dependent_on:
-    - design_exhibit_materials
-    prompt: Determine the number and placement of exhibit boards for each strategy
-      team. Provide a list of board titles and locations.
-  assign_speakers_to_sessions:
+    - define_asset_universe
+    - set_performance_and_risk_targets
+    - draft_pitch_deck_outline
+    prompt: Select one primary hedge fund strategy category that best serves the fund
+      objectives (e.g., long/short equity, global macro). Provide a one‑sentence rationale.
+  choose_legal_entity_type:
     agent: false
-    description: Allocate speakers to agenda sessions.
-    name: assign_speakers_to_sessions
+    description: Select the legal structure for the fund.
+    name: choose_legal_entity_type
     nodes_depended_on:
-    - create_agenda_structure
+    - select_jurisdiction
     nodes_dependent_on:
-    - request_speaker_confirmations
-    - prepare_speaker_materials
-    prompt: 'Match each agenda session with an internal speaker from the relevant
-      strategy team. Provide a list with columns: Session Title, Speaker Name, Team.'
-  collect_speaker_biographies:
+    - identify_regulatory_requirements
+    - list_service_providers
+    - outline_governance_structure
+    prompt: Specify the legal entity structure (e.g., LP, LLC, SICAV) appropriate
+      for the chosen jurisdiction. Give a one‑sentence explanation.
+  clarify_fund_objectives:
     agent: false
-    description: Gather speaker bios.
-    name: collect_speaker_biographies
-    nodes_depended_on:
-    - request_speaker_confirmations
-    nodes_dependent_on:
-    - compile_biography_list
-    prompt: Ask each confirmed speaker to provide a 100‑word bio and headshot. Specify
-      the submission deadline.
-  compile_biography_list:
-    agent: false
-    description: Compile speaker information for program.
-    name: compile_biography_list
-    nodes_depended_on:
-    - collect_speaker_biographies
-    nodes_dependent_on:
-    - populate_event_program
-    prompt: 'Create a master list of speakers with their bios and headshots. Output
-      in a markdown table with columns: Name, Team, Bio.'
-  confirm_audio_visual_equipment:
-    agent: false
-    description: Validate AV equipment readiness.
-    name: confirm_audio_visual_equipment
-    nodes_depended_on:
-    - set_up_presentation_gear
-    nodes_dependent_on:
-    - install_audio_visual_equipment
-    prompt: Check that all listed equipment is available and functional. Report any
-      missing items.
-  coordinate_catering:
-    agent: false
-    description: Arrange catering logistics.
-    name: coordinate_catering
-    nodes_depended_on:
-    - plan_venue_layout
-    nodes_dependent_on:
-    - finalize_catering_menu
-    prompt: Identify the catering service needed for the event and draft a request
-      for quote. Include attendee count, dietary requirements, and event time.
-  create_agenda_structure:
-    agent: false
-    description: Develop the core event agenda.
-    name: create_agenda_structure
-    nodes_depended_on:
-    - define_open_day_objectives
-    - select_event_date_time
-    nodes_dependent_on:
-    - assign_speakers_to_sessions
-    - plan_venue_layout
-    - schedule_tech_rehearsal
-    - draft_mailing_campaign
-    prompt: 'Outline a session list with titles, durations, and target audiences for
-      the open day, based on the objectives and date/time. Use a table with columns:
-      Session Title, Duration (minutes), Target Audience.'
-  define_open_day_objectives:
-    agent: false
-    description: Establish the high‑level objectives that will guide all subsequent
-      planning.
-    name: define_open_day_objectives
+    description: Generate a bullet‑point list of the hedge fund’s core objectives.
+    name: clarify_fund_objectives
     nodes_depended_on: []
     nodes_dependent_on:
-    - create_agenda_structure
-    - select_event_date_time
-    prompt: Specify the primary goals of the open day (e.g., brand awareness, lead
-      generation, talent scouting) as a short bullet list. Do not include operational
-      details.
-  draft_mailing_campaign:
+    - choose_investment_strategy
+    - select_jurisdiction
+    - define_investor_profile
+    - compile_pitch_deck_outline
+    - outline_governance_structure
+    prompt: State the primary business objectives for launching the hedge fund. Provide
+      a concise bullet list covering investment purpose, competitive edge, and long‑term
+      vision (max 8 bullets).
+  define_asset_universe:
     agent: false
-    description: Prepare email templates for invitation and follow‑up.
-    name: draft_mailing_campaign
+    description: Specify tradable assets.
+    name: define_asset_universe
     nodes_depended_on:
-    - create_agenda_structure
+    - choose_investment_strategy
     nodes_dependent_on:
-    - send_invitation_emails
-    - post_event_survey
-    prompt: Write an email invitation template and a follow‑up thank‑you template
-      for attendees. Include placeholders for event details and RSVP link.
-  install_audio_visual_equipment:
+    - draft_operations_workflow
+    prompt: List the specific asset classes and instruments the chosen strategy will
+      trade (e.g., US large‑cap equities, S&P futures). Keep list ≤10 items.
+  define_investor_profile:
     agent: false
-    description: Set up AV hardware physically.
-    name: install_audio_visual_equipment
+    description: Describe the target investor segment.
+    name: define_investor_profile
     nodes_depended_on:
-    - confirm_audio_visual_equipment
+    - clarify_fund_objectives
     nodes_dependent_on:
-    - verify_av_setup
-    prompt: Deploy the AV equipment in the venue according to the layout plan. Note
-      any adjustments needed.
-  plan_venue_layout:
+    - compile_pitch_deck_outline
+    prompt: 'Based on the stated fund objectives, specify the ideal target investor
+      profile (e.g., family offices, pensions). List key characteristics: typical
+      ticket size, risk tolerance, liquidity preference, geographic focus.'
+  design_risk_management_framework:
     agent: false
-    description: Plan the spatial arrangement of the venue.
-    name: plan_venue_layout
+    description: Outline quantitative and qualitative risk controls.
+    name: design_risk_management_framework
     nodes_depended_on:
-    - create_agenda_structure
+    - set_performance_and_risk_targets
     nodes_dependent_on:
-    - coordinate_catering
-    - arrange_exhibit_boards
-    prompt: 'Design the physical layout for the event: stage, breakout rooms, networking
-      area, and exhibit boards. Provide a schematic description or list of zones with
-      capacity.'
-  prepare_speaker_materials:
+    - draft_operations_workflow
+    - design_compliance_program
+    prompt: 'List core risk controls aligned with the target metrics: position limits,
+      VaR limits, stop‑loss rules, liquidity thresholds. Provide 4–6 bullet points.'
+  estimate_setup_and_operating_costs:
     agent: false
-    description: Provide speakers with a standardized material template.
-    name: prepare_speaker_materials
+    description: Rough cost model for fund setup and operations.
+    name: estimate_setup_and_operating_costs
     nodes_depended_on:
-    - assign_speakers_to_sessions
+    - list_service_providers
     nodes_dependent_on:
-    - review_speaker_slides
-    prompt: Create a slide deck outline template for speakers, specifying required
-      sections and time allocation. Provide it in markdown format.
-  request_speaker_confirmations:
+    - draft_fee_structure
+    prompt: 'Provide a simple annual cost estimate (in USD) for each listed service
+      provider plus overhead (office, tech). Present as two columns: Cost Item | Estimated
+      USD.'
+  identify_regulatory_requirements:
     agent: false
-    description: Send confirmation requests to speakers.
-    name: request_speaker_confirmations
+    description: Outline key regulatory filings.
+    name: identify_regulatory_requirements
     nodes_depended_on:
-    - assign_speakers_to_sessions
+    - choose_legal_entity_type
     nodes_dependent_on:
-    - collect_speaker_biographies
-    prompt: Draft a confirmation email to each speaker with session details and ask
-      for confirmation within 48 hours. Include a polite sign‑off.
-  schedule_tech_rehearsal:
+    - design_compliance_program
+    - list_service_providers
+    prompt: List the primary registrations or filings required for the selected entity
+      and jurisdiction (e.g., SEC Form ADV). Provide citation to governing body names
+      only.
+  list_service_providers:
     agent: false
-    description: Plan the technical rehearsal schedule.
-    name: schedule_tech_rehearsal
+    description: Enumerate required third‑party service providers.
+    name: list_service_providers
     nodes_depended_on:
-    - create_agenda_structure
+    - choose_legal_entity_type
     nodes_dependent_on:
-    - set_up_presentation_gear
-    - test_live_streaming
-    prompt: 'Create a rehearsal timetable for all presenters, including tech check
-      times. Use a table with columns: Time Slot, Speaker, Activity.'
-  select_event_date_time:
+    - estimate_setup_and_operating_costs
+    - draft_operations_workflow
+    - design_compliance_program
+    prompt: 'Generate a checklist of mandatory external service providers: prime broker,
+      fund administrator, auditor, legal counsel, compliance consultant, custodian.
+      No descriptive text—just provider types.'
+  select_jurisdiction:
     agent: false
-    description: Determine the event schedule timing.
-    name: select_event_date_time
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - create_agenda_structure
-    prompt: Choose a date and time for the open day that maximizes attendee availability.
-      Provide the date in ISO format and the time zone. Do not provide reasoning.
-  set_up_presentation_gear:
-    agent: false
-    description: Prepare the technical gear list.
-    name: set_up_presentation_gear
+    description: Pick the fund domicile.
+    name: select_jurisdiction
     nodes_depended_on:
-    - schedule_tech_rehearsal
+    - clarify_fund_objectives
     nodes_dependent_on:
-    - confirm_audio_visual_equipment
-    prompt: List all hardware and software required for presentations (projectors,
-      microphones, Zoom, etc.) and the responsible personnel for each.
-  test_live_streaming:
+    - choose_legal_entity_type
+    - identify_regulatory_requirements
+    - list_service_providers
+    - outline_governance_structure
+    prompt: Choose the optimal fund domicile (e.g., Cayman, Delaware, Luxembourg)
+      considering objectives. Provide 2 pros and 2 cons for the selected jurisdiction
+      only.
+  set_performance_and_risk_targets:
     agent: false
-    description: Verify live streaming capability.
-    name: test_live_streaming
+    description: Quantify return and risk goals.
+    name: set_performance_and_risk_targets
     nodes_depended_on:
-    - schedule_tech_rehearsal
-    nodes_dependent_on: []
-    prompt: Perform a mock live stream of a short presentation. Log any connectivity
-      or audio issues and recommend fixes.
-  verify_av_setup:
-    agent: false
-    description: Confirm AV setup works during rehearsal.
-    name: verify_av_setup
-    nodes_depended_on:
-    - install_audio_visual_equipment
+    - choose_investment_strategy
     nodes_dependent_on:
-    - schedule_tech_rehearsal
-    prompt: Run a quick test of each AV system in place. Confirm speaker audio, presentation
-      display, and live stream output.
+    - draft_fee_structure
+    - design_risk_management_framework
+    - compile_pitch_deck_outline
+    prompt: Define numerical annual targets for gross return, volatility (standard
+      deviation), Sharpe ratio, and maximum drawdown consistent with the chosen strategy.
+      Present as a 4‑row table.
