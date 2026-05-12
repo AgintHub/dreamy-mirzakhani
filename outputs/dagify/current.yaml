@@ -1,6 +1,5 @@
-dag_type: plain_text
-description: Creates a self-contained quantitative trading strategy with concurrent
-  data processing, signal development, and risk modeling components
+dag_type: typed
+description: Generated workflow from UI.
 name: build_quant_trading_strategy
 nodes:
   backtest_initial_strategy:
@@ -12,6 +11,16 @@ nodes:
     - develop_exit_signals
     - define_position_sizing
     nodes_dependent_on: []
+    output_structure:
+    - description: Total return of the strategy
+      key: total_return
+      type: float
+    - description: Maximum drawdown of the strategy
+      key: max_drawdown
+      type: float
+    - description: Sharpe ratio of the strategy
+      key: Sharpe_ratio
+      type: float
     prompt: Simulate strategy performance from price/indicator data using entry/exit
       rules and position sizing. Report total return, max drawdown, and Sharpe ratio
       in 3-cell table.
@@ -23,6 +32,16 @@ nodes:
     - select_data_sources
     - collect_price_data
     nodes_dependent_on: []
+    output_structure:
+    - description: List of asset symbols
+      key: asset_symbols
+      type: List[str]
+    - description: 2D list of technical indicator values
+      key: indicator_values
+      type: List[float]
+    - description: List of data sources used
+      key: data_sources
+      type: List[str]
     prompt: Compute technical indicators from the selected sources for each asset
       in the price data table. Present as [Date] | [Indicator1] | [Indicator2] | ...
       in tabular form.
@@ -33,6 +52,22 @@ nodes:
     nodes_depended_on:
     - select_data_sources
     nodes_dependent_on: []
+    output_structure:
+    - description: Date timestamp of the data point
+      key: date_timestamp
+      type: str
+    - description: Open value of the stock
+      key: open_value
+      type: float
+    - description: High value of the stock
+      key: high_value
+      type: float
+    - description: Low value of the stock
+      key: low_value
+      type: float
+    - description: Close value of the stock
+      key: close_value
+      type: float
     prompt: 'Using selected data sources, compile daily OHLCV data for the target
       asset universe covering the last 3 years. Format as 5-column table: Date | Open
       | High | Low | Close.'
@@ -44,6 +79,22 @@ nodes:
     - calculate_technical_indicators
     - backtest_initial_strategy
     nodes_dependent_on: []
+    output_structure:
+    - description: Correlation table of risk metrics and scenarios
+      key: risk_matrix
+      type: str
+    - description: Confidence interval values for risk metrics
+      key: confidence_intervals
+      type: str
+    - description: Selected volatility measure
+      key: volatility_measure
+      type: str
+    - description: Expected drawdown probability
+      key: drawdown_probability
+      type: float
+    - description: Selected tail risk measure
+      key: tail_risk_measure
+      type: str
     prompt: Build risk matrix including volatility, drawdown probability, and tail
       risk measures. Format as correlation table of [Metric][Scenario] with confidence
       intervals.
@@ -54,6 +105,19 @@ nodes:
     nodes_depended_on:
     - define_strategy_framework
     nodes_dependent_on: []
+    output_structure:
+    - description: Calculated risk per trade
+      key: risk_per-trade
+      type: float
+    - description: List of account size rules
+      key: account-size-rules
+      type: List[str]
+    - description: Calculated volatility scaling factor
+      key: volatility-scaling
+      type: float
+    - description: List of risk limits for each trade step
+      key: risk-limits
+      type: List[float]
     prompt: 'Specify position size determination logic including: 1) risk per trade
       2) account size rules 3) volatility scaling. Present as calculation steps with
       risk limits.'
@@ -63,6 +127,16 @@ nodes:
     name: define_strategy_framework
     nodes_depended_on: []
     nodes_dependent_on: []
+    output_structure:
+    - description: Primary objective of the trading strategy
+      key: strategy_objective
+      type: str
+    - description: List of target assets or classes
+      key: target_assets
+      type: List[str]
+    - description: Capital allocation model used in the strategy
+      key: capital_allocation_model
+      type: str
     prompt: 'Create a trading strategy framework including: 1) primary objective (e.g.
       momentum, mean reversion) 2) target assets/classes 3) capital allocation model.
       Present as 3-column table: Feature | Specification | Rationale.'
@@ -73,6 +147,22 @@ nodes:
     nodes_depended_on:
     - calculate_technical_indicators
     nodes_dependent_on: []
+    output_structure:
+    - description: List of IF-THEN-ELSE rules for entry signals
+      key: entry_rules
+      type: List[str]
+    - description: List of conditions for long signals
+      key: long_conditions
+      type: List[str]
+    - description: List of conditions for short signals
+      key: short_conditions
+      type: List[str]
+    - description: Description of position sizing logic
+      key: position-sizing_logic
+      type: str
+    - description: Whether entry rules are valid and correct
+      key: validation_results
+      type: bool
     prompt: 'Create unambiguous entry rules using available indicators: 1) long conditions
       2) short conditions 3) position sizing. Format as IF-THEN-ELSE rule set.'
   develop_exit_signals:
@@ -82,6 +172,22 @@ nodes:
     nodes_depended_on:
     - calculate_technical_indicators
     nodes_dependent_on: []
+    output_structure:
+    - description: Unambiguous exit rule
+      key: exit_signal
+      type: str
+    - description: Profit target value
+      key: profit_target
+      type: float
+    - description: Stop-loss rule
+      key: stop_loss_rule
+      type: str
+    - description: Trailing stop value
+      key: trailing_stop
+      type: float
+    - description: Performance metrics for each rule
+      key: metrics
+      type: List[float]
     prompt: 'Create unambiguous exit rules using available indicators: 1) profit targets
       2) stop-loss rules 3) trailing stops. Present as IF-THEN-ELSE rule set.'
   generate_strategy_documentation:
@@ -97,6 +203,25 @@ nodes:
     - optimize_parameters
     - construct_risk_model
     nodes_dependent_on: []
+    output_structure:
+    - description: Name of the generated trading strategy
+      key: strategy_name
+      type: str
+    - description: Primary objective of the trading strategy
+      key: strategy_objectives
+      type: str
+    - description: Table of entry and exit rules
+      key: rules_table
+      type: str
+    - description: Table of risk controls
+      key: risk_controls_table
+      type: str
+    - description: Performance metrics of the trading strategy
+      key: performance_metrics
+      type: str
+    - description: Executive summary of the trading strategy document
+      key: executive_summary
+      type: str
     prompt: 'Synthesize complete strategy document with: 1) objectives 2) rules 3)
       risk controls 4) performance metrics. Format as executive summary with 4-part
       structure.'
@@ -107,6 +232,19 @@ nodes:
     nodes_depended_on:
     - backtest_initial_strategy
     nodes_dependent_on: []
+    output_structure:
+    - description: Top 3 optimized parameter sets
+      key: optimized_parameters
+      type: List[int]
+    - description: Performance metrics for the optimized parameter sets
+      key: performance_metrics
+      type: List[float]
+    - description: Best parameter set for the strategy
+      key: best_param_set
+      type: List[int]
+    - description: Best performance metric for the strategy
+      key: best_performance
+      type: float
     prompt: Conduct parameter optimization for key variables (timeframes, thresholds)
       using grid search. Present top 3 parameter sets with corresponding performance
       metrics.
@@ -117,6 +255,13 @@ nodes:
     nodes_depended_on:
     - define_strategy_framework
     nodes_dependent_on: []
+    output_structure:
+    - description: List of required data sources
+      key: data_sources
+      type: List[str]
+    - description: List of required technical indicators
+      key: technical_indicators
+      type: List[str]
     prompt: List 3-5 critical data sources (e.g. Yahoo Finance, Alpha Vantage) and
       4 technical indicators (e.g. RSI, MACD) required for this strategy's signal
       generation. Format as [Indicator] - [Calculation Period] - [Source].
@@ -127,5 +272,15 @@ nodes:
     nodes_depended_on:
     - optimize_parameters
     nodes_dependent_on: []
+    output_structure:
+    - description: List of out-of-sample metrics
+      key: out_of_sample_results
+      type: List[float]
+    - description: List of in-sample metrics
+      key: in_sample_results
+      type: List[float]
+    - description: Comparison between in-sample and out-of-sample results
+      key: evaluation
+      type: str
     prompt: Execute out-of-sample backtest on 12-month period outside historical data
       range. Compare results to in-sample metrics in 2-row table.
