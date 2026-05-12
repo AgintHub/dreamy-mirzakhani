@@ -1,3 +1,10 @@
+from ._add_grand_finale.analyze_narrative_structure import analyze_narrative_structure
+from ._add_grand_finale.identify_twist_opportunities import identify_twist_opportunities
+from ._add_grand_finale.craft_shyamalan_style_twist import craft_shyamalan_style_twist
+from ._add_grand_finale.enhance_emotional_depth import enhance_emotional_depth
+from ._add_grand_finale.integrate_thematic_symbolism import integrate_thematic_symbolism
+from ._add_grand_finale.polish_narrative_coherence import polish_narrative_coherence
+
 from pydantic import BaseModel, Field
 
 
@@ -15,7 +22,9 @@ class WriteChapter3Output(BaseModel):
 class AddGrandFinaleOutput(BaseModel):
     """Pydantic model for add_grand_finale node outputs."""
     final_chapter_text: str = (
-        Field(..., description="The polished, finalized Chapter 3 text incorporating the M. Night Shyamalan-style twist, emotional depth, and thematic symbolism.")
+        Field(..., description = (
+            "The polished, finalized Chapter 3 text incorporating the M. Night Shyamalan-style twist, emotional depth, and thematic symbolism.")
+        )
     )
 
 
@@ -41,6 +50,12 @@ def add_grand_finale(write_chapter_3_input: WriteChapter3Output, **kwargs) -> Ad
     thematic symbolism.
 
     """
+    analyzed_narrative: dict = analyze_narrative_structure(content=write_chapter_3_input.chapter_content, summary=write_chapter_3_input.chapter_summary)
+    twist_elements: dict = identify_twist_opportunities(narrative_data=analyzed_narrative, chapter_content=write_chapter_3_input.chapter_content)
+    crafted_twist: str = craft_shyamalan_style_twist(twist_opportunities=twist_elements, existing_content=write_chapter_3_input.chapter_content)
+    enhanced_emotions: str = enhance_emotional_depth(content=crafted_twist, character_connections=analyzed_narrative)
+    thematic_integration: str = integrate_thematic_symbolism(content=enhanced_emotions, narrative_themes=analyzed_narrative)
+    polished_finale: str = polish_narrative_coherence(content=thematic_integration, original_summary=write_chapter_3_input.chapter_summary)
     return AddGrandFinaleOutput(
-        final_chapter_text="",
+        final_chapter_text=polished_finale,
     )

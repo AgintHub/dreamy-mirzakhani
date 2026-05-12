@@ -1,3 +1,12 @@
+from ._write_chapter_2.validate_inputs import validate_inputs
+from ._write_chapter_2.analyze_chapter_1_context import analyze_chapter_1_context
+from ._write_chapter_2.extract_chapter_2_outline import extract_chapter_2_outline
+from ._write_chapter_2.integrate_character_profiles import integrate_character_profiles
+from ._write_chapter_2.prepare_setting_elements import prepare_setting_elements
+from ._write_chapter_2.identify_narrative_threads import identify_narrative_threads
+from ._write_chapter_2.compose_chapter_2_prose import compose_chapter_2_prose
+from ._write_chapter_2.polish_chapter_text import polish_chapter_text
+
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -5,10 +14,14 @@ from typing import List
 class WriteChapter1Output(BaseModel):
     """Pydantic model for write_chapter_1 node outputs."""
     chapter_text: str = (
-        Field(..., description="The complete, prose-formatted text of Chapter 1")
+        Field(..., description = (
+            "The complete, prose-formatted text of Chapter 1")
+        )
     )
     valid_output: bool = (
-        Field(..., description="True if the output is a well-formed, non-empty chapter; otherwise False")
+        Field(..., description = (
+            "True if the output is a well-formed, non-empty chapter; otherwise False")
+        )
     )
 
 
@@ -28,7 +41,9 @@ class GenerateStoryOutlineOutput(BaseModel):
         Field(..., description="Three bullet points summarizing Chapter 3.")
     )
     favorite_color: str = (
-        Field(..., description="The dog\u2019s favorite color, reflecting its personality.")
+        Field(..., description = (
+            "The dog\u2019s favorite color, reflecting its personality.")
+        )
     )
 
 
@@ -38,19 +53,27 @@ class GenerateCharacterProfilesOutput(BaseModel):
         Field(..., description="The character\u2019s full name.")
     )
     age: float = (
-        Field(..., description="The character\u2019s age in years, if applicable.")
+        Field(..., description = (
+            "The character\u2019s age in years, if applicable.")
+        )
     )
     personality_traits: str = (
         Field(..., description="A concise list of defining personality traits.")
     )
     role_in_plot: str = (
-        Field(..., description="The character\u2019s functional role within the story.")
+        Field(..., description = (
+            "The character\u2019s functional role within the story.")
+        )
     )
     favorite_color: str = (
-        Field(..., description="A color that encapsulates the character\u2019s essence or aesthetic.")
+        Field(..., description = (
+            "A color that encapsulates the character\u2019s essence or aesthetic.")
+        )
     )
     dog_profile: List[str] = (
-        Field(..., description="A series of sentences detailing the dog\u2019s breed, background, quirks, and motivations.")
+        Field(..., description = (
+            "A series of sentences detailing the dog\u2019s breed, background, quirks, and motivations.")
+        )
     )
 
 
@@ -60,13 +83,19 @@ class GenerateStorySettingOutput(BaseModel):
         Field(..., description="The geographic place where the story unfolds.")
     )
     time_period: str = (
-        Field(..., description="The historical or temporal setting of the narrative.")
+        Field(..., description = (
+            "The historical or temporal setting of the narrative.")
+        )
     )
     environmental_details: str = (
-        Field(..., description="Key environmental factors\u2014weather, terrain, societal norms\u2014that influence the dog\u2019s adventure.")
+        Field(..., description = (
+            "Key environmental factors\u2014weather, terrain, societal norms\u2014that influence the dog\u2019s adventure.")
+        )
     )
     favorite_color: str = (
-        Field(..., description="A color favored by the protagonist, offering insight into personality or thematic symbolism.")
+        Field(..., description = (
+            "A color favored by the protagonist, offering insight into personality or thematic symbolism.")
+        )
     )
 
 
@@ -128,6 +157,20 @@ def write_chapter_2(write_chapter_1_input: WriteChapter1Output, generate_story_o
     <text of Chapter 2>
 
     """
-    return WriteChapter2Output(
-        chapter_2_output="",
-    )
+    validate_inputs(chapter_1_input=write_chapter_1_input, outline_input=generate_story_outline_input, character_input=generate_character_profiles_input, setting_input=generate_story_setting_input)
+    
+    narrative_context: dict = analyze_chapter_1_context(chapter_1_text=write_chapter_1_input.chapter_text)
+    
+    chapter_2_outline: dict = extract_chapter_2_outline(outline=generate_story_outline_input, bullet_points=generate_story_outline_input.chapter_2_bullet_points)
+    
+    character_integration: dict = integrate_character_profiles(character_profiles=generate_character_profiles_input, dog_profile=generate_character_profiles_input.dog_profile)
+    
+    setting_elements: dict = prepare_setting_elements(setting=generate_story_setting_input, environmental_details=generate_story_setting_input.environmental_details)
+    
+    narrative_threads: list = identify_narrative_threads(previous_chapter=narrative_context, outline=chapter_2_outline, characters=character_integration)
+    
+    chapter_2_text: str = compose_chapter_2_prose(narrative_threads=narrative_threads, setting_elements=setting_elements, character_details=character_integration, story_title=generate_story_outline_input.title)
+    
+    polished_chapter: str = polish_chapter_text(raw_text=chapter_2_text, story_context=narrative_context)
+    
+    return WriteChapter2Output(chapter_2_output=polished_chapter)

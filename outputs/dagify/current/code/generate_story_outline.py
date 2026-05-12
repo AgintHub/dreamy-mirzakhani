@@ -1,3 +1,9 @@
+from ._generate_story_outline.validate_prompt import validate_prompt
+from ._generate_story_outline.generate_story_title import generate_story_title
+from ._generate_story_outline.generate_chapter_titles import generate_chapter_titles
+from ._generate_story_outline.generate_chapter_bullet_points import generate_chapter_bullet_points
+from ._generate_story_outline.generate_dog_favorite_color import generate_dog_favorite_color
+
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -18,7 +24,9 @@ class GenerateStoryOutlineOutput(BaseModel):
         Field(..., description="Three bullet points summarizing Chapter 3.")
     )
     favorite_color: str = (
-        Field(..., description="The dog\u2019s favorite color, reflecting its personality.")
+        Field(..., description = (
+            "The dog\u2019s favorite color, reflecting its personality.")
+        )
     )
 
 
@@ -78,11 +86,18 @@ def generate_story_outline(general_input: str, **kwargs) -> GenerateStoryOutline
     solved', 'The dog returns home'], 'favorite_color': 'Red'}
 
     """
+    validated_prompt: str = validate_prompt(prompt=general_input)
+    story_title: str = generate_story_title(prompt=validated_prompt)
+    chapter_titles: List[str] = generate_chapter_titles(prompt=validated_prompt, story_title=story_title)
+    chapter_1_events: List[str] = generate_chapter_bullet_points(prompt=validated_prompt, chapter_number=1, chapter_title=chapter_titles[0])
+    chapter_2_events: List[str] = generate_chapter_bullet_points(prompt=validated_prompt, chapter_number=2, chapter_title=chapter_titles[1])
+    chapter_3_events: List[str] = generate_chapter_bullet_points(prompt=validated_prompt, chapter_number=3, chapter_title=chapter_titles[2])
+    dog_favorite_color: str = generate_dog_favorite_color(prompt=validated_prompt, story_context=story_title)
     return GenerateStoryOutlineOutput(
-        title="",
-        chapter_titles=[],
-        chapter_1_bullet_points=[],
-        chapter_2_bullet_points=[],
-        chapter_3_bullet_points=[],
-        favorite_color="",
+        title=story_title,
+        chapter_titles=chapter_titles,
+        chapter_1_bullet_points=chapter_1_events,
+        chapter_2_bullet_points=chapter_2_events,
+        chapter_3_bullet_points=chapter_3_events,
+        favorite_color=dog_favorite_color
     )
