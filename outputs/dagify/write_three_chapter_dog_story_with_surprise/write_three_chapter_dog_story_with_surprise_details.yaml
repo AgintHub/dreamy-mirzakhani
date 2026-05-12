@@ -1,4 +1,4 @@
-dag_type: typed
+dag_type: spec
 description: Generated workflow from UI.
 name: write_three_chapter_dog_story_with_surprise
 nodes:
@@ -18,6 +18,27 @@ nodes:
         Shyamalan-style twist, emotional depth, and thematic symbolism.
       key: final_chapter_text
       type: str
+    prd:
+      conceptual_info: This node crafts a surprise twist at the end of Chapter 3,
+        enriching the narrative and deepening character connections.
+      docstring:
+        examples:
+        - lines:
+          - create_grand_finale_twist('write_chapter_3')
+          output: The grand finale twist is crafted, enriching the narrative and deepening
+            character connections.
+        - lines:
+          - create_grand_finale_twist('write_chapter_3')
+          output: The emotional resonance of the twist enhances character psychology
+            and thematic symbolism.
+        parameters: []
+        raises: []
+        returns:
+          description: The revised final chapter with the grand finale twist and emotional
+            resonance fully integrated.
+          type: str
+        summary: Adds a grand finale twist to Chapter 3, maintaining narrative coherence
+          while surprising the reader.
     prompt: Using the completed Chapter 3 text, craft an elaborate M. Night Shyamalan-style
       grand finale twist that reshapes the reader’s understanding of the story while
       maintaining narrative coherence and thematic unity. Integrate a symbolic motif
@@ -58,25 +79,30 @@ nodes:
         and motivations.
       key: dog_profile
       type: List[str]
+    prd:
+      conceptual_info: This node generates richly detailed character biographies for
+        each person and the dog in the story.
+      docstring:
+        examples: []
+        parameters:
+        - description: List of dictionaries containing character information for each
+            person and the dog.
+          name: character_profiles
+          type: List[dict]
+        raises:
+        - description: If the input character_profiles is not a list of dictionaries.
+          type: TypeError
+        returns:
+          description: A dictionary containing the generated character profiles where
+            each key is a character name and each value is a dictionary with their
+            profile information.
+          type: dict
+        summary: Generate detailed character profiles.
     prompt: 'Craft comprehensive biographies for the protagonist dog and each supporting
-      character. For every individual, provide:
-
-      - a unique name
-
-      - age (if applicable)
-
-      - a concise yet vivid list of personality traits
-
-      - their specific role within the narrative arc
-
-      - a favorite color that reflects their essence
-
-      - for the dog, a detailed profile encompassing breed, history, quirks, and key
-      motivations. Present each profile as a structured entry ready for downstream
-      narrative construction.'
+      character. For every individual, provide:'
   generate_story_outline:
     agent: false
-    description: Creates a succinct, three‑chapter outline for a dog‑centric narrative,
+    description: Creates a succinct, three-chapter outline for a dog-centric narrative,
       providing a title, chapter titles, event bullet points, and a favorite color
       for the dog’s character profile.
     name: generate_story_outline
@@ -101,8 +127,61 @@ nodes:
     - description: The dog’s favorite color, reflecting its personality.
       key: favorite_color
       type: str
-    prompt: Craft a concise, engaging 3‑chapter outline for a heartwarming dog story.
-      Include a captivating title, unique chapter titles, and 2–3 bullet points per
+    prd:
+      conceptual_info: This node generates a concise, three-chapter outline for a
+        dog-centric narrative, including a title, chapter titles, event bullet points,
+        and a favorite color for the dog’s character profile.
+      docstring:
+        examples:
+        - lines:
+          - generate_story_outline(prompt='A heartwarming dog story')
+          - 'output = {''title'': ''The Adventures of Buddy'', ''chapter_titles'':
+            [''Chapter 1: Introduction'', ''Chapter 2: The Journey'', ''Chapter 3:
+            The Return''], ''chapter_1_bullet_points'': [''Buddy meets a new friend'',
+            ''Buddy goes on an adventure'', ''Buddy returns home''], ''chapter_2_bullet_points'':
+            [''Buddy faces a challenge'', ''Buddy finds a treasure'', ''Buddy makes
+            a new friend''], ''chapter_3_bullet_points'': [''Buddy concludes his journey'',
+            ''Buddy says goodbye to friends'', ''Buddy returns home happy''], ''favorite_color'':
+            ''Blue''}'
+          output: '{''title'': ''The Adventures of Buddy'', ''chapter_titles'': [''Chapter
+            1: Introduction'', ''Chapter 2: The Journey'', ''Chapter 3: The Return''],
+            ''chapter_1_bullet_points'': [''Buddy meets a new friend'', ''Buddy goes
+            on an adventure'', ''Buddy returns home''], ''chapter_2_bullet_points'':
+            [''Buddy faces a challenge'', ''Buddy finds a treasure'', ''Buddy makes
+            a new friend''], ''chapter_3_bullet_points'': [''Buddy concludes his journey'',
+            ''Buddy says goodbye to friends'', ''Buddy returns home happy''], ''favorite_color'':
+            ''Blue''}'
+        - lines:
+          - generate_story_outline(prompt='A dog story with a mystery')
+          - 'output = {''title'': ''The Mystery of the Missing Treats'', ''chapter_titles'':
+            [''Chapter 1: The Mysterious Scene'', ''Chapter 2: The Investigation'',
+            ''Chapter 3: The Suspect Revealed''], ''chapter_1_bullet_points'': [''A
+            treat goes missing'', ''The scene is established'', ''Clues are revealed''],
+            ''chapter_2_bullet_points'': [''The investigation begins'', ''More clues
+            are found'', ''The plot thickens''], ''chapter_3_bullet_points'': [''The
+            suspect is revealed'', ''The mystery is solved'', ''The dog returns home''],
+            ''favorite_color'': ''Red''}'
+          output: '{''title'': ''The Mystery of the Missing Treats'', ''chapter_titles'':
+            [''Chapter 1: The Mysterious Scene'', ''Chapter 2: The Investigation'',
+            ''Chapter 3: The Suspect Revealed''], ''chapter_1_bullet_points'': [''A
+            treat goes missing'', ''The scene is established'', ''Clues are revealed''],
+            ''chapter_2_bullet_points'': [''The investigation begins'', ''More clues
+            are found'', ''The plot thickens''], ''chapter_3_bullet_points'': [''The
+            suspect is revealed'', ''The mystery is solved'', ''The dog returns home''],
+            ''favorite_color'': ''Red''}'
+        parameters:
+        - description: A prompt for the story outline.
+          name: prompt
+          type: str
+        raises:
+        - description: If the prompt is invalid.
+          type: Exception
+        returns:
+          description: A dictionary with story outline details.
+          type: dict
+        summary: Generates a three-chapter outline for a dog story.
+    prompt: Craft a concise, engaging 3-chapter outline for a heartwarming dog story.
+      Include a captivating title, unique chapter titles, and 2-3 bullet points per
       chapter that outline the main events. Additionally, for the character profile
       of the dog, specify a favorite color that reflects its personality.
   generate_story_setting:
@@ -129,6 +208,43 @@ nodes:
         or thematic symbolism.
       key: favorite_color
       type: str
+    prd:
+      conceptual_info: This node creates a rich, immersive setting for the story by
+        specifying the geographic locale, temporal context, environmental conditions,
+        and introducing a favorite color that reflects character traits or thematic
+        undercurrents.
+      docstring:
+        examples:
+        - lines:
+          - location = 'New York City'
+          - time_period = '1980s'
+          - environmental_details = 'cold weather, urban terrain, hipster society'
+          - favorite_color = 'blue'
+          output: '[''New York City'', ''1980s'', ''cold weather, urban terrain, hipster
+            society'', ''blue'']'
+        parameters:
+        - description: The geographic place where the story unfolds.
+          name: location
+          type: str
+        - description: The historical or temporal setting of the narrative.
+          name: time_period
+          type: str
+        - description: Key environmental factors—weather, terrain, societal norms—that
+            influence the dog’s adventure.
+          name: environmental_details
+          type: str
+        - description: A color favored by the protagonist, offering insight into personality
+            or thematic symbolism.
+          name: favorite_color
+          type: str
+        raises:
+        - description: If any of the input parameters are not of the correct type.
+          type: TypeError
+        returns:
+          description: A list of strings representing the location, time period, environmental
+            details, and favorite color.
+          type: '[str, str, str, str]'
+        summary: Generate a story setting based on the input parameters.
     prompt: 'Paint the backdrop of your tale in vivid detail: describe the primary
       location, the era or time frame, and any environmental nuances—weather, geography,
       societal norms—that will shape the dog’s journey. Additionally, note a favorite
@@ -147,14 +263,54 @@ nodes:
     - generate_story_setting
     nodes_dependent_on: []
     output_structure:
-    - description: The complete, prose-formatted text of Chapter 1
+    - description: The complete, prose-formatted text of Chapter 1
       key: chapter_text
       type: str
-    - description: True if the output is a well‑formed, non‑empty chapter; otherwise
+    - description: True if the output is a well-formed, non-empty chapter; otherwise
         False
       key: valid_output
       type: bool
-    prompt: Compose Chapter 1 of the story. Use the provided outline, character profiles
+    prd:
+      conceptual_info: The write_chapter_1 node crafts the opening chapter of a story
+        by integrating the provided story outline, character profiles with their favorite
+        colors, and environmental details.
+      docstring:
+        examples:
+        - lines:
+          - 'story_outline = {''title'': ''Story Title'', ''chapter_titles'': [''Chapter
+            1'', ''Chapter 2''], ''event_bullet_points'': [''Point 1'', ''Point 2'',
+            ''Point 3'']}'
+          - 'character_profiles = [{''name'': ''John'', ''age'': 30, ''personality_traits'':
+            ''friendly'', ''role_in_plot'': ''protagonist'', ''favorite_color'': ''red''}]'
+          - 'story_setting = {''location'': ''Park'', ''time_period'': ''Now'', ''environmental_details'':
+            ''sunny'', ''favorite_color'': ''blue''}'
+          - write_chapter_1(story_outline, character_profiles, story_setting)
+          output: '{''chapter_text'': ''The complete, prose-formatted text of Chapter
+            1'', ''valid_output'': True}'
+        parameters:
+        - description: The concise story outline for the narrative.
+          name: story_outline
+          type: dict
+        - description: A list of richly detailed character biographies.
+          name: character_profiles
+          type: list
+        - description: The comprehensive story setting including the geographic locale,
+            temporal context, environmental conditions, and a favorite color that
+            reflects character traits or thematic undercurrents.
+          name: story_setting
+          type: dict
+        raises:
+        - description: If the input story outline, character profiles, or story setting
+            is invalid or missing.
+          type: ValueError
+        returns:
+          description: '{''chapter_text'': ''The complete, prose-formatted text of
+            Chapter 1'', ''valid_output'': True/False}'
+          type: dict
+        summary: Crafts the opening chapter of a story by weaving together the provided
+          story outline, character profiles with their favorite colors, and environmental
+          context.
+    prompt: Compose Chapter 1 of the story. Use the provided outline, character profiles
       (note each character’s favorite color), and setting details. Begin with a compelling
       introduction of the dog, paint the environment with sensory specifics, and reveal
       the inciting incident that sets the plot in motion. Ensure the prose is complete,
@@ -174,12 +330,60 @@ nodes:
     - description: The complete Chapter 2 text in prose.
       key: chapter_2_output
       type: str
+    prd:
+      conceptual_info: This node continues the narrative of the story by writing the
+        second chapter, incorporating the previous chapter's output, the outline,
+        character profiles, and environmental setting.
+      docstring:
+        examples:
+        - lines:
+          - 'write_chapter_2(chapter_1_output=''<text>'', outline={''title'': ''The
+            Story'', ''chapter_titles'': [''Chapter 1'', ''Chapter 2'', ''Chapter
+            3'']}, character_profiles={''dog'': {''name'': ''Max'', ''age'': 2, ''personality_traits'':
+            ''Friendly'', ''role_in_plot'': ''Protagonist'', ''favorite_color'': ''Blue''}},
+            story_setting={''location'': ''Beach'', ''time_period'': ''Summer'', ''environmental_details'':
+            ''Sunny'', ''favorite_color'': ''Red''})'
+          output: <text of Chapter 2>
+        - lines:
+          - 'write_chapter_2(chapter_1_output=''<text>'', outline={''title'': ''The
+            Story'', ''chapter_titles'': [''Chapter 1'', ''Chapter 2'', ''Chapter
+            3'']}, character_profiles={''dog'': {''name'': ''Max'', ''age'': 2, ''personality_traits'':
+            ''Friendly'', ''role_in_plot'': ''Protagonist'', ''favorite_color'': ''Blue''}},
+            story_setting={''location'': ''Forest'', ''time_period'': ''Fall'', ''environmental_details'':
+            ''Rainy'', ''favorite_color'': ''Green''})'
+          output: <text of Chapter 2>
+        parameters:
+        - description: The text of the first chapter, used as a basis for the second
+            chapter's writing.
+          name: chapter_1_output
+          type: str
+        - description: A structured dictionary containing the story outline, including
+            title, chapter titles, event bullet points, and the dog's favorite color.
+          name: outline
+          type: dict
+        - description: A dictionary containing the richly detailed character biographies,
+            including each character's name, age, personality traits, plot role, and
+            favorite color.
+          name: character_profiles
+          type: dict
+        - description: A dictionary describing the rich, immersive setting of the
+            narrative, including geographic locale, temporal context, environmental
+            conditions, and the protagonist's favorite color.
+          name: story_setting
+          type: dict
+        raises:
+        - description: If any of the input parameters are missing or invalid.
+          type: ValueError
+        returns:
+          description: The complete text of Chapter 2.
+          type: str
+        summary: Writes Chapter 2 using the provided inputs.
     prompt: Write Chapter 2 of the story using the provided outline, character profiles,
       setting, and the full text of Chapter 1. Continue the plot, developing the conflict
       and interactions. Output a complete chapter in prose.
   write_chapter_3:
     agent: false
-    description: Writes Chapter 3, receiving Chapter 2 output to conclude the story.
+    description: Writes Chapter 3, receiving Chapter 2 output to conclude the story.
     name: write_chapter_3
     nodes_depended_on:
     - write_chapter_2
@@ -197,6 +401,32 @@ nodes:
     - description: A summary of what happens in Chapter 3.
       key: chapter_summary
       type: str
+    prd:
+      conceptual_info: This node is responsible for crafting the final chapter of
+        the story, incorporating the plot developments from Chapter 2 and setting
+        the scene for a satisfying conclusion.
+      docstring:
+        examples:
+        - lines:
+          - final_chapter = write_chapter_3(chapter_2_output)
+          - print(final_chapter['chapter_title'])
+          - print(final_chapter['chapter_content'])
+          - print(final_chapter['chapter_summary'])
+          output: "Chapter Title: The Final Chapter\r\nChapter Content: The final\
+            \ chapter of the story.\r\nChapter Summary: The dog's adventure concludes\
+            \ with ​​.\r\n"
+        parameters:
+        - description: The complete text of Chapter 2.
+          name: chapter_2_output
+          type: str
+        raises:
+        - description: If chapter_2_output is not a string.
+          type: TypeError
+        returns:
+          description: Contains the title, content, and summary of the final chapter.
+          type: dict[str, str]
+        summary: Generates the final chapter of the story, using the provided outline,
+          character profiles, and setting to conclude the dog's adventure.
     prompt: Write Chapter 3 of the story using the provided outline, character profiles,
-      setting, and the full text of Chapter 2. Resolve the plot and conclude the dog’s
+      setting, and the full text of Chapter 2. Resolve the plot and conclude the dog's
       adventure.
