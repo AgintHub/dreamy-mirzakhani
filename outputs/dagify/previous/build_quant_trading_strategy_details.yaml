@@ -1,265 +1,195 @@
 dag_type: plain_text
-description: A workflow that creates a quantitative trading strategy by gathering
-  data, engineering features, selecting models, backtesting, optimizing, and defining
-  execution and risk controls.
+description: A detailed, concurrent workflow for designing, testing, and deploying
+  a quantitative trading strategy from data acquisition to live execution.
 name: build_quant_trading_strategy
 nodes:
-  analyze_backtest_results:
+  adjust_risk_controls:
     agent: false
-    description: Assess the output of backtesting to evaluate strategy viability and
-      identify improvements.
-    name: analyze_backtest_results
+    description: Modify risk parameters to align with performance objectives.
+    name: adjust_risk_controls
     nodes_depended_on:
-    - run_backtest
+    - evaluate_backtest_results
     nodes_dependent_on:
-    - refine_strategy_or_finalize
-    prompt: Analyze the backtest output metrics and visualizations to judge if the
-      strategy meets target performance and risk criteria. Identify weaknesses or
-      confirm readiness.
-  clean_historical_market_data:
+    - finalize_strategy_documentation
+    prompt: If drawdown exceeds the target, suggest position‑size scaling or tighter
+      stop‑loss. If Sharpe is low, propose feature or model adjustments. Return a
+      revised trading rule if changes are made.
+  backtest_strategy:
     agent: false
-    description: Process and clean raw historical market data to handle missing values,
-      errors, and standardize formats.
-    name: clean_historical_market_data
+    description: Simulate strategy performance on unseen data.
+    name: backtest_strategy
     nodes_depended_on:
-    - gather_historical_market_data
+    - normalize_and_split_data
+    - develop_trading_rule
     nodes_dependent_on:
-    - engineer_features_from_market_data
-    prompt: Clean the collected historical market data by filling or removing missing
-      values, correcting erroneous data points, normalizing formats, and ensuring
-      consistent timestamps.
-  construct_backtesting_environment:
+    - evaluate_backtest_results
+    - adjust_risk_controls
+    prompt: Run the trading rule on the test set, simulating daily orders, slippage
+      0.05%, and transaction costs 5 bps. Generate P&L, drawdown, Sharpe, and turnover
+      metrics. Output a CSV of trade logs.
+  clean_and_store_raw_data:
     agent: false
-    description: Set up a system to simulate trading the strategy on historical data
-      including transaction costs and market impact.
-    name: construct_backtesting_environment
+    description: Prepare clean, stored market data ready for feature engineering.
+    name: clean_and_store_raw_data
     nodes_depended_on:
-    - test_final_model
+    - collect_market_data
+    - define_eligibility_criteria
     nodes_dependent_on:
-    - run_backtest
-    prompt: Develop a backtesting framework that applies the model’s signals to historical
-      asset prices, incorporating realistic execution and cost assumptions.
-  define_performance_metrics:
+    - generate_feature_set
+    prompt: 'For each selected instrument, clean the data: adjust for splits/dividends,
+      interpolate missing values, and store in a time‑series database. Provide a status
+      report of cleaned records.'
+  collect_market_data:
     agent: false
-    description: Specify the key metrics that will define strategy success and guide
-      optimization.
-    name: define_performance_metrics
+    description: Gather raw market data required for analysis.
+    name: collect_market_data
     nodes_depended_on:
-    - merge_features
+    - select_asset_universe
     nodes_dependent_on:
-    - split_dataset
-    prompt: Identify measurable performance metrics for the trading strategy such
-      as annualized return, Sharpe ratio, maximum drawdown, and turnover. Provide
-      definitions and target thresholds.
-  define_risk_management_rules:
+    - clean_and_store_raw_data
+    - extract_market_factors
+    prompt: Retrieve historical price and volume data for each instrument in the asset
+      universe covering the last 10 years. Include OHLCV and adjusted close. Output
+      in CSV format.
+  define_eligibility_criteria:
     agent: false
-    description: Specify risk controls and monitoring measures to limit losses and
-      ensure compliance during live trading.
-    name: define_risk_management_rules
+    description: Filter the asset universe to suitable trading candidates.
+    name: define_eligibility_criteria
     nodes_depended_on:
-    - refine_strategy_or_finalize
-    nodes_dependent_on: []
-    prompt: Establish quantitative risk limits, stop-loss criteria, exposure constraints,
-      and procedures for monitoring and responding to risk breaches during live trading.
-  define_trading_universe:
+    - select_asset_universe
+    nodes_dependent_on:
+    - clean_and_store_raw_data
+    prompt: 'Specify filtering rules for the assets: minimum market cap, liquidity
+      threshold (average daily volume > 1M shares), and data availability. Return
+      a list of instruments that meet all criteria.'
+  define_strategy_goals:
     agent: false
-    description: Specify the set of assets and markets to consider for the trading
-      strategy.
-    name: define_trading_universe
+    description: Establish the quantitative performance and risk targets that the
+      strategy must meet.
+    name: define_strategy_goals
     nodes_depended_on: []
     nodes_dependent_on:
-    - gather_historical_market_data
-    - gather_alternative_data
-    prompt: List the asset classes, markets, and instruments you want to include in
-      your quantitative trading strategy (e.g., US equities, futures, FX pairs). Specify
-      any time frames or exchanges if relevant.
-  design_execution_plan:
+    - select_asset_universe
+    - set_performance_targets
+    prompt: 'Specify the primary objectives of the strategy: expected annual return,
+      maximum drawdown, target Sharpe ratio, and maximum position size. Provide concise
+      bullet points.'
+  develop_trading_rule:
     agent: false
-    description: Define how the trading strategy will be executed in live markets,
-      including order types and execution timing.
-    name: design_execution_plan
+    description: Create the concrete trading logic that will be backtested.
+    name: develop_trading_rule
     nodes_depended_on:
-    - refine_strategy_or_finalize
-    nodes_dependent_on: []
-    prompt: Detail the live trading execution methods for the strategy, specifying
-      order types (market, limit), execution timing, position sizing rules, and interaction
-      with brokers or venues.
-  engineer_features_from_alternative_data:
-    agent: false
-    description: Extract useful features from processed alternative data like sentiment
-      scores or economic trend indicators.
-    name: engineer_features_from_alternative_data
-    nodes_depended_on:
-    - process_alternative_data
+    - select_best_model
     nodes_dependent_on:
-    - merge_features
-    prompt: Derive numerical or categorical features from alternative data such as
-      sentiment indexes, event flags, macroeconomic trend values, or other predictive
-      indicators aligned by asset and time.
-  engineer_features_from_market_data:
+    - backtest_strategy
+    prompt: 'Define a trading rule that maps model predictions to position sizes:
+      e.g., long if predicted return > 0.5% and scale by z‑score. Include stop‑loss
+      and take‑profit thresholds. Output the rule in pseudocode.'
+  evaluate_backtest_results:
     agent: false
-    description: Create quantitative features from cleaned historical market data
-      such as returns, volatility, and technical indicators.
-    name: engineer_features_from_market_data
+    description: Assess whether the backtest meets the predefined goals.
+    name: evaluate_backtest_results
     nodes_depended_on:
-    - clean_historical_market_data
+    - backtest_strategy
     nodes_dependent_on:
-    - merge_features
-    prompt: Generate quantitative features from the cleaned market data, including
-      price returns over various periods, moving averages, volatility measures, volume
-      indicators, and other technical factors relevant to trading signals.
-  gather_alternative_data:
+    - adjust_risk_controls
+    prompt: Compare backtest metrics to performance targets set in define_strategy_goals.
+      Highlight any shortfalls in a concise report.
+  evaluate_feature_importance:
     agent: false
-    description: Obtain non-traditional data sources relevant to the trading universe,
-      such as sentiment, news, or macroeconomic indicators.
-    name: gather_alternative_data
+    description: Assess which features contribute most to predictive power.
+    name: evaluate_feature_importance
     nodes_depended_on:
-    - define_trading_universe
+    - generate_feature_set
     nodes_dependent_on:
-    - process_alternative_data
-    prompt: Acquire alternative datasets relevant to the defined assets (e.g., news
-      sentiment, economic indicators, social media signals) aligned in time and scope
-      with the historical market data.
-  gather_historical_market_data:
+    - select_features
+    prompt: Using a simple random forest regressor, compute feature importance scores
+      on a hold‑out sample. Return a ranked list of features with importance values.
+  extract_market_factors:
     agent: false
-    description: Collect raw historical price and volume data for the defined trading
-      universe.
-    name: gather_historical_market_data
+    description: Generate macro and factor data to be used in feature construction.
+    name: extract_market_factors
     nodes_depended_on:
-    - define_trading_universe
+    - collect_market_data
     nodes_dependent_on:
-    - clean_historical_market_data
-    prompt: Using the defined trading universe, retrieve historical market data of
-      prices, volumes, and relevant fundamental or technical data from reliable sources
-      for at least 3 years. Provide data with timestamps and identifiers.
-  merge_features:
+    - generate_feature_set
+    prompt: Compute standard market factors (e.g., Fama–French 3 factors, momentum)
+      for the universe over the same period. Output factor time series with dates.
+  generate_feature_set:
     agent: false
-    description: Combine features derived from market and alternative data into a
-      single dataset for model input.
-    name: merge_features
+    description: Construct the raw feature set for model training.
+    name: generate_feature_set
     nodes_depended_on:
-    - engineer_features_from_market_data
-    - engineer_features_from_alternative_data
+    - clean_and_store_raw_data
+    - extract_market_factors
     nodes_dependent_on:
-    - select_model_type
-    - define_performance_metrics
-    prompt: Integrate all engineered features from market and alternative datasets
-      into one consolidated feature matrix indexed by time and asset, ready for model
-      training.
-  optimize_parameters:
+    - evaluate_feature_importance
+    - normalize_and_split_data
+    prompt: 'Create a comprehensive feature matrix: price‑based (returns, moving averages,
+      volatility), volume‑based, macro factors, and sentiment indicators. Include
+      lagged and rolling window features. Output a CSV with timestamps.'
+  normalize_and_split_data:
     agent: false
-    description: Adjust model hyperparameters to improve performance based on validation
-      results.
-    name: optimize_parameters
+    description: Prepare data for modeling and evaluation.
+    name: normalize_and_split_data
     nodes_depended_on:
-    - validate_model
+    - select_features
     nodes_dependent_on:
-    - test_final_model
-    prompt: Use validation feedback to perform hyperparameter optimization of the
-      model (e.g., grid search, random search). Document the best configuration found.
-  perform_cross_validation:
+    - train_and_tune_models
+    - backtest_strategy
+    prompt: Standardize the feature matrix (z‑score). Split into training (70%), validation
+      (15%), and test (15%) sets using rolling origin cross‑validation. Output the
+      split datasets in separate CSVs.
+  select_asset_universe:
     agent: false
-    description: Perform k-fold or rolling-window cross-validation to assess model
-      stability and variance.
-    name: perform_cross_validation
-    nodes_depended_on:
-    - validate_model
+    description: Define the set of tradable securities for the strategy.
+    name: select_asset_universe
+    nodes_depended_on: []
     nodes_dependent_on:
-    - test_final_model
-    prompt: Execute cross-validation procedures on the training and validation datasets
-      to estimate model robustness and variability of performance metrics.
-  process_alternative_data:
+    - collect_market_data
+    - define_eligibility_criteria
+    prompt: List the asset classes and specific instruments the strategy will trade
+      (e.g., NYSE equities, E-mini S&P futures, EUR/USD). Include ticker symbols and
+      market identifiers.
+  select_best_model:
     agent: false
-    description: Clean and structure alternative data sources for integration.
-    name: process_alternative_data
+    description: Identify the optimal predictive model for deployment.
+    name: select_best_model
     nodes_depended_on:
-    - gather_alternative_data
+    - train_and_tune_models
     nodes_dependent_on:
-    - engineer_features_from_alternative_data
-    prompt: Clean and preprocess the alternative data to remove noise and irrelevant
-      records. Structure it into a format compatible with the market data timeline
-      and identifiers.
-  refine_strategy_or_finalize:
+    - develop_trading_rule
+    prompt: Choose the model with the lowest validation RMSE that also meets a minimum
+      Sharpe ratio on the validation set. Return the model architecture and hyperparameters.
+  select_features:
     agent: false
-    description: Decide to iterate improvements on the strategy or finalize the trading
-      model for implementation.
-    name: refine_strategy_or_finalize
+    description: Filter the feature set to a manageable subset.
+    name: select_features
     nodes_depended_on:
-    - analyze_backtest_results
+    - evaluate_feature_importance
     nodes_dependent_on:
-    - design_execution_plan
-    - define_risk_management_rules
-    prompt: Based on backtest analysis, either specify refinements on feature engineering,
-      model, or parameters and restart relevant steps, or proceed to formalize how
-      the model will execute live and manage risk.
-  run_backtest:
+    - normalize_and_split_data
+    prompt: Choose the top 30 features based on importance, removing highly collinear
+      pairs (R > 0.85). List selected feature names.
+  set_performance_targets:
     agent: false
-    description: Execute the trading strategy simulation over historical data to generate
-      detailed performance results.
-    name: run_backtest
-    nodes_depended_on:
-    - construct_backtesting_environment
+    description: Convert strategic objectives into measurable numeric targets.
+    name: set_performance_targets
+    nodes_depended_on: []
     nodes_dependent_on:
-    - analyze_backtest_results
-    prompt: Run the backtest on historical data using the constructed environment.
-      Produce detailed results including returns, drawdown, turnover, and risk metrics.
-  select_model_type:
+    - define_strategy_goals
+    prompt: 'Translate the strategy goals into quantitative metrics: target annual
+      return %, max drawdown %, minimum Sharpe ratio, and maximum position size %
+      of portfolio. Use a table format.'
+  train_and_tune_models:
     agent: false
-    description: Choose the type of quantitative model(s) to develop for the strategy
-      (e.g., statistical, machine learning, factor-based).
-    name: select_model_type
+    description: Generate multiple predictive models with tuned parameters.
+    name: train_and_tune_models
     nodes_depended_on:
-    - merge_features
+    - normalize_and_split_data
     nodes_dependent_on:
-    - split_dataset
-    prompt: Based on the features available, select appropriate model methodology
-      types such as linear regression, random forest, neural networks, or factor models
-      for the quantitative trading strategy.
-  split_dataset:
-    agent: false
-    description: Partition the consolidated dataset into training, validation, and
-      test sets for model development and evaluation.
-    name: split_dataset
-    nodes_depended_on:
-    - select_model_type
-    - define_performance_metrics
-    nodes_dependent_on:
-    - train_model
-    prompt: Divide the feature dataset chronologically into training, validation,
-      and test datasets ensuring no lookahead bias. Specify proportions or date cutoffs
-      used.
-  test_final_model:
-    agent: false
-    description: Evaluate the optimized model on the holdout test dataset for unbiased
-      performance estimation.
-    name: test_final_model
-    nodes_depended_on:
-    - optimize_parameters
-    - perform_cross_validation
-    nodes_dependent_on:
-    - construct_backtesting_environment
-    prompt: Use the test dataset to generate unbiased performance metrics for the
-      final model configuration. Confirm metrics meet strategy success criteria.
-  train_model:
-    agent: false
-    description: Fit the chosen quantitative model to the training dataset.
-    name: train_model
-    nodes_depended_on:
-    - split_dataset
-    nodes_dependent_on:
-    - validate_model
-    prompt: Train the selected model type on the training dataset. Optimize parameters
-      internally as needed, but do not evaluate performance yet.
-  validate_model:
-    agent: false
-    description: Evaluate the trained model on the validation dataset to estimate
-      generalization performance.
-    name: validate_model
-    nodes_depended_on:
-    - train_model
-    nodes_dependent_on:
-    - optimize_parameters
-    - perform_cross_validation
-    prompt: Assess the model’s predictive quality and trading signal efficacy using
-      the validation dataset. Calculate defined performance metrics and identify areas
-      needing tuning.
+    - select_best_model
+    prompt: Train a portfolio of candidate models (linear regression, LSTM, XGBoost,
+      CatBoost, SVM) on the training set. Perform hyperparameter tuning via Bayesian
+      search on the validation set. Return model performance metrics (RMSE, MAE) and
+      the best hyperparameters.
