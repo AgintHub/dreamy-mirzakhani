@@ -4,47 +4,81 @@ name: write_three_chapter_dog_story_with_surprise
 nodes:
   add_grand_finale:
     agent: false
-    description: Adds a M. Night Shyamalan-style grand finale surprise to the end
-      of Chapter 3.
+    description: Elevates Chapter 3’s conclusion by introducing an intricate, M. Night
+      Shyamalan-style grand finale—a masterfully constructed, emotionally resonant,
+      and intellectually gripping twist that reframes the narrative arc in a surprising,
+      yet thematically cohesive, new light, while incorporating a subtle visual motif
+      to enhance thematic resonance and character psychology.
     name: add_grand_finale
     nodes_depended_on:
     - write_chapter_3
     nodes_dependent_on: []
     output_structure:
-    - description: The final chapter of the story with a shocking twist.
+    - description: The polished, finalized Chapter 3 text incorporating the M. Night
+        Shyamalan-style twist, emotional depth, and thematic symbolism.
       key: final_chapter_text
       type: str
-    prompt: Take the completed Chapter 3 text and append a shocking, twist-filled
-      grand finale inspired by M. Night Shyamalan’s style. The surprise should reframe
-      the entire story in an unexpected way while remaining coherent. Output the final
-      chapter with the surprise included.
+    prompt: Using the completed Chapter 3 text, craft an elaborate M. Night Shyamalan-style
+      grand finale twist that reshapes the reader’s understanding of the story while
+      maintaining narrative coherence and thematic unity. Integrate a symbolic motif
+      or recurring visual pattern introduced earlier in the narrative to anchor the
+      twist in a way that feels both unexpected and inevitable. Enhance the finale
+      with a subtle but powerful emotional beat that ties into one of the protagonist’s
+      core traits or character arc. Output the revised final chapter with the grand
+      finale twist and emotional resonance fully integrated.
   generate_character_profiles:
     agent: false
-    description: Creates detailed biographies for the dog and supporting characters.
+    description: Generates richly detailed character biographies that capture identity,
+      motivation, and narrative function. Each profile includes a name, age (when
+      relevant), personality traits, plot role, and a favorite color that informs
+      visual or thematic cues. The dog’s profile is expanded into a list of descriptive
+      strings detailing breed, backstory, habits, and core motivations. The output
+      is structured to support seamless integration with subsequent plot development
+      and visual design stages.
     name: generate_character_profiles
     nodes_depended_on: []
     nodes_dependent_on: []
     output_structure:
-    - description: Name of the character
+    - description: The character’s full name.
       key: character_name
       type: str
-    - description: Age of the character, if applicable
+    - description: The character’s age in years, if applicable.
       key: age
       type: float
-    - description: Personality traits of the character
+    - description: A concise list of defining personality traits.
       key: personality_traits
       type: str
-    - description: Role of the character in the plot
+    - description: The character’s functional role within the story.
       key: role_in_plot
       type: str
-    - description: Detailed profile of the dog
+    - description: A color that encapsulates the character’s essence or aesthetic.
+      key: favorite_color
+      type: str
+    - description: A series of sentences detailing the dog’s breed, background, quirks,
+        and motivations.
       key: dog_profile
       type: List[str]
-    prompt: Generate detailed profiles for the dog and any supporting characters.
-      Provide name, age (if applicable), personality traits, and role in the plot.
+    prompt: 'Craft comprehensive biographies for the protagonist dog and each supporting
+      character. For every individual, provide:
+
+      - a unique name
+
+      - age (if applicable)
+
+      - a concise yet vivid list of personality traits
+
+      - their specific role within the narrative arc
+
+      - a favorite color that reflects their essence
+
+      - for the dog, a detailed profile encompassing breed, history, quirks, and key
+      motivations. Present each profile as a structured entry ready for downstream
+      narrative construction.'
   generate_story_outline:
     agent: false
-    description: Produces a concise three-chapter outline for the story.
+    description: Creates a succinct, three‑chapter outline for a dog‑centric narrative,
+      providing a title, chapter titles, event bullet points, and a favorite color
+      for the dog’s character profile.
     name: generate_story_outline
     nodes_depended_on: []
     nodes_dependent_on: []
@@ -64,30 +98,48 @@ nodes:
     - description: Three bullet points summarizing Chapter 3.
       key: chapter_3_bullet_points
       type: List[str]
-    prompt: Create a concise outline for a 3-chapter story about a dog. Include a
-      title, chapter titles, and 2–3 bullet points per chapter describing the main
-      events.
+    - description: The dog’s favorite color, reflecting its personality.
+      key: favorite_color
+      type: str
+    prompt: Craft a concise, engaging 3‑chapter outline for a heartwarming dog story.
+      Include a captivating title, unique chapter titles, and 2–3 bullet points per
+      chapter that outline the main events. Additionally, for the character profile
+      of the dog, specify a favorite color that reflects its personality.
   generate_story_setting:
     agent: false
-    description: Describes the main setting(s) for the story.
+    description: Creates a rich, immersive setting that anchors the narrative. It
+      specifies the geographic locale, temporal context, environmental conditions,
+      and introduces a favorite color that reflects character traits or thematic undercurrents.
+      This comprehensive backdrop informs mood, plot direction, and visual storytelling.
     name: generate_story_setting
     nodes_depended_on: []
     nodes_dependent_on: []
     output_structure:
-    - description: The location where the story takes place.
+    - description: The geographic place where the story unfolds.
       key: location
       type: str
-    - description: The time period when the story takes place.
+    - description: The historical or temporal setting of the narrative.
       key: time_period
       type: str
-    - description: Any relevant environmental details that influence the dog’s adventure.
+    - description: Key environmental factors—weather, terrain, societal norms—that
+        influence the dog’s adventure.
       key: environmental_details
       type: str
-    prompt: Describe the main setting(s) for the story, including location, time period,
-      and any relevant environmental details that influence the dog’s adventure.
+    - description: A color favored by the protagonist, offering insight into personality
+        or thematic symbolism.
+      key: favorite_color
+      type: str
+    prompt: 'Paint the backdrop of your tale in vivid detail: describe the primary
+      location, the era or time frame, and any environmental nuances—weather, geography,
+      societal norms—that will shape the dog’s journey. Additionally, note a favorite
+      color that the protagonist is drawn to, hinting at personality or thematic symbolism.'
   write_chapter_1:
     agent: false
-    description: Writes Chapter 1 using outline, character profiles, and setting.
+    description: Crafts the opening chapter of the story by weaving together the concise
+      outline, richly detailed character profiles (including each character’s favorite
+      color), and the environmental context. The chapter must vividly introduce the
+      canine protagonist, establish the setting, and present the inciting incident
+      that propels the narrative forward.
     name: write_chapter_1
     nodes_depended_on:
     - generate_story_outline
@@ -95,15 +147,19 @@ nodes:
     - generate_story_setting
     nodes_dependent_on: []
     output_structure:
-    - description: The complete text of Chapter 1.
+    - description: The complete, prose-formatted text of Chapter 1
       key: chapter_text
       type: str
-    - description: Whether the output is valid.
+    - description: True if the output is a well‑formed, non‑empty chapter; otherwise
+        False
       key: valid_output
       type: bool
-    prompt: Write Chapter 1 of the story using the provided outline, character profiles,
-      and setting. Focus on introducing the dog, its environment, and the inciting
-      incident. Output a complete chapter in prose.
+    prompt: Compose Chapter 1 of the story. Use the provided outline, character profiles
+      (note each character’s favorite color), and setting details. Begin with a compelling
+      introduction of the dog, paint the environment with sensory specifics, and reveal
+      the inciting incident that sets the plot in motion. Ensure the prose is complete,
+      engaging, and flows naturally from one paragraph to the next. Output the full
+      chapter as a single block of text.
   write_chapter_2:
     agent: false
     description: Writes Chapter 2, receiving Chapter 1 output to continue the narrative.
