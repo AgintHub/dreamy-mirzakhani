@@ -1,3 +1,6 @@
+import json
+
+
 def validate_character_profiles_input(character_profiles: str) -> str:
     """
     Validate the structure and content of character profile data extracted from
@@ -35,4 +38,23 @@ def validate_character_profiles_input(character_profiles: str) -> str:
     ValueError: Invalid data types in character profiles.
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    try:
+        profiles = json.loads(character_profiles)
+    except json.JSONDecodeError:
+        raise TypeError("character_profiles is not a correctly formatted JSON string")
+    
+    if not isinstance(profiles, list):
+        raise TypeError("character_profiles must contain a list of dictionaries")
+    
+    for profile in profiles:
+        if not isinstance(profile, dict):
+            raise TypeError("Each character profile must be a dictionary")
+        
+        for key, value in profile.items():
+            if key == "name" and not isinstance(value, str):
+                raise ValueError("Invalid data types in character profiles")
+            if key == "age" and not isinstance(value, (int, float)):
+                raise ValueError("Invalid data types in character profiles")
+    
+    return "Validation successful: character profiles are valid."

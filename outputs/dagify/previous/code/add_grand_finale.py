@@ -5,6 +5,13 @@ from ._add_grand_finale.enhance_emotional_depth import enhance_emotional_depth
 from ._add_grand_finale.integrate_thematic_symbolism import integrate_thematic_symbolism
 from ._add_grand_finale.polish_narrative_coherence import polish_narrative_coherence
 
+from ._add_grand_finale.analyze_narrative_structure import analyze_narrative_structure
+from ._add_grand_finale.identify_twist_opportunities import identify_twist_opportunities
+from ._add_grand_finale.craft_shyamalan_style_twist import craft_shyamalan_style_twist
+from ._add_grand_finale.enhance_emotional_depth import enhance_emotional_depth
+from ._add_grand_finale.integrate_thematic_symbolism import integrate_thematic_symbolism
+from ._add_grand_finale.polish_narrative_coherence import polish_narrative_coherence
+
 from pydantic import BaseModel, Field
 
 

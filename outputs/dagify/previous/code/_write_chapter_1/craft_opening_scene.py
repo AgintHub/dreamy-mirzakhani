@@ -51,4 +51,42 @@ def craft_opening_scene(character_context: str, setting_context: str, color_them
     city was her muse.'}
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(character_context, str):
+        raise TypeError("character_context must be a string")
+    if not isinstance(setting_context, str):
+        raise TypeError("setting_context must be a string")
+    if not isinstance(color_themes, str):
+        raise TypeError("color_themes must be a string")
+    
+    if not color_themes.strip():
+        raise ValueError("color_themes cannot be empty")
+    
+    
+    character_info = character_context.strip()
+    setting_info = setting_context.strip()
+    color_info = color_themes.strip().lower()
+    
+    scene_parts = []
+    
+    if character_info and setting_info:
+        scene_parts.append(f"{character_info} found themselves in {setting_info}")
+    elif character_info:
+        scene_parts.append(f"{character_info} began their story")
+    elif setting_info:
+        scene_parts.append(f"The scene unfolded in {setting_info}")
+    else:
+        scene_parts.append("The story began")
+    
+    if color_info:
+        if 'bright' in color_info or 'vibrant' in color_info:
+            scene_parts.append(f"The atmosphere was alive with {color_themes}, creating an energetic and dynamic environment")
+        elif 'muted' in color_info or 'monochromatic' in color_info:
+            scene_parts.append(f"The scene was painted in {color_themes}, giving it a subdued and contemplative mood")
+        elif 'dark' in color_info:
+            scene_parts.append(f"Shadows and {color_themes} dominated the scene, creating an mysterious ambiance")
+        else:
+            scene_parts.append(f"The visual palette was defined by {color_themes}, setting the tone for what was to come")
+    
+    opening_scene = ". ".join(scene_parts) + "."
+    
+    return opening_scene

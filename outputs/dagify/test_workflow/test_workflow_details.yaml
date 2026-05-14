@@ -1,72 +1,79 @@
 dag_type: plain_text
-description: A minimal workflow that demonstrates elemental atomic steps for the given
-  task 'test', treating it as a generic placeholder test procedure.
+description: A workflow to test an objective, ensuring execution of a single, clear,
+  self-contained, atomic, stateless action
 name: test_workflow
 nodes:
-  analyze_test_results:
+  break_down_task:
     agent: false
-    description: Review and interpret the outcomes from the test execution to determine
-      success or failure.
-    name: analyze_test_results
+    description: Take the interpreted objective and break it down into a sequence
+      of fundamental tasks, ensuring each task can be executed independently with
+      its inputs
+    name: break_down_task
     nodes_depended_on:
-    - execute_test
-    nodes_dependent_on:
-    - document_test_summary
-    prompt: Analyze the data and results obtained from the test execution. Determine
-      whether the test met the objectives and explain why, based solely on the test
-      results.
-  define_test_objective:
-    agent: false
-    description: Specify the purpose and goal of the test to be conducted.
-    name: define_test_objective
-    nodes_depended_on: []
-    nodes_dependent_on:
-    - select_test_method
-    - prepare_test_inputs
-    prompt: State clearly the objective and intended outcome of the test. Describe
-      what you aim to verify or validate.
-  document_test_summary:
-    agent: false
-    description: Create a concise summary report of the test procedure, results, and
-      conclusions.
-    name: document_test_summary
-    nodes_depended_on:
-    - analyze_test_results
+    - interpret_objective
     nodes_dependent_on: []
-    prompt: Draft a summary that includes the test objective, method used, inputs,
-      execution details, results, and final conclusions about the test success or
-      failure.
-  execute_test:
+    prompt: Convert the interpreted objective into a well-defined sequence of tasks,
+      ensuring each task is atomic and can be executed without prior context or dependencies.
+  conclude_workflow:
     agent: false
-    description: Perform the test using the selected method and prepared inputs.
-    name: execute_test
+    description: Finalize the execution of the workflow by confirming successful completion
+      of all tasks and objective alignment
+    name: conclude_workflow
     nodes_depended_on:
-    - select_test_method
-    - prepare_test_inputs
-    nodes_dependent_on:
-    - analyze_test_results
-    prompt: Simulate or describe the execution of the test using the given method
-      and inputs. Record the direct outcomes observed during this process.
-  prepare_test_inputs:
+    - verify_consistency
+    nodes_dependent_on: []
+    prompt: Confirm that all tasks within the workflow have been successfully executed
+      and that the overall output aligns with the objective. Finalize the workflow
+      as complete and consistent.
+  execute_task:
     agent: false
-    description: Generate or gather the necessary inputs or resources required to
-      perform the test.
-    name: prepare_test_inputs
+    description: For each identified task, if all dependencies have been met, execute
+      it with its inputs
+    name: execute_task
     nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on:
-    - execute_test
-    prompt: Based on the test objective, list or create all input data, parameters,
-      or resources needed to perform the test. Provide these inputs explicitly.
-  select_test_method:
+    - validate_output
+    nodes_dependent_on: []
+    prompt: Execute the task, confirming that it completes successfully and produces
+      the intended output, given all necessary inputs and dependencies.
+  interpret_objective:
     agent: false
-    description: Choose an appropriate method or type of test based on the defined
-      objective.
-    name: select_test_method
+    description: Determine the specific action or task described in the objective
+      and break it into fundamental operations
+    name: interpret_objective
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Parse the objective 'test' into a clear, actionable task or series of
+      tasks.
+  list_dependencies:
+    agent: false
+    description: Enumerate any potential dependencies or prerequisites for each task
+      identified in the previous step
+    name: list_dependencies
     nodes_depended_on:
-    - define_test_objective
-    nodes_dependent_on:
-    - execute_test
-    prompt: Based solely on the provided test objective, select the method or technique
-      best suited for testing (e.g., unit test, functional test, performance test).
-      Clearly name the method and justify why it's appropriate.
+    - break_down_task
+    nodes_dependent_on: []
+    prompt: For each task identified, list any required dependencies or prerequisites.
+      Consider both internal (e.g., previous tasks) and external (e.g., services,
+      inputs) dependencies.
+  validate_output:
+    agent: false
+    description: For each task, ensure that its outputs align with the objective and
+      that any dependencies have been met
+    name: validate_output
+    nodes_depended_on:
+    - list_dependencies
+    nodes_dependent_on: []
+    prompt: Verify that each task's outputs are correctly defined and align with the
+      ultimate objective. Confirm that any identified dependencies have been properly
+      addressed.
+  verify_consistency:
+    agent: false
+    description: After executing all tasks, ensure that the overall workflow's output
+      is consistent with the objective and aligns with the validation step
+    name: verify_consistency
+    nodes_depended_on:
+    - execute_task
+    nodes_dependent_on: []
+    prompt: Assess the overall workflow output for consistency with the original objective.
+      Ensure that tasks have executed correctly and produced the intended results
+      without contradiction.

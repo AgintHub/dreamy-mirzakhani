@@ -1,3 +1,7 @@
+import json
+import re
+
+
 def extract_or_generate_location(parsed_data: str, fallback_input: str) -> str:
     """
     Extracts the location from provided parsed data or generates one using
@@ -35,4 +39,51 @@ def extract_or_generate_location(parsed_data: str, fallback_input: str) -> str:
     'Mountains'
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    if not isinstance(parsed_data, str) or not isinstance(fallback_input, str):
+        raise ValueError("Input data types are incorrect")
+    
+    try:
+        data = json.loads(parsed_data)
+        if isinstance(data, dict):
+            for key in ['city', 'location', 'place', 'town', 'area']:
+                if key in data and data[key]:
+                    return str(data[key])
+    except (json.JSONDecodeError, TypeError):
+        pass
+    
+    location_patterns = [
+        r'\bin\s+([A-Z][a-zA-Z\s]+)(?:\.|,|$)',
+        r'\bat\s+([A-Z][a-zA-Z\s]+)(?:\.|,|$)',
+        r'\bmountains?\b',
+        r'\bcity\b',
+        r'\btown\b',
+        r'\bvillage\b',
+        r'\bforest\b',
+        r'\bocean\b',
+        r'\bdesert\b'
+    ]
+    
+    for pattern in location_patterns:
+        match = re.search(pattern, fallback_input, re.IGNORECASE)
+        if match:
+            if match.groups():
+                return match.group(1).strip()
+            else:
+                matched_word = match.group(0).lower()
+                if 'mountain' in matched_word:
+                    return 'Mountains'
+                elif 'city' in matched_word:
+                    return 'City'
+                elif 'town' in matched_word:
+                    return 'Town'
+                elif 'village' in matched_word:
+                    return 'Village'
+                elif 'forest' in matched_word:
+                    return 'Forest'
+                elif 'ocean' in matched_word:
+                    return 'Ocean'
+                elif 'desert' in matched_word:
+                    return 'Desert'
+    
+    raise ValueError("Location extraction/generation failed entirely")

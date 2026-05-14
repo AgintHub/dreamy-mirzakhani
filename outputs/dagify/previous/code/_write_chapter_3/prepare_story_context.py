@@ -39,4 +39,29 @@ def prepare_story_context(chapter_2_content: str, outline: str, characters: str,
     the setting.'}
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(chapter_2_content, str):
+        raise TypeError("chapter_2_content must be a string")
+    if not isinstance(outline, str):
+        raise TypeError("outline must be a string")
+    if not isinstance(characters, str):
+        raise TypeError("characters must be a string")
+    if not isinstance(setting, str):
+        raise TypeError("setting must be a string")
+    
+    if not chapter_2_content.strip():
+        raise ValueError("chapter_2_content cannot be empty or whitespace only")
+    if not outline.strip():
+        raise ValueError("outline cannot be empty or whitespace only")
+    if not characters.strip():
+        raise ValueError("characters cannot be empty or whitespace only")
+    if not setting.strip():
+        raise ValueError("setting cannot be empty or whitespace only")
+    
+    context_dict = {
+        'chapter_2_content': chapter_2_content,
+        'outline': outline,
+        'characters': characters,
+        'setting': setting
+    }
+    
+    return context_dict

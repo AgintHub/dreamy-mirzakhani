@@ -33,4 +33,32 @@ def determine_plot_role(character_data: str) -> str:
     'antagonist'
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    if not isinstance(character_data, str):
+        raise TypeError("Input must be a string")
+    
+    if not character_data or not character_data.strip():
+        raise ValueError("Input string is invalid or missing required information")
+    
+    parts = [part.strip().lower() for part in character_data.split(',')]
+    
+    if len(parts) < 3:
+        raise ValueError("Input string is invalid or missing required information")
+    
+    traits = parts[2:]
+    
+    protagonist_traits = {'brave', 'heroic', 'loyal', 'determined', 'strong', 'courageous', 'noble'}
+    antagonist_traits = {'mean', 'evil', 'cruel', 'stubborn', 'ruthless', 'wicked', 'malicious'}
+    sidekick_traits = {'sweet', 'naive', 'helpful', 'supportive', 'friendly', 'loyal', 'kind'}
+    
+    protagonist_score = sum(1 for trait in traits if trait in protagonist_traits)
+    antagonist_score = sum(1 for trait in traits if trait in antagonist_traits)
+    sidekick_score = sum(1 for trait in traits if trait in sidekick_traits)
+    
+    if antagonist_score > 0 and antagonist_score >= protagonist_score and antagonist_score >= sidekick_score:
+        return 'antagonist'
+    elif protagonist_score > 0 and protagonist_score >= sidekick_score:
+        return 'protagonist'
+    elif sidekick_score > 0:
+        return 'sidekick'
+    else:
+        return 'protagonist'

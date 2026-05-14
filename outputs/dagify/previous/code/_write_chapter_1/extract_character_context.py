@@ -1,3 +1,6 @@
+import json
+
+
 def extract_character_context(character_profile: str) -> str:
     """
     Extract character context from the given character profile input string.
@@ -57,4 +60,25 @@ def extract_character_context(character_profile: str) -> str:
     }
 
     """
-    raise NotImplementedError("This is a virtual stub node that needs to be implemented")
+    
+    if not isinstance(character_profile, str):
+        raise TypeError("Input character profile must be a string")
+    
+    try:
+        profile_data = json.loads(character_profile)
+    except json.JSONDecodeError as e:
+        raise ValueError("Invalid JSON string provided") from e
+    
+    if not isinstance(profile_data, dict):
+        raise ValueError("Character profile must be a JSON object")
+    
+    output_data = {
+        "character_name": profile_data.get("name", ""),
+        "age": profile_data.get("age", 0),
+        "personality_traits": profile_data.get("personality_traits", []),
+        "role_in_plot": profile_data.get("role", ""),
+        "favorite_color": profile_data.get("favorite_color", ""),
+        "dog_profile": profile_data.get("dog_profile", "")
+    }
+    
+    return json.dumps(output_data, indent=2)
